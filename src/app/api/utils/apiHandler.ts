@@ -1,7 +1,11 @@
 import { NextRequest } from "next/server";
 import { BaseApiHandler } from "./BaseApiHandler";
 
-// 新しい基底クラスを使用するファクトリ関数
+/**
+ * APIハンドラーを生成するファクトリ関数
+ * @param HandlerClass - ハンドラークラスのコンストラクタ
+ * @return {Function} - APIリクエストを処理する関数
+ */
 export function createApiHandler(HandlerClass: new (req: NextRequest) => BaseApiHandler) {
     return async function (req: NextRequest) {
         const handler = new HandlerClass(req);

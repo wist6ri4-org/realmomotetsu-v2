@@ -1,10 +1,20 @@
 import { AccessLog, ErrorLog, LogContext } from "./types";
 
 export class LogService {
+    /**
+     * リクエストIDを生成する
+     * @returns {string} - 生成されたリクエストID
+     */
     private static generateRequestId(): string {
         return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     }
 
+    /**
+     * リクエストからログコンテキストを生成する
+     * すべてのログで共通して使用される
+     * @param req - リクエストオブジェクト
+     * @return {LogContext} - 生成されたログコンテキスト
+     */
     static createLogContext(req: Request): LogContext {
         return {
             method: req.method,
@@ -15,6 +25,12 @@ export class LogService {
         };
     }
 
+    /**
+     * アクセスログを記録する
+     * @param context - ログコンテキスト
+     * @param statusCode - レスポンスステータスコード
+     * @param responseTime - レスポンス時間（ミリ秒）
+     */
     static logAccess(context: LogContext, statusCode: number, responseTime: number): void {
         const accessLog: AccessLog = {
             ...context,
@@ -32,6 +48,11 @@ export class LogService {
         }
     }
 
+    /**
+     * エラーログを記録する
+     * @param context - ログコンテキスト
+     * @param error - エラーオブジェクト
+     */
     static logError(context: LogContext, error: Error | unknown): void {
         const errorLog: ErrorLog = {
             ...context,
@@ -50,6 +71,12 @@ export class LogService {
         }
     }
 
+    /**
+     * 情報ログを記録する
+     * @param context - ログコンテキスト
+     * @param message - ログメッセージ
+     * @param data - 追加データ（オプション）
+     */
     static logInfo(context: LogContext, message: string, data?: unknown): void {
         console.log(
             `[INFO] ${context.requestId} ${context.method} ${context.url}: ${message}`,
@@ -57,6 +84,12 @@ export class LogService {
         );
     }
 
+    /**
+     * デバッグログを記録する
+     * @param context - ログコンテキスト
+     * @param message - ログメッセージ
+     * @param data - 追加データ（オプション）
+     */
     static logDebug(context: LogContext, message: string, data?: unknown): void {
         if (process.env.NODE_ENV === "development") {
             console.debug(
