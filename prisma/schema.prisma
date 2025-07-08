@@ -35,6 +35,7 @@ model Events {
   goalStations    GoalStations[]
   transitStations TransitStations[]
   bombiiHistory   BombiiHistories[]
+  points          Points[]
 
   @@map("events")
 }
@@ -44,13 +45,13 @@ model Events {
  * イベント種別
  */
 model EventTypes {
-  id            Int      @id @default(autoincrement()) @map("id")
-  eventTypeCode String   @unique @map("event_type_code")
-  description   String?  @map("description")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+  id            Int        @id @default(autoincrement()) @map("id")
+  eventTypeCode String     @unique @map("event_type_code")
+  description   String?    @map("description")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @default(now()) @updatedAt @map("updated_at")
   events        Events[]
-  stations     Stations[]
+  stations      Stations[]
 
   @@map("event_types")
 }
@@ -110,6 +111,7 @@ model Teams {
   updatedAt     DateTime          @default(now()) @updatedAt @map("updated_at")
   event         Events            @relation(fields: [eventCode], references: [eventCode])
   bombiiHistory BombiiHistories[]
+  points        Points[]
 
   @@map("teams")
 }
@@ -160,4 +162,31 @@ model BombiiHistories {
   team      Teams    @relation(fields: [teamCode], references: [teamCode])
 
   @@map("bombii_histories")
+}
+
+/**
+ * PointStatus
+ * ポイントステータス
+ */
+enum PointStatus {
+  points
+  scored
+}
+
+/**
+ * Points
+ * ポイント
+ */
+model Points {
+  id        Int         @id @default(autoincrement()) @map("id")
+  teamCode  String      @map("team_code")
+  eventCode String      @map("event_code")
+  points    Int         @default(0) @map("points")
+  status    PointStatus @default(points) @map("status")
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @default(now()) @updatedAt @map("updated_at")
+  event     Events      @relation(fields: [eventCode], references: [eventCode])
+  team      Teams       @relation(fields: [teamCode], references: [teamCode])
+
+  @@map("points")
 }
