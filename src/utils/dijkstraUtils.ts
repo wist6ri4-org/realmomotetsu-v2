@@ -1,6 +1,6 @@
 import { NearbyStationWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 
-export default class Dijkstra {
+export default class DijkstraUtils {
     /**
      * 近隣駅の接続情報をグラフ形式に変換
      * @param nearbyStations - 近隣駅の接続情報

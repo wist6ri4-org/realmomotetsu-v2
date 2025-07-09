@@ -3,7 +3,7 @@ import { InitHomeService } from "./interface";
 import { InitHomeRequest, InitHomeResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { TeamData } from "@/types/TeamData";
-import Dijkstra from "@/utils/dijkstra";
+import DijkstraUtils from "@/utils/dijkstraUtils";
 
 export const InitHomeServiceImpl: InitHomeService = {
     /**
@@ -40,7 +40,7 @@ export const InitHomeServiceImpl: InitHomeService = {
 
             const eventTypeCode = events?.eventTypeCode || "";
             const stationGraph = await nearbyStationsRepository.findByEventTypeCode(eventTypeCode);
-            const convertedStationGraph = Dijkstra.convertToStationGraph(stationGraph);
+            const convertedStationGraph = DijkstraUtils.convertToStationGraph(stationGraph);
 
             // TeamsをTeamDataに変換
             const teamData: TeamData[] = teams.map((team) => ({
@@ -49,10 +49,10 @@ export const InitHomeServiceImpl: InitHomeService = {
                 teamName: team.teamName,
                 teamColor: team.teamColor || "",
                 transitStations: team.transitStations,
-                remainingStationsNumber: Dijkstra.calculateRemainingStationsNumber(
+                remainingStationsNumber: DijkstraUtils.calculateRemainingStationsNumber(
                     convertedStationGraph,
                     team.transitStations.at(-1)?.stationCode || "",
-                    nextGoalStation?.stationCode || "",
+                    nextGoalStation?.stationCode || ""
                 ),
                 points: totalPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 scoredPoints:
