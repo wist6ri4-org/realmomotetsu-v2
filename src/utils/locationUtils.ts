@@ -2,7 +2,7 @@ import { Stations } from "@/generated/prisma";
 
 export default class LocationUtils {
     static readonly R = 6371; // 地球の半径 (km)
-    static readonly NUMBER_OF_STATIONS = 5; // 取得する駅の数
+    static readonly NUMBER_OF_STATIONS = 1; // 取得する駅の数
 
     /**
      * 指定された位置から近い駅を計算する
@@ -61,7 +61,7 @@ export default class LocationUtils {
     ): Array<{ stationCode: string; distance: number }> {
         const distances: Array<{ stationCode: string; distance: number }> = [];
 
-        for (const [stationCode, location] of Object.entries(locationGraph)) {
+        for (const [stationCode, location] of locationGraph.entries()) {
             const distance = this.calculateDistance(
                 latitude,
                 longitude,
@@ -73,7 +73,6 @@ export default class LocationUtils {
                 distance: distance,
             });
             distances.sort((a, b) => a.distance - b.distance);
-            return distances.slice(0, numberOfStations);
         }
 
         // 距離でソートして、近い順に並べる

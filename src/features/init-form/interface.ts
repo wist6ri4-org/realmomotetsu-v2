@@ -1,4 +1,4 @@
-import { Stations } from "@/generated/prisma";
+import { InitFormRequest, InitFormResponse } from "./types";
 
 export interface InitFormService {
 
@@ -6,5 +6,5 @@ export interface InitFormService {
      * ホーム画面の初期化データを取得する
      * @returns {Promise<InitHome[]>} ホーム画面の初期化
      */
-    getDataForForm: () => Promise<Stations[]>;
+    getDataForForm: (req: InitFormRequest) => Promise<InitFormResponse>;
 }

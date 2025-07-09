@@ -83,7 +83,7 @@ export class StationsRepository extends BaseRepository {
                     eventTypeCode: eventTypeCode,
                 },
                 orderBy: {
-                    name: "asc",
+                    kana: "asc",
                 },
             });
         } catch (error) {
