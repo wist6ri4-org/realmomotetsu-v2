@@ -1,7 +1,9 @@
+import { Teams } from "@/generated/prisma";
 import { InitHomeService } from "./interface";
 import { InitHomeRequest, InitHomeResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { TeamData } from "@/types/TeamData";
+import Dijkstra from "@/utils/dijkstra";
 
 export const InitHomeServiceImpl: InitHomeService = {
     /**
@@ -14,14 +16,31 @@ export const InitHomeServiceImpl: InitHomeService = {
         const teamsRepository = RepositoryFactory.getTeamsRepository();
         const goalStationsRepository = RepositoryFactory.getGoalStationsRepository();
         const bombiiHistoriesRepository = RepositoryFactory.getBombiiHistoriesRepository();
+        const pointsRepository = RepositoryFactory.getPointsRepository();
+        const eventsRepository = RepositoryFactory.getEventsRepository();
+        const nearbyStationsRepository = RepositoryFactory.getNearbyStationsRepository();
 
         try {
             // 並列でデータを取得
-            const [teams, nextGoalStation, currentBombiiHistory] = await Promise.all([
+            const [
+                teams,
+                nextGoalStation,
+                currentBombiiHistory,
+                totalPoints,
+                totalScoredPoints,
+                events,
+            ] = await Promise.all([
                 teamsRepository.findByEventCode(req.eventCode),
                 goalStationsRepository.findNextGoalStation(req.eventCode),
                 bombiiHistoriesRepository.findCurrentBombiiTeam(req.eventCode),
+                pointsRepository.sumPointsGroupedByTeamCode(),
+                pointsRepository.sumScoredPointsGroupedByTeamCode(),
+                eventsRepository.findByEventCode(req.eventCode),
             ]);
+
+            const eventTypeCode = events?.eventTypeCode || "";
+            const stationGraph = await nearbyStationsRepository.findByEventTypeCode(eventTypeCode);
+            const convertedStationGraph = Dijkstra.convertToStationGraph(stationGraph);
 
             // TeamsをTeamDataに変換
             const teamData: TeamData[] = teams.map((team) => ({
@@ -29,14 +48,19 @@ export const InitHomeServiceImpl: InitHomeService = {
                 teamCode: team.teamCode,
                 teamName: team.teamName,
                 teamColor: team.teamColor || "",
-                transitStations: [], // TODO: 実際のtransitStationsデータを取得して設定
-                remainingStationsNumber: 0, // TODO: 実際の計算ロジックを実装
-                chargedPoints: 0, // TODO: 実際のポイント計算ロジックを実装
-                notChargedPoints: 0, // TODO: 実際のポイント計算ロジックを実装
+                transitStations: team.transitStations,
+                remainingStationsNumber: Dijkstra.calculateRemainingStationsNumber(
+                    convertedStationGraph,
+                    team.transitStations.at(-1)?.stationCode || "",
+                    nextGoalStation?.stationCode || "",
+                ),
+                points: totalPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
+                scoredPoints:
+                    totalScoredPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
             }));
 
             // currentBombiiHistoryからbombiiTeamを取得
-            let bombiiTeam: TeamData | null = null;
+            let bombiiTeam: Teams | null = null;
             if (currentBombiiHistory) {
                 const team = currentBombiiHistory.team;
                 bombiiTeam = {
@@ -44,10 +68,9 @@ export const InitHomeServiceImpl: InitHomeService = {
                     teamCode: team.teamCode,
                     teamName: team.teamName,
                     teamColor: team.teamColor || "",
-                    transitStations: [], // TODO: 実際のデータを取得
-                    remainingStationsNumber: 0, // TODO: 実際の計算
-                    chargedPoints: 0, // TODO: 実際の計算
-                    notChargedPoints: 0, // TODO: 実際の計算
+                    eventCode: team.eventCode,
+                    createdAt: team.createdAt,
+                    updatedAt: team.updatedAt,
                 };
             }
 

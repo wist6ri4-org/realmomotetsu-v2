@@ -49,6 +49,9 @@ class InitHomeApiHandler extends BaseApiHandler {
             // サービスからデータを取得
             const data = await InitHomeServiceImpl.getDataForHome(validatedParams);
 
+            // レスポンスのスキーマでバリデーション
+            // const validatedResponse = initHomeResponseSchema.parse(data);
+
             this.logInfo("Successfully retrieved init-home data", {
                 teamDataCount: data.teamData.length,
                 hasNextGoal: !!data.nextGoalStation,
