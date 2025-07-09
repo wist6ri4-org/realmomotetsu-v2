@@ -2,7 +2,7 @@ import { NearbyStations, Stations } from "@/generated/prisma";
 import { BaseRepository } from "../base/BaseRepository";
 
 // includeありのNearbyStationsの型定義
-type NearbyStationWithRelations = NearbyStations & {
+export type NearbyStationWithRelations = NearbyStations & {
     fromStation: Stations;
     toStation: Stations;
 };
@@ -100,6 +100,27 @@ export class NearbyStationsRepository extends BaseRepository {
     }
 
     /**
+     * 指定されたイベントコードに関連する近隣駅接続を取得
+     * @param eventTypeCode - イベント種別コード
+     * @returns {Promise<NearbyStationWithRelations[]>} 近隣駅の配列
+     */
+    async findByEventTypeCode(eventTypeCode: string): Promise<NearbyStationWithRelations[]> {
+        try {
+            return (await this.prisma.nearbyStations.findMany({
+                where: {
+                    eventTypeCode: eventTypeCode,
+                },
+                include: {
+                    fromStation: true,
+                    toStation: true,
+                },
+            })) as NearbyStationWithRelations[];
+        } catch (error) {
+            this.handleDatabaseError(error, "findByEventCode");
+        }
+    }
+
+    /**
      * 新しい近隣駅接続を作成
      * @param connectionData - 接続作成データ
      * @returns {Promise<NearbyStations>} 作成された近隣駅接続
@@ -107,6 +128,7 @@ export class NearbyStationsRepository extends BaseRepository {
     async create(connectionData: {
         fromStationCode: string;
         toStationCode: string;
+        eventTypeCode: string;
         timeMinutes: number;
     }): Promise<NearbyStations> {
         try {

@@ -1,5 +1,11 @@
-import { Teams } from "@/generated/prisma";
+import { Stations, Teams, TransitStations } from "@/generated/prisma";
 import { BaseRepository } from "../base/BaseRepository";
+
+export type TeamsWithTransitStations = Teams & {
+    transitStations: (TransitStations & {
+        station: Stations;
+    })[];
+};
 
 /**
  * チーム関連のデータアクセス処理を担当するRepository
@@ -10,16 +16,23 @@ export class TeamsRepository extends BaseRepository {
      * @param eventCode - イベントコード
      * @returns {Promise<Teams[]>} チームの配列
      */
-    async findByEventCode(eventCode: string): Promise<Teams[]> {
+    async findByEventCode(eventCode: string): Promise<TeamsWithTransitStations[]> {
         try {
             return await this.prisma.teams.findMany({
                 where: {
                     eventCode: eventCode,
                 },
-                orderBy: {
-                    teamName: "asc",
+                include: {
+                    transitStations: {
+                        include: {
+                            station: true,
+                        },
+                    },
                 },
-            });
+                orderBy: {
+                    id: "asc",
+                },
+            }) as TeamsWithTransitStations[];
         } catch (error) {
             this.handleDatabaseError(error, "findByEventCode");
         }

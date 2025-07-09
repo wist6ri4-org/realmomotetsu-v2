@@ -33,11 +33,11 @@ export class PointsRepository extends BaseRepository {
     }
 
     /**
-     * 指定されたチームコードのポイントを合計
+     * 指定されたチームコードごとのポイントを合計
      * @param teamCode - チームコード
      * @return {Promise<PointsGroupedByTeam[]>} チームコードごとの合計ポイント
      */
-    async sumPointsGroupedByTeamCode(teamCode: string): Promise<SummedPoints[]> {
+    async sumPointsGroupedByTeamCode(): Promise<SummedPoints[]> {
         try {
             const result = await this.prisma.points.groupBy({
                 by: ['teamCode'],
@@ -45,7 +45,6 @@ export class PointsRepository extends BaseRepository {
                     points: true,
                 },
                 where: {
-                    teamCode: teamCode,
                     status: "points", // ポイント状態のポイントのみを対象
                 },
             });
@@ -59,11 +58,11 @@ export class PointsRepository extends BaseRepository {
     }
 
     /**
-     * 指定されたチームコードのスコアポイントを合計
+     * 指定されたチームコードごとのスコアポイントを合計
      * @param teamCode - チームコード
      * @return {Promise<ScoredPointsGroupedByTeamCode[]>} チームコードごとの合計スコアポイント
      */
-    async sumScoredPointsGroupedByTeamCode(teamCode: string): Promise<SummedPoints[]> {
+    async sumScoredPointsGroupedByTeamCode(): Promise<SummedPoints[]> {
         try {
             const result = await this.prisma.points.groupBy({
                 by: ['teamCode'],
@@ -71,7 +70,6 @@ export class PointsRepository extends BaseRepository {
                     points: true,
                 },
                 where: {
-                    teamCode: teamCode,
                     status: 'scored', // スコア済みのポイントのみを対象
                 },
             });

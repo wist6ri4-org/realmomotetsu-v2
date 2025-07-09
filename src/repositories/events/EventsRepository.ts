@@ -63,7 +63,7 @@ export class EventsRepository extends BaseRepository {
                             station: true,
                         },
                     },
-                    bombiiHistory: {
+                    bombiiHistories: {
                         include: {
                             team: true,
                         },
