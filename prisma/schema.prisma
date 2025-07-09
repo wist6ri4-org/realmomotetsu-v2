@@ -34,7 +34,7 @@ model Events {
   teams           Teams[]
   goalStations    GoalStations[]
   transitStations TransitStations[]
-  bombiiHistory   BombiiHistories[]
+  bombiiHistories BombiiHistories[]
   points          Points[]
 
   @@map("events")
@@ -45,13 +45,14 @@ model Events {
  * イベント種別
  */
 model EventTypes {
-  id            Int        @id @default(autoincrement()) @map("id")
-  eventTypeCode String     @unique @map("event_type_code")
-  description   String?    @map("description")
-  createdAt     DateTime   @default(now()) @map("created_at")
-  updatedAt     DateTime   @default(now()) @updatedAt @map("updated_at")
-  events        Events[]
-  stations      Stations[]
+  id             Int              @id @default(autoincrement()) @map("id")
+  eventTypeCode  String           @unique @map("event_type_code")
+  description    String?          @map("description")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @default(now()) @updatedAt @map("updated_at")
+  events         Events[]
+  stations       Stations[]
+  nearbyStations NearbyStations[]
 
   @@map("event_types")
 }
@@ -85,14 +86,16 @@ model Stations {
  * 近隣駅
  */
 model NearbyStations {
-  id              Int      @id @default(autoincrement()) @map("id")
-  fromStationCode String   @map("from_station_code")
-  toStationCode   String   @map("to_station_code")
-  timeMinutes     Int      @map("time_minutes")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at")
-  fromStation     Stations @relation("from_station", fields: [fromStationCode], references: [stationCode])
-  toStation       Stations @relation("to_station", fields: [toStationCode], references: [stationCode])
+  id              Int        @id @default(autoincrement()) @map("id")
+  eventTypeCode   String     @map("event_type_code")
+  fromStationCode String     @map("from_station_code")
+  toStationCode   String     @map("to_station_code")
+  timeMinutes     Int        @map("time_minutes")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @default(now()) @updatedAt @map("updated_at")
+  eventType       EventTypes @relation(fields: [eventTypeCode], references: [eventTypeCode])
+  fromStation     Stations   @relation("from_station", fields: [fromStationCode], references: [stationCode])
+  toStation       Stations   @relation("to_station", fields: [toStationCode], references: [stationCode])
 
   @@map("nearby_stations")
 }
@@ -102,16 +105,17 @@ model NearbyStations {
  * チーム
  */
 model Teams {
-  id            Int               @id @default(autoincrement()) @map("id")
-  teamCode      String            @unique @map("team_code")
-  teamName      String            @unique @map("team_name")
-  teamColor     String?           @map("team_color")
-  eventCode     String            @map("event_code")
-  createdAt     DateTime          @default(now()) @map("created_at")
-  updatedAt     DateTime          @default(now()) @updatedAt @map("updated_at")
-  event         Events            @relation(fields: [eventCode], references: [eventCode])
-  bombiiHistory BombiiHistories[]
-  points        Points[]
+  id              Int               @id @default(autoincrement()) @map("id")
+  teamCode        String            @unique @map("team_code")
+  teamName        String            @unique @map("team_name")
+  teamColor       String?           @map("team_color")
+  eventCode       String            @map("event_code")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at")
+  event           Events            @relation(fields: [eventCode], references: [eventCode])
+  bombiiHistory   BombiiHistories[]
+  points          Points[]
+  transitStations TransitStations[]
 
   @@map("teams")
 }
@@ -139,11 +143,13 @@ model GoalStations {
 model TransitStations {
   id          Int      @id @default(autoincrement()) @map("id")
   stationCode String   @map("station_code")
+  teamCode    String   @map("team_code")
   eventCode   String   @map("event_code")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
   event       Events   @relation(fields: [eventCode], references: [eventCode])
   station     Stations @relation(fields: [stationCode], references: [stationCode])
+  team        Teams    @relation(fields: [teamCode], references: [teamCode])
 
   @@map("transit_stations")
 }
