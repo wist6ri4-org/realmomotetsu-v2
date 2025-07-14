@@ -8,7 +8,7 @@ import {
 import { BaseRepository } from "../base/BaseRepository";
 
 // includeありのStationsの型定義
-type StationWithRelations = Stations & {
+export type StationWithRelations = Stations & {
     eventType?: EventTypes;
     fromStations?: (NearbyStations & { toStation: Stations })[];
     toStations?: (NearbyStations & { fromStation: Stations })[];
@@ -205,13 +205,14 @@ export class StationsRepository extends BaseRepository {
 
     /**
      * 駅情報を更新
-     * @param stationCode - 更新対象の駅コード
+     * @param id - 更新対象のID
      * @param updateData - 更新データ
      * @returns {Promise<Stations>} 更新された駅
      */
     async update(
-        stationCode: string,
+        id: number,
         updateData: {
+            stationCode: string,
             name?: string;
             kana?: string;
             latitude?: number;
@@ -222,7 +223,7 @@ export class StationsRepository extends BaseRepository {
         try {
             return await this.prisma.stations.update({
                 where: {
-                    stationCode: stationCode,
+                    id: id,
                 },
                 data: updateData,
             });
@@ -233,14 +234,14 @@ export class StationsRepository extends BaseRepository {
 
     /**
      * 駅を削除
-     * @param stationCode - 削除する駅コード
+     * @param id - 削除対象のID
      * @returns {Promise<Stations>} 削除された駅
      */
-    async delete(stationCode: string): Promise<Stations> {
+    async delete(id: number): Promise<Stations> {
         try {
             return await this.prisma.stations.delete({
                 where: {
-                    stationCode: stationCode,
+                    id: id,
                 },
             });
         } catch (error) {

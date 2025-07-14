@@ -1,5 +1,9 @@
-import { GoalStations } from "@/generated/prisma";
+import { GoalStations, Stations } from "@/generated/prisma";
 import { BaseRepository } from "../base/BaseRepository";
+
+export type GoalStationsWithRelations = GoalStations & {
+    station: Stations;
+};
 
 /**
  * 目的駅関連のデータアクセス処理を担当するRepository
@@ -8,9 +12,9 @@ export class GoalStationsRepository extends BaseRepository {
     /**
      * 指定されたイベントの次の目的駅を取得
      * @param eventCode - イベントコード
-     * @returns {Promise<GoalStations | null>} 次の目的駅またはnull
+     * @returns {Promise<GoalStationsWithRelations | null>} 次の目的駅またはnull
      */
-    async findNextGoalStation(eventCode: string): Promise<GoalStations | null> {
+    async findNextGoalStation(eventCode: string): Promise<GoalStationsWithRelations | null> {
         try {
             return await this.prisma.goalStations.findFirst({
                 where: {
@@ -31,9 +35,9 @@ export class GoalStationsRepository extends BaseRepository {
     /**
      * 指定されたイベントのすべての目的駅を取得
      * @param eventCode - イベントコード
-     * @returns {Promise<GoalStations[]>} 目的駅の配列
+     * @returns {Promise<GoalStationsWithRelations[]>} 目的駅の配列
      */
-    async findByEventCode(eventCode: string): Promise<GoalStations[]> {
+    async findByEventCode(eventCode: string): Promise<GoalStationsWithRelations[]> {
         try {
             return await this.prisma.goalStations.findMany({
                 where: {
@@ -53,17 +57,14 @@ export class GoalStationsRepository extends BaseRepository {
 
     /**
      * 新しい目的駅を追加
-     * @param stationCode - 駅コード
      * @param eventCode - イベントコード
+     * @param stationCode - 駅コード
      * @returns {Promise<GoalStations>} 作成された目的駅
      */
-    async create(stationCode: string, eventCode: string): Promise<GoalStations> {
+    async create(goalStationData: {eventCode: string, stationCode: string}): Promise<GoalStations> {
         try {
             return await this.prisma.goalStations.create({
-                data: {
-                    stationCode: stationCode,
-                    eventCode: eventCode,
-                },
+                data: goalStationData,
             });
         } catch (error) {
             this.handleDatabaseError(error, "create");
@@ -72,7 +73,7 @@ export class GoalStationsRepository extends BaseRepository {
 
     /**
      * 目的駅を削除
-     * @param id - 目的駅ID
+     * @param id - 削除対象のID
      * @returns {Promise<GoalStations>} 削除された目的駅
      */
     async delete(id: number): Promise<GoalStations> {

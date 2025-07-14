@@ -82,25 +82,7 @@ export class NearbyStationsRepository extends BaseRepository {
     }
 
     /**
-     * すべての近隣駅情報を取得
-     * @returns {Promise<NearbyStationWithRelations[]>} 近隣駅の配列
-     */
-    async findAll(): Promise<NearbyStationWithRelations[]> {
-        try {
-            return (await this.prisma.nearbyStations.findMany({
-                include: {
-                    fromStation: true,
-                    toStation: true,
-                },
-                orderBy: [{ fromStationCode: "asc" }, { timeMinutes: "asc" }],
-            })) as NearbyStationWithRelations[];
-        } catch (error) {
-            this.handleDatabaseError(error, "findAll");
-        }
-    }
-
-    /**
-     * 指定されたイベントコードに関連する近隣駅接続を取得
+     * 指定されたイベント種別コードに関連する近隣駅接続を取得
      * @param eventTypeCode - イベント種別コード
      * @returns {Promise<NearbyStationWithRelations[]>} 近隣駅の配列
      */
@@ -166,7 +148,7 @@ export class NearbyStationsRepository extends BaseRepository {
 
     /**
      * 近隣駅接続を削除
-     * @param id - 削除するID
+     * @param id - 削除対象のID
      * @returns {Promise<NearbyStations>} 削除された近隣駅接続
      */
     async delete(id: number): Promise<NearbyStations> {

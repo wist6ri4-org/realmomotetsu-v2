@@ -1,32 +1,55 @@
-import { Events, Points, Teams } from "@/generated/prisma";
+import { Points, PointStatus } from "@/generated/prisma";
 import { BaseRepository } from "../base/BaseRepository";
 import { SummedPoints } from "@/types/SummedPoints";
 
-type PointsWithRelations = Points & {
-    team: Teams;
-    event: Events;
-};
-
 export class PointsRepository extends BaseRepository {
+    /**
+     * イベントコードでポイントを取得
+     * @param eventCode - イベントコード
+     * @return {Promise<Points[]>} ポイントの配列
+     */
+    async findByEventCode(eventCode: string): Promise<Points[]> {
+        try {
+            return (
+                ((await this.prisma.points.findMany({
+                    where: {
+                        eventCode: eventCode,
+                    },
+                    include: {
+                        team: true, // チーム情報を含める
+                        event: true, // イベント情報を含める
+                    },
+                    orderBy: {
+                        createdAt: "desc",
+                    },
+                })) as Points[]) || null
+            );
+        } catch (error) {
+            this.handleDatabaseError(error, "findByEventCode");
+        }
+    }
+
     /**
      * チームコードでポイントを取得
      * @param teamCode - チームコード
-     * @return {Promise<PointsWithRelations[]>} ポイントの配列
+     * @return {Promise<Points[]>} ポイントの配列
      */
-    async findByTeamCode(teamCode: string): Promise<PointsWithRelations[]> {
+    async findByTeamCode(teamCode: string): Promise<Points[]> {
         try {
-            return (await this.prisma.points.findMany({
-                where: {
-                    teamCode: teamCode,
-                },
-                include: {
-                    team: true, // チーム情報を含める
-                    event: true, // イベント情報を含める
-                },
-                orderBy: {
-                    createdAt: "desc",
-                },
-            })) as PointsWithRelations[] || null;
+            return (
+                ((await this.prisma.points.findMany({
+                    where: {
+                        teamCode: teamCode,
+                    },
+                    include: {
+                        team: true, // チーム情報を含める
+                        event: true, // イベント情報を含める
+                    },
+                    orderBy: {
+                        createdAt: "desc",
+                    },
+                })) as Points[]) || null
+            );
         } catch (error) {
             this.handleDatabaseError(error, "findByTeamCode");
         }
@@ -40,7 +63,7 @@ export class PointsRepository extends BaseRepository {
     async sumPointsGroupedByTeamCode(): Promise<SummedPoints[]> {
         try {
             const result = await this.prisma.points.groupBy({
-                by: ['teamCode'],
+                by: ["teamCode"],
                 _sum: {
                     points: true,
                 },
@@ -48,7 +71,7 @@ export class PointsRepository extends BaseRepository {
                     status: "points", // ポイント状態のポイントのみを対象
                 },
             });
-            return result.map(item => ({
+            return result.map((item) => ({
                 teamCode: item.teamCode,
                 totalPoints: item._sum.points || 0, // nullの場合は0にする
             })) as SummedPoints[];
@@ -65,20 +88,82 @@ export class PointsRepository extends BaseRepository {
     async sumScoredPointsGroupedByTeamCode(): Promise<SummedPoints[]> {
         try {
             const result = await this.prisma.points.groupBy({
-                by: ['teamCode'],
+                by: ["teamCode"],
                 _sum: {
                     points: true,
                 },
                 where: {
-                    status: 'scored', // スコア済みのポイントのみを対象
+                    status: "scored", // スコア済みのポイントのみを対象
                 },
             });
-            return result.map(item => ({
+            return result.map((item) => ({
                 teamCode: item.teamCode,
                 totalPoints: item._sum.points || 0, // nullの場合は0にする
             })) as SummedPoints[];
         } catch (error) {
             this.handleDatabaseError(error, "sumScoredPointsByTeamCode");
+        }
+    }
+
+    /**
+     * 新しいポイントを作成
+     * @param eventCode - イベントコード
+     * @param teamCode - チームコード
+     * @param points - ポイント数
+     * @return {Promise<Points>} 作成されたポイント
+     */
+    async create(eventCode: string, teamCode: string, points: number, status: PointStatus = "points"): Promise<Points> {
+        try {
+            return await this.prisma.points.create({
+                data: {
+                    teamCode: teamCode,
+                    eventCode: eventCode,
+                    points: points,
+                    status: status,
+                },
+            });
+        } catch (error) {
+            this.handleDatabaseError(error, "create");
+        }
+    }
+
+    /**
+     * ポイントを更新
+     * @param id - 更新対象のID
+     * @param teamCode - チームコード
+     * @param eventCode - イベントコード
+     * @param points - 更新するポイント数
+     * @return {Promise<Points>} 更新されたポイント
+     */
+    async update(id: number, teamCode: string, eventCode: string, points: number): Promise<Points> {
+        try {
+            return await this.prisma.points.update({
+                where: {
+                    id: id,
+                },
+                data: {
+                    points: points,
+                },
+            });
+        } catch (error) {
+            this.handleDatabaseError(error, "update");
+        }
+    }
+
+    /**
+     * ポイントを削除
+     * @param id - 削除対象のID
+     * @return {Promise<Points>} 削除されたポイント
+     */
+    async delete(id: number): Promise<Points> {
+        try {
+            return await this.prisma.points.delete({
+                where: {
+                    id: id,
+                },
+            });
+        } catch (error) {
+            this.handleDatabaseError(error, "delete");
         }
     }
 }

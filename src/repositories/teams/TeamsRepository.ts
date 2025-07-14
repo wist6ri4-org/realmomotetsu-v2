@@ -77,12 +77,12 @@ export class TeamsRepository extends BaseRepository {
 
     /**
      * チーム情報を更新
-     * @param teamCode - 更新対象のチームコード
+     * @param id - 更新対象のID
      * @param updateData - 更新データ
      * @returns {Promise<Teams>} 更新されたチーム
      */
     async update(
-        teamCode: string,
+        id: number,
         updateData: {
             teamName?: string;
             teamColor?: string;
@@ -91,7 +91,7 @@ export class TeamsRepository extends BaseRepository {
         try {
             return await this.prisma.teams.update({
                 where: {
-                    teamCode: teamCode,
+                    id: id,
                 },
                 data: updateData,
             });
@@ -102,14 +102,14 @@ export class TeamsRepository extends BaseRepository {
 
     /**
      * チームを削除
-     * @param teamCode - 削除するチームコード
+     * @param id - 削除対象のID
      * @returns {Promise<Teams>} 削除されたチーム
      */
-    async delete(teamCode: string): Promise<Teams> {
+    async delete(id: number): Promise<Teams> {
         try {
             return await this.prisma.teams.delete({
                 where: {
-                    teamCode: teamCode,
+                    id: id,
                 },
             });
         } catch (error) {
