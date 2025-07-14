@@ -12,7 +12,6 @@ export const InitHomeServiceImpl: InitHomeService = {
      * @returns {Promise<InitHomeResponse>} ホーム画面の初期化データ
      */
     async getDataForHome(req: InitHomeRequest): Promise<InitHomeResponse> {
-        // Repositoryのインスタンスを取得
         const teamsRepository = RepositoryFactory.getTeamsRepository();
         const goalStationsRepository = RepositoryFactory.getGoalStationsRepository();
         const bombiiHistoriesRepository = RepositoryFactory.getBombiiHistoriesRepository();
@@ -74,6 +73,7 @@ export const InitHomeServiceImpl: InitHomeService = {
                 };
             }
 
+            // レスポンスの作成
             const res: InitHomeResponse = {
                 teamData: teamData,
                 nextGoalStation: nextGoalStation,
