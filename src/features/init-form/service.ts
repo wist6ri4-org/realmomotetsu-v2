@@ -5,30 +5,31 @@ import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 
 export const InitFormServiceImpl: InitFormService = {
     /**
-     * ホーム画面の初期化データを取得する
+     * フォーム画面の初期化データを取得する
      * @param req - リクエストデータ
-     * @returns {Promise<InitFormResponse>} ホーム画面の初期化データ
+     * @returns {Promise<InitFormResponse>} フォーム画面の初期化データ
      */
     async getDataForForm(req: InitFormRequest): Promise<InitFormResponse> {
-        // Repositoryのインスタンスを取得
+        const eventsRepository = RepositoryFactory.getEventsRepository();
         const teamsRepository = RepositoryFactory.getTeamsRepository();
         const stationsRepository = RepositoryFactory.getStationsRepository();
-        const eventsRepository = RepositoryFactory.getEventsRepository();
 
         try {
+            // イベント種別の取得
             const events = await eventsRepository.findByEventCodeWithRelations(req.eventCode);
             const eventTypeCode = events?.eventTypeCode || "";
 
+            // レスポンスの作成
             const [teams, stations] = await Promise.all([
                 teamsRepository.findByEventCode(req.eventCode),
                 stationsRepository.findByEventTypeCode(eventTypeCode),
             ]);
-
             const res: InitFormResponse = {
                 teams: teams,
                 stations: stations,
             };
 
+            // 位置情報が提供されている場合、近隣の駅を計算
             if (req.latitude && req.longitude) {
                 const nearbyStations = LocationUtils.calculate(
                     stations,
