@@ -126,8 +126,8 @@ model Teams {
  */
 model GoalStations {
   id          Int      @id @default(autoincrement()) @map("id")
-  stationCode String   @map("station_code")
   eventCode   String   @map("event_code")
+  stationCode String   @map("station_code")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
   event       Events   @relation(fields: [eventCode], references: [eventCode])
