@@ -1,33 +1,108 @@
 "use client";
 
-import { Stations } from "@/generated/prisma/client";
+import CustomButton from "@/components/base/CustomButton";
+import { TeamCard } from "@/components/composite/TeamCard";
+import { Stations, Teams } from "@/generated/prisma";
+import theme from "@/theme";
+import { TeamData } from "@/types/TeamData";
+import { Alert, Box, CircularProgress, Grid, Typography } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 
 export default function HomePage() {
-    const [data, setData] = useState<Stations[]>([]);
+    const [teamData, setTeamData] = useState<TeamData[]>([]);
+    const [nextGoalStationData, setNextGoalStationData] = useState<Stations>({} as Stations);
+    const [bombiiTeamData, setBombiiTeamData] = useState<Teams>({} as Teams);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    /**
+     * データを取得する関数
+     */
+    const fetchData = async () => {
+        try {
+            setIsLoading(true);
+            setError(null);
+
+            const params = new URLSearchParams();
+            params.append("eventCode", "TOKYU_20250517");
+
+            const response = await fetch("/api/init-home?" + params.toString());
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const teamData = data?.data?.teamData || data?.teamData || [];
+            const nextGoalStationData = data?.data?.nextGoalStation || data?.nextGoalStation || {};
+            const bombiiTeamData = data?.data?.bombiiTeam || data
+            if (!Array.isArray(teamData) || typeof nextGoalStationData !== "object" || typeof bombiiTeamData !== "object") {
+                throw new Error("Unexpected response structure");
+            }
+            setTeamData(teamData as TeamData[]);
+            setNextGoalStationData(nextGoalStationData as Stations);
+            setBombiiTeamData(bombiiTeamData as Teams);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setError(error instanceof Error ? error.message : "Unknown error");
+            setTeamData([]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
-        console.log("api")
-        fetch("/api/init-home")
-        .then((res) => res.json())
-        .then((data) => setData(data as Stations[]))
-    },[]);
-
+        fetchData();
+    }, []);
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-            <main className="flex flex-col gap-[32px] items-center sm:items-start">
-                <h1 className="text-2xl font-bold">ホームページ</h1>
-                <p className="text-sm text-gray-600">
-                    ここにホームページのコンテンツが表示されます。
-                </p>
-                <div>
-                    <h2 className="text-xl font-semibold">初期化データ</h2>
-                    <div>
-                        {JSON.stringify(data)}
-                    </div>
-                </div>
-            </main>
-        </div>
+        <ThemeProvider theme={theme}>
+            {/* サブヘッダーセクション */}
+            <Box sx={{ m: 2 }}>
+                <Typography variant="h1">ホームページ</Typography>
+                <CustomButton onClick={fetchData}>更新</CustomButton>
+            </Box>
+
+            {/* コンテンツセクション */}
+            <Box>
+                {/* ローディング */}
+                {isLoading && (
+                    <Box sx={{ textAlign: "center", mb: 4 }}>
+                        <CircularProgress size={40} />
+                    </Box>
+                )}
+                {/* エラー */}
+                {error && (
+                    <Box sx={{ mb: 4 }}>
+                        <Alert
+                            severity="error"
+                            action={<CustomButton onClick={fetchData}>再試行</CustomButton>}
+                        >
+                            {error}
+                        </Alert>
+                    </Box>
+                )}
+                {/* データの表示 */}
+                {!isLoading && !error && (
+                    <>
+                        {teamData.length > 0 ? (
+                            <Grid container spacing={2}>
+                                {teamData.map((teamData) => (
+                                    <Grid key={teamData.id} size={{ xs: 6, sm: 6, md: 3, lg: 3 }}>
+                                        <TeamCard teamData={teamData} bombiiTeamData={bombiiTeamData}/>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        ) : (
+                            <Box sx={{ textAlign: "center", py: 8 }}>
+                                <Typography variant="body1" color="text.secondary">
+                                    データがありません
+                                </Typography>
+                            </Box>
+                        )}
+                    </>
+                )}
+            </Box>
+        </ThemeProvider>
     );
 }
