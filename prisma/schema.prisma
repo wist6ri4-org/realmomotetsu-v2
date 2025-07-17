@@ -36,6 +36,8 @@ model Events {
   transitStations TransitStations[]
   bombiiHistories BombiiHistories[]
   points          Points[]
+  documents       Documents[]
+  attndances      Attendances[]
 
   @@map("events")
 }
@@ -195,4 +197,63 @@ model Points {
   team      Teams       @relation(fields: [teamCode], references: [teamCode])
 
   @@map("points")
+}
+
+/**
+ * Documents
+ * ドキュメント
+ */
+model Documents {
+  id        Int      @id @default(autoincrement()) @map("id")
+  name      String   @map("name")
+  url       String   @map("url")
+  eventCode String   @map("event_code")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  event     Events   @relation(fields: [eventCode], references: [eventCode])
+
+  @@map("documents")
+}
+
+/**
+ * Role
+ * ユーザーロール
+ */
+enum Role {
+  user
+  admin
+}
+
+/**
+ * Users
+ * ユーザー
+ */
+model Users {
+  id         String        @id @map("id")
+  email      String        @unique @map("email")
+  nickname   String?       @map("nickname")
+  iconUrl    String?       @map("icon_url")
+  role       Role          @default(user) @map("role") // 恒久的なロール
+  createdAt  DateTime      @default(now()) @map("created_at")
+  updatedAt  DateTime      @default(now()) @updatedAt @map("updated_at")
+  attendance Attendances[]
+
+  @@map("users")
+}
+
+/**
+ * Attendances
+ * 参加情報
+ */
+model Attendances {
+  id        Int      @id @default(autoincrement()) @map("id")
+  userId    String   @map("user_id")
+  eventCode String   @map("event_code")
+  role      Role     @default(user) @map("role") // 一時的なロール
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  user      Users    @relation(fields: [userId], references: [id])
+  event     Events   @relation(fields: [eventCode], references: [eventCode])
+
+  @@map("attendances")
 }
