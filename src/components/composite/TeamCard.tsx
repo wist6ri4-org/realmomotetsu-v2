@@ -50,9 +50,16 @@ export const TeamCard: React.FC<TeamCardProps> = ({ teamData, bombiiTeamData }) 
                 }}
             >
                 {/* チーム名 */}
-                <Box sx={{display: "flex", justifyContent: "start"}}>
+                <Box sx={{ display: "flex", justifyContent: "start" }}>
                     {bombiiTeamData && bombiiTeamData.teamCode === teamData.teamCode && (
-                        <Image alt="Bombii" src={"/moving_bombii.png?" + new Date().getTime()} width={30} height={10}/>
+                        <Image
+                            alt="Bombii"
+                            src={"/moving_bombii.png?" + new Date().getTime()}
+                            width={0}
+                            height={0}
+                            unoptimized
+                            style={{ width: "auto", height: "3.5rem", marginRight: "0.5rem" }}
+                        />
                     )}
                     <Typography variant="h5" gutterBottom>
                         {teamData.teamName}
