@@ -193,6 +193,12 @@ export const theme = createTheme({
                             boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
                         },
                     }),
+                    fontSize:
+                        ownerState.size === "small"
+                            ? "1rem"
+                            : ownerState.size === "large"
+                            ? "2rem"
+                            : "1.5rem",
                 }),
                 contained: {
                     boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
@@ -215,6 +221,30 @@ export const theme = createTheme({
                 root: {
                     "& .MuiOutlinedInput-root": {
                         borderRadius: 8,
+                    },
+                },
+            },
+        },
+        MuiBottomNavigation: {
+            styleOverrides: {
+                root: {
+                    height: "auto",
+                    padding: "8px 0",
+                },
+            },
+        },
+        MuiBottomNavigationAction: {
+            styleOverrides: {
+                root: {
+                    fontSize: "1.3rem", // ラベルのフォントサイズ
+                    minWidth: "auto",
+                    padding: "6px 12px",
+                    "& .MuiSvgIcon-root": {
+                        fontSize: "3rem", // アイコンのサイズ
+                    },
+                    "& .MuiBottomNavigationAction-label": {
+                        fontSize: "0.75rem", // ラベルのフォントサイズを明示的に指定
+                        marginTop: "4px",
                     },
                 },
             },

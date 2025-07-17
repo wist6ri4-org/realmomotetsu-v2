@@ -1,6 +1,7 @@
 "use client";
 
 import CustomButton from "@/components/base/CustomButton";
+import { UpdatedTime } from "@/components/base/UpdatedTime";
 import { TeamCard } from "@/components/composite/TeamCard";
 import { Stations, Teams } from "@/generated/prisma";
 import theme from "@/theme";
@@ -68,7 +69,7 @@ export default function HomePage() {
                 {/* ローディング */}
                 {isLoading && (
                     <Box sx={{ textAlign: "center", mb: 4 }}>
-                        <CircularProgress size={40} />
+                        <CircularProgress size={40} color="primary"/>
                     </Box>
                 )}
                 {/* エラー */}
@@ -103,6 +104,9 @@ export default function HomePage() {
                     </>
                 )}
             </Box>
+
+            {/* サブフッターセクション */}
+            <UpdatedTime />
         </ThemeProvider>
     );
 }
