@@ -47,7 +47,7 @@ export default class LocationUtils {
 
     /**
      * 指定された位置から近い駅を検索する
-     * @param {Map<string, { latitude: number; longitude: number }>} location - 位置情報グラフ
+     * @param {Map<string, { latitude: number; longitude: number }>} locationGraph - 位置情報グラフ
      * @param {number} latitude - 検索する位置の緯度
      * @param {number} longitude - 検索する位置の経度
      * @param {number} numberOfStations - 取得する駅の数
