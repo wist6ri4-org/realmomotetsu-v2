@@ -1,9 +1,11 @@
 "use client";
 
+import BulletinBoard from "@/components/base/BulletinBoard";
 import CustomButton from "@/components/base/CustomButton";
 import { UpdatedTime } from "@/components/base/UpdatedTime";
 import { TeamCard } from "@/components/composite/TeamCard";
-import { Stations, Teams } from "@/generated/prisma";
+import { Teams } from "@/generated/prisma";
+import { GoalStationsWithRelations } from "@/repositories/goalStations/GoalStationsRepository";
 import theme from "@/theme";
 import { TeamData } from "@/types/TeamData";
 import { Alert, Box, CircularProgress, Grid, Typography } from "@mui/material";
@@ -12,7 +14,9 @@ import { useEffect, useState } from "react";
 
 export default function HomePage() {
     const [teamData, setTeamData] = useState<TeamData[]>([]);
-    const [nextGoalStationData, setNextGoalStationData] = useState<Stations>({} as Stations);
+    const [nextGoalStationData, setNextGoalStationData] = useState<GoalStationsWithRelations>(
+        {} as GoalStationsWithRelations
+    );
     const [bombiiTeamData, setBombiiTeamData] = useState<Teams>({} as Teams);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -36,12 +40,16 @@ export default function HomePage() {
             const data = await response.json();
             const teamData = data?.data?.teamData || data?.teamData || [];
             const nextGoalStationData = data?.data?.nextGoalStation || data?.nextGoalStation || {};
-            const bombiiTeamData = data?.data?.bombiiTeam || data
-            if (!Array.isArray(teamData) || typeof nextGoalStationData !== "object" || typeof bombiiTeamData !== "object") {
+            const bombiiTeamData = data?.data?.bombiiTeam || data;
+            if (
+                !Array.isArray(teamData) ||
+                typeof nextGoalStationData !== "object" ||
+                typeof bombiiTeamData !== "object"
+            ) {
                 throw new Error("Unexpected response structure");
             }
             setTeamData(teamData as TeamData[]);
-            setNextGoalStationData(nextGoalStationData as Stations);
+            setNextGoalStationData(nextGoalStationData as GoalStationsWithRelations);
             setBombiiTeamData(bombiiTeamData as Teams);
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -59,8 +67,11 @@ export default function HomePage() {
     return (
         <ThemeProvider theme={theme}>
             {/* サブヘッダーセクション */}
-            <Box sx={{ m: 2 }}>
-                <Typography variant="h1">ホームページ</Typography>
+            <Box>
+                <BulletinBoard
+                    nextStation={nextGoalStationData.station?.name || "ー"}
+                    nextStationEng={nextGoalStationData.station?.stationCode || "ー"}
+                />
                 <CustomButton onClick={fetchData}>更新</CustomButton>
             </Box>
 
@@ -69,7 +80,7 @@ export default function HomePage() {
                 {/* ローディング */}
                 {isLoading && (
                     <Box sx={{ textAlign: "center", mb: 4 }}>
-                        <CircularProgress size={40} color="primary"/>
+                        <CircularProgress size={40} color="primary" />
                     </Box>
                 )}
                 {/* エラー */}
@@ -90,7 +101,10 @@ export default function HomePage() {
                             <Grid container spacing={2}>
                                 {teamData.map((teamData) => (
                                     <Grid key={teamData.id} size={{ xs: 6, sm: 6, md: 3, lg: 3 }}>
-                                        <TeamCard teamData={teamData} bombiiTeamData={bombiiTeamData}/>
+                                        <TeamCard
+                                            teamData={teamData}
+                                            bombiiTeamData={bombiiTeamData}
+                                        />
                                     </Grid>
                                 ))}
                             </Grid>
@@ -106,7 +120,7 @@ export default function HomePage() {
             </Box>
 
             {/* サブフッターセクション */}
-            <UpdatedTime />
+            <UpdatedTime textAlign="right" variant="body2" />
         </ThemeProvider>
     );
 }

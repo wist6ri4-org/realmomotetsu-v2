@@ -61,7 +61,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({ teamData, bombiiTeamData }) 
                             style={{ width: "auto", height: "3.5rem", marginRight: "0.5rem" }}
                         />
                     )}
-                    <Typography variant="h5" gutterBottom>
+                    <Typography variant="h5">
                         {teamData.teamName}
                     </Typography>
                 </Box>

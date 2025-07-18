@@ -103,41 +103,41 @@ export const theme = createTheme({
         htmlFontSize: 16,
         fontFamily: "var(--font-dot-gothic), 'DotGothic16', monospace, sans-serif",
         h1: {
-            fontSize: "3rem",
+            fontSize: "3.5rem",
             fontWeight: 400,
             lineHeight: 1.2,
         },
         h2: {
-            fontSize: "2.75rem",
+            fontSize: "3.25rem",
             fontWeight: 400,
             lineHeight: 1.3,
         },
         h3: {
-            fontSize: "2.5rem",
+            fontSize: "3.0rem",
             fontWeight: 400,
             lineHeight: 1.4,
         },
         h4: {
-            fontSize: "2.25rem",
+            fontSize: "2.5rem",
             fontWeight: 400,
             lineHeight: 1.4,
         },
         h5: {
-            fontSize: "2rem",
+            fontSize: "2.25rem",
             fontWeight: 400,
             lineHeight: 1.5,
         },
         h6: {
-            fontSize: "1.5rem",
+            fontSize: "2rem",
             fontWeight: 400,
             lineHeight: 1.6,
         },
         body1: {
-            fontSize: "1.5rem",
-            lineHeight: 1.6,
+            fontSize: "2rem",
+            lineHeight: 2,
         },
         body2: {
-            fontSize: "1.3rem",
+            fontSize: "1.6rem",
             lineHeight: 1.6,
         },
         button: {
