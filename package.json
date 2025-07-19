@@ -2,12 +2,14 @@
     "name": "realmomotetsu-v2",
     "version": "0.1.0",
     "private": true,
+    "type": "module",
     "scripts": {
         "dev": "prisma generate && next dev --turbopack -p 3001",
         "build": "prisma generate && prisma migrate deploy && next build",
         "start": "next start",
         "lint": "next lint",
-        "format:fix": "prettier --write \"**/*.{ts,tsx,js,jsx,cjs,mjs,md,json,lintstagedrc,yml,yaml}\" --cache && prisma format"
+        "format:fix": "prettier --write \"**/*.{ts,tsx,js,jsx,cjs,mjs,md,json,lintstagedrc,yml,yaml}\" --cache && prisma format",
+        "seed": "node prisma/seed.js"
     },
     "dependencies": {
         "@emotion/react": "^11.14.0",
@@ -28,6 +30,7 @@
         "@types/node": "^20.19.4",
         "@types/react": "^19",
         "@types/react-dom": "^19",
+        "csv-parser": "^3.2.0",
         "eslint": "^9",
         "eslint-config-next": "15.3.5",
         "nodemon": "^3.1.10",
