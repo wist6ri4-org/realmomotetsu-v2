@@ -6,10 +6,19 @@ import { Assignment, Casino, Home, Settings } from "@mui/icons-material";
 import { BottomNavigation, BottomNavigationAction, Box } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
 
+/**
+ * NavigationBarコンポーネントのプロパティ型定義
+ * @property {string} [currentTab] - 現在のタブ名（
+ */
 interface NavigationBarProps {
     currentTab?: string;
 }
 
+/**
+ * NavigationBarコンポーネント
+ * @param currentTab - 現在のタブ名（オプション）
+ * @return {JSX.Element} - NavigationBarコンポーネント
+ */
 export const NavigationBar: React.FC<NavigationBarProps> = ({ currentTab }) => {
     const router = useRouter();
     const pathname = usePathname();

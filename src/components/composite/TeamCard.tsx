@@ -7,15 +7,29 @@ import { Converter } from "@/utils/converter";
 import Toll from "@mui/icons-material/Toll";
 import { Teams } from "@/generated/prisma";
 
+/**
+ * TeamCardコンポーネントのプロパティ型定義
+ * @property {TeamData} teamData - チームのデータ
+ * @property {Teams | null} bombiiTeamData - Bombiiチームのデータ（オプション）
+ */
 type TeamCardProps = {
     teamData: TeamData;
     bombiiTeamData: Teams | null;
 };
 
+/**
+ * LastStationTypographyコンポーネントのプロパティ型定義
+ * @property {number} length - 駅名の文字数
+ */
 interface LastStationTypographyProps {
     length: number;
 }
 
+/**
+ * LastStationTypographyコンポーネント
+ * @param length - 駅名の文字数
+ * @returns {JSX.Element} - LastStationTypographyコンポーネント
+ */
 const LastStationTypography = styled(Typography, {
     shouldForwardProp: (prop) => prop !== "length",
 })<LastStationTypographyProps>(({ length }) => {
@@ -37,6 +51,12 @@ const LastStationTypography = styled(Typography, {
     };
 });
 
+/**
+ * TeamCardコンポーネント
+ * @param teamData - チームのデータ
+ * @param bombiiTeamData - Bombiiチームのデータ（オプション）
+ * @returns {JSX.Element} - TeamCardコンポーネント
+ */
 export const TeamCard: React.FC<TeamCardProps> = ({ teamData, bombiiTeamData }) => {
     const lastStation = teamData.transitStations[teamData.transitStations.length - 1] || null;
     return (

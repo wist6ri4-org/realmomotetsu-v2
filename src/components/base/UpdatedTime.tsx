@@ -1,11 +1,22 @@
 import { Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 
+/**
+ * UpdatedTimeコンポーネントのプロパティ型定義
+ * @param {string} [textAlign] - テキストの配置（"left" | "center" | "right"）
+ * @param {string} [variant] - テキストのバリアント（"body1" | "body2" | "h4" | "h5"）
+ */
 type UpdatedTimeProps = {
     textAlign?: "left" | "center" | "right";
     variant?: "body1" | "body2" | "h4" | "h5";
 };
 
+/**
+ * UpdatedTimeコンポーネント
+ * @param textAlign - テキストの配置（"left" | "center" | "right"）
+ * @param variant - テキストのバリアント（"body1" | "body2" | "h4" | "h5"）
+ * @return {JSX.Element} - UpdatedTimeコンポーネント
+ */
 export const UpdatedTime: React.FC<UpdatedTimeProps> = ({
     textAlign = "center",
     variant = "body1",
