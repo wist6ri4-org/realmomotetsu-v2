@@ -1,4 +1,4 @@
-import { TransitStations, Stations } from "@/generated/prisma";
+import { TransitStations, Stations, LatestTransitStations } from "@/generated/prisma";
 import { BaseRepository } from "../base/BaseRepository";
 
 // includeありのTransitStationsの型定義
@@ -30,6 +30,26 @@ export class TransitStationsRepository extends BaseRepository {
             })) as TransitStationsWithRelations[];
         } catch (error) {
             this.handleDatabaseError(error, "findByEventCode");
+        }
+    }
+
+    /**
+     * 指定されたイベントコードに紐づく最新の経由駅を取得
+     * @param eventCode - イベントコード
+     * @returns {Promise<LatestTransitStations[]>} 最新経由駅の配列
+     */
+    async findLatestByEventCode(eventCode: string): Promise<LatestTransitStations[]> {
+        try {
+            return await this.prisma.latestTransitStations.findMany({
+                where: {
+                    eventCode: eventCode,
+                },
+                orderBy: {
+                    teamCode: "asc",
+                },
+            }) as LatestTransitStations[];
+        } catch (error) {
+            this.handleDatabaseError(error, "findLatestByEventCode");
         }
     }
 

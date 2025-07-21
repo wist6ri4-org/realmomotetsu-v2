@@ -2,7 +2,7 @@ import { NearbyStations, Stations } from "@/generated/prisma";
 import { BaseRepository } from "../base/BaseRepository";
 
 // includeありのNearbyStationsの型定義
-export type NearbyStationWithRelations = NearbyStations & {
+export type NearbyStationsWithRelations = NearbyStations & {
     fromStation: Stations;
     toStation: Stations;
 };
@@ -14,9 +14,9 @@ export class NearbyStationsRepository extends BaseRepository {
     /**
      * 指定された駅からの近隣駅を取得
      * @param fromStationCode - 出発駅コード
-     * @returns {Promise<NearbyStationWithRelations[]>} 近隣駅の配列
+     * @returns {Promise<NearbyStationsWithRelations[]>} 近隣駅の配列
      */
-    async findFromStation(fromStationCode: string): Promise<NearbyStationWithRelations[]> {
+    async findFromStation(fromStationCode: string): Promise<NearbyStationsWithRelations[]> {
         try {
             return (await this.prisma.nearbyStations.findMany({
                 where: {
@@ -29,7 +29,7 @@ export class NearbyStationsRepository extends BaseRepository {
                 orderBy: {
                     timeMinutes: "asc",
                 },
-            })) as NearbyStationWithRelations[];
+            })) as NearbyStationsWithRelations[];
         } catch (error) {
             this.handleDatabaseError(error, "findFromStation");
         }
@@ -38,9 +38,9 @@ export class NearbyStationsRepository extends BaseRepository {
     /**
      * 指定された駅への近隣駅を取得
      * @param toStationCode - 到着駅コード
-     * @returns {Promise<NearbyStationWithRelations[]>} 近隣駅の配列
+     * @returns {Promise<NearbyStationsWithRelations[]>} 近隣駅の配列
      */
-    async findToStation(toStationCode: string): Promise<NearbyStationWithRelations[]> {
+    async findToStation(toStationCode: string): Promise<NearbyStationsWithRelations[]> {
         try {
             return (await this.prisma.nearbyStations.findMany({
                 where: {
@@ -53,7 +53,7 @@ export class NearbyStationsRepository extends BaseRepository {
                 orderBy: {
                     timeMinutes: "asc",
                 },
-            })) as NearbyStationWithRelations[];
+            })) as NearbyStationsWithRelations[];
         } catch (error) {
             this.handleDatabaseError(error, "findToStation");
         }
@@ -84,9 +84,9 @@ export class NearbyStationsRepository extends BaseRepository {
     /**
      * 指定されたイベント種別コードに関連する近隣駅接続を取得
      * @param eventTypeCode - イベント種別コード
-     * @returns {Promise<NearbyStationWithRelations[]>} 近隣駅の配列
+     * @returns {Promise<NearbyStationsWithRelations[]>} 近隣駅の配列
      */
-    async findByEventTypeCode(eventTypeCode: string): Promise<NearbyStationWithRelations[]> {
+    async findByEventTypeCode(eventTypeCode: string): Promise<NearbyStationsWithRelations[]> {
         try {
             return (await this.prisma.nearbyStations.findMany({
                 where: {
@@ -96,7 +96,7 @@ export class NearbyStationsRepository extends BaseRepository {
                     fromStation: true,
                     toStation: true,
                 },
-            })) as NearbyStationWithRelations[];
+            })) as NearbyStationsWithRelations[];
         } catch (error) {
             this.handleDatabaseError(error, "findByEventCode");
         }
