@@ -2,12 +2,9 @@
 
 import CustomButton from "@/components/base/CustomButton";
 import CustomSelect from "@/components/base/CustomSelect";
-import FormDescription from "@/components/base/FormDescription";
-import FormTitle from "@/components/base/FormTitle";
 import { Stations, Teams } from "@/generated/prisma";
 import theme from "@/theme";
 import { TypeConverter } from "@/utils/typeConverter";
-import { Assignment } from "@mui/icons-material";
 import { Box, ThemeProvider } from "@mui/material";
 import React, { useState } from "react";
 
@@ -33,7 +30,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     teams,
     stations,
     closestStations: closestStations,
-}) => {
+}): React.JSX.Element => {
     const [selectedTeamCode, setSelectedTeamCode] = useState<string>("");
     const [selectedStationCode, setSelectedStationCode] = useState<string>(
         closestStations?.[0]?.stationCode ? String(closestStations?.[0]?.stationCode) : ""
@@ -108,25 +105,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
 
     return (
         <ThemeProvider theme={theme}>
-            <Box sx={{ marginX: 2 }}>
-                <FormTitle
-                    title="到着報告フォーム"
-                    icon={<Assignment sx={{ fontSize: "3.5rem" }} />}
-                />
-                <FormDescription>
-                    【いつ送る?】
-                    <br />
-                    １．サイコロを２回振ってカードを決定
-                    <br />
-                    ２．カードの効果を処理する
-                    <br />
-                    ３．もう一度サイコロを振って行き先を決定
-                    <br />
-                    ４．移動したら移動先の駅（今いる駅）をこのフォームから送信
-                    <br />
-                    ５．１～４を繰り返す
-                    <br />
-                </FormDescription>
+            <Box>
                 <Box sx={{ display: "flex", flexDirection: "column", margin: 2 }}>
                     <Box sx={{ marginBottom: 2 }}>
                         <CustomSelect

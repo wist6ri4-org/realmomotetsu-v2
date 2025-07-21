@@ -1,10 +1,13 @@
 "use client";
 
 import CustomButton from "@/components/base/CustomButton";
+import PageDescription from "@/components/base/PageDescription";
+import PageTitle from "@/components/base/PageTitle";
 import CurrentLocationForm from "@/components/composite/form/CurrentLocationForm";
 import { Stations, Teams } from "@/generated/prisma";
 import theme from "@/theme";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
+import { Assignment } from "@mui/icons-material";
 import { Alert, Box, CircularProgress } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { useEffect, useState } from "react";
@@ -72,6 +75,26 @@ export default function FormPage() {
     return (
         <ThemeProvider theme={theme}>
             {/* サブヘッダーセクション */}
+            <Box>
+                <PageTitle
+                    title="到着報告フォーム"
+                    icon={<Assignment sx={{ fontSize: "3.5rem", marginRight: 1 }} />}
+                />
+                <PageDescription>
+                    【いつ送る?】
+                    <br />
+                    １．サイコロを２回振ってカードを決定
+                    <br />
+                    ２．カードの効果を処理する
+                    <br />
+                    ３．もう一度サイコロを振って行き先を決定
+                    <br />
+                    ４．移動したら移動先の駅（今いる駅）をこのフォームから送信
+                    <br />
+                    ５．１～４を繰り返す
+                    <br />
+                </PageDescription>
+            </Box>
 
             {/* コンテンツセクション */}
             <Box>
@@ -95,11 +118,13 @@ export default function FormPage() {
                 {/* データの表示 */}
                 {!isLoading && !error && (
                     <>
-                        <CurrentLocationForm
-                            teams={teams}
-                            stations={stations}
-                            closestStations={closestStations}
-                        />
+                        <Box sx={{ marginX: 2 }}>
+                            <CurrentLocationForm
+                                teams={teams}
+                                stations={stations}
+                                closestStations={closestStations}
+                            />
+                        </Box>
                     </>
                 )}
             </Box>

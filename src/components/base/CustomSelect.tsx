@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId } from "react";
 import {
     Select as MuiSelect,
     FormControl,
@@ -106,8 +106,9 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
     onChange,
     sx,
     ...props
-}) => {
-    const labelId = `custom-select-label-${Math.random().toString(36).substr(2, 9)}`;
+}): React.JSX.Element => {
+    const id = useId();
+    const labelId = `custom-select-label-${id}`;
 
     // MUIの標準カラーのみを許可
     const standardColor = ["team1", "team2", "team3", "team4"].includes(color)
@@ -116,7 +117,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
 
     return (
         <ThemeProvider theme={theme}>
-            <Box sx={{ width:"stretch" }}>
+            <Box sx={{ width: "stretch" }}>
                 <FormControl
                     variant={variant}
                     size={size}
