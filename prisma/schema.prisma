@@ -257,3 +257,18 @@ model Attendances {
 
   @@map("attendances")
 }
+
+/**
+  * LatestTransitStations
+  * 最新の経由駅情報ビュー
+  */
+model LatestTransitStations {
+  id          Int      @id @map("id")
+  teamCode    String   @map("team_code")
+  stationCode String   @map("station_code")
+  eventCode   String   @map("event_code")
+  createdAt   DateTime @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("latest_transit_stations")
+}
