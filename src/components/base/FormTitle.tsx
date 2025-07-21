@@ -18,7 +18,7 @@ interface FormTitleProps {
  * @param icon - タイトルの前に表示するアイコン
  * @returns {JSX.Element} - FormTitleコンポーネント
  */
-const FormTitle: React.FC<FormTitleProps> = ({ title, icon }) => {
+const FormTitle: React.FC<FormTitleProps> = ({ title, icon }): React.JSX.Element => {
     return (
         <ThemeProvider theme={theme}>
             <Box sx={{ display: "flex", alignItems: "left", margin: 2 }}>

@@ -15,7 +15,7 @@ interface FormDescriptionProps {
  * @param children - 説明文の内容
  * @returns {JSX.Element} - FormDescriptionコンポーネント
  */
-const FormDescription: React.FC<FormDescriptionProps> = ({ children }) => {
+const FormDescription: React.FC<FormDescriptionProps> = ({ children }): React.JSX.Element => {
     return (
         <ThemeProvider theme={theme}>
             <Paper variant="outlined">

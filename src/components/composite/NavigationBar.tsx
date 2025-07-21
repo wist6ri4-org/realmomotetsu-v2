@@ -19,7 +19,7 @@ interface NavigationBarProps {
  * @param currentTab - 現在のタブ名（オプション）
  * @return {JSX.Element} - NavigationBarコンポーネント
  */
-export const NavigationBar: React.FC<NavigationBarProps> = ({ currentTab }) => {
+export const NavigationBar: React.FC<NavigationBarProps> = ({ currentTab }): React.JSX.Element => {
     const router = useRouter();
     const pathname = usePathname();
 

@@ -14,6 +14,7 @@ interface BulletinBoardProps {
     nextStationEng: string;
 }
 
+// スライドアニメーションの定義
 const slideDestination = keyframes`
     0% {
         transform: translateX(100dvw);
@@ -29,7 +30,7 @@ const slideDestination = keyframes`
  * @param nextStationEng - 次の駅名（英語表記、駅コード）
  * @returns {JSX.Element} - BulletinBoardコンポーネント
  */
-const BulletinBoard: React.FC<BulletinBoardProps> = ({ nextStation, nextStationEng }) => {
+const BulletinBoard: React.FC<BulletinBoardProps> = ({ nextStation, nextStationEng }): React.JSX.Element => {
     return (
         <Box
             sx={{

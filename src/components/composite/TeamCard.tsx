@@ -57,7 +57,10 @@ const LastStationTypography = styled(Typography, {
  * @param bombiiTeamData - Bombiiチームのデータ（オプション）
  * @returns {JSX.Element} - TeamCardコンポーネント
  */
-export const TeamCard: React.FC<TeamCardProps> = ({ teamData, bombiiTeamData }) => {
+export const TeamCard: React.FC<TeamCardProps> = ({
+    teamData,
+    bombiiTeamData,
+}): React.JSX.Element => {
     const lastStation = teamData.transitStations[teamData.transitStations.length - 1] || null;
     return (
         <ThemeProvider theme={theme}>
@@ -81,9 +84,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({ teamData, bombiiTeamData }) 
                             style={{ width: "auto", height: "3.5rem", marginRight: "0.5rem" }}
                         />
                     )}
-                    <Typography variant="h5">
-                        {teamData.teamName}
-                    </Typography>
+                    <Typography variant="h5">{teamData.teamName}</Typography>
                 </Box>
 
                 {/* チームカード */}

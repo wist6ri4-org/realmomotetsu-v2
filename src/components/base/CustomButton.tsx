@@ -52,7 +52,7 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
     disabled,
     sx,
     ...props
-}) => {
+}): React.JSX.Element => {
     return (
         <ThemeProvider theme={theme}>
             <MuiButton

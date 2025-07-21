@@ -20,7 +20,7 @@ type UpdatedTimeProps = {
 export const UpdatedTime: React.FC<UpdatedTimeProps> = ({
     textAlign = "center",
     variant = "body1",
-}) => {
+}): React.JSX.Element => {
     const [updatedAt, setUpdatedAt] = useState<string>();
 
     useEffect(() => {

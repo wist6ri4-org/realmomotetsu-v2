@@ -19,8 +19,7 @@ interface HeaderProps {
  * Headerコンポーネント
  * @returns {JSX.Element} - ヘッダーコンポーネント
  */
-export const Header: React.FC<HeaderProps> = () => {
-
+export const Header: React.FC<HeaderProps> = (): React.JSX.Element => {
     return (
         <ThemeProvider theme={theme}>
             <Box
