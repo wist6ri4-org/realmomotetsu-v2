@@ -1,0 +1,6 @@
+export class GameConstants {
+    /* 移動ポイント */
+    static readonly POINT_FOR_MOVING = 5;
+    /* ルーレットから排除する範囲の所要時間 */
+    static readonly ELIMINATION_TIME_RANGE_MINUTES = 15;
+}

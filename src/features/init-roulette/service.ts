@@ -13,6 +13,8 @@ export const InitRouletteServiceImpl: InitRouletteService = {
         const eventsRepository = RepositoryFactory.getEventsRepository();
         const teamsRepository = RepositoryFactory.getTeamsRepository();
         const stationsRepository = RepositoryFactory.getStationsRepository();
+        const transitStationsRepository = RepositoryFactory.getTransitStationsRepository();
+        const nearbyStationsRepository = RepositoryFactory.getNearbyStationsRepository();
 
         try {
             // イベント種別の取得
@@ -20,13 +22,17 @@ export const InitRouletteServiceImpl: InitRouletteService = {
             const eventTypeCode = events?.eventTypeCode || "";
 
             // レスポンスの作成
-            const [teams, stations] = await Promise.all([
+            const [teams, stations, latestTransitStations, nearbyStations] = await Promise.all([
                 teamsRepository.findByEventCode(req.eventCode),
                 stationsRepository.findByEventTypeCode(eventTypeCode),
+                transitStationsRepository.findLatestByEventCode(req.eventCode),
+                nearbyStationsRepository.findByEventTypeCode(eventTypeCode),
             ]);
             const res: InitRouletteResponse = {
                 teams: teams,
                 stations: stations,
+                latestTransitStations: latestTransitStations,
+                nearbyStations: nearbyStations,
             };
 
             // 位置情報が提供されている場合、近隣の駅を計算
@@ -36,7 +42,7 @@ export const InitRouletteServiceImpl: InitRouletteService = {
                     req.latitude,
                     req.longitude
                 );
-                res.nearbyStations = nearbyStations;
+                res.closestStations = nearbyStations;
             }
 
             return res;

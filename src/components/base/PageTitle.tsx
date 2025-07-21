@@ -1,5 +1,5 @@
 import theme from "@/theme";
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import React from "react";
 
@@ -9,6 +9,7 @@ import React from "react";
  */
 interface PageTitleProps {
     title: string;
+    icon?: React.ReactNode;
 }
 
 /**
@@ -16,14 +17,15 @@ interface PageTitleProps {
  * @param title - ページタイトルのテキスト
  * @return {JSX.Element} - PageTitleコンポーネント
  */
-const PageTitle: React.FC<PageTitleProps> = ({title}) => {
+const PageTitle: React.FC<PageTitleProps> = ({ title, icon }): React.JSX.Element => {
     return (
         <ThemeProvider theme={theme}>
-            <Typography variant="h4" sx={{ textAlign: "center", margin: 2}}>
-                {title}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "left", margin: 2 }}>
+                {icon}
+                <Typography variant="h5">{title}</Typography>
+            </Box>
         </ThemeProvider>
-    )
+    );
 };
 
 export default PageTitle;
