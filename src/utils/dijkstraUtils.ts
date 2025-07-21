@@ -1,4 +1,4 @@
-import { NearbyStationWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
+import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 
 export default class DijkstraUtils {
     /**
@@ -6,7 +6,7 @@ export default class DijkstraUtils {
      * @param nearbyStations - 近隣駅の接続情報
      * @returns {Record<string, Array<{ stationCode: string; timeMinutes: number; stationNumber: number }>>} グラフ形式の駅接続情報
      */
-    static convertToStationGraph(nearbyStations: NearbyStationWithRelations[]): Record<
+    static convertToStationGraph(nearbyStations: NearbyStationsWithRelations[]): Record<
         string,
         Array<{ stationCode: string; timeMinutes: number;}>
     > {
@@ -42,7 +42,7 @@ export default class DijkstraUtils {
         startStationCode: string
     ) :string {
         const times = this.calculateRequiredTimeAndStations(graph, startStationCode);
-        const probabilities = this.calculateProbabilities(startStationCode, times);
+        const probabilities = this.calculateProbabilities(times);
         return this.selectNextStationCode(probabilities);
     }
 
@@ -138,12 +138,10 @@ export default class DijkstraUtils {
 
     /**
      * 重み付きルーレットの確率計算
-     * @param startStationCode - 開始駅のコード
      * @param times - 駅ごとの最短時間と駅数を含
      * @returns {Map<string, number>} 駅ごとの確率を含むマップ
      */
     static calculateProbabilities(
-        startStationCode: string,
         times: Map<string, { timeMinutes: number; stationsNumber: number }>
     ): Map<string, number> {
         // 確率を格納するマップを初期化
