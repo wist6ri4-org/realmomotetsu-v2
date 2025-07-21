@@ -16,14 +16,14 @@ export type InitFormRequest = {
  * 初期化フォームのレスポンス
  * @param teams - チームの配列
  * @param stations - 駅の配列
- * @param nearbyStations - 近隣の駅の配列（オプション）
- * @param nearbyStations.stationCode - 駅コード
- * @param nearbyStations.distance - 現在位置からの距離（km）
+ * @param closestStations - 近隣の駅の配列（オプション）
+ * @param closestStations.stationCode - 駅コード
+ * @param closestStations.distance - 現在位置からの距離（km）
  */
 export type InitFormResponse = {
     teams: Teams[];
     stations: Stations[];
-    nearbyStations?: Array<{
+    closestStations?: Array<{
         stationCode: string;
         distance: number;
     }>;

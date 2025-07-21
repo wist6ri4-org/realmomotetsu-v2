@@ -31,12 +31,12 @@ export const InitFormServiceImpl: InitFormService = {
 
             // 位置情報が提供されている場合、近隣の駅を計算
             if (req.latitude && req.longitude) {
-                const nearbyStations = LocationUtils.calculate(
+                const closestStations = LocationUtils.calculate(
                     stations,
                     req.latitude,
                     req.longitude
                 );
-                res.nearbyStations = nearbyStations;
+                res.closestStations = closestStations;
             }
 
             return res;
