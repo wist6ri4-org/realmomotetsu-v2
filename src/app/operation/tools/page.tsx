@@ -2,6 +2,7 @@
 
 import CustomButton from "@/components/base/CustomButton";
 import ArrivalGoalStationsForm from "@/components/composite/form/ArrivalGoalStationsForm";
+import PointsExchangeForm from "@/components/composite/form/PointsExchangeForm";
 import PointsTransferForm from "@/components/composite/form/PointsTransferForm";
 import RegisterGoalStationsForm from "@/components/composite/form/RegisterGoalStationsForm";
 import RegisterPointsForm from "@/components/composite/form/RegisterPointsForm";
@@ -85,6 +86,8 @@ export default function ToolsPage() {
                         <RegisterPointsForm teams={teams} />
                         <Divider />
                         <PointsTransferForm teams={teams} />
+                        <Divider />
+                        <PointsExchangeForm teams={teams} />
                     </>
                 )}
             </Box>
