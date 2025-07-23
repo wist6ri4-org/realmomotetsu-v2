@@ -1,4 +1,4 @@
-import React, { useId, forwardRef } from "react";
+import React, { useId, forwardRef, useRef } from "react";
 import { FormControl, FormHelperText, Box, InputLabel } from "@mui/material";
 import { NumberField } from "@base-ui-components/react/number-field";
 import { Add, Remove } from "@mui/icons-material";
@@ -46,12 +46,17 @@ interface CustomNumberInputProps {
     loading?: boolean;
     disabled?: boolean;
     value?: number;
-    defaultValue?: number;
     min?: number;
     max?: number;
     step?: number;
     showSteppers?: boolean;
-    onChange?: (value: number | null) => void;
+    onChange?: (
+        event:
+            | React.ChangeEvent<HTMLInputElement>
+            | (Event & { target: { value: unknown; name: string } })
+            | number
+            | null
+    ) => void;
     onBlur?: () => void;
     sx?: object;
 }
@@ -94,7 +99,6 @@ export const CustomNumberInput = forwardRef<HTMLInputElement, CustomNumberInputP
             loading = false,
             disabled,
             value,
-            defaultValue = 0,
             min,
             max,
             step = 1,
@@ -107,6 +111,7 @@ export const CustomNumberInput = forwardRef<HTMLInputElement, CustomNumberInputP
     ): React.JSX.Element => {
         const id = useId();
         const labelId = `custom-number-input-label-${id}`;
+        const lastValueRef = useRef<number | null>(value ?? null);
 
         // MUIの標準カラーのみを許可
         const standardColor = ["team1", "team2", "team3", "team4"].includes(color)
@@ -116,7 +121,12 @@ export const CustomNumberInput = forwardRef<HTMLInputElement, CustomNumberInputP
         return (
             <>
                 <Box sx={{ width: fullWidth ? "100%" : "auto" }}>
-                    <FormControl error={error} disabled={disabled || loading} fullWidth={fullWidth} variant={variant}>
+                    <FormControl
+                        error={error}
+                        disabled={disabled || loading}
+                        fullWidth={fullWidth}
+                        variant={variant}
+                    >
                         {label && (
                             <InputLabel
                                 htmlFor={id}
@@ -138,9 +148,24 @@ export const CustomNumberInput = forwardRef<HTMLInputElement, CustomNumberInputP
                             min={min}
                             max={max}
                             step={step}
-                            defaultValue={defaultValue}
+                            onValueChange={(newValue: number | null) => {
+                                // 前回の値と同じ場合は処理をスキップ
+                                if (lastValueRef.current === newValue) {
+                                    return;
+                                }
+                                lastValueRef.current = newValue;
+
+                                if (onChange) {
+                                    const syntheticEvent = {
+                                        target: {
+                                            value: newValue,
+                                            name: id,
+                                        },
+                                    } as Event & { target: { value: unknown; name: string } };
+                                    onChange(syntheticEvent);
+                                }
+                            }}
                             disabled={disabled || loading}
-                            onValueChange={(newValue: number | null) => onChange?.(newValue)}
                             style={{
                                 width: fullWidth ? "100%" : "auto",
                                 ...sx,
@@ -167,7 +192,7 @@ export const CustomNumberInput = forwardRef<HTMLInputElement, CustomNumberInputP
                                             width: "5rem",
                                         }}
                                     >
-                                        <Remove sx={{fontSize: "2.5rem"}}/>
+                                        <Remove sx={{ fontSize: "2.5rem" }} />
                                     </NumberField.Decrement>
                                 )}
                                 <NumberField.Input

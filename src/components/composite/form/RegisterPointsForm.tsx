@@ -1,44 +1,61 @@
 /**
- * 目的駅到着処理フォーム
+ * ポイント登録フォーム
  */
 "use client";
 
 import CustomButton from "@/components/base/CustomButton";
 import CustomNumberInput from "@/components/base/CustomNumberInput";
+import CustomRadio, { RadioOption } from "@/components/base/CustomRadio";
 import CustomSelect from "@/components/base/CustomSelect";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
-import { Teams } from "@/generated/prisma";
+import { GameConstants } from "@/constants/gameConstants";
+import { PointStatus, Teams } from "@/generated/prisma";
 import { useNumberInput } from "@/hooks/useNumberInput";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 
-interface ArrivalGoalStationsFormProps {
+interface RegisterPointsFormProps {
     teams: Teams[];
 }
 
-const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
-    teams,
-}): React.JSX.Element => {
+const pointStatusOptions: RadioOption[] = [
+    { value: GameConstants.POINT_STATUS.POINTS, label: "ポイント" },
+    { value: GameConstants.POINT_STATUS.SCORED, label: "総資産" },
+];
+
+const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({ teams }) => {
     const teamCodeInput = useSelectInput("");
     const pointsInput = useNumberInput(0);
+    const [pointStatus, setPointStatus] = useState<PointStatus>(GameConstants.POINT_STATUS.POINTS);
 
-    const createArrivalData = async () => {
+    const handlePointStatusChange = (
+        event:
+            | React.ChangeEvent<HTMLInputElement>
+            | (Event & { target: { value: unknown; name: string } })
+    ) => {
+        const newValue = event.target.value as PointStatus;
+        setPointStatus(newValue);
+        console.log("選択されたポイント状態:", newValue);
+    };
+
+    const createPointsData = async () => {
         const isConfirmed = confirm(
-            "以下の内容で到着処理を行いますか？\n" +
+            "以下の内容でポイントを登録しますか？\n" +
                 `チーム: ${
                     teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"
                 }\n` +
-                `ポイント: ${pointsInput.value || "不明"}`
+                `ポイント: ${pointsInput.value || "不明"}\n` +
+                `状態: ${pointStatus}`
         );
         if (!isConfirmed) {
             return;
         }
 
         try {
-            const responseCreatePoints = await fetch("/api/points", {
+            const response = await fetch("/api/points", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -47,36 +64,20 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
                     eventCode: "TOKYU_20250517", // TODO: イベントコードをセッションから取得する
                     teamCode: teamCodeInput.value,
                     points: pointsInput.value,
-                    status: "points",
+                    status: pointStatus,
                 }),
             });
 
-            if (!responseCreatePoints.ok) {
-                throw new Error(`HTTP error! status: ${responseCreatePoints.status}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-
-            const responseUpdatePoints = await fetch("/api/points", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    teamCode: teamCodeInput.value,
-                }),
-            });
-
-            if (!responseUpdatePoints.ok) {
-                throw new Error(`HTTP error! status: ${responseUpdatePoints.status}`);
-            }
-
-            const data = await responseUpdatePoints.json();
-            console.log("到着処理成功:", data);
             teamCodeInput.reset();
             pointsInput.reset();
-            alert("登録が完了しました。");
+            setPointStatus(GameConstants.POINT_STATUS.POINTS);
+            alert("ポイントが登録されました。");
         } catch (error) {
-            console.error("Error registering:", error);
-            alert("登録に失敗しました。");
+            console.error("ポイント登録エラー:", error);
+            alert("ポイントの登録に失敗しました。");
             return;
         }
     };
@@ -84,13 +85,11 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
     return (
         <>
             <Box>
-                <FormTitle title="目的駅到着処理" />
+                <FormTitle title="ポイント登録" />
                 <FormDescription>
-                    目的駅に到着した場合、チームを選択し、到着処理を行なう。
+                    チームを選択し、ポイントを登録する。
                     <br />
-                    到着ポイントは、前の目的駅から今回の目的駅までの運賃を入力する。
-                    <br />
-                    換金も同時に実行される。
+                    ポイントまたは総資産として登録することができる。
                 </FormDescription>
                 <Box
                     border={1}
@@ -117,14 +116,24 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
                     <Box sx={{ marginBottom: 2 }}>
                         <CustomNumberInput
                             value={pointsInput.value}
-                            label="到着ポイント"
+                            label="ポイント"
                             showSteppers={true}
                             step={5}
                             onChange={pointsInput.handleChange}
                         />
                     </Box>
+                    <Box sx={{ marginBottom: 2 }}>
+                        <CustomRadio
+                            options={pointStatusOptions}
+                            value={pointStatus}
+                            onChange={handlePointStatusChange}
+                            size="small"
+                            label="ステータス"
+                            row={true}
+                        />
+                    </Box>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <CustomButton onClick={createArrivalData}>送信</CustomButton>
+                        <CustomButton onClick={createPointsData}>送信</CustomButton>
                     </Box>
                 </Box>
             </Box>
@@ -132,4 +141,4 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
     );
 };
 
-export default ArrivalGoalStationsForm;
+export default RegisterPointsForm;

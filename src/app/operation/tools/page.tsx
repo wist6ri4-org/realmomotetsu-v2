@@ -3,6 +3,7 @@
 import CustomButton from "@/components/base/CustomButton";
 import ArrivalGoalStationsForm from "@/components/composite/form/ArrivalGoalStationsForm";
 import RegisterGoalStationsForm from "@/components/composite/form/RegisterGoalStationsForm";
+import RegisterPointsForm from "@/components/composite/form/RegisterPointsForm";
 import { Stations, Teams } from "@/generated/prisma";
 import { Alert, Box, CircularProgress, Divider } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -79,6 +80,8 @@ export default function ToolsPage() {
                         <RegisterGoalStationsForm stations={stations} />
                         <Divider />
                         <ArrivalGoalStationsForm teams={teams} />
+                        <Divider />
+                        <RegisterPointsForm teams={teams} />
                     </>
                 )}
             </Box>

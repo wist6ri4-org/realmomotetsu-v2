@@ -6,9 +6,10 @@
 import CustomButton from "@/components/base/CustomButton";
 import CustomSelect from "@/components/base/CustomSelect";
 import { Stations, Teams } from "@/generated/prisma";
+import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
-import React, { useState } from "react";
+import React from "react";
 
 /**
  * CurrentLocationFormコンポーネントのプロパティ型定義
@@ -33,42 +34,10 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     stations,
     closestStations: closestStations,
 }): React.JSX.Element => {
-    const [selectedTeamCode, setSelectedTeamCode] = useState<string>("");
-    const [selectedStationCode, setSelectedStationCode] = useState<string>(
+    const selectedTeamCodeInput = useSelectInput("");
+    const selectedStationCodeInput = useSelectInput(
         closestStations?.[0]?.stationCode ? String(closestStations?.[0]?.stationCode) : ""
     );
-
-    /**
-     * 選択されたチームの変更ハンドラー
-     * @param event - イベントオブジェクト
-     * @param event.target.value - 新しいチームIDの値
-     * @param event.target.name - イベントの名前（オプション）
-     */
-    const handleSelectedTeamChange = (
-        event:
-            | React.ChangeEvent<HTMLInputElement>
-            | (Event & { target: { value: unknown; name: string } })
-    ) => {
-        const newValue = event.target.value as string;
-        setSelectedTeamCode(newValue);
-        console.log("選択されたチーム:", newValue);
-    };
-
-    /**
-     * 選択された駅の変更ハンドラー
-     * @param event - イベントオブジェクト
-     * @param event.target.value - 新しい駅IDの値
-     * @param event.target.name - イベントの名前（オプション）
-     */
-    const handleSelectedStationChange = (
-        event:
-            | React.ChangeEvent<HTMLInputElement>
-            | (Event & { target: { value: unknown; name: string } })
-    ) => {
-        const newValue = event.target.value as string;
-        setSelectedStationCode(newValue);
-        console.log("選択された駅:", newValue);
-    };
 
     /**
      * 現在地の登録
@@ -76,8 +45,8 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     const createTransitStation = async () => {
         const isConfirmed = confirm(
             "以下の内容で登録しますか？\n" +
-                `チーム: ${selectedTeamCode}\n` +
-                `駅: ${selectedStationCode}`
+                `チーム: ${selectedTeamCodeInput.value}\n` +
+                `駅: ${selectedStationCodeInput.value}`
         );
         if (!isConfirmed) {
             return;
@@ -90,16 +59,16 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
                 },
                 body: JSON.stringify({
                     eventCode: "TOKYU_20250517", // TODO: イベントコードをセッションから取得する
-                    teamCode: selectedTeamCode,
-                    stationCode: selectedStationCode,
+                    teamCode: selectedTeamCodeInput.value,
+                    stationCode: selectedStationCodeInput.value,
                 }),
             });
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            setSelectedTeamCode("");
-            setSelectedStationCode("");
+            selectedTeamCodeInput.reset();
+            selectedStationCodeInput.reset();
             alert("登録されました。");
         } catch (error) {
             console.error("Error creating transit station:", error);
@@ -115,8 +84,8 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
                     <Box sx={{ marginBottom: 2 }}>
                         <CustomSelect
                             options={TypeConverter.convertTeamsToSelectOptions(teams)}
-                            value={selectedTeamCode}
-                            onChange={handleSelectedTeamChange}
+                            value={selectedTeamCodeInput.value}
+                            onChange={selectedTeamCodeInput.handleChange}
                             size="small"
                             variant="outlined"
                             label="チーム名"
@@ -127,8 +96,8 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
                     <Box sx={{ marginBottom: 2 }}>
                         <CustomSelect
                             options={TypeConverter.convertStationsToSelectOptions(stations)}
-                            value={selectedStationCode}
-                            onChange={handleSelectedStationChange}
+                            value={selectedStationCodeInput.value}
+                            onChange={selectedStationCodeInput.handleChange}
                             size="small"
                             variant="outlined"
                             label="今いる駅"

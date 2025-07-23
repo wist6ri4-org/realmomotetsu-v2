@@ -13,7 +13,7 @@ import CustomButton from "@/components/base/CustomButton";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 import CustomRadio, { RadioOption } from "@/components/base/CustomRadio";
 import RouletteCard from "../../base/RouletteCard";
-
+import { useSelectInput } from "@/hooks/useSelectInput";
 interface RouletteFormProps {
     stations: Stations[];
     nearbyStations: NearbyStationsWithRelations[];
@@ -32,9 +32,7 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
     latestTransitStations,
     closestStations,
 }): React.JSX.Element => {
-    const [startStationCode, setStartStationCode] = useState<string>(
-        closestStations?.[0]?.stationCode || ""
-    );
+    const startStationCodeInput =useSelectInput(closestStations?.[0]?.stationCode || "");
     const [rouletteMode, setRouletteMode] = useState<"weighted" | "random">("weighted");
     const [spinInterval, setSpinInterval] = useState<NodeJS.Timeout | null>(null);
     const [isRolling, setIsRolling] = useState<boolean>(false);
@@ -43,13 +41,13 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
         const nextStationCode = RouletteUtils.getWeightedStationCode(
             nearbyStations,
             latestTransitStations,
-            startStationCode
+            startStationCodeInput.value,
         );
         return stations.find((station) => station.stationCode === nextStationCode) || null;
     };
 
     const getRandomStation = () => {
-        const randomStationCode = RouletteUtils.getRandomStationCode(stations, startStationCode);
+        const randomStationCode = RouletteUtils.getRandomStationCode(stations, startStationCodeInput.value);
         return stations.find((station) => station.stationCode === randomStationCode) || null;
     };
 
@@ -62,16 +60,6 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
         }
     };
     const [displayedStation, dispatch] = useReducer(reducer, null);
-
-    const handleStartStationCodeChange = (
-        event:
-            | React.ChangeEvent<HTMLInputElement>
-            | (Event & { target: { value: unknown; name: string } })
-    ) => {
-        const newValue = event.target.value as string;
-        setStartStationCode(newValue);
-        console.log("選択された開始駅:", newValue);
-    };
 
     const handleRouletteModeChange = (
         event:
@@ -94,7 +82,7 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
                 "Starting roulette with mode:",
                 rouletteMode,
                 "and start station:",
-                startStationCode
+                startStationCodeInput.value
             );
             if (spinInterval) {
                 clearInterval(spinInterval);
@@ -112,8 +100,8 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
                 <Box sx={{ marginBottom: 2 }}>
                     <CustomSelect
                         options={TypeConverter.convertStationsToSelectOptions(stations)}
-                        value={startStationCode}
-                        onChange={handleStartStationCodeChange}
+                        value={startStationCodeInput.value}
+                        onChange={startStationCodeInput.handleChange}
                         size="small"
                         label="今いる駅"
                         fullWidth
