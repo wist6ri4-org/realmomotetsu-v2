@@ -4,6 +4,8 @@ import "./globals.css";
 import { Box, Container } from "@mui/material";
 import Header from "@/components/composite/Header";
 import { NavigationBar } from "@/components/composite/NavigationBar";
+import ThemeRegistry from "@/components/ThemeRegistry";
+import ApplicationBar from "@/components/composite/ApplicationBar";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -43,20 +45,27 @@ export default function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} ${dotGothic16.variable}`}
             suppressHydrationWarning={true}
         >
-            <body className={dotGothic16.className}>
-                <Container
-                    maxWidth="md"
-                    disableGutters
-                    sx={{
-                        minHeight: "100dvh",
-                        display: "flex",
-                        flexDirection: "column",
-                    }}
-                >
-                    <Header />
-                    <Box sx={{ flex: 1, padding: 1 }}>{children}</Box>
-                    <NavigationBar />
-                </Container>
+            <head>
+                <meta name="emotion-insertion-point" content="" />
+                <meta name="viewport" content="initial-scale=1, width=device-width" />
+            </head>
+            <body className={dotGothic16.className} suppressHydrationWarning={true}>
+                <ThemeRegistry>
+                    <Container
+                        maxWidth="md"
+                        disableGutters
+                        sx={{
+                            minHeight: "100dvh",
+                            display: "flex",
+                            flexDirection: "column",
+                        }}
+                    >
+                        <ApplicationBar />
+                        <Header />
+                        <Box sx={{ flex: 1, padding: 1 }}>{children}</Box>
+                        <NavigationBar />
+                    </Container>
+                </ThemeRegistry>
             </body>
         </html>
     );
