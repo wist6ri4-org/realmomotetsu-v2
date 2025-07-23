@@ -1,4 +1,4 @@
-import { GetPointsRequest, GetPointsResponse, PostPointsRequest } from "./types";
+import { GetPointsRequest, GetPointsResponse, PostPointsRequest, PutPointsRequest } from "./types";
 import { PointsService } from "./interface";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { Points } from "@/generated/prisma";
@@ -51,4 +51,19 @@ export const PointsServiceImpl: PointsService = {
             throw new Error("Failed to post points");
         }
     },
+
+    /**
+     * ポイントのステータスを更新する
+     * @param req - リクエストデータ
+     * @return {Promise<{ count: number }>} 更新されたポイントの数
+     */
+    async putPoints(req: PutPointsRequest): Promise<{ count: number }> {
+        const pointRepository = RepositoryFactory.getPointsRepository();
+        try {
+            return await pointRepository.updateStatusByTeamCode(req.teamCode, "scored");
+        } catch (error) {
+            console.error("Error in putPoints:", error);
+            throw new Error("Failed to update points status");
+        }
+    }
 };

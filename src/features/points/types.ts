@@ -27,3 +27,11 @@ export type PostPointsRequest = {
     points: number;
     status: PointStatus;
 };
+
+/**
+ * ポイントの更新リクエスト
+ * @param teamCode - チームコード
+ */
+export type PutPointsRequest = {
+    teamCode: string;
+}

@@ -1,5 +1,5 @@
 import { PointsGroupedByTeamCode } from "@/types/PointsGroupedByTeamCode";
-import { GetPointsRequest, PostPointsRequest } from "./types";
+import { GetPointsRequest, PostPointsRequest, PutPointsRequest } from "./types";
 import { Points } from "@/generated/prisma";
 
 export interface PointsService {
@@ -18,4 +18,11 @@ export interface PointsService {
      * @return {Promise<void>} 登録完了
      */
     postPoints: (req: PostPointsRequest) => Promise<Points>;
+
+    /**
+     * ポイントのステータスを更新する
+     * @param req - リクエストデータ
+     * @return {Promise<{ count: number }>} 更新されたポイントの数
+     */
+    putPoints: (req: PutPointsRequest) => Promise<{ count: number }>;
 }

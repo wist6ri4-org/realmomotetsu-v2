@@ -103,41 +103,41 @@ export const theme = createTheme({
         htmlFontSize: 16,
         fontFamily: "var(--font-dot-gothic), 'DotGothic16', monospace, sans-serif",
         h1: {
-            fontSize: "3.5rem",
+            fontSize: "3rem",
             fontWeight: 400,
             lineHeight: 1.2,
         },
         h2: {
-            fontSize: "3.25rem",
+            fontSize: "2.75rem",
             fontWeight: 400,
             lineHeight: 1.3,
         },
         h3: {
-            fontSize: "3.0rem",
-            fontWeight: 400,
-            lineHeight: 1.4,
-        },
-        h4: {
             fontSize: "2.5rem",
             fontWeight: 400,
             lineHeight: 1.4,
         },
-        h5: {
+        h4: {
             fontSize: "2.25rem",
+            fontWeight: 400,
+            lineHeight: 1.4,
+        },
+        h5: {
+            fontSize: "2.rem",
             fontWeight: 400,
             lineHeight: 1.5,
         },
         h6: {
-            fontSize: "2rem",
+            fontSize: "1.8rem",
             fontWeight: 400,
             lineHeight: 1.6,
         },
         body1: {
-            fontSize: "2rem",
+            fontSize: "1.8rem",
             lineHeight: 2,
         },
         body2: {
-            fontSize: "1.6rem",
+            fontSize: "1.4rem",
             lineHeight: 1.6,
         },
         button: {
@@ -245,6 +245,15 @@ export const theme = createTheme({
                     "& .MuiBottomNavigationAction-label": {
                         fontSize: "0.75rem", // ラベルのフォントサイズを明示的に指定
                         marginTop: "4px",
+                    },
+                },
+            },
+        },
+        MuiAppBar: {
+            styleOverrides: {
+                root: {
+                    "& .MuiSvgIcon-root": {
+                        fontSize: "2.5rem", // アイコンのサイズ
                     },
                 },
             },

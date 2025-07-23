@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { PointsServiceImpl } from "@/features/points/service";
-import { getPointsRequestSchema, postPointsRequestSchema } from "@/features/points/validator";
+import { getPointsRequestSchema, postPointsRequestSchema, putPointsRequestSchema } from "@/features/points/validator";
 
 /**
  * ポイントに関するAPIハンドラー
@@ -24,6 +24,7 @@ class PointsApiHandler extends BaseApiHandler {
         return {
             GET: this.handleGet.bind(this),
             POST: this.handlePost.bind(this),
+            PUT: this.handlePut.bind(this),
         };
     }
 
@@ -46,7 +47,9 @@ class PointsApiHandler extends BaseApiHandler {
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data = await PointsServiceImpl.getPointsByEventCodeGroupedByTeamCode(validatedParams);
+            const data = await PointsServiceImpl.getPointsByEventCodeGroupedByTeamCode(
+                validatedParams
+            );
 
             // レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
@@ -55,19 +58,19 @@ class PointsApiHandler extends BaseApiHandler {
                 [teamCode: string]: {
                     pointsCount: number;
                     scoredCount: number;
-                }
+                };
             };
 
             const info: Info = {};
             Object.entries(data).forEach(([teamCode, items]) => {
-                if(!info[teamCode]) {
-                    info[teamCode] = {pointsCount: 0, scoredCount: 0};
+                if (!info[teamCode]) {
+                    info[teamCode] = { pointsCount: 0, scoredCount: 0 };
                 }
                 info[teamCode].pointsCount = items.points.length;
                 info[teamCode].scoredCount = items.scored.length;
-            })
+            });
             this.logInfo("Successfully retrieved points data", {
-                ...info
+                ...info,
             });
 
             return this.createSuccessResponse(data);
@@ -101,7 +104,36 @@ class PointsApiHandler extends BaseApiHandler {
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully processed points data", {
-                id: data.id
+                id: data.id,
+            });
+
+            return this.createSuccessResponse(data);
+        } catch (error) {
+            // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
+            return this.handleError(error);
+        }
+    }
+
+    private async handlePut(req: NextRequest): Promise<NextResponse> {
+        this.logInfo("Handling PUT request for points");
+
+        try {
+            // リクエストボディをJSONとしてパース
+            const body = await req.json();
+
+            // Zodでバリデーション
+            const validatedBody = putPointsRequestSchema.parse(body);
+
+            this.logDebug("Request body", validatedBody);
+
+            // サービスからデータを取得
+            const data = await PointsServiceImpl.putPoints(validatedBody);
+
+            // レスポンスのスキーマでバリデーション
+            // const validatedResponse = initOperationResponseSchema.parse(data);
+
+            this.logInfo("Successfully processed points data", {
+                count: data.count,
             });
 
             return this.createSuccessResponse(data);

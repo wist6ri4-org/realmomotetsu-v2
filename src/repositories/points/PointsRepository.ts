@@ -151,6 +151,28 @@ export class PointsRepository extends BaseRepository {
     }
 
     /**
+     * チームコードに基づいてポイントのステータスを更新
+     * @param teamCode - チームコード
+     * @param status - 更新するステータス（デフォルトは"scored"）
+     * @return {Promise<{ count: number }>} 更新されたレコード数
+     */
+    async updateStatusByTeamCode(teamCode: string, status: PointStatus = "scored"): Promise<{ count: number }> {
+        try {
+            return await this.prisma.points.updateMany({
+                where: {
+                    teamCode: teamCode,
+                    status: status === "scored" ? "points" : "scored", // スコア済みの場合はポイントからスコア済みに変更
+                },
+                data: {
+                    status: status,
+                },
+            });
+        } catch (error) {
+            this.handleDatabaseError(error, "updateStatusByTeamCode");
+        }
+    }
+
+    /**
      * ポイントを削除
      * @param id - 削除対象のID
      * @return {Promise<Points>} 削除されたポイント
