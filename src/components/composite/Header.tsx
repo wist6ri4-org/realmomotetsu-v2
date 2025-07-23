@@ -2,8 +2,6 @@
 
 import React from "react";
 import { Box } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "@/theme";
 import Image from "next/image";
 
 /**
@@ -21,7 +19,7 @@ interface HeaderProps {
  */
 export const Header: React.FC<HeaderProps> = (): React.JSX.Element => {
     return (
-        <ThemeProvider theme={theme}>
+        <>
             <Box
                 component="header"
                 sx={{
@@ -66,7 +64,7 @@ export const Header: React.FC<HeaderProps> = (): React.JSX.Element => {
                     /> */}
                 </Box>
             </Box>
-        </ThemeProvider>
+        </>
     );
 };
 

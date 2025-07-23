@@ -1,5 +1,4 @@
-import theme from "@/theme";
-import { Paper, ThemeProvider, Typography } from "@mui/material";
+import { Paper, Typography } from "@mui/material";
 import React from "react";
 
 /**
@@ -17,13 +16,11 @@ interface FormDescriptionProps {
  */
 const FormDescription: React.FC<FormDescriptionProps> = ({ children }): React.JSX.Element => {
     return (
-        <ThemeProvider theme={theme}>
-            <Paper variant="outlined">
-                <Typography variant="body2" sx={{ textAlign: "left", margin: 2 }}>
-                    {children}
-                </Typography>
-            </Paper>
-        </ThemeProvider>
+        <>
+            <Typography variant="body2" sx={{ textAlign: "left", margin: 1 }}>
+                {children}
+            </Typography>
+        </>
     );
 };
 

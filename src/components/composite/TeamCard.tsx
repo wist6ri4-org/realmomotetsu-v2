@@ -1,7 +1,6 @@
-import theme from "@/theme";
 import Image from "next/image";
 import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
-import { styled, ThemeProvider } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import { TeamData } from "@/types/TeamData";
 import { Converter } from "@/utils/converter";
 import Toll from "@mui/icons-material/Toll";
@@ -63,7 +62,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({
 }): React.JSX.Element => {
     const lastStation = teamData.transitStations[teamData.transitStations.length - 1] || null;
     return (
-        <ThemeProvider theme={theme}>
+        <>
             <Box
                 sx={{
                     width: "100%",
@@ -81,7 +80,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({
                             width={0}
                             height={0}
                             unoptimized
-                            style={{ width: "auto", height: "3.5rem", marginRight: "0.5rem" }}
+                            style={{ width: "auto", height: "2.5rem", marginRight: "0.5rem" }}
                         />
                     )}
                     <Typography variant="h5">{teamData.teamName}</Typography>
@@ -181,6 +180,6 @@ export const TeamCard: React.FC<TeamCardProps> = ({
                     </CardContent>
                 </Card>
             </Box>
-        </ThemeProvider>
+        </>
     );
 };

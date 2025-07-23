@@ -6,10 +6,8 @@ import { UpdatedTime } from "@/components/base/UpdatedTime";
 import { TeamCard } from "@/components/composite/TeamCard";
 import { Teams } from "@/generated/prisma";
 import { GoalStationsWithRelations } from "@/repositories/goalStations/GoalStationsRepository";
-import theme from "@/theme";
 import { TeamData } from "@/types/TeamData";
 import { Alert, Box, CircularProgress, Grid, Typography } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 
 export default function HomePage() {
@@ -65,7 +63,7 @@ export default function HomePage() {
     }, []);
 
     return (
-        <ThemeProvider theme={theme}>
+        <>
             {/* サブヘッダーセクション */}
             <Box>
                 <BulletinBoard
@@ -121,6 +119,6 @@ export default function HomePage() {
 
             {/* サブフッターセクション */}
             <UpdatedTime textAlign="right" variant="body2" />
-        </ThemeProvider>
+        </>
     );
 }

@@ -8,8 +8,6 @@ import {
     FormHelperText,
     Box,
 } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "@/theme";
 
 /**
  * セレクトボックスのオプション型定義
@@ -116,7 +114,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         : (color as "primary" | "secondary" | "success" | "error" | "warning" | "info");
 
     return (
-        <ThemeProvider theme={theme}>
+        <>
             <Box sx={{ width: "stretch" }}>
                 <FormControl
                     variant={variant}
@@ -169,7 +167,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
                     {helperText && <FormHelperText>{helperText}</FormHelperText>}
                 </FormControl>
             </Box>
-        </ThemeProvider>
+        </>
     );
 };
 

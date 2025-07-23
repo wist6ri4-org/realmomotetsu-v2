@@ -1,7 +1,5 @@
 import React from "react";
 import { Button as MuiButton, ButtonProps as MuiButtonProps } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "@/theme";
 
 /**
  * カスタムボタンのプロパティ型定義
@@ -54,7 +52,7 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
     ...props
 }): React.JSX.Element => {
     return (
-        <ThemeProvider theme={theme}>
+        <>
             <MuiButton
                 color={color}
                 size={size}
@@ -71,7 +69,7 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
             >
                 {loading ? "Loading..." : children}
             </MuiButton>
-        </ThemeProvider>
+        </>
     );
 };
 

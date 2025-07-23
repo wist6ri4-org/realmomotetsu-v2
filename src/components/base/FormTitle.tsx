@@ -1,5 +1,4 @@
-import theme from "@/theme";
-import { Box, ThemeProvider, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import React from "react";
 
 /**
@@ -20,14 +19,14 @@ interface FormTitleProps {
  */
 const FormTitle: React.FC<FormTitleProps> = ({ title, icon }): React.JSX.Element => {
     return (
-        <ThemeProvider theme={theme}>
-            <Box sx={{ display: "flex", alignItems: "left", margin: 2 }}>
+        <>
+            <Box sx={{ display: "flex", alignItems: "left", margin: 1 }}>
                 {icon}
-                <Typography variant="h5">
+                <Typography variant="h6" fontWeight={700}>
                     {title}
                 </Typography>
             </Box>
-        </ThemeProvider>
+        </>
     );
 };
 

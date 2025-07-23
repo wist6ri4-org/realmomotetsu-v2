@@ -9,8 +9,6 @@ import {
     Box,
     RadioGroupProps as MuiRadioGroupProps,
 } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "@/theme";
 
 /**
  * ラジオボタンのオプション型定義
@@ -104,7 +102,7 @@ export const CustomRadio: React.FC<CustomRadioProps> = ({
         : (color as "primary" | "secondary" | "success" | "error" | "warning" | "info");
 
     return (
-        <ThemeProvider theme={theme}>
+        <>
             <Box sx={{ width: "stretch" }}>
                 <FormControl
                     component="fieldset"
@@ -151,7 +149,7 @@ export const CustomRadio: React.FC<CustomRadioProps> = ({
                     {helperText && <FormHelperText>{helperText}</FormHelperText>}
                 </FormControl>
             </Box>
-        </ThemeProvider>
+        </>
     );
 };
 
