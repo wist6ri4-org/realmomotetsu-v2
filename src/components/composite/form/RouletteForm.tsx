@@ -1,15 +1,18 @@
+/**
+ * ルーレットフォーム
+ */
+"use client";
+
 import CustomSelect from "@/components/base/CustomSelect";
 import { Stations, TransitStations } from "@/generated/prisma";
-import theme from "@/theme";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
 import React, { useEffect, useReducer, useState } from "react";
 import { RouletteUtils } from "@/utils/rouletteUtils";
 import CustomButton from "@/components/base/CustomButton";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 import CustomRadio, { RadioOption } from "@/components/base/CustomRadio";
-import RouletteCard from "../RouletteCard";
+import RouletteCard from "../../base/RouletteCard";
 
 interface RouletteFormProps {
     stations: Stations[];
@@ -104,7 +107,7 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
     }, [isRolling]);
 
     return (
-        <ThemeProvider theme={theme}>
+        <>
             <Box sx={{ display: "flex", flexDirection: "column", margin: 2 }}>
                 <Box sx={{ marginBottom: 2 }}>
                     <CustomSelect
@@ -153,7 +156,7 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
                     )}
                 </Box>
             </Box>
-        </ThemeProvider>
+        </>
     );
 };
 

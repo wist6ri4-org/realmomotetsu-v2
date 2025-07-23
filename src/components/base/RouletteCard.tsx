@@ -1,6 +1,5 @@
 import { Stations } from "@/generated/prisma";
-import theme from "@/theme";
-import { Box, styled, ThemeProvider, Typography } from "@mui/material";
+import { Box, styled, Typography } from "@mui/material";
 import React from "react";
 
 interface RouletteCardProps {
@@ -43,7 +42,7 @@ const DisplayedStationTypography = styled(Typography, {
 
 const RouletteCard: React.FC<RouletteCardProps> = ({ displayedStation }) => {
     return (
-        <ThemeProvider theme={theme}>
+        <>
             <Box
                 sx={{
                     display: "flex",
@@ -115,7 +114,7 @@ const RouletteCard: React.FC<RouletteCardProps> = ({ displayedStation }) => {
                     </Box>
                 </Box>
             </Box>
-        </ThemeProvider>
+        </>
     );
 };
 

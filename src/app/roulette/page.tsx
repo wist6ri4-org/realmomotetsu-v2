@@ -1,16 +1,21 @@
 "use client";
 
 import CustomButton from "@/components/base/CustomButton";
-import PageDescription from "@/components/base/PageDescription";
 import PageTitle from "@/components/base/PageTitle";
 import RouletteForm from "@/components/composite/form/RouletteForm";
 import { LatestTransitStations, Stations, Teams } from "@/generated/prisma";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
-import theme from "@/theme";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
-import { Casino } from "@mui/icons-material";
-import { Alert, Box, CircularProgress } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
+import { ArrowDropDown, Casino } from "@mui/icons-material";
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Alert,
+    Box,
+    CircularProgress,
+    Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 
 export default function RoulettePage() {
@@ -81,34 +86,42 @@ export default function RoulettePage() {
     }, []);
 
     return (
-        <ThemeProvider theme={theme}>
+        <>
             {/* サブヘッダーセクション */}
             <Box>
-                <PageTitle title="駅ルーレット" icon={<Casino sx={{ fontSize: "3.5rem",marginRight: 1 }} />}/>
-                <PageDescription>
-                    【使い方】
-                    <br />
-                    １．今いる駅を選択
-                    <br />
-                    ２．モードを選ぶ
-                    <br />
-                    ３．スタートボタンを押してルーレットを回す
-                    <br />
-                    ４．ストップボタンを押して目的地を決定
-                </PageDescription>
+                <PageTitle
+                    title="駅ルーレット"
+                    icon={<Casino sx={{ fontSize: "3.5rem", marginRight: 1 }} />}
+                />
+                <Accordion>
+                    <AccordionSummary expandIcon={<ArrowDropDown sx={{fontSize: "2.5rem"}}/>}>
+                        <Typography variant="body2" fontWeight={700}>使い方</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Typography variant="body2">
+                            １．今いる駅を選択
+                            <br />
+                            ２．モードを選ぶ
+                            <br />
+                            ３．スタートボタンを押してルーレットを回す
+                            <br />
+                            ４．ストップボタンを押して目的地を決定
+                        </Typography>
+                    </AccordionDetails>
+                </Accordion>
             </Box>
 
             {/* コンテンツセクション */}
             <Box>
                 {/* ローディング */}
                 {isLoading && (
-                    <Box sx={{ textAlign: "center", mb: 4 }}>
+                    <Box sx={{ textAlign: "center", margin: 4 }}>
                         <CircularProgress size={40} color="primary" />
                     </Box>
                 )}
                 {/* エラー */}
                 {error && (
-                    <Box sx={{ mb: 4 }}>
+                    <Box sx={{ margin: 4 }}>
                         <Alert
                             severity="error"
                             action={<CustomButton onClick={fetchData}>再試行</CustomButton>}
@@ -132,6 +145,6 @@ export default function RoulettePage() {
                     </>
                 )}
             </Box>
-        </ThemeProvider>
+        </>
     );
 }

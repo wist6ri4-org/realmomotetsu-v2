@@ -1,11 +1,13 @@
+/**
+ * 現在地登録フォーム
+ */
 "use client";
 
 import CustomButton from "@/components/base/CustomButton";
 import CustomSelect from "@/components/base/CustomSelect";
 import { Stations, Teams } from "@/generated/prisma";
-import theme from "@/theme";
 import { TypeConverter } from "@/utils/typeConverter";
-import { Box, ThemeProvider } from "@mui/material";
+import { Box } from "@mui/material";
 import React, { useState } from "react";
 
 /**
@@ -37,12 +39,12 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     );
 
     /**
-     * 選択されたチームIDの変更ハンドラー
+     * 選択されたチームの変更ハンドラー
      * @param event - イベントオブジェクト
      * @param event.target.value - 新しいチームIDの値
      * @param event.target.name - イベントの名前（オプション）
      */
-    const handleSelectTeamIdChange = (
+    const handleSelectedTeamChange = (
         event:
             | React.ChangeEvent<HTMLInputElement>
             | (Event & { target: { value: unknown; name: string } })
@@ -53,12 +55,12 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     };
 
     /**
-     * 選択された駅IDの変更ハンドラー
+     * 選択された駅の変更ハンドラー
      * @param event - イベントオブジェクト
      * @param event.target.value - 新しい駅IDの値
      * @param event.target.name - イベントの名前（オプション）
      */
-    const handleSelectStationIdChange = (
+    const handleSelectedStationChange = (
         event:
             | React.ChangeEvent<HTMLInputElement>
             | (Event & { target: { value: unknown; name: string } })
@@ -68,6 +70,9 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
         console.log("選択された駅:", newValue);
     };
 
+    /**
+     * 現在地の登録
+     */
     const createTransitStation = async () => {
         const isConfirmed = confirm(
             "以下の内容で登録しますか？\n" +
@@ -104,27 +109,31 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     };
 
     return (
-        <ThemeProvider theme={theme}>
+        <>
             <Box>
-                <Box sx={{ display: "flex", flexDirection: "column", margin: 2 }}>
+                <Box sx={{ display: "flex", flexDirection: "column", padding: 2 }}>
                     <Box sx={{ marginBottom: 2 }}>
                         <CustomSelect
                             options={TypeConverter.convertTeamsToSelectOptions(teams)}
                             value={selectedTeamCode}
-                            onChange={handleSelectTeamIdChange}
+                            onChange={handleSelectedTeamChange}
                             size="small"
+                            variant="outlined"
                             label="チーム名"
                             fullWidth
+                            sx={{ backgroundColor: "white" }}
                         />
                     </Box>
                     <Box sx={{ marginBottom: 2 }}>
                         <CustomSelect
                             options={TypeConverter.convertStationsToSelectOptions(stations)}
                             value={selectedStationCode}
-                            onChange={handleSelectStationIdChange}
+                            onChange={handleSelectedStationChange}
                             size="small"
+                            variant="outlined"
                             label="今いる駅"
                             fullWidth
+                            sx={{ backgroundColor: "white" }}
                         />
                     </Box>
                     <Box sx={{ marginTop: 5 }}>
@@ -134,7 +143,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
                     </Box>
                 </Box>
             </Box>
-        </ThemeProvider>
+        </>
     );
 };
 

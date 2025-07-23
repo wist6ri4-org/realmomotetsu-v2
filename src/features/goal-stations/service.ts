@@ -1,6 +1,6 @@
 import { GoalStations } from "@/generated/prisma";
 import { GoalStationsService } from "./interface";
-import { GetGoalStationsRequest, GetGoalStationsResponse } from "./types";
+import { GetGoalStationsRequest, GetGoalStationsResponse, PostGoalStationsRequest } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 
 export const GoalStationsServiceImpl: GoalStationsService = {
@@ -31,7 +31,7 @@ export const GoalStationsServiceImpl: GoalStationsService = {
      * @param req - リクエストデータ
      * @return {Promise<void>} 登録完了
      */
-    async postGoalStations(req: { eventCode: string; stationCode: string }): Promise<GoalStations> {
+    async postGoalStations(req: PostGoalStationsRequest): Promise<GoalStations> {
         const goalStationsRepository = RepositoryFactory.getGoalStationsRepository();
 
         try {
