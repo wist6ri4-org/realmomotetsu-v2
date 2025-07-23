@@ -2,6 +2,7 @@
 
 import CustomButton from "@/components/base/CustomButton";
 import ArrivalGoalStationsForm from "@/components/composite/form/ArrivalGoalStationsForm";
+import PointsTransferForm from "@/components/composite/form/PointsTransferForm";
 import RegisterGoalStationsForm from "@/components/composite/form/RegisterGoalStationsForm";
 import RegisterPointsForm from "@/components/composite/form/RegisterPointsForm";
 import { Stations, Teams } from "@/generated/prisma";
@@ -82,6 +83,8 @@ export default function ToolsPage() {
                         <ArrivalGoalStationsForm teams={teams} />
                         <Divider />
                         <RegisterPointsForm teams={teams} />
+                        <Divider />
+                        <PointsTransferForm teams={teams} />
                     </>
                 )}
             </Box>
