@@ -52,3 +52,7 @@ POST http://localhost:3001/api/transit-stations
     "stationCode": "YOKOHAMA",
     "teamCode": "TEAM_A"
 }
+
+### Get transit-stations/latest
+GET http://localhost:3001/api/transit-stations/latest
+    ?eventCode=TOKYU_20250517
