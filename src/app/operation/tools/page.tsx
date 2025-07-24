@@ -5,16 +5,19 @@ import ArrivalGoalStationsForm from "@/components/composite/form/ArrivalGoalStat
 import MissionFormSenzokuike from "@/components/composite/form/MissionFormSenzokuike";
 import PointsExchangeForm from "@/components/composite/form/PointsExchangeForm";
 import PointsTransferForm from "@/components/composite/form/PointsTransferForm";
+import RegisterBombiiAutoForm from "@/components/composite/form/RegisterBombiiAutoForm";
 import RegisterBombiiManualForm from "@/components/composite/form/RegisterBombiiManualForm";
 import RegisterGoalStationsForm from "@/components/composite/form/RegisterGoalStationsForm";
 import RegisterPointsForm from "@/components/composite/form/RegisterPointsForm";
 import { Stations, Teams } from "@/generated/prisma";
+import { TeamData } from "@/types/TeamData";
 import { Alert, Box, CircularProgress, Divider } from "@mui/material";
 import { useEffect, useState } from "react";
 
 export default function ToolsPage() {
     const [teams, setTeams] = useState<Teams[]>([]);
     const [stations, setStations] = useState<Stations[]>([]);
+    const [teamData, setTeamData] = useState<TeamData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -35,12 +38,14 @@ export default function ToolsPage() {
             const data = await response.json();
             const teams = data?.data?.teams || data?.teams || [];
             const stations = data?.data?.stations || data?.stations || [];
+            const teamData = data?.data?.teamData || data?.teamData || [];
 
             if (!Array.isArray(teams) || !Array.isArray(stations)) {
                 throw new Error("Unexpected response structure");
             }
             setTeams(teams as Teams[]);
             setStations(stations as Stations[]);
+            setTeamData(teamData as TeamData[]);
         } catch (error) {
             console.error("Error fetching data:", error);
             setError(error instanceof Error ? error.message : "Unknown error");
@@ -84,6 +89,8 @@ export default function ToolsPage() {
                         <RegisterGoalStationsForm stations={stations} />
                         <Divider />
                         <ArrivalGoalStationsForm teams={teams} />
+                        <Divider />
+                        <RegisterBombiiAutoForm teamData={teamData} />
                         <Divider />
                         <RegisterPointsForm teams={teams} />
                         <Divider />

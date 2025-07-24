@@ -60,7 +60,7 @@ export class PointsRepository extends BaseRepository {
      * @param teamCode - チームコード
      * @return {Promise<PointsGroupedByTeam[]>} チームコードごとの合計ポイント
      */
-    async sumPointsGroupedByTeamCode(): Promise<SummedPoints[]> {
+    async sumPointsGroupedByTeamCode(eventCode: string): Promise<SummedPoints[]> {
         try {
             const result = await this.prisma.points.groupBy({
                 by: ["teamCode"],
@@ -69,6 +69,7 @@ export class PointsRepository extends BaseRepository {
                 },
                 where: {
                     status: "points", // ポイント状態のポイントのみを対象
+                    eventCode: eventCode,
                 },
             });
             return result.map((item) => ({
@@ -85,7 +86,7 @@ export class PointsRepository extends BaseRepository {
      * @param teamCode - チームコード
      * @return {Promise<ScoredPointsGroupedByTeamCode[]>} チームコードごとの合計スコアポイント
      */
-    async sumScoredPointsGroupedByTeamCode(): Promise<SummedPoints[]> {
+    async sumScoredPointsGroupedByTeamCode(eventCode: string): Promise<SummedPoints[]> {
         try {
             const result = await this.prisma.points.groupBy({
                 by: ["teamCode"],
@@ -94,6 +95,7 @@ export class PointsRepository extends BaseRepository {
                 },
                 where: {
                     status: "scored", // スコア済みのポイントのみを対象
+                    eventCode: eventCode,
                 },
             });
             return result.map((item) => ({

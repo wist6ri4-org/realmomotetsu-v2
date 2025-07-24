@@ -32,8 +32,8 @@ export const InitHomeServiceImpl: InitHomeService = {
                 teamsRepository.findByEventCode(req.eventCode),
                 goalStationsRepository.findNextGoalStation(req.eventCode),
                 bombiiHistoriesRepository.findCurrentBombiiTeam(req.eventCode),
-                pointsRepository.sumPointsGroupedByTeamCode(),
-                pointsRepository.sumScoredPointsGroupedByTeamCode(),
+                pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
+                pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
                 eventsRepository.findByEventCode(req.eventCode),
             ]);
 
