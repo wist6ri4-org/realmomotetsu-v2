@@ -63,13 +63,10 @@ export class BombiiHistoriesRepository extends BaseRepository {
      * @param eventCode - イベントコード
      * @returns {Promise<BombiiHistories>} 作成されたボンビー履歴
      */
-    async create(teamCode: string, eventCode: string): Promise<BombiiHistories> {
+    async create(bombiiHistoryData: {teamCode: string, eventCode: string}): Promise<BombiiHistories> {
         try {
             return await this.prisma.bombiiHistories.create({
-                data: {
-                    teamCode: teamCode,
-                    eventCode: eventCode,
-                },
+                data: bombiiHistoryData,
             });
         } catch (error) {
             this.handleDatabaseError(error, "create");
