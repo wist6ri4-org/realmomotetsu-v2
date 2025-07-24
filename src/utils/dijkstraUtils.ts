@@ -6,14 +6,10 @@ export default class DijkstraUtils {
      * @param nearbyStations - 近隣駅の接続情報
      * @returns {Record<string, Array<{ stationCode: string; timeMinutes: number; stationNumber: number }>>} グラフ形式の駅接続情報
      */
-    static convertToStationGraph(nearbyStations: NearbyStationsWithRelations[]): Record<
-        string,
-        Array<{ stationCode: string; timeMinutes: number;}>
-    > {
-        const graph: Record<
-            string,
-            Array<{ stationCode: string; timeMinutes: number;}>
-        > = {};
+    static convertToStationGraph(
+        nearbyStations: NearbyStationsWithRelations[]
+    ): Record<string, Array<{ stationCode: string; timeMinutes: number }>> {
+        const graph: Record<string, Array<{ stationCode: string; timeMinutes: number }>> = {};
 
         nearbyStations.forEach((connection) => {
             if (!graph[connection.fromStationCode]) {
@@ -35,12 +31,9 @@ export default class DijkstraUtils {
      * @returns {string} 次に選択する駅のコード
      */
     static calculate(
-        graph: Record<
-            string,
-            Array<{ stationCode: string; timeMinutes: number;}>
-        >,
+        graph: Record<string, Array<{ stationCode: string; timeMinutes: number }>>,
         startStationCode: string
-    ) :string {
+    ): string {
         const times = this.calculateRequiredTimeAndStations(graph, startStationCode);
         const probabilities = this.calculateProbabilities(times);
         return this.selectNextStationCode(probabilities);
@@ -53,16 +46,13 @@ export default class DijkstraUtils {
      * @returns {number} 残りの駅数
      */
     static calculateRemainingStationsNumber(
-        graph: Record<
-            string,
-            Array<{ stationCode: string; timeMinutes: number;}>
-        >,
+        graph: Record<string, Array<{ stationCode: string; timeMinutes: number }>>,
         startStationCode: string,
         nextGoalStationCode: string
     ): number {
         const times = this.calculateRequiredTimeAndStations(graph, startStationCode);
         const stationsNumber = times.get(nextGoalStationCode)?.stationsNumber;
-        if(!stationsNumber && stationsNumber !== 0) {
+        if (!stationsNumber && stationsNumber !== 0) {
             throw new Error(`Station ${startStationCode} not found in the graph`);
         }
         return stationsNumber;
@@ -75,10 +65,7 @@ export default class DijkstraUtils {
      * @returns {Map<string, { timeMinutes: number; stationsNumber: number }>} 駅ごとの最短時間と駅数を含むマップ
      */
     static calculateRequiredTimeAndStations(
-        graph: Record<
-            string,
-            Array<{ stationCode: string; timeMinutes: number;}>
-        >,
+        graph: Record<string, Array<{ stationCode: string; timeMinutes: number }>>,
         startStationCode: string
     ): Map<string, { timeMinutes: number; stationsNumber: number }> {
         // 各駅の最短時間と駅数を格納するマップを初期化（無限大に設定）
@@ -115,23 +102,21 @@ export default class DijkstraUtils {
             const { stationCode, timeMinutes, stationsNumber } = queue.shift()!;
 
             // 隣接駅それぞれへの時間と駅数を取得
-            graph[stationCode].forEach(
-                (neighbor: { stationCode: string; timeMinutes: number;}) => {
-                    const newTimeMinutes = timeMinutes + neighbor.timeMinutes;
-                    const newStationsNumber = stationsNumber + 1;
+            graph[stationCode].forEach((neighbor: { stationCode: string; timeMinutes: number }) => {
+                const newTimeMinutes = timeMinutes + neighbor.timeMinutes;
+                const newStationsNumber = stationsNumber + 1;
 
-                    // 新しい所要時間が既存の所要時間より短ければ更新
-                    if (newTimeMinutes < times.get(neighbor.stationCode)!.timeMinutes) {
-                        times.get(neighbor.stationCode)!.timeMinutes = newTimeMinutes;
-                        times.get(neighbor.stationCode)!.stationsNumber = newStationsNumber;
-                        queue.push({
-                            stationCode: neighbor.stationCode,
-                            timeMinutes: newTimeMinutes,
-                            stationsNumber: newStationsNumber,
-                        });
-                    }
+                // 新しい所要時間が既存の所要時間より短ければ更新
+                if (newTimeMinutes < times.get(neighbor.stationCode)!.timeMinutes) {
+                    times.get(neighbor.stationCode)!.timeMinutes = newTimeMinutes;
+                    times.get(neighbor.stationCode)!.stationsNumber = newStationsNumber;
+                    queue.push({
+                        stationCode: neighbor.stationCode,
+                        timeMinutes: newTimeMinutes,
+                        stationsNumber: newStationsNumber,
+                    });
                 }
-            );
+            });
         }
         return times;
     }

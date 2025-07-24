@@ -13,13 +13,27 @@ import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
 import React from "react";
 
+/**
+ * RegisterBombiiManualFormコンポーネントのプロパティ型定義
+ * @property {Teams[]} teams - チームのリスト
+ */
 interface RegisterBombiiManualFormProps {
     teams: Teams[];
 }
 
-const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({ teams }) => {
+/**
+ * ボンビー手動設定フォームコンポーネント
+ * @param teams - チームのリスト
+ * @returns {JSX.Element} - RegisterBombiiManualFormコンポーネント
+ */
+const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
+    teams,
+}): React.JSX.Element => {
     const teamCodeInput = useSelectInput("");
 
+    /**
+     * データの登録
+     */
     const createBombiiData = async () => {
         const isConfirmed = confirm(
             "以下の内容でボンビーを登録しますか？\n" +

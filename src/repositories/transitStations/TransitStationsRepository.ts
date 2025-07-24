@@ -40,14 +40,14 @@ export class TransitStationsRepository extends BaseRepository {
      */
     async findLatestByEventCode(eventCode: string): Promise<LatestTransitStations[]> {
         try {
-            return await this.prisma.latestTransitStations.findMany({
+            return (await this.prisma.latestTransitStations.findMany({
                 where: {
                     eventCode: eventCode,
                 },
                 orderBy: {
                     teamCode: "asc",
                 },
-            }) as LatestTransitStations[];
+            })) as LatestTransitStations[];
         } catch (error) {
             this.handleDatabaseError(error, "findLatestByEventCode");
         }

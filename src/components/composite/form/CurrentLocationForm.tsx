@@ -24,7 +24,7 @@ interface CurrentLocationFormProps {
 }
 
 /**
- * CurrentLocationFormコンポーネント
+ * 現在地登録フォームコンポーネント
  * @param teams - チームのリスト
  * @param stations - 駅のリスト
  * @returns {JSX.Element} - CurrentLocationFormコンポーネント
@@ -40,7 +40,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     );
 
     /**
-     * 現在地の登録
+     * データの登録
      */
     const createTransitStation = async () => {
         const isConfirmed = confirm(
@@ -80,7 +80,17 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     return (
         <>
             <Box>
-                <Box sx={{ display: "flex", flexDirection: "column", padding: 2 }}>
+                <Box
+                    border={1}
+                    borderRadius={1}
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        margin: 2,
+                        padding: 2,
+                        backgroundColor: "white",
+                    }}
+                >
                     <Box sx={{ marginBottom: 2 }}>
                         <CustomSelect
                             options={TypeConverter.convertTeamsToSelectOptions(teams)}
@@ -90,7 +100,6 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
                             variant="outlined"
                             label="チーム名"
                             fullWidth
-                            sx={{ backgroundColor: "white" }}
                         />
                     </Box>
                     <Box sx={{ marginBottom: 2 }}>
@@ -102,7 +111,6 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
                             variant="outlined"
                             label="今いる駅"
                             fullWidth
-                            sx={{ backgroundColor: "white" }}
                         />
                     </Box>
                     <Box sx={{ marginTop: 5 }}>

@@ -23,13 +23,11 @@ class InitRouletteApiHandler extends BaseApiHandler {
     protected getHandlers(): Handlers {
         return {
             GET: this.handleGet.bind(this),
-            // 必要に応じてPOST, PUT, DELETEも追加
         };
     }
 
     /**
      * GETリクエストを処理するメソッド
-     * クエリパラメータからeventCodeを取得し、サービスからデータを取得する
      * @param req - Next.jsのリクエストオブジェクト
      * @return {Promise<NextResponse>} - レスポンスオブジェクト
      */
@@ -37,7 +35,7 @@ class InitRouletteApiHandler extends BaseApiHandler {
         this.logInfo("Handling GET request for init-roulette");
 
         try {
-            // クエリパラメータからeventCodeを取得
+            // クエリパラメータを取得
             const { searchParams } = new URL(req.url);
 
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
@@ -53,7 +51,6 @@ class InitRouletteApiHandler extends BaseApiHandler {
             // const validatedResponse = initRouletteResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved init-roulette data", {
-                teamsCount: data.teams.length,
                 stationsCount: data.stations.length,
                 nearbyStationsCount: data.closestStations ? data.closestStations.length : 0,
             });

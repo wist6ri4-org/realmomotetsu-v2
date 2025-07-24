@@ -3,7 +3,7 @@
 import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
 import RouletteForm from "@/components/composite/form/RouletteForm";
-import { LatestTransitStations, Stations, Teams } from "@/generated/prisma";
+import { LatestTransitStations, Stations } from "@/generated/prisma";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
 import { ArrowDropDown, Casino } from "@mui/icons-material";
@@ -18,8 +18,10 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
-export default function RoulettePage() {
-    const [teams, setTeams] = useState<Teams[]>([]);
+/**
+ * 駅ルーレットページ
+ */
+const RoulettePage: React.FC = (): React.JSX.Element => {
     const [stations, setStations] = useState<Stations[]>([]);
     const [nearbyStations, setNearbyStations] = useState<NearbyStationsWithRelations[]>([]);
     const [latestTransitStations, setLatestTransitStations] = useState<LatestTransitStations[]>([]);
@@ -27,6 +29,9 @@ export default function RoulettePage() {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
+    /**
+     * データの取得
+     */
     const fetchData = async () => {
         try {
             setIsLoading(true);
@@ -48,7 +53,6 @@ export default function RoulettePage() {
             }
 
             const data = await response.json();
-            const teams = data?.data?.teams || data?.teams || [];
             const stations = data?.data?.stations || data?.stations || [];
             const nearbyStations = data?.data?.nearbyStations || data?.nearbyStations || [];
             const latestTransitStations =
@@ -56,7 +60,6 @@ export default function RoulettePage() {
             const closestStations = data?.data?.closestStations || data?.closestStations || [];
 
             if (
-                !Array.isArray(teams) ||
                 !Array.isArray(stations) ||
                 !Array.isArray(nearbyStations) ||
                 !Array.isArray(latestTransitStations) ||
@@ -64,7 +67,6 @@ export default function RoulettePage() {
             ) {
                 throw new Error("Unexpected response structure");
             }
-            setTeams(teams as Teams[]);
             setStations(stations as Stations[]);
             setNearbyStations(nearbyStations as NearbyStationsWithRelations[]);
             setLatestTransitStations(latestTransitStations as LatestTransitStations[]);
@@ -72,7 +74,6 @@ export default function RoulettePage() {
         } catch (error) {
             console.error("Error fetching data:", error);
             setError(error instanceof Error ? error.message : "Unknown error");
-            setTeams([]);
             setStations([]);
             setNearbyStations([]);
             setClosestStations([]);
@@ -81,6 +82,9 @@ export default function RoulettePage() {
         }
     };
 
+    /**
+     * 初期表示
+     */
     useEffect(() => {
         fetchData();
     }, []);
@@ -94,8 +98,10 @@ export default function RoulettePage() {
                     icon={<Casino sx={{ fontSize: "3.5rem", marginRight: 1 }} />}
                 />
                 <Accordion>
-                    <AccordionSummary expandIcon={<ArrowDropDown sx={{fontSize: "2.5rem"}}/>}>
-                        <Typography variant="body2" fontWeight={700}>使い方</Typography>
+                    <AccordionSummary expandIcon={<ArrowDropDown sx={{ fontSize: "2.5rem" }} />}>
+                        <Typography variant="body2" fontWeight={700}>
+                            使い方
+                        </Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                         <Typography variant="body2">
@@ -147,4 +153,6 @@ export default function RoulettePage() {
             </Box>
         </>
     );
-}
+};
+
+export default RoulettePage;

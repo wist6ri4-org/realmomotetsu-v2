@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { TransitStationsServiceImpl } from "@/features/transit-stations/service";
-import { getTransitStationsRequestSchema, postTransitStationsRequestSchema } from "@/features/transit-stations/validator";
+import {
+    getTransitStationsRequestSchema,
+    postTransitStationsRequestSchema,
+} from "@/features/transit-stations/validator";
 
 /**
  * 目的駅に関するAPIハンドラー
@@ -29,7 +32,6 @@ class TransitStationsApiHandler extends BaseApiHandler {
 
     /**
      * GETリクエストを処理するメソッド
-     * クエリパラメータからeventCodeを取得し、サービスからデータを取得する
      * @param req - Next.jsのリクエストオブジェクト
      * @return {Promise<NextResponse>} - レスポンスオブジェクト
      */
@@ -37,7 +39,7 @@ class TransitStationsApiHandler extends BaseApiHandler {
         this.logInfo("Handling GET request for transit-stations");
 
         try {
-            // クエリパラメータからeventCodeを取得
+            // クエリパラメータを取得
             const { searchParams } = new URL(req.url);
 
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
@@ -47,7 +49,10 @@ class TransitStationsApiHandler extends BaseApiHandler {
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data = await TransitStationsServiceImpl.getTransitStationsByEventCodeGroupedByTeamCode(validatedParams);
+            const data =
+                await TransitStationsServiceImpl.getTransitStationsByEventCodeGroupedByTeamCode(
+                    validatedParams
+                );
 
             // レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
@@ -55,8 +60,8 @@ class TransitStationsApiHandler extends BaseApiHandler {
             type Info = {
                 [teamCode: string]: {
                     transitStationsCount: number;
-                }
-            }
+                };
+            };
 
             const info: Info = {};
             Object.entries(data).forEach(([teamCode, transitStations]) => {
@@ -65,7 +70,7 @@ class TransitStationsApiHandler extends BaseApiHandler {
                 };
             });
             this.logInfo("Successfully retrieved transit-stations data", {
-                ...info
+                ...info,
             });
 
             return this.createSuccessResponse(data);
@@ -77,7 +82,6 @@ class TransitStationsApiHandler extends BaseApiHandler {
 
     /**
      * POSTリクエストを処理するメソッド
-     * リクエストボディからデータを取得し、サービスに渡す
      * @param req - Next.jsのリクエストオブジェクト
      * @return {Promise<NextResponse>} - レスポンスオブジェクト
      */

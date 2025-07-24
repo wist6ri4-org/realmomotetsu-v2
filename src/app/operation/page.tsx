@@ -10,7 +10,10 @@ import {
 import PageTitle from "@/components/base/PageTitle";
 import { useRouter } from "next/navigation";
 
-export default function OperationPage() {
+/**
+ * オペレーションメニューページ
+ */
+const OperationPage: React.FC = (): React.JSX.Element => {
     const router = useRouter();
     const menuItems = [
         {
@@ -68,6 +71,7 @@ export default function OperationPage() {
                                     transform: "translateY(-4px)",
                                     boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
                                 },
+                                minHeight: 150,
                             }}
                         >
                             <CardActionArea
@@ -112,4 +116,6 @@ export default function OperationPage() {
             </Grid>
         </>
     );
-}
+};
+
+export default OperationPage;

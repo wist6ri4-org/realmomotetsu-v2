@@ -17,20 +17,34 @@ import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
 import React, { useState } from "react";
 
+/**
+ * RegisterPointsFormコンポーネントのプロパティ型定義
+ * @property {Teams[]} teams - チームのリスト
+ */
 interface RegisterPointsFormProps {
     teams: Teams[];
 }
 
+// ポイント状態のオプション
 const pointStatusOptions: RadioOption[] = [
     { value: GameConstants.POINT_STATUS.POINTS, label: "ポイント" },
     { value: GameConstants.POINT_STATUS.SCORED, label: "総資産" },
 ];
 
-const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({ teams }) => {
+/**
+ * ポイント登録フォームコンポーネント
+ * @param teams - チームのリスト
+ * @returns {JSX.Element} - RegisterPointsFormコンポーネント
+ */
+const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({ teams }): React.JSX.Element => {
     const teamCodeInput = useSelectInput("");
     const pointsInput = useNumberInput(0);
     const [pointStatus, setPointStatus] = useState<PointStatus>(GameConstants.POINT_STATUS.POINTS);
 
+    /**
+     * ポイント状態の変更ハンドラー
+     * @param {React.ChangeEvent<HTMLInputElement> | Event} event - イベントオブジェクト
+     */
     const handlePointStatusChange = (
         event:
             | React.ChangeEvent<HTMLInputElement>
@@ -41,6 +55,9 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({ teams }) => {
         console.log("選択されたポイント状態:", newValue);
     };
 
+    /**
+     * データの登録
+     */
     const createPointsData = async () => {
         const isConfirmed = confirm(
             "以下の内容でポイントを登録しますか？\n" +

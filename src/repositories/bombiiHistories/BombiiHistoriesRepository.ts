@@ -70,7 +70,7 @@ export class BombiiHistoriesRepository extends BaseRepository {
                 },
                 orderBy: {
                     teamCode: "asc",
-                }
+                },
             })) as BombiiCounts[];
         } catch (error) {
             this.handleDatabaseError(error, "countByEventCodeGroupedByTeamCode");
@@ -83,7 +83,10 @@ export class BombiiHistoriesRepository extends BaseRepository {
      * @param eventCode - イベントコード
      * @returns {Promise<BombiiHistories>} 作成されたボンビー履歴
      */
-    async create(bombiiHistoryData: {teamCode: string, eventCode: string}): Promise<BombiiHistories> {
+    async create(bombiiHistoryData: {
+        teamCode: string;
+        eventCode: string;
+    }): Promise<BombiiHistories> {
         try {
             return await this.prisma.bombiiHistories.create({
                 data: bombiiHistoryData,

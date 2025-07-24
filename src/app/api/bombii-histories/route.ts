@@ -1,5 +1,5 @@
 import { createApiHandler } from "@/app/api/utils/apiHandler";
-import GoalStationsApiHandler from "./BombiiHistoriesApiHandler";
+import BombiiHistoriesApiHandler from "./BombiiHistoriesApiHandler";
 
-export const GET = createApiHandler(GoalStationsApiHandler);
-export const POST = createApiHandler(GoalStationsApiHandler);
+export const GET = createApiHandler(BombiiHistoriesApiHandler);
+export const POST = createApiHandler(BombiiHistoriesApiHandler);

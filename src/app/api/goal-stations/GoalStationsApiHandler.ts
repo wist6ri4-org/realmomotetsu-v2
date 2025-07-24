@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { GoalStationsServiceImpl } from "@/features/goal-stations/service";
-import { getGoalStationsRequestSchema, postGoalStationsRequestSchema } from "@/features/goal-stations/validator";
+import {
+    getGoalStationsRequestSchema,
+    postGoalStationsRequestSchema,
+} from "@/features/goal-stations/validator";
 
 /**
  * 目的駅に関するAPIハンドラー
@@ -36,7 +39,7 @@ class GoalStationsApiHandler extends BaseApiHandler {
         this.logInfo("Handling GET request for goal-stations");
 
         try {
-            // クエリパラメータからeventCodeを取得
+            // クエリパラメータを取得
             const { searchParams } = new URL(req.url);
 
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）

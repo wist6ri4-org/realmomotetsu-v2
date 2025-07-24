@@ -28,7 +28,6 @@ class LatestTransitStationsApiHandler extends BaseApiHandler {
 
     /**
      * GETリクエストを処理するメソッド
-     * クエリパラメータからeventCodeを取得し、サービスからデータを取得する
      * @param req - Next.jsのリクエストオブジェクト
      * @return {Promise<NextResponse>} - レスポンスオブジェクト
      */
@@ -36,7 +35,7 @@ class LatestTransitStationsApiHandler extends BaseApiHandler {
         this.logInfo("Handling GET request for transit-stations/latest");
 
         try {
-            // クエリパラメータからeventCodeを取得
+            // クエリパラメータを取得
             const { searchParams } = new URL(req.url);
 
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
@@ -46,7 +45,9 @@ class LatestTransitStationsApiHandler extends BaseApiHandler {
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data = await LatestTransitStationsServiceImpl.getLatestTransitStationsByEventCode(validatedParams);
+            const data = await LatestTransitStationsServiceImpl.getLatestTransitStationsByEventCode(
+                validatedParams
+            );
 
             // レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);

@@ -14,6 +14,14 @@ import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/Nearb
 import CustomRadio, { RadioOption } from "@/components/base/CustomRadio";
 import RouletteCard from "../../base/RouletteCard";
 import { useSelectInput } from "@/hooks/useSelectInput";
+
+/**
+ * RouletteFormコンポーネントのプロパティ型定義
+ * @property {Stations[]} stations - 駅のリスト
+ * @property {NearbyStationsWithRelations[]} nearbyStations - 最寄り駅のリスト
+ * @property {TransitStations[]} latestTransitStations - 最新の乗り換え駅のリスト
+ * @property {Stations[]} closestStations - 最寄り駅のリスト
+ */
 interface RouletteFormProps {
     stations: Stations[];
     nearbyStations: NearbyStationsWithRelations[];
@@ -21,37 +29,67 @@ interface RouletteFormProps {
     closestStations: Stations[];
 }
 
+// ルーレットモードのオプション
 const rouletteModes: RadioOption[] = [
     { value: "weighted", label: "目的地" },
     { value: "random", label: "ぶっとび" },
 ];
 
+/**
+ * ルーレットフォームコンポーネント
+ * @param stations - 駅のリスト
+ * @param nearbyStations - 最寄り駅のリスト
+ * @param latestTransitStations - 最新の乗り換え駅のリスト
+ * @param closestStations - 最寄り駅のリスト
+ * @returns {JSX.Element} - RouletteFormコンポーネント
+ */
 const RouletteForm: React.FC<RouletteFormProps> = ({
     stations,
     nearbyStations,
     latestTransitStations,
     closestStations,
 }): React.JSX.Element => {
-    const startStationCodeInput =useSelectInput(closestStations?.[0]?.stationCode || "");
+    const startStationCodeInput = useSelectInput(closestStations?.[0]?.stationCode || "");
     const [rouletteMode, setRouletteMode] = useState<"weighted" | "random">("weighted");
     const [spinInterval, setSpinInterval] = useState<NodeJS.Timeout | null>(null);
     const [isRolling, setIsRolling] = useState<boolean>(false);
 
-    const getWeightedStation = () => {
+    /**
+     * ルーレットの次の駅を取得するための関数
+     * @return {Stations | null} - 次の駅
+     */
+    const getWeightedStation = (): Stations | null => {
         const nextStationCode = RouletteUtils.getWeightedStationCode(
             nearbyStations,
             latestTransitStations,
-            startStationCodeInput.value,
+            startStationCodeInput.value
         );
         return stations.find((station) => station.stationCode === nextStationCode) || null;
     };
 
-    const getRandomStation = () => {
-        const randomStationCode = RouletteUtils.getRandomStationCode(stations, startStationCodeInput.value);
+    /**
+     * ランダムな駅を取得するための関数
+     * @return {Stations | null} - ランダムな駅
+     */
+    const getRandomStation = (): Stations | null => {
+        const randomStationCode = RouletteUtils.getRandomStationCode(
+            stations,
+            startStationCodeInput.value
+        );
         return stations.find((station) => station.stationCode === randomStationCode) || null;
     };
 
-    const reducer = (state: Stations | null, action: { type: "weighted" | "random" }) => {
+    /**
+     * ルーレットの状態を管理するためのリデューサー関数
+     * @param {Stations | null} state - 現在の状態
+     * @param {Object} action - アクションオブジェクト
+     * @param {string} action.type - アクションのタイプ（"weighted" または "random"）
+     * @return {Stations | null} - 更新された状態
+     */
+    const reducer = (
+        state: Stations | null,
+        action: { type: "weighted" | "random" }
+    ): Stations | null => {
         switch (action.type) {
             case "weighted":
                 return getWeightedStation();
@@ -61,6 +99,10 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
     };
     const [displayedStation, dispatch] = useReducer(reducer, null);
 
+    /**
+     * ルーレットモードの変更ハンドラー
+     * @param {React.ChangeEvent<HTMLInputElement> | Event} event - イベントオブジェクト
+     */
     const handleRouletteModeChange = (
         event:
             | React.ChangeEvent<HTMLInputElement>
@@ -71,6 +113,9 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
         console.log("選択されたルーレットモード:", newValue);
     };
 
+    /**
+     * ルーレットの開始・停止処理
+     */
     useEffect(() => {
         if (!isRolling) {
             if (spinInterval) {

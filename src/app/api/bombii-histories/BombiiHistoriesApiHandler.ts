@@ -50,7 +50,7 @@ class BombiiHistoriesApiHandler extends BaseApiHandler {
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully processed bombii-histories data", {
-                count: data.id,
+                id: data.id,
             });
 
             return this.createSuccessResponse(data);

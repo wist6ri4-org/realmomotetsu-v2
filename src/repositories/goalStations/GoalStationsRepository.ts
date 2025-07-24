@@ -1,6 +1,7 @@
 import { GoalStations, Stations } from "@/generated/prisma";
 import { BaseRepository } from "../base/BaseRepository";
 
+// includeありのGoalStationsの型定義
 export type GoalStationsWithRelations = GoalStations & {
     station: Stations;
 };
@@ -61,7 +62,10 @@ export class GoalStationsRepository extends BaseRepository {
      * @param stationCode - 駅コード
      * @returns {Promise<GoalStations>} 作成された目的駅
      */
-    async create(goalStationData: {eventCode: string, stationCode: string}): Promise<GoalStations> {
+    async create(goalStationData: {
+        eventCode: string;
+        stationCode: string;
+    }): Promise<GoalStations> {
         try {
             return await this.prisma.goalStations.create({
                 data: goalStationData,

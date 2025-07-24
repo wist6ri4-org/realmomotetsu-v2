@@ -11,11 +11,25 @@ import { GameLogicUtils } from "@/utils/gameLogicUtils";
 import { Box } from "@mui/material";
 import React from "react";
 
+/**
+ * RegisterBombiiAutoFormコンポーネントのプロパティ型定義
+ * @property {TeamData[]} teamData - チームデータのリスト
+ */
 interface RegisterBombiiAutoFormProps {
     teamData: TeamData[];
 }
 
-const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({ teamData }) => {
+/**
+ * ボンビー自動設定フォームコンポーネント
+ * @param teamData - チームデータのリスト
+ * @returns {JSX.Element} - RegisterBombiiAutoFormコンポーネント
+ */
+const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
+    teamData,
+}): React.JSX.Element => {
+    /**
+     * データの確認と登録
+     */
     const confirmBombii = async () => {
         const bombiiTeam = GameLogicUtils.confirmBombii(teamData);
 

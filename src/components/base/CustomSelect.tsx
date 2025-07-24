@@ -171,5 +171,4 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
     );
 };
 
-// デフォルトエクスポート
 export default CustomSelect;

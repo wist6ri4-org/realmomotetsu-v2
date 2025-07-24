@@ -13,13 +13,25 @@ import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
 import React from "react";
 
+/**
+ * PointsExchangeFormコンポーネントのプロパティ型定義
+ * @property {Teams[]} teams - チームのリスト
+ */
 interface PointsExchangeFormProps {
     teams: Teams[];
 }
 
+/**
+ * ポイント換金フォームコンポーネント
+ * @param teams - チームのリスト
+ * @returns {JSX.Element} - PointsExchangeFormコンポーネント
+ */
 const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({ teams }) => {
     const teamCodeInput = useSelectInput("");
 
+    /**
+     * データの更新
+     */
     const updatePointStatus = async () => {
         const isConfirmed = confirm(
             "以下の内容でポイントを換金しますか？\n" +

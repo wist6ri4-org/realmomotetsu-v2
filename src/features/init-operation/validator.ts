@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// オペレーションページのリクエストスキーマ
 export const initOperationRequestSchema = z.object({
     eventCode: z.string().min(1, "Event code is required"),
     longitude: z

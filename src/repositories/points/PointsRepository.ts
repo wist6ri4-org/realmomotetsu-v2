@@ -114,7 +114,12 @@ export class PointsRepository extends BaseRepository {
      * @param points - ポイント数
      * @return {Promise<Points>} 作成されたポイント
      */
-    async create(eventCode: string, teamCode: string, points: number, status: PointStatus = "points"): Promise<Points> {
+    async create(
+        eventCode: string,
+        teamCode: string,
+        points: number,
+        status: PointStatus = "points"
+    ): Promise<Points> {
         try {
             return await this.prisma.points.create({
                 data: {
@@ -158,7 +163,10 @@ export class PointsRepository extends BaseRepository {
      * @param status - 更新するステータス（デフォルトは"scored"）
      * @return {Promise<{ count: number }>} 更新されたレコード数
      */
-    async updateStatusByTeamCode(teamCode: string, status: PointStatus = "scored"): Promise<{ count: number }> {
+    async updateStatusByTeamCode(
+        teamCode: string,
+        status: PointStatus = "scored"
+    ): Promise<{ count: number }> {
         try {
             return await this.prisma.points.updateMany({
                 where: {

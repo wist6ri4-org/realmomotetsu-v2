@@ -17,21 +17,35 @@ import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
 import React, { useState } from "react";
 
+/**
+ * PointsTransferFormコンポーネントのプロパティ型定義
+ * @property {Teams[]} teams - チームのリスト
+ */
 interface PointsTransferFormProps {
     teams: Teams[];
 }
 
+// ポイント状態のオプション
 const pointStatusOptions: RadioOption[] = [
     { value: GameConstants.POINT_STATUS.POINTS, label: "ポイント" },
     { value: GameConstants.POINT_STATUS.SCORED, label: "総資産" },
 ];
 
+/**
+ * ポイント移動フォームコンポーネント
+ * @param teams - チームのリスト
+ * @returns {JSX.Element} - PointsTransferFormコンポーネント
+ */
 const PointsTransferForm: React.FC<PointsTransferFormProps> = ({ teams }) => {
     const fromTeamCodeInput = useSelectInput("");
     const toTeamCodeInput = useSelectInput("");
     const pointsInput = useNumberInput(0);
     const [pointStatus, setPointStatus] = useState<PointStatus>(GameConstants.POINT_STATUS.POINTS);
 
+    /**
+     * ポイント状態の変更ハンドラー
+     * @param {React.ChangeEvent<HTMLInputElement> | Event} event - イベントオブジェクト
+     */
     const handlePointStatusChange = (
         event:
             | React.ChangeEvent<HTMLInputElement>
@@ -42,6 +56,9 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({ teams }) => {
         console.log("選択されたポイント状態:", newValue);
     };
 
+    /**
+     * データの登録
+     */
     const createPointsData = async () => {
         const isConfirmed = confirm(
             "以下の内容でポイントを移動しますか？\n" +

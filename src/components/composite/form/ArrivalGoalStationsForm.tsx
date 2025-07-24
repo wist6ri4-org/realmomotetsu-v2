@@ -15,16 +15,28 @@ import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
 import React from "react";
 
+/**
+ * ArrivalGoalStationsFormコンポーネントのプロパティ型定義
+ * @property {Teams[]} teams - チームのリスト
+ */
 interface ArrivalGoalStationsFormProps {
     teams: Teams[];
 }
 
+/**
+ * 目的駅到着処理フォームコンポーネント
+ * @param teams - チームのリスト
+ * @return {JSX.Element} - ArrivalGoalStationsFormコンポーネント
+ */
 const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
     teams,
 }): React.JSX.Element => {
     const teamCodeInput = useSelectInput("");
     const pointsInput = useNumberInput(0);
 
+    /**
+     * データの登録
+     */
     const createArrivalData = async () => {
         const isConfirmed = confirm(
             "以下の内容で到着処理を行いますか？\n" +
@@ -69,8 +81,6 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
                 throw new Error(`HTTP error! status: ${responseUpdatePoints.status}`);
             }
 
-            const data = await responseUpdatePoints.json();
-            console.log("到着処理成功:", data);
             teamCodeInput.reset();
             pointsInput.reset();
             alert("登録が完了しました。");

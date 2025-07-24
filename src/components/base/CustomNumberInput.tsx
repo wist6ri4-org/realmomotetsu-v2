@@ -247,5 +247,4 @@ export const CustomNumberInput = forwardRef<HTMLInputElement, CustomNumberInputP
 // displayNameを追加（forwardRefの要件）
 CustomNumberInput.displayName = "CustomNumberInput";
 
-// デフォルトエクスポート
 export default CustomNumberInput;

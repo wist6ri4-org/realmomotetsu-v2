@@ -10,7 +10,10 @@ import { TeamData } from "@/types/TeamData";
 import { Alert, Box, CircularProgress, Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 
-export default function HomePage() {
+/**
+ * ホームページ
+ */
+const HomePage: React.FC = (): React.JSX.Element => {
     const [teamData, setTeamData] = useState<TeamData[]>([]);
     const [nextGoalStationData, setNextGoalStationData] = useState<GoalStationsWithRelations>(
         {} as GoalStationsWithRelations
@@ -20,7 +23,7 @@ export default function HomePage() {
     const [error, setError] = useState<string | null>(null);
 
     /**
-     * データを取得する関数
+     * データの取得
      */
     const fetchData = async () => {
         try {
@@ -58,6 +61,9 @@ export default function HomePage() {
         }
     };
 
+    /**
+     * 初期表示
+     */
     useEffect(() => {
         fetchData();
     }, []);
@@ -121,4 +127,6 @@ export default function HomePage() {
             <UpdatedTime textAlign="right" variant="body2" />
         </>
     );
-}
+};
+
+export default HomePage;

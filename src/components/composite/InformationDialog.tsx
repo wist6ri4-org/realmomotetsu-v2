@@ -7,21 +7,37 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, Fab } from "@mui/mat
 import React, { useState } from "react";
 import CustomButton from "../base/CustomButton";
 
+/**
+ * InformationDialogコンポーネントのプロパティ型定義
+ * @param {TeamData[]} teamData - チームデータの配列
+ */
 interface InformationDialogProps {
     teamData: TeamData[];
 }
 
+/**
+ * チーム情報ダイアログコンポーネント
+ * @param {InformationDialogProps} props - プロパティ
+ * @returns {JSX.Element} - InformationDialogコンポーネント
+ */
 const InformationDialog: React.FC<InformationDialogProps> = ({ teamData }) => {
     const [isOpen, setIsOpen] = useState(false);
 
+    /**
+     * ダイアログを開くハンドラー
+     */
     const handleClickOpen = () => {
         setIsOpen(true);
     };
 
+    /**
+     * ダイアログを閉じるハンドラー
+     */
     const handleClose = () => {
         setIsOpen(false);
     };
 
+    // チームデータのフィールドとヘッダー名
     const fields = [
         { field: "teamName", headerName: "チーム名", width: 120},
         { field: "points", headerName: "PT", width: 80},
@@ -29,6 +45,7 @@ const InformationDialog: React.FC<InformationDialogProps> = ({ teamData }) => {
         { field: "remainingStationsNumber", headerName: "目的駅まで", width: 80 },
         { field: "bombiiCounts", headerName: "ボンビー回数", width: 80 },
     ]
+    // ページネーションの初期設定
     const paginationModel = { page: 0, pageSize: 5 };
 
     return (

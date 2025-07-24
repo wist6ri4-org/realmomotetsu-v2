@@ -2,6 +2,10 @@ import { Stations } from "@/generated/prisma";
 import { Box, styled, Typography } from "@mui/material";
 import React from "react";
 
+/**
+ * RouletteCardコンポーネントのプロパティ型定義
+ * @property {Stations | null} displayedStation - 表示する駅情報
+ */
 interface RouletteCardProps {
     displayedStation: Stations | null;
 }
@@ -40,7 +44,12 @@ const DisplayedStationTypography = styled(Typography, {
     };
 });
 
-const RouletteCard: React.FC<RouletteCardProps> = ({ displayedStation }) => {
+/**
+ * RouletteCardコンポーネント
+ * @param displayedStation - 表示する駅情報
+ * @return {JSX.Element} - RouletteCardコンポーネント
+ */
+const RouletteCard: React.FC<RouletteCardProps> = ({ displayedStation }): React.JSX.Element => {
     return (
         <>
             <Box

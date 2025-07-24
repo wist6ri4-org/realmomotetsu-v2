@@ -1,4 +1,4 @@
-import { LatestTransitStations, NearbyStations, Stations, Teams } from "@/generated/prisma";
+import { LatestTransitStations, NearbyStations, Stations } from "@/generated/prisma";
 
 /**
  * ルーレット画面の初期化リクエスト
@@ -21,7 +21,6 @@ export type InitRouletteRequest = {
  * @param closestStations.distance - 現在位置からの距離（km）
  */
 export type InitRouletteResponse = {
-    teams: Teams[];
     stations: Stations[];
     nearbyStations: NearbyStations[];
     latestTransitStations: LatestTransitStations[];

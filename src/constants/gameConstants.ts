@@ -1,5 +1,8 @@
 import { PointStatus } from "@/generated/prisma";
 
+/**
+ * ゲームに関する定数を定義するクラス
+ */
 export class GameConstants {
     /* 移動ポイント */
     static readonly POINT_FOR_MOVING = 5;

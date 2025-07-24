@@ -111,7 +111,12 @@ export const CustomRadio: React.FC<CustomRadioProps> = ({
                     sx={sx}
                 >
                     {label && (
-                        <FormLabel id={labelId} component="legend" color={standardColor} sx={{ fontSize: size === "small" ? "1.4rem" : "1.6rem" }}>
+                        <FormLabel
+                            id={labelId}
+                            component="legend"
+                            color={standardColor}
+                            sx={{ fontSize: size === "small" ? "1.4rem" : "1.6rem" }}
+                        >
                             {label}
                         </FormLabel>
                     )}
@@ -153,5 +158,4 @@ export const CustomRadio: React.FC<CustomRadioProps> = ({
     );
 };
 
-// デフォルトエクスポート
 export default CustomRadio;

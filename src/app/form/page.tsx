@@ -6,10 +6,21 @@ import CurrentLocationForm from "@/components/composite/form/CurrentLocationForm
 import { Stations, Teams } from "@/generated/prisma";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
 import { ArrowDropDown, Assignment } from "@mui/icons-material";
-import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, CircularProgress, Typography } from "@mui/material";
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Alert,
+    Box,
+    CircularProgress,
+    Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 
-export default function FormPage() {
+/**
+ * フォームページ
+ */
+const FormPage: React.FC = (): React.JSX.Element => {
     const [teams, setTeams] = useState<Teams[]>([]);
     const [stations, setStations] = useState<Stations[]>([]);
     const [closestStations, setClosestStations] = useState<Stations[]>([]);
@@ -17,7 +28,7 @@ export default function FormPage() {
     const [error, setError] = useState<string | null>(null);
 
     /**
-     * データを取得する関数
+     * データの取得
      */
     const fetchData = async () => {
         try {
@@ -65,6 +76,9 @@ export default function FormPage() {
         }
     };
 
+    /**
+     * 初期表示
+     */
     useEffect(() => {
         fetchData();
     }, []);
@@ -78,8 +92,10 @@ export default function FormPage() {
                     icon={<Assignment sx={{ fontSize: "3.5rem", marginRight: 1 }} />}
                 />
                 <Accordion>
-                    <AccordionSummary expandIcon={<ArrowDropDown sx={{fontSize: "2.5rem"}}/>}>
-                        <Typography variant="body2" fontWeight={700}>いつ送る？</Typography>
+                    <AccordionSummary expandIcon={<ArrowDropDown sx={{ fontSize: "2.5rem" }} />}>
+                        <Typography variant="body2" fontWeight={700}>
+                            いつ送る？
+                        </Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                         <Typography variant="body2">
@@ -133,4 +149,6 @@ export default function FormPage() {
             {/* サブフッターセクション */}
         </>
     );
-}
+};
+
+export default FormPage;

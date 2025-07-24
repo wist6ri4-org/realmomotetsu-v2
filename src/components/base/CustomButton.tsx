@@ -9,6 +9,17 @@ import { Button as MuiButton, ButtonProps as MuiButtonProps } from "@mui/materia
  * @property {boolean} [fullWidth] - ボタンの幅を全体にするかどうか
  * @property {boolean} [loading] - ローディング状態
  */
+
+/**
+ * カスタムボタンのプロパティ
+ * @param {React.ReactNode} children - ボタンの子要素
+ * @param {string} [color] - ボタンの色
+ * @param {string} [size] - ボタンのサイズ
+ * @param {string} [variant] - ボタンのバリアント
+ * @param {boolean} [fullWidth] - ボタンの幅を全体にするかどうか
+ * @param {boolean} [loading] - ローディング状態
+ * @param {boolean} [disabled] - ボタンを無効化するかどうか
+ */
 interface CustomButtonProps extends Omit<MuiButtonProps, "color" | "size"> {
     color?:
         | "primary"
@@ -73,5 +84,4 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
     );
 };
 
-// デフォルトエクスポート
 export default CustomButton;

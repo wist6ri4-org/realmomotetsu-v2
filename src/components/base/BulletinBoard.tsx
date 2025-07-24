@@ -9,6 +9,12 @@ import { keyframes } from "@mui/system";
  * @property {string}[nextStation] - 次の駅名
  * @property {string}[nextStationEng] - 次の駅名（英語表記、駅コード）
  */
+
+/**
+ * BulletinBoardコンポーネントのプロパティ
+ * @param {string} nextStation - 次の駅名
+ * @param {string} nextStationEng - 次の駅名（英語表記、駅コード）
+ */
 interface BulletinBoardProps {
     nextStation: string;
     nextStationEng: string;
@@ -30,7 +36,10 @@ const slideDestination = keyframes`
  * @param nextStationEng - 次の駅名（英語表記、駅コード）
  * @returns {JSX.Element} - BulletinBoardコンポーネント
  */
-const BulletinBoard: React.FC<BulletinBoardProps> = ({ nextStation, nextStationEng }): React.JSX.Element => {
+const BulletinBoard: React.FC<BulletinBoardProps> = ({
+    nextStation,
+    nextStationEng,
+}): React.JSX.Element => {
     return (
         <Box
             sx={{
@@ -81,8 +90,8 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({ nextStation, nextStationE
                             marginRight={40}
                         >
                             {nextStation}
-                        </Typography>
-                        {" "}Next{" "}
+                        </Typography>{" "}
+                        Next{" "}
                         <Typography
                             component="span"
                             sx={{

@@ -212,7 +212,7 @@ export class StationsRepository extends BaseRepository {
     async update(
         id: number,
         updateData: {
-            stationCode: string,
+            stationCode: string;
             name?: string;
             kana?: string;
             latitude?: number;

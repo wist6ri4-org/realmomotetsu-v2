@@ -15,13 +15,19 @@ import { TeamData } from "@/types/TeamData";
 import { Alert, Box, CircularProgress, Divider } from "@mui/material";
 import { useEffect, useState } from "react";
 
-export default function ToolsPage() {
+/**
+ * GMツールページ
+ */
+const ToolsPage: React.FC = (): React.JSX.Element => {
     const [teams, setTeams] = useState<Teams[]>([]);
     const [stations, setStations] = useState<Stations[]>([]);
     const [teamData, setTeamData] = useState<TeamData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
+    /**
+     * データの取得
+     */
     const fetchData = async () => {
         try {
             setIsLoading(true);
@@ -57,6 +63,9 @@ export default function ToolsPage() {
         }
     };
 
+    /**
+     * 初期表示
+     */
     useEffect(() => {
         fetchData();
     }, []);
@@ -108,4 +117,6 @@ export default function ToolsPage() {
             </Box>
         </>
     );
-}
+};
+
+export default ToolsPage;

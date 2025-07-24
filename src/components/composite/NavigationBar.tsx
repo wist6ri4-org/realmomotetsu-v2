@@ -21,6 +21,10 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ currentTab }): Rea
     const router = useRouter();
     const pathname = usePathname();
 
+    /**
+     * 現在のタブを取得する
+     * @returns {string} - 現在のタブ名
+     */
     const getCurrentTab = () => {
         if (currentTab) return currentTab;
         if (pathname.includes("/home")) return "home";
@@ -32,10 +36,14 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ currentTab }): Rea
 
     const activeTab = getCurrentTab();
 
+    /**
+     * ナビゲーションの変更ハンドラー
+     */
     const handleNavChange = (event: React.SyntheticEvent, newValue: number) => {
         router.push(`/${newValue}`);
     };
 
+    // ナビゲーションの定義
     const navigation = [
         { value: "home", label: "ホーム", icon: <Home />, path: "/home" },
         { value: "roulette", label: "ルーレット", icon: <Casino />, path: "/roulette" },

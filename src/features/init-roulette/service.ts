@@ -11,7 +11,6 @@ export const InitRouletteServiceImpl: InitRouletteService = {
      */
     async getDataForRoulette(req: InitRouletteRequest): Promise<InitRouletteResponse> {
         const eventsRepository = RepositoryFactory.getEventsRepository();
-        const teamsRepository = RepositoryFactory.getTeamsRepository();
         const stationsRepository = RepositoryFactory.getStationsRepository();
         const transitStationsRepository = RepositoryFactory.getTransitStationsRepository();
         const nearbyStationsRepository = RepositoryFactory.getNearbyStationsRepository();
@@ -22,14 +21,12 @@ export const InitRouletteServiceImpl: InitRouletteService = {
             const eventTypeCode = events?.eventTypeCode || "";
 
             // レスポンスの作成
-            const [teams, stations, latestTransitStations, nearbyStations] = await Promise.all([
-                teamsRepository.findByEventCode(req.eventCode),
+            const [stations, latestTransitStations, nearbyStations] = await Promise.all([
                 stationsRepository.findByEventTypeCode(eventTypeCode),
                 transitStationsRepository.findLatestByEventCode(req.eventCode),
                 nearbyStationsRepository.findByEventTypeCode(eventTypeCode),
             ]);
             const res: InitRouletteResponse = {
-                teams: teams,
                 stations: stations,
                 latestTransitStations: latestTransitStations,
                 nearbyStations: nearbyStations,

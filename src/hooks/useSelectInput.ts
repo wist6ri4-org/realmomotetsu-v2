@@ -1,5 +1,12 @@
 import { useState, useCallback } from "react";
 
+/**
+ * カスタムフック: 選択入力の管理の戻り値の型定義
+ * @property {string} value - 現在の選択値
+ * @property {Function} setValue - 選択値を更新する関数
+ * @property {Function} handleChange - 入力変更を処理する関数
+ * @property {Function} reset - 選択値を初期値にリセットする関数
+ */
 interface UseSelectInputReturn {
     value: string;
     setValue: (newValue: string) => void;
@@ -11,6 +18,11 @@ interface UseSelectInputReturn {
     reset: () => void;
 }
 
+/**
+ * カスタムフック: 選択入力の管理
+ * @param {string} initialValue - 初期値（デフォルトは空文字列）
+ * @return {UseSelectInputReturn} - 選択入力の管理に必要な関数と状態
+ */
 export const useSelectInput = (initialValue: string = ""): UseSelectInputReturn => {
     const [value, setValue] = useState<string>(initialValue);
 

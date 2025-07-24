@@ -13,15 +13,27 @@ import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
 import React from "react";
 
+/**
+ * RegisterGoalStationsFormコンポーネントのプロパティ型定義
+ * @property {Stations[]} stations - 駅のリスト
+ */
 interface RegisterGoalStationsFormProps {
     stations: Stations[];
 }
 
+/**
+ * 目的駅登録フォームコンポーネント
+ * @param stations - 駅のリスト
+ * @returns {JSX.Element} - RegisterGoalStationsFormコンポーネント
+ */
 const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
     stations,
 }): React.JSX.Element => {
     const stationCodeInput = useSelectInput("");
 
+    /**
+     * データの登録
+     */
     const createGoalStation = async () => {
         const isConfirmed = confirm(
             "以下の内容で登録しますか？\n" +

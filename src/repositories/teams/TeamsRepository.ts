@@ -1,6 +1,7 @@
 import { Stations, Teams, TransitStations } from "@/generated/prisma";
 import { BaseRepository } from "../base/BaseRepository";
 
+// includeありのTeamsの型定義
 export type TeamsWithTransitStations = Teams & {
     transitStations: (TransitStations & {
         station: Stations;
@@ -18,7 +19,7 @@ export class TeamsRepository extends BaseRepository {
      */
     async findByEventCode(eventCode: string): Promise<TeamsWithTransitStations[]> {
         try {
-            return await this.prisma.teams.findMany({
+            return (await this.prisma.teams.findMany({
                 where: {
                     eventCode: eventCode,
                 },
@@ -32,7 +33,7 @@ export class TeamsRepository extends BaseRepository {
                 orderBy: {
                     id: "asc",
                 },
-            }) as TeamsWithTransitStations[];
+            })) as TeamsWithTransitStations[];
         } catch (error) {
             this.handleDatabaseError(error, "findByEventCode");
         }
