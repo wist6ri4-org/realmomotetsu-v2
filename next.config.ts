@@ -7,6 +7,15 @@ const nextConfig: NextConfig = {
     experimental: {
         optimizePackageImports: ["@mui/material", "@mui/icons-material"],
     },
+    async redirects() {
+        return [
+            {
+                source: "/",
+                destination: "/home",
+                permanent: true,
+            },
+        ]
+    },
 };
 
 export default nextConfig;
