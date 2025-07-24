@@ -2,8 +2,10 @@
 
 import CustomButton from "@/components/base/CustomButton";
 import ArrivalGoalStationsForm from "@/components/composite/form/ArrivalGoalStationsForm";
+import MissionFormSenzokuike from "@/components/composite/form/MissionFormSenzokuike";
 import PointsExchangeForm from "@/components/composite/form/PointsExchangeForm";
 import PointsTransferForm from "@/components/composite/form/PointsTransferForm";
+import RegisterBombiiManualForm from "@/components/composite/form/RegisterBombiiManualForm";
 import RegisterGoalStationsForm from "@/components/composite/form/RegisterGoalStationsForm";
 import RegisterPointsForm from "@/components/composite/form/RegisterPointsForm";
 import { Stations, Teams } from "@/generated/prisma";
@@ -88,6 +90,10 @@ export default function ToolsPage() {
                         <PointsTransferForm teams={teams} />
                         <Divider />
                         <PointsExchangeForm teams={teams} />
+                        <Divider />
+                        <RegisterBombiiManualForm teams={teams} />
+                        <Divider />
+                        <MissionFormSenzokuike />
                     </>
                 )}
             </Box>
