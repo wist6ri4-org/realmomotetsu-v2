@@ -28,6 +28,7 @@ export const InitHomeServiceImpl: InitHomeService = {
                 totalPoints,
                 totalScoredPoints,
                 events,
+                bombiiCounts,
             ] = await Promise.all([
                 teamsRepository.findByEventCode(req.eventCode),
                 goalStationsRepository.findNextGoalStation(req.eventCode),
@@ -35,6 +36,7 @@ export const InitHomeServiceImpl: InitHomeService = {
                 pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
                 pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
                 eventsRepository.findByEventCode(req.eventCode),
+                bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
             ]);
 
             const eventTypeCode = events?.eventTypeCode || "";
@@ -56,6 +58,7 @@ export const InitHomeServiceImpl: InitHomeService = {
                 points: totalPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 scoredPoints:
                     totalScoredPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
+                bombiiCounts: bombiiCounts.find((b) => b.teamCode === team.teamCode)?.count || 0,
             }));
 
             // currentBombiiHistoryからbombiiTeamを取得

@@ -18,6 +18,7 @@ export const InitOperationServiceImpl: InitOperationService = {
         const nearbyStationsRepository = RepositoryFactory.getNearbyStationsRepository();
         const pointsRepository = RepositoryFactory.getPointsRepository();
         const goalStationsRepository = RepositoryFactory.getGoalStationsRepository();
+        const bombiiHistoriesRepository = RepositoryFactory.getBombiiHistoriesRepository();
 
 
         try {
@@ -26,13 +27,14 @@ export const InitOperationServiceImpl: InitOperationService = {
             const eventTypeCode = events?.eventTypeCode || "";
 
             // レスポンスの作成
-            const [teams, stations, nearbyStations, totalPoints, totalScoredPoints, nextGoalStation] = await Promise.all([
+            const [teams, stations, nearbyStations, totalPoints, totalScoredPoints, nextGoalStation, bombiiCounts] = await Promise.all([
                 teamsRepository.findByEventCode(req.eventCode),
                 stationsRepository.findByEventTypeCode(eventTypeCode),
                 nearbyStationsRepository.findByEventTypeCode(eventTypeCode),
                 pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
                 pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
                 goalStationsRepository.findNextGoalStation(req.eventCode),
+                bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode)
             ]);
 
             const convertedStationGraph = DijkstraUtils.convertToStationGraph(nearbyStations)
@@ -50,6 +52,7 @@ export const InitOperationServiceImpl: InitOperationService = {
                 points: totalPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 scoredPoints:
                     totalScoredPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
+                bombiiCounts: bombiiCounts.find((b) => b.teamCode === team.teamCode)?.count || 0
             }));
 
             const res: InitOperationResponse = {

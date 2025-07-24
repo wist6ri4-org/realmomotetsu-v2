@@ -9,6 +9,7 @@ import RegisterBombiiAutoForm from "@/components/composite/form/RegisterBombiiAu
 import RegisterBombiiManualForm from "@/components/composite/form/RegisterBombiiManualForm";
 import RegisterGoalStationsForm from "@/components/composite/form/RegisterGoalStationsForm";
 import RegisterPointsForm from "@/components/composite/form/RegisterPointsForm";
+import InformationDialog from "@/components/composite/InformationDialog";
 import { Stations, Teams } from "@/generated/prisma";
 import { TeamData } from "@/types/TeamData";
 import { Alert, Box, CircularProgress, Divider } from "@mui/material";
@@ -101,6 +102,7 @@ export default function ToolsPage() {
                         <RegisterBombiiManualForm teams={teams} />
                         <Divider />
                         <MissionFormSenzokuike />
+                        <InformationDialog teamData={teamData} />
                     </>
                 )}
             </Box>

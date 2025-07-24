@@ -10,6 +10,7 @@ import { TransitStationsWithRelations } from "@/repositories/transitStations/Tra
  * @property {number} remainingStationsNumber - 残りの駅数
  * @property {number} points - ポイント
  * @property {number} scoredPoints - 得点済みポイント
+ * @property {number} bombiiCounts - ボンビーの回数
  */
 export type TeamData = {
     id: number;
@@ -20,4 +21,5 @@ export type TeamData = {
     remainingStationsNumber: number;
     points: number;
     scoredPoints: number;
+    bombiiCounts: number;
 };

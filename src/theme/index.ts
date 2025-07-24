@@ -258,6 +258,23 @@ export const theme = createTheme({
                 },
             },
         },
+        MuiFab: {
+            styleOverrides: {
+                root: {
+                    position: "fixed",
+                    bottom: 100,
+                    left: 25,
+                    zIndex: 1000, // 他の要素より前面に表示
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                    "&:hover": {
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+                    },
+                    "& .MuiSvgIcon-root": {
+                        fontSize: "2.5rem", // アイコンのサイズ
+                    },
+                },
+            },
+        },
     },
 });
 
