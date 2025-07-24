@@ -3,7 +3,7 @@
 import BulletinBoard from "@/components/base/BulletinBoard";
 import CustomButton from "@/components/base/CustomButton";
 import { UpdatedTime } from "@/components/base/UpdatedTime";
-import { TeamCard } from "@/components/composite/TeamCard";
+import { TeamCard } from "@/components/base/TeamCard";
 import { Teams } from "@/generated/prisma";
 import { GoalStationsWithRelations } from "@/repositories/goalStations/GoalStationsRepository";
 import { TeamData } from "@/types/TeamData";
