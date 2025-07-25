@@ -56,3 +56,7 @@ POST http://localhost:3001/api/transit-stations
 ### Get transit-stations/latest
 GET http://localhost:3001/api/transit-stations/latest
     ?eventCode=TOKYU_20250517
+
+### GET documents
+GET http://localhost:3001/api/documents
+    ?eventCode=TOKYU_20250517

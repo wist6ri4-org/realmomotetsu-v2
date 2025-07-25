@@ -32,8 +32,8 @@ const OperationPage: React.FC = (): React.JSX.Element => {
             icon: <Description sx={{ fontSize: "1.8rem" }} />,
             color: "#FF9800",
             onClick: () => {
-                // TODO: 配布資料ページへのナビゲーション
                 console.log("配布資料クリック");
+                router.push("/operation/docs");
             },
         },
         {
@@ -42,7 +42,7 @@ const OperationPage: React.FC = (): React.JSX.Element => {
             icon: <SettingsIcon sx={{ fontSize: "1.8rem" }} />,
             color: "#2196F3",
             onClick: () => {
-                console.log("管理ツールクリック");
+                console.log("GMツールクリック");
                 router.push("/operation/tools");
             },
         },

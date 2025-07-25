@@ -14,6 +14,7 @@ const csvNearbyStationsPath = join(process.cwd(), "./prisma/csv/nearby_stations.
 const csvGoalStationsPath = join(process.cwd(), "./prisma/csv/goal_stations.csv");
 const csvTransitStationsPath = join(process.cwd(), "./prisma/csv/transit_stations.csv");
 const csvBombiiHistoriesPath = join(process.cwd(), "./prisma/csv/bombii_histories.csv");
+const csvDocumentsPath = join(process.cwd(), "./prisma/csv/documents.csv");
 
 // CSVを読み込む関数
 function readCSV(filePath) {
@@ -42,6 +43,7 @@ async function main() {
         await prisma.events.deleteMany({});
         await prisma.stations.deleteMany({});
         await prisma.eventTypes.deleteMany({});
+        await prisma.documents.deleteMany({});
 
         // autoincrementシーケンスをリセット
         console.log("🔄 IDシーケンスをリセット中...");
@@ -54,6 +56,7 @@ async function main() {
         await prisma.$executeRaw`ALTER SEQUENCE goal_stations_id_seq RESTART WITH 1;`;
         await prisma.$executeRaw`ALTER SEQUENCE transit_stations_id_seq RESTART WITH 1;`;
         await prisma.$executeRaw`ALTER SEQUENCE bombii_histories_id_seq RESTART WITH 1;`;
+        await prisma.$executeRaw`ALTER SEQUENCE documents_id_seq RESTART WITH 1;`;
 
         // 1. EventTypesを挿入
         console.log("📊 EventTypesを挿入中...");
@@ -253,6 +256,27 @@ async function main() {
             });
         }
         console.log(`✅ ${bombiiHistoriesData.length}件のBombiiHistoriesを挿入しました`);
+
+        console.log("📝 Documentsを挿入中...");
+        const documentsData = await readCSV(csvDocumentsPath);
+        for (const row of documentsData) {
+            const name = row.name?.trim();
+            const url = row.url?.trim();
+            const eventCode = row.event_code?.trim();
+            const createdAt = new Date(row.created_at?.trim());
+            const updatedAt = new Date(row.updated_at?.trim());
+
+            await prisma.documents.create({
+                data: {
+                    name,
+                    url,
+                    eventCode,
+                    createdAt,
+                    updatedAt,
+                },
+            });
+        }
+        console.log(`✅ ${documentsData.length}件のDocumentsを挿入しました`);
 
         console.log("🎉 すべてのシードデータの挿入が完了しました！");
     } catch (error) {
