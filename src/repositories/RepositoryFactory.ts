@@ -9,6 +9,7 @@ import { NearbyStationsRepository } from "./nearbyStations/NearbyStationsReposit
 import { TransitStationsRepository } from "./transitStations/TransitStationsRepository";
 import { PointsRepository } from "./points/PointsRepository";
 import { DocumentsRepository } from "./documents/DocumentsRepository";
+import { UsersRepository } from "./users/UsersRepository";
 
 /**
  * Repositoryのファクトリークラス
@@ -25,6 +26,7 @@ export class RepositoryFactory {
     private static transitStationsRepository: TransitStationsRepository | null = null;
     private static pointsRepository: PointsRepository | null = null;
     private static documentsRepository: DocumentsRepository | null = null;
+    private static usersRepository: UsersRepository | null = null;
     /**
      * TeamsRepositoryのインスタンスを取得（シングルトン）
      * @returns {TeamsRepository} TeamsRepositoryのインスタンス
@@ -136,6 +138,17 @@ export class RepositoryFactory {
     }
 
     /**
+     * UsersRepositoryのインスタンスを取得（シングルトン）
+     * @returns {UsersRepository} UsersRepositoryのインスタンス
+     */
+    static getUsersRepository(): UsersRepository {
+        if (!this.usersRepository) {
+            this.usersRepository = new UsersRepository(prisma);
+        }
+        return this.usersRepository;
+    }
+
+    /**
      * すべてのRepositoryをリセット（主にテスト用）
      */
     static resetAll(): void {
@@ -149,5 +162,6 @@ export class RepositoryFactory {
         this.transitStationsRepository = null;
         this.pointsRepository = null;
         this.documentsRepository = null;
+        this.usersRepository = null;
     }
 }

@@ -5,9 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["views"]
-  output   = "../src/generated/prisma"
+  output          = "../src/generated/prisma"
 }
 
 datasource db {
@@ -230,14 +230,15 @@ enum Role {
  * ユーザー
  */
 model Users {
-  id         String        @id @map("id")
-  email      String        @unique @map("email")
-  nickname   String?       @map("nickname")
-  iconUrl    String?       @map("icon_url")
-  role       Role          @default(user) @map("role") // 恒久的なロール
-  createdAt  DateTime      @default(now()) @map("created_at")
-  updatedAt  DateTime      @default(now()) @updatedAt @map("updated_at")
-  attendance Attendances[]
+  id          Int           @id @default(autoincrement()) @map("id")
+  uuid        String        @unique @map("uuid")
+  email       String        @unique @map("email")
+  nickname    String?       @map("nickname")
+  iconUrl     String?       @map("icon_url")
+  masterRole  Role          @default(user) @map("master_role") // 恒久的なロール
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @default(now()) @updatedAt @map("updated_at")
+  attendances Attendances[]
 
   @@map("users")
 }
@@ -248,7 +249,7 @@ model Users {
  */
 model Attendances {
   id        Int      @id @default(autoincrement()) @map("id")
-  userId    String   @map("user_id")
+  userId    Int      @map("user_id")
   eventCode String   @map("event_code")
   role      Role     @default(user) @map("role") // 一時的なロール
   createdAt DateTime @default(now()) @map("created_at")

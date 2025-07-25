@@ -10,7 +10,7 @@ BEGIN
         NEW.id,
         NEW.email,
         COALESCE(NEW.raw_user_meta_data->>'nickname', NEW.raw_user_meta_data->>'name', NEW.raw_user_meta_data->>'full_name'),
-        'user'
+        'user'::public."Role"
     );
     RETURN NEW;
 EXCEPTION
@@ -39,7 +39,7 @@ BEGIN
             NEW.id,
             NEW.email,
             COALESCE(NEW.raw_user_meta_data->>'nickname', NEW.raw_user_meta_data->>'name', NEW.raw_user_meta_data->>'full_name'),
-            'user'
+            'user'::public."Role"
         );
     END IF;
 
