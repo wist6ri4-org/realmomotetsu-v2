@@ -97,24 +97,28 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
                     title="駅ルーレット"
                     icon={<Casino sx={{ fontSize: "3.5rem", marginRight: 1 }} />}
                 />
-                <Accordion>
-                    <AccordionSummary expandIcon={<ArrowDropDown sx={{ fontSize: "2.5rem" }} />}>
-                        <Typography variant="body2" fontWeight={700}>
-                            使い方
-                        </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <Typography variant="body2">
-                            １．今いる駅を選択
-                            <br />
-                            ２．モードを選ぶ
-                            <br />
-                            ３．スタートボタンを押してルーレットを回す
-                            <br />
-                            ４．ストップボタンを押して目的地を決定
-                        </Typography>
-                    </AccordionDetails>
-                </Accordion>
+                <Box sx={{ margin: 4 }}>
+                    <Accordion>
+                        <AccordionSummary
+                            expandIcon={<ArrowDropDown sx={{ fontSize: "2.5rem" }} />}
+                        >
+                            <Typography variant="body2" fontWeight={700}>
+                                使い方
+                            </Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography variant="body2">
+                                １．今いる駅を選択
+                                <br />
+                                ２．モードを選ぶ
+                                <br />
+                                ３．スタートボタンを押してルーレットを回す
+                                <br />
+                                ４．ストップボタンを押して目的地を決定
+                            </Typography>
+                        </AccordionDetails>
+                    </Accordion>
+                </Box>
             </Box>
 
             {/* コンテンツセクション */}

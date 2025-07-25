@@ -31,7 +31,7 @@ const HomePage: React.FC = (): React.JSX.Element => {
             setError(null);
 
             const params = new URLSearchParams();
-            params.append("eventCode", "TOKYU_20250517");
+            params.append("eventCode", "TOKYU_20250517"); // TODO イベントコードをセッションから取得する
 
             const response = await fetch("/api/init-home?" + params.toString());
             if (!response.ok) {

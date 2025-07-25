@@ -91,26 +91,30 @@ const FormPage: React.FC = (): React.JSX.Element => {
                     title="到着報告フォーム"
                     icon={<Assignment sx={{ fontSize: "3.5rem", marginRight: 1 }} />}
                 />
-                <Accordion>
-                    <AccordionSummary expandIcon={<ArrowDropDown sx={{ fontSize: "2.5rem" }} />}>
-                        <Typography variant="body2" fontWeight={700}>
-                            いつ送る？
-                        </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <Typography variant="body2">
-                            １．サイコロを２回振ってカードを決定
-                            <br />
-                            ２．カードの効果を処理する
-                            <br />
-                            ３．もう一度サイコロを振って行き先を決定
-                            <br />
-                            ４．移動したら移動先の駅（今いる駅）をこのフォームから送信
-                            <br />
-                            ５．１～４を繰り返す
-                        </Typography>
-                    </AccordionDetails>
-                </Accordion>
+                <Box sx={{ margin: 4}}>
+                    <Accordion>
+                        <AccordionSummary
+                            expandIcon={<ArrowDropDown sx={{ fontSize: "2.5rem" }} />}
+                        >
+                            <Typography variant="body2" fontWeight={700}>
+                                いつ送る？
+                            </Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography variant="body2">
+                                １．サイコロを２回振ってカードを決定
+                                <br />
+                                ２．カードの効果を処理する
+                                <br />
+                                ３．もう一度サイコロを振って行き先を決定
+                                <br />
+                                ４．移動したら移動先の駅（今いる駅）をこのフォームから送信
+                                <br />
+                                ５．１～４を繰り返す
+                            </Typography>
+                        </AccordionDetails>
+                    </Accordion>
+                </Box>
             </Box>
 
             {/* コンテンツセクション */}
