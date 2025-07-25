@@ -9,6 +9,7 @@ import FormTitle from "@/components/base/FormTitle";
 import { TeamData } from "@/types/TeamData";
 import { GameLogicUtils } from "@/utils/gameLogicUtils";
 import { Box } from "@mui/material";
+import { useParams } from "next/navigation";
 import React from "react";
 
 /**
@@ -27,6 +28,8 @@ interface RegisterBombiiAutoFormProps {
 const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
     teamData,
 }): React.JSX.Element => {
+    const { eventCode } = useParams();
+
     /**
      * データの確認と登録
      */
@@ -50,7 +53,7 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    eventCode: "TOKYU_20250517", // TODO: イベントコードをセッションから取得する
+                    eventCode: eventCode,
                     teamCode: bombiiTeam.teamCode,
                 }),
             });

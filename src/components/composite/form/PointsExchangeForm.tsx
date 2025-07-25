@@ -26,7 +26,7 @@ interface PointsExchangeFormProps {
  * @param teams - チームのリスト
  * @returns {JSX.Element} - PointsExchangeFormコンポーネント
  */
-const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({ teams }) => {
+const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({ teams }): React.JSX.Element => {
     const teamCodeInput = useSelectInput("");
 
     /**

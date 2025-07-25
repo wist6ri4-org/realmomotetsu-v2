@@ -8,13 +8,16 @@ import {
     Description,
 } from "@mui/icons-material";
 import PageTitle from "@/components/base/PageTitle";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 /**
  * オペレーションメニューページ
  */
 const OperationPage: React.FC = (): React.JSX.Element => {
     const router = useRouter();
+    const params = useParams();
+    const eventCode = params.eventCode as string;
+
     const menuItems = [
         {
             title: "ユーザー設定",
@@ -33,7 +36,7 @@ const OperationPage: React.FC = (): React.JSX.Element => {
             color: "#FF9800",
             onClick: () => {
                 console.log("配布資料クリック");
-                router.push("/operation/docs");
+                router.push(`/events/${eventCode}/operation/docs`);
             },
         },
         {
@@ -43,7 +46,7 @@ const OperationPage: React.FC = (): React.JSX.Element => {
             color: "#2196F3",
             onClick: () => {
                 console.log("GMツールクリック");
-                router.push("/operation/tools");
+                router.push(`/events/${eventCode}/operation/tools`);
             },
         },
     ];

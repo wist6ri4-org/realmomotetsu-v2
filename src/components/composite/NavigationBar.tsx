@@ -4,26 +4,24 @@ import { Assignment, Casino, Home, Settings } from "@mui/icons-material";
 import { BottomNavigation, BottomNavigationAction, Box } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
 
-/**
- * NavigationBarコンポーネントのプロパティ型定義
- * @property {string} [currentTab] - 現在のタブ名（
- */
 interface NavigationBarProps {
     currentTab?: string;
 }
 
-/**
- * NavigationBarコンポーネント
- * @param currentTab - 現在のタブ名（オプション）
- * @return {JSX.Element} - NavigationBarコンポーネント
- */
 export const NavigationBar: React.FC<NavigationBarProps> = ({ currentTab }): React.JSX.Element => {
     const router = useRouter();
     const pathname = usePathname();
 
     /**
+     * 現在のeventCodeを取得する
+     */
+    const getEventCode = () => {
+        const pathSegments = pathname.split("/");
+        return pathSegments[2]; // /events/[eventCode]/... の eventCode部分
+    };
+
+    /**
      * 現在のタブを取得する
-     * @returns {string} - 現在のタブ名
      */
     const getCurrentTab = () => {
         if (currentTab) return currentTab;
@@ -35,39 +33,36 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ currentTab }): Rea
     };
 
     const activeTab = getCurrentTab();
+    const eventCode = getEventCode();
 
     /**
      * ナビゲーションの変更ハンドラー
      */
-    const handleNavChange = (event: React.SyntheticEvent, newValue: number) => {
-        router.push(`/${newValue}`);
+    const handleNavChange = (event: React.SyntheticEvent, newValue: string) => {
+        const targetPath = `/events/${eventCode}/${newValue}`;
+        router.push(targetPath);
     };
 
     // ナビゲーションの定義
     const navigation = [
-        { value: "home", label: "ホーム", icon: <Home />, path: "/home" },
-        { value: "roulette", label: "ルーレット", icon: <Casino />, path: "/roulette" },
-        { value: "form", label: "フォーム", icon: <Assignment />, path: "/form" },
-        { value: "operation", label: "その他", icon: <Settings />, path: "/operation" },
+        { value: "home", label: "ホーム", icon: <Home /> },
+        { value: "roulette", label: "ルーレット", icon: <Casino /> },
+        { value: "form", label: "フォーム", icon: <Assignment /> },
+        { value: "operation", label: "その他", icon: <Settings /> },
     ];
 
     return (
-        <>
-            <Box
-                component="footer"
-                sx={{ width: "100%", position: "sticky", bottom: 0, zIndex: 1100 }}
-            >
-                <BottomNavigation showLabels value={activeTab} onChange={handleNavChange}>
-                    {navigation.map((nav) => (
-                        <BottomNavigationAction
-                            key={nav.value}
-                            label={nav.label}
-                            icon={nav.icon}
-                            value={nav.value}
-                        />
-                    ))}
-                </BottomNavigation>
-            </Box>
-        </>
+        <Box component="footer" sx={{ width: "100%", position: "sticky", bottom: 0, zIndex: 1100 }}>
+            <BottomNavigation showLabels value={activeTab} onChange={handleNavChange}>
+                {navigation.map((nav) => (
+                    <BottomNavigationAction
+                        key={nav.value}
+                        label={nav.label}
+                        icon={nav.icon}
+                        value={nav.value}
+                    />
+                ))}
+            </BottomNavigation>
+        </Box>
     );
 };

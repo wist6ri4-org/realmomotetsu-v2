@@ -15,6 +15,7 @@ import { useNumberInput } from "@/hooks/useNumberInput";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
+import { useParams } from "next/navigation";
 import React, { useState } from "react";
 
 /**
@@ -37,6 +38,8 @@ const pointStatusOptions: RadioOption[] = [
  * @returns {JSX.Element} - RegisterPointsFormコンポーネント
  */
 const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({ teams }): React.JSX.Element => {
+    const { eventCode } = useParams();
+
     const teamCodeInput = useSelectInput("");
     const pointsInput = useNumberInput(0);
     const [pointStatus, setPointStatus] = useState<PointStatus>(GameConstants.POINT_STATUS.POINTS);
@@ -78,7 +81,7 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({ teams }): React
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    eventCode: "TOKYU_20250517", // TODO: イベントコードをセッションから取得する
+                    eventCode: eventCode,
                     teamCode: teamCodeInput.value,
                     points: pointsInput.value,
                     status: pointStatus,

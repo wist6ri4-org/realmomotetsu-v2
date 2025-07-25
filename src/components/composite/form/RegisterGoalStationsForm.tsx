@@ -11,6 +11,7 @@ import { Stations } from "@/generated/prisma";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
+import { useParams } from "next/navigation";
 import React from "react";
 
 /**
@@ -29,6 +30,8 @@ interface RegisterGoalStationsFormProps {
 const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
     stations,
 }): React.JSX.Element => {
+    const { eventCode } = useParams();
+
     const stationCodeInput = useSelectInput("");
 
     /**
@@ -53,7 +56,7 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    eventCode: "TOKYU_20250517", // TODO: イベントコードをセッションから取得する
+                    eventCode: eventCode,
                     stationCode: stationCodeInput.value,
                 }),
             });

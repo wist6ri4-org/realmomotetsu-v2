@@ -11,6 +11,7 @@ import { Teams } from "@/generated/prisma";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
+import { useParams } from "next/navigation";
 import React from "react";
 
 /**
@@ -29,6 +30,8 @@ interface RegisterBombiiManualFormProps {
 const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
     teams,
 }): React.JSX.Element => {
+    const { eventCode } = useParams();
+
     const teamCodeInput = useSelectInput("");
 
     /**
@@ -52,7 +55,7 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    eventCode: "TOKYU_20250517", // TODO: イベントコードをセッションから取得する
+                    eventCode: eventCode,
                     teamCode: teamCodeInput.value,
                 }),
             });

@@ -15,6 +15,7 @@ import { useNumberInput } from "@/hooks/useNumberInput";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
+import { useParams } from "next/navigation";
 import React, { useState } from "react";
 
 /**
@@ -36,7 +37,9 @@ const pointStatusOptions: RadioOption[] = [
  * @param teams - チームのリスト
  * @returns {JSX.Element} - PointsTransferFormコンポーネント
  */
-const PointsTransferForm: React.FC<PointsTransferFormProps> = ({ teams }) => {
+const PointsTransferForm: React.FC<PointsTransferFormProps> = ({ teams }): React.JSX.Element => {
+    const { eventCode } = useParams();
+
     const fromTeamCodeInput = useSelectInput("");
     const toTeamCodeInput = useSelectInput("");
     const pointsInput = useNumberInput(0);
@@ -84,7 +87,7 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({ teams }) => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    eventCode: "TOKYU_20250517", // TODO: イベントコードをセッションから取得する
+                    eventCode: eventCode,
                     teamCode: fromTeamCodeInput.value,
                     points: 0 - pointsInput.value,
                     status: pointStatus,
@@ -101,7 +104,7 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({ teams }) => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    eventCode: "TOKYU_20250517", // TODO: イベントコードをセッションから取得する
+                    eventCode: eventCode,
                     teamCode: toTeamCodeInput.value,
                     points: pointsInput.value,
                     status: pointStatus,

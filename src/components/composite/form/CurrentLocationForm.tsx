@@ -9,6 +9,7 @@ import { Stations, Teams } from "@/generated/prisma";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
+import { useParams } from "next/navigation";
 import React from "react";
 
 /**
@@ -34,6 +35,8 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     stations,
     closestStations: closestStations,
 }): React.JSX.Element => {
+    const { eventCode } = useParams();
+
     const selectedTeamCodeInput = useSelectInput("");
     const selectedStationCodeInput = useSelectInput(
         closestStations?.[0]?.stationCode ? String(closestStations?.[0]?.stationCode) : ""
@@ -58,7 +61,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    eventCode: "TOKYU_20250517", // TODO: イベントコードをセッションから取得する
+                    eventCode: eventCode,
                     teamCode: selectedTeamCodeInput.value,
                     stationCode: selectedStationCodeInput.value,
                 }),

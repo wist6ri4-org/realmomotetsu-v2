@@ -5,12 +5,15 @@ import PageTitle from "@/components/base/PageTitle";
 import { Documents } from "@/generated/prisma";
 import { Description } from "@mui/icons-material";
 import { Alert, Box, CircularProgress, Link, Paper, Stack, Typography } from "@mui/material";
+import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 /**
  * 配布資料ページ
  */
 const DocsPage: React.FC = (): React.JSX.Element => {
+    const { eventCode } = useParams();
+
     const [documents, setDocuments] = useState<Documents[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -24,8 +27,7 @@ const DocsPage: React.FC = (): React.JSX.Element => {
             setError(null);
 
             const params = new URLSearchParams();
-            // TODO イベントコードをセッションから取得する
-            params.append("eventCode", "TOKYU_20250517");
+            params.append("eventCode", eventCode as string);
 
             const response = await fetch("/api/documents?" + params.toString());
             if (!response.ok) {

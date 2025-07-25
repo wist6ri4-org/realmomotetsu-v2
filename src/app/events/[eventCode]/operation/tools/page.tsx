@@ -13,12 +13,15 @@ import InformationDialog from "@/components/composite/InformationDialog";
 import { Stations, Teams } from "@/generated/prisma";
 import { TeamData } from "@/types/TeamData";
 import { Alert, Box, CircularProgress, Divider } from "@mui/material";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 /**
  * GMツールページ
  */
 const ToolsPage: React.FC = (): React.JSX.Element => {
+    const { eventCode } = useParams();
+
     const [teams, setTeams] = useState<Teams[]>([]);
     const [stations, setStations] = useState<Stations[]>([]);
     const [teamData, setTeamData] = useState<TeamData[]>([]);
@@ -34,8 +37,7 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
             setError(null);
 
             const params = new URLSearchParams();
-            // TODO イベントコードをセッションから取得する
-            params.append("eventCode", "TOKYU_20250517");
+            params.append("eventCode", eventCode as string);
 
             const response = await fetch("/api/init-operation?" + params.toString());
             if (!response.ok) {

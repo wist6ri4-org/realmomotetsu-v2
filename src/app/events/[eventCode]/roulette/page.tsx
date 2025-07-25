@@ -16,12 +16,15 @@ import {
     CircularProgress,
     Typography,
 } from "@mui/material";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 /**
  * 駅ルーレットページ
  */
 const RoulettePage: React.FC = (): React.JSX.Element => {
+    const { eventCode } = useParams();
+
     const [stations, setStations] = useState<Stations[]>([]);
     const [nearbyStations, setNearbyStations] = useState<NearbyStationsWithRelations[]>([]);
     const [latestTransitStations, setLatestTransitStations] = useState<LatestTransitStations[]>([]);
@@ -38,8 +41,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
             setError(null);
 
             const params = new URLSearchParams();
-            // TODO イベントコードをセッションから取得する
-            params.append("eventCode", "TOKYU_20250517");
+            params.append("eventCode", eventCode as string);
 
             const { latitude, longitude } = await CurrentLocationUtils.getCurrentLocation();
             if (latitude && longitude) {

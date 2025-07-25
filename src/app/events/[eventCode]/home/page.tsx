@@ -9,11 +9,14 @@ import { GoalStationsWithRelations } from "@/repositories/goalStations/GoalStati
 import { TeamData } from "@/types/TeamData";
 import { Alert, Box, CircularProgress, Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
 /**
  * ホームページ
  */
 const HomePage: React.FC = (): React.JSX.Element => {
+    const { eventCode } = useParams();
+
     const [teamData, setTeamData] = useState<TeamData[]>([]);
     const [nextGoalStationData, setNextGoalStationData] = useState<GoalStationsWithRelations>(
         {} as GoalStationsWithRelations
@@ -31,7 +34,7 @@ const HomePage: React.FC = (): React.JSX.Element => {
             setError(null);
 
             const params = new URLSearchParams();
-            params.append("eventCode", "TOKYU_20250517"); // TODO イベントコードをセッションから取得する
+            params.append("eventCode", eventCode as string);
 
             const response = await fetch("/api/init-home?" + params.toString());
             if (!response.ok) {
