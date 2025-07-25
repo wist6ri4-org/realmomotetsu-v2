@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "debug": "NODE_OPTIONS='--inspect' next dev",
-        "debug:win": "set NODE_OPTIONS=--inspect && next dev",
+        "debug:win": "next dev --turbopack -p 3001",
         "dev": "prisma generate && next dev --turbopack -p 3001",
         "build": "prisma generate && prisma migrate deploy && next build",
         "start": "next start",
