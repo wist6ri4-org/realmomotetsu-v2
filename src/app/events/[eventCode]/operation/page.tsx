@@ -34,7 +34,7 @@ const OperationPage: React.FC = (): React.JSX.Element => {
             icon: <Description sx={{ fontSize: "1.8rem" }} />,
             color: "#FF9800",
             onClick: () => {
-                console.log("配布資料クリック");
+                router.push(`/events/${eventCode}/operation/docs`);
             },
         },
         {
@@ -43,7 +43,7 @@ const OperationPage: React.FC = (): React.JSX.Element => {
             icon: <SettingsIcon sx={{ fontSize: "1.8rem" }} />,
             color: "#2196F3",
             onClick: () => {
-                console.log("GMツールクリック");
+                router.push(`/events/${eventCode}/operation/tools`);
             },
         },
     ];
