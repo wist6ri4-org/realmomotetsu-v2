@@ -60,3 +60,9 @@ GET http://localhost:3001/api/transit-stations/latest
 ### GET documents
 GET http://localhost:3001/api/documents
     ?eventCode=TOKYU_20250517
+
+### GET users/[uuid]
+GET http://localhost:3001/api/users/f389d9e9-81d0-46d7-84c1-d1b0cd65e764
+
+### GET events/[eventCode]
+GET http://localhost:3001/api/events/TOKYU_20250517
