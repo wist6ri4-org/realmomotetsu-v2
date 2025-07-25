@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, DotGothic16 } from "next/font/google";
 import "./globals.css";
-import { Box, Container } from "@mui/material";
-import Header from "@/components/composite/Header";
-import { NavigationBar } from "@/components/composite/NavigationBar";
+import { Container } from "@mui/material";
 import ThemeRegistry from "@/components/ThemeRegistry";
-import ApplicationBar from "@/components/composite/ApplicationBar";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -60,10 +57,7 @@ export default function RootLayout({
                             flexDirection: "column",
                         }}
                     >
-                        <ApplicationBar />
-                        <Header />
-                        <Box sx={{ flex: 1, padding: 1 }}>{children}</Box>
-                        <NavigationBar />
+                        {children}
                     </Container>
                 </ThemeRegistry>
             </body>

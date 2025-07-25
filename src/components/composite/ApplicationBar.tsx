@@ -9,22 +9,104 @@ import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-import { useState, MouseEvent } from "react";
+import { useState, MouseEvent, useEffect } from "react";
+import { User } from "@supabase/supabase-js";
+import { useParams, useRouter } from "next/navigation";
+import { Events } from "@/generated/prisma";
+import { signOut } from "@/lib/auth";
+import { UsersWithRelations } from "@/repositories/users/UsersRepository";
 
-export default function ApplicationBar() {
-    const [auth, setAuth] = useState(true);
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+interface ApplicationBarProps {
+    sbUser: User;
+}
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setAuth(event.target.checked);
+const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }): React.JSX.Element => {
+    const router = useRouter();
+    const { eventCode } = useParams();
+
+    const [event, setEvent] = useState<Events | null>(null);
+    const [user, setUser] = useState<UsersWithRelations | null>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    /**
+     * データの取得
+     */
+    const fetchData = async () => {
+        try {
+            setError(null);
+
+            const [responseEvents, responseUsers] = await Promise.all([
+                fetch(`/api/events/${eventCode}`),
+                fetch(`/api/users/${sbUser.id}`),
+            ]);
+
+            if (!responseEvents.ok) {
+                throw new Error(`HTTP error! status: ${responseEvents.status}`);
+            }
+            if (!responseUsers.ok) {
+                throw new Error(`HTTP error! status: ${responseUsers.status}`);
+            }
+            const dataEvents = await responseEvents.json();
+            const dataUsers = await responseUsers.json();
+
+            const eventData = dataEvents?.data || {};
+            const userData = dataUsers?.data || {};
+            if (!eventData || !userData) {
+                throw new Error("Event or user data not found");
+            }
+            setUser(userData as UsersWithRelations);
+            setEvent(eventData as Events);
+        } catch (error) {
+            console.error("Error fetching event data:", error);
+            setError(error instanceof Error ? error.message : "Unknown error");
+            setEvent(null);
+            setUser(null);
+        }
     };
 
-    const handleMenu = (event: MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
+    /**
+     * コンポーネントのマウント時にデータを取得
+     */
+    useEffect(() => {
+        fetchData();
+    }, [eventCode, sbUser]);
+
+    // イベントメニューの状態管理
+    const [anchorEventMenu, setAnchorEventMenu] = useState<null | HTMLElement>(null);
+    const handleEventMenu = (event: MouseEvent<HTMLElement>) => {
+        setAnchorEventMenu(event.currentTarget);
+    };
+    const handleEventMenuClose = () => {
+        setAnchorEventMenu(null);
     };
 
-    const handleClose = () => {
-        setAnchorEl(null);
+    // ユーザーメニューの状態管理
+    const [anchorUserMenu, setAnchorUserMenu] = useState<null | HTMLElement>(null);
+    const handleUserMenu = (event: MouseEvent<HTMLElement>) => {
+        setAnchorUserMenu(event.currentTarget);
+    };
+    const handleUserMenuClose = () => {
+        setAnchorUserMenu(null);
+    };
+    const handlePushUserSettings = () => {
+        handleUserMenuClose();
+        router.push(`/events/${eventCode}/operation/user-settings`);
+    }
+
+    /**
+     * サインアウト処理
+     */
+    const handleSignOut = async () => {
+        try {
+            await signOut();
+            setUser(null);
+            setEvent(null);
+        } catch (error) {
+            console.error("Error signing out:", error);
+            setError(error instanceof Error ? error.message : "Unknown error");
+        } finally {
+            handleUserMenuClose();
+        }
     };
 
     return (
@@ -33,14 +115,6 @@ export default function ApplicationBar() {
                 component="header"
                 sx={{ width: "100%", position: "sticky", top: 0, zIndex: 2000 }}
             >
-                {/* <FormGroup>
-                <FormControlLabel
-                    control={
-                        <Switch checked={auth} onChange={handleChange} aria-label="login switch" />
-                    }
-                    label={auth ? "Logout" : "Login"}
-                />
-            </FormGroup> */}
                 <AppBar position="sticky">
                     <Toolbar>
                         <IconButton
@@ -48,28 +122,59 @@ export default function ApplicationBar() {
                             edge="start"
                             color="inherit"
                             aria-label="menu"
+                            onClick={handleEventMenu}
                             sx={{ mr: 2 }}
                         >
                             <MenuIcon />
                         </IconButton>
+                        <Menu
+                            id="event-menu"
+                            anchorEl={anchorEventMenu}
+                            anchorOrigin={{
+                                vertical: "top",
+                                horizontal: "left",
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: "top",
+                                horizontal: "left",
+                            }}
+                            open={Boolean(anchorEventMenu)}
+                            onClose={handleEventMenuClose}
+                            sx={{
+                                zIndex: 2000, // Ensure the menu is above other elements
+                            }}
+                        >
+                            {user && user.attendances.map((attendance) => (
+                                <MenuItem
+                                    key={attendance.eventCode}
+                                    onClick={() => {
+                                        handleUserMenuClose();
+                                        window.location.href = `/events/${attendance.eventCode}/home`;
+                                    }}
+                                >
+                                    {attendance.event.eventName}
+                                </MenuItem>
+                            ))}
+                        </Menu>
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                            東急線リアル桃鉄
+                            {event ? event.eventName : "Loading..."}
                         </Typography>
-                        {auth && (
+                        {user && (
                             <Box>
                                 <IconButton
                                     size="large"
                                     aria-label="account of current user"
-                                    aria-controls="menu-appbar"
+                                    aria-controls="user-menu"
                                     aria-haspopup="true"
-                                    onClick={handleMenu}
+                                    onClick={handleUserMenu}
                                     color="inherit"
                                 >
                                     <AccountCircle />
                                 </IconButton>
                                 <Menu
-                                    id="menu-appbar"
-                                    anchorEl={anchorEl}
+                                    id="user-menu"
+                                    anchorEl={anchorUserMenu}
                                     anchorOrigin={{
                                         vertical: "top",
                                         horizontal: "right",
@@ -79,11 +184,14 @@ export default function ApplicationBar() {
                                         vertical: "top",
                                         horizontal: "right",
                                     }}
-                                    open={Boolean(anchorEl)}
-                                    onClose={handleClose}
+                                    open={Boolean(anchorUserMenu)}
+                                    onClose={handleUserMenuClose}
+                                    sx={{
+                                        zIndex: 2000,
+                                    }}
                                 >
-                                    <MenuItem onClick={handleClose}>Profile</MenuItem>
-                                    <MenuItem onClick={handleClose}>My account</MenuItem>
+                                    <MenuItem onClick={handlePushUserSettings}>ユーザー設定</MenuItem>
+                                    <MenuItem onClick={handleSignOut}>サインアウト</MenuItem>
                                 </Menu>
                             </Box>
                         )}
@@ -92,4 +200,6 @@ export default function ApplicationBar() {
             </Box>
         </>
     );
-}
+};
+
+export default ApplicationBar;

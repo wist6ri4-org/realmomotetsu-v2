@@ -25,8 +25,7 @@ const OperationPage: React.FC = (): React.JSX.Element => {
             icon: <AccountCircleIcon sx={{ fontSize: "1.8rem" }} />,
             color: "#4CAF50",
             onClick: () => {
-                // TODO: ユーザー設定ページへのナビゲーション
-                console.log("ユーザー設定クリック");
+                router.push(`/events/${eventCode}/operation/user-settings`);
             },
         },
         {
@@ -36,7 +35,6 @@ const OperationPage: React.FC = (): React.JSX.Element => {
             color: "#FF9800",
             onClick: () => {
                 console.log("配布資料クリック");
-                router.push(`/events/${eventCode}/operation/docs`);
             },
         },
         {
@@ -46,7 +44,6 @@ const OperationPage: React.FC = (): React.JSX.Element => {
             color: "#2196F3",
             onClick: () => {
                 console.log("GMツールクリック");
-                router.push(`/events/${eventCode}/operation/tools`);
             },
         },
     ];
