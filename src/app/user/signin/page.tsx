@@ -4,6 +4,18 @@ import { useState } from "react";
 import { signIn } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
+import {
+    Box,
+    Typography,
+    Alert,
+    Card,
+    CardContent,
+    Link,
+    Stack,
+} from "@mui/material";
+import { Email, Lock } from "@mui/icons-material";
+import { CustomTextField } from "@/components/base/CustomTextField";
+import CustomButton from "@/components/base/CustomButton";
 
 export default function SignInPage() {
     const [email, setEmail] = useState("");
@@ -14,11 +26,11 @@ export default function SignInPage() {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
-        const {user, error} = await signIn(email, password);
+        const { user, error } = await signIn(email, password);
         if (error) {
             setError(error.message);
         } else {
-            fetchEventCode(user as User).then(eventCode => {
+            fetchEventCode(user as User).then((eventCode) => {
                 if (eventCode) {
                     router.push(`/events/${eventCode}/home`);
                 } else {
@@ -47,32 +59,85 @@ export default function SignInPage() {
             setError(error instanceof Error ? error.message : "Unknown error");
             return "";
         }
-    }
+    };
 
     return (
-        <div>
-            <h1>Login</h1>
-            <form onSubmit={handleLogin}>
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                <button type="submit">Login</button>
-            </form>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <p>
-                Don&apos;t have an account? <a href="/user/signup">Sign up</a>
-            </p>
-        </div>
+        <Box
+            sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                py: 4,
+            }}
+        >
+            <Card sx={{ width: "100%", maxWidth: 400 }}>
+                <CardContent sx={{ p: 4 }}>
+                    <Typography
+                        variant="h4"
+                        component="h1"
+                        gutterBottom
+                        textAlign="center"
+                        color="primary"
+                    >
+                        ログイン
+                    </Typography>
+
+                    <Box component="form" onSubmit={handleLogin} sx={{ mt: 3 }}>
+                        <Stack spacing={3}>
+                            <CustomTextField
+                                type="email"
+                                label="メールアドレス"
+                                placeholder="sample@mail.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                fullWidth
+                                variant="outlined"
+                                startAdornment={<Email />}
+                            />
+
+                            <CustomTextField
+                                type="password"
+                                label="パスワード"
+                                placeholder="*****"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                fullWidth
+                                variant="outlined"
+                                showPasswordToggle
+                                startAdornment={<Lock />}
+                            />
+
+                            {error && (
+                                <Alert severity="error" sx={{ mt: 2 }}>
+                                    {error}
+                                </Alert>
+                            )}
+
+                            <CustomButton
+                                color="primary"
+                                type="submit"
+                                variant="contained"
+                                size="large"
+                                fullWidth
+                                sx={{ mt: 3, py: 1.5 }}
+                            >
+                                ログイン
+                            </CustomButton>
+                        </Stack>
+                    </Box>
+
+                    <Box sx={{ mt: 3, textAlign: "center" }}>
+                        <Typography variant="body2" color="text.secondary">
+                            アカウントをお持ちでない方は{" "}
+                            <Link href="/user/signup">
+                                サインアップ
+                            </Link>
+                        </Typography>
+                    </Box>
+                </CardContent>
+            </Card>
+        </Box>
     );
 }

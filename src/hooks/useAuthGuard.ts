@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import supabase from "@/lib/supabase";
 
+const SIGN_IN_URL = "/user/signin";
+
 export const useAuthGuard = () => {
     const [sbUser, setSbUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -33,7 +35,7 @@ export const useAuthGuard = () => {
                     console.log("No auth data in localStorage");
                     setSbUser(null);
                     setIsLoading(false);
-                    router.push("/user/signin");
+                    router.push(SIGN_IN_URL);
                     return;
                 }
 
@@ -47,7 +49,7 @@ export const useAuthGuard = () => {
                     console.error("Auth check error:", error);
                     setSbUser(null);
                     setIsLoading(false);
-                    router.push("/user/signin");
+                    router.push(SIGN_IN_URL);
                     return;
                 }
 
@@ -55,7 +57,7 @@ export const useAuthGuard = () => {
                     console.log("No user found");
                     setSbUser(null);
                     setIsLoading(false);
-                    router.push("/user/signin");
+                    router.push(SIGN_IN_URL);
                     return;
                 }
 
@@ -65,7 +67,7 @@ export const useAuthGuard = () => {
                 console.error("Initial auth check failed:", error);
                 setSbUser(null);
                 setIsLoading(false);
-                router.push("/user/signin");
+                router.push(SIGN_IN_URL);
             }
         };
 
@@ -79,7 +81,7 @@ export const useAuthGuard = () => {
                 console.log("User signed out or session invalid");
                 setSbUser(null);
                 setIsLoading(false);
-                router.push("/user/signin");
+                router.push(SIGN_IN_URL);
             } else if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
                 console.log("User signed in or token refreshed");
                 setSbUser(session.user);
@@ -95,34 +97,34 @@ export const useAuthGuard = () => {
                     console.log("Auth data removed from localStorage");
                     setSbUser(null);
                     setIsLoading(false);
-                    router.push("/user/signin");
+                    router.push(SIGN_IN_URL);
                 }
             }
         };
 
         window.addEventListener("storage", handleStorageChange);
 
-        // 定期的な認証チェック
-        const intervalCheck = setInterval(async () => {
-            try {
-                const {
-                    data: { user },
-                    error,
-                } = await supabase.auth.getUser();
+        // // 定期的な認証チェック
+        // const intervalCheck = setInterval(async () => {
+        //     try {
+        //         const {
+        //             data: { user },
+        //             error,
+        //         } = await supabase.auth.getUser();
 
-                if (error || !user) {
-                    console.log("Periodic auth check failed");
-                    setSbUser(null);
-                    router.push("/user/signin");
-                    clearInterval(intervalCheck);
-                }
-            } catch (error) {
-                console.error("Periodic auth check error:", error);
-                setSbUser(null);
-                router.push("/user/signin");
-                clearInterval(intervalCheck);
-            }
-        }, 60000);
+        //         if (error || !user) {
+        //             console.log("Periodic auth check failed");
+        //             setSbUser(null);
+        //             router.push(SIGN_IN_URL);
+        //             clearInterval(intervalCheck);
+        //         }
+        //     } catch (error) {
+        //         console.error("Periodic auth check error:", error);
+        //         setSbUser(null);
+        //         router.push(SIGN_IN_URL);
+        //         clearInterval(intervalCheck);
+        //     }
+        // }, 5000);
 
         checkInitialAuth();
 
@@ -130,7 +132,7 @@ export const useAuthGuard = () => {
         return () => {
             subscription.unsubscribe();
             window.removeEventListener("storage", handleStorageChange);
-            clearInterval(intervalCheck);
+            // clearInterval(intervalCheck);
         };
     }, [router]);
 
