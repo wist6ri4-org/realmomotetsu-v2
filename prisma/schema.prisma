@@ -251,7 +251,7 @@ model Attendances {
   id        Int      @id @default(autoincrement()) @map("id")
   userId    Int      @map("user_id")
   eventCode String   @map("event_code")
-  role      Role     @default(user) @map("role") // 一時的なロール
+  eventRole Role     @default(user) @map("event_role") // 一時的なロール
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
   user      Users    @relation(fields: [userId], references: [id])
@@ -259,7 +259,6 @@ model Attendances {
 
   @@map("attendances")
 }
-
 
 /**
  * View

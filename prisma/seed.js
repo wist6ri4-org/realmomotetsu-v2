@@ -288,7 +288,7 @@ async function main() {
         for (const row of attendancesData) {
             const eventCode = row.event_code?.trim();
             const userId = parseInt(row.user_id?.trim(), 10);
-            const role = row.role?.trim() || "user";
+            const eventRole = row.event_role?.trim() || "user";
             const createdAt = new Date(row.created_at?.trim());
             const updatedAt = new Date(row.updated_at?.trim());
 
@@ -296,7 +296,7 @@ async function main() {
                 data: {
                     eventCode,
                     userId,
-                    role,
+                    eventRole,
                     createdAt,
                     updatedAt,
                 },

@@ -1,3 +1,3 @@
-event_code,user_id,role,created_at,updated_at
+event_code,user_id,event_role,created_at,updated_at
 TOKYU_20250517,1,user,2025-07-25 00:00:00,2025-07-25 00:00:00
 DUMMY_20250725,1,user,2025-07-25 00:00:00,2025-07-25 00:00:00
