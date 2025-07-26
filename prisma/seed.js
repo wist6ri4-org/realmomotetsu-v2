@@ -15,6 +15,7 @@ const csvGoalStationsPath = join(process.cwd(), "./prisma/csv/goal_stations.csv"
 const csvTransitStationsPath = join(process.cwd(), "./prisma/csv/transit_stations.csv");
 const csvBombiiHistoriesPath = join(process.cwd(), "./prisma/csv/bombii_histories.csv");
 const csvDocumentsPath = join(process.cwd(), "./prisma/csv/documents.csv");
+const csvAttendancesPath = join(process.cwd(), "./prisma/csv/attendances.csv");
 
 // CSVを読み込む関数
 function readCSV(filePath) {
@@ -34,6 +35,8 @@ async function main() {
 
         // 依存関係を考慮して逆順で削除
         console.log("🗑️ 既存データを削除中...");
+        await prisma.attendances.deleteMany({});
+        await prisma.documents.deleteMany({});
         await prisma.bombiiHistories.deleteMany({});
         await prisma.transitStations.deleteMany({});
         await prisma.goalStations.deleteMany({});
@@ -43,7 +46,6 @@ async function main() {
         await prisma.events.deleteMany({});
         await prisma.stations.deleteMany({});
         await prisma.eventTypes.deleteMany({});
-        await prisma.documents.deleteMany({});
 
         // autoincrementシーケンスをリセット
         console.log("🔄 IDシーケンスをリセット中...");
@@ -57,6 +59,7 @@ async function main() {
         await prisma.$executeRaw`ALTER SEQUENCE transit_stations_id_seq RESTART WITH 1;`;
         await prisma.$executeRaw`ALTER SEQUENCE bombii_histories_id_seq RESTART WITH 1;`;
         await prisma.$executeRaw`ALTER SEQUENCE documents_id_seq RESTART WITH 1;`;
+        await prisma.$executeRaw`ALTER SEQUENCE attendances_id_seq RESTART WITH 1;`;
 
         // 1. EventTypesを挿入
         console.log("📊 EventTypesを挿入中...");
@@ -257,6 +260,7 @@ async function main() {
         }
         console.log(`✅ ${bombiiHistoriesData.length}件のBombiiHistoriesを挿入しました`);
 
+        // 10. Documentsを挿入
         console.log("📝 Documentsを挿入中...");
         const documentsData = await readCSV(csvDocumentsPath);
         for (const row of documentsData) {
@@ -277,6 +281,28 @@ async function main() {
             });
         }
         console.log(`✅ ${documentsData.length}件のDocumentsを挿入しました`);
+
+        // 11. Attendancesを挿入
+        console.log("👥 Attendancesを挿入中...");
+        const attendancesData = await readCSV(csvAttendancesPath);
+        for (const row of attendancesData) {
+            const eventCode = row.event_code?.trim();
+            const userId = parseInt(row.user_id?.trim(), 10);
+            const role = row.role?.trim() || "user";
+            const createdAt = new Date(row.created_at?.trim());
+            const updatedAt = new Date(row.updated_at?.trim());
+
+            await prisma.attendances.create({
+                data: {
+                    eventCode,
+                    userId,
+                    role,
+                    createdAt,
+                    updatedAt,
+                },
+            });
+        }
+        console.log(`✅ ${attendancesData.length}件のAttendancesを挿入しました`);
 
         console.log("🎉 すべてのシードデータの挿入が完了しました！");
     } catch (error) {
