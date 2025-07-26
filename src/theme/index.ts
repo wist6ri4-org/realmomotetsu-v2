@@ -123,7 +123,7 @@ export const theme = createTheme({
             lineHeight: 1.4,
         },
         h5: {
-            fontSize: "2.rem",
+            fontSize: "2rem",
             fontWeight: 400,
             lineHeight: 1.5,
         },
