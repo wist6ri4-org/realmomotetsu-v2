@@ -61,20 +61,20 @@ class TransitStationsApiHandler extends BaseApiHandler {
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
-            type Info = {
+            type LogObject = {
                 [teamCode: string]: {
                     transitStationsCount: number;
                 };
             };
 
-            const info: Info = {};
+            const logObject: LogObject = {};
             Object.entries(data.transitStations).forEach(([teamCode, transitStations]) => {
-                info[teamCode] = {
+                logObject[teamCode] = {
                     transitStationsCount: transitStations.length,
                 };
             });
             this.logInfo("Successfully retrieved transit-stations data", {
-                ...info,
+                ...logObject,
             });
 
             return this.createSuccessResponse(data);

@@ -58,23 +58,23 @@ class PointsApiHandler extends BaseApiHandler {
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
-            type Info = {
+            type LogObject = {
                 [teamCode: string]: {
                     pointsCount: number;
                     scoredCount: number;
                 };
             };
 
-            const info: Info = {};
+            const logObject: LogObject = {};
             Object.entries(data.points).forEach(([teamCode, items]) => {
-                if (!info[teamCode]) {
-                    info[teamCode] = { pointsCount: 0, scoredCount: 0 };
+                if (!logObject[teamCode]) {
+                    logObject[teamCode] = { pointsCount: 0, scoredCount: 0 };
                 }
-                info[teamCode].pointsCount = items.points.length;
-                info[teamCode].scoredCount = items.scored.length;
+                logObject[teamCode].pointsCount = items.points.length;
+                logObject[teamCode].scoredCount = items.scored.length;
             });
             this.logInfo("Successfully retrieved points data", {
-                ...info,
+                ...logObject,
             });
 
             return this.createSuccessResponse(data);
