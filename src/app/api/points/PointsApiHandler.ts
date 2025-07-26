@@ -136,7 +136,7 @@ class PointsApiHandler extends BaseApiHandler {
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
-            this.logInfo("Successfully processed points data", {
+            this.logInfo("Successfully updated points data", {
                 count: data.count,
             });
 
