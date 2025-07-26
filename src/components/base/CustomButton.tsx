@@ -27,6 +27,7 @@ interface CustomButtonProps extends Omit<MuiButtonProps, "color" | "size"> {
     variant?: "contained" | "outlined" | "text";
     fullWidth?: boolean;
     loading?: boolean;
+    disabled?: boolean;
 }
 
 /**

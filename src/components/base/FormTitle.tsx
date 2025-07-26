@@ -7,7 +7,7 @@ import React from "react";
  * @property {React.ReactNode} [icon] - タイトルの前に表示するアイコン
  */
 interface FormTitleProps {
-    title?: string;
+    title: string;
     icon?: React.ReactNode;
 }
 
