@@ -38,6 +38,7 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
     const [event, setEvent] = useState<Events | null>(null);
     const [user, setUser] = useState<UsersWithRelations | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     /**
      * データの取得
@@ -45,6 +46,7 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
     const fetchData = async () => {
         try {
             setError(null);
+            setIsLoading(true);
 
             const [responseEvents, responseUsers] = await Promise.all([
                 fetch(`/api/events/${eventCode}`),
@@ -72,6 +74,8 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
             setError(error instanceof Error ? error.message : "Unknown error");
             setEvent(null);
             setUser(null);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -170,7 +174,7 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
                                 ))}
                         </Menu>
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                            {event ? event.eventName : "Loading..."}
+                            {!isLoading && event ? event.eventName : "..."}
                         </Typography>
                         {user && (
                             <Box>
