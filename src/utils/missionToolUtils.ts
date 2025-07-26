@@ -15,17 +15,17 @@ export class MissionToolUtils {
          * @return {number} 計算された得点
          */
         calculate: (answer: number) => {
-            const diff = Math.abs(answer - this.MissionSenzokuike.SENZOKUIKE_AREA);
+            const diff = Math.abs(answer - MissionToolUtils.MissionSenzokuike.SENZOKUIKE_AREA);
             let score = Math.round(
-                this.MissionSenzokuike.MAX_SCORE *
-                    Math.exp(-1 * (diff / this.MissionSenzokuike.SCALE) ** 2)
+                MissionToolUtils.MissionSenzokuike.MAX_SCORE *
+                    Math.exp(-1 * (diff / MissionToolUtils.MissionSenzokuike.SCALE) ** 2)
             );
 
-            score += this.MissionSenzokuike.BASE_POINT;
-            if (answer === this.MissionSenzokuike.SENZOKUIKE_AREA) {
-                score += this.MissionSenzokuike.JUST_BONUS;
+            score += MissionToolUtils.MissionSenzokuike.BASE_POINT;
+            if (answer === MissionToolUtils.MissionSenzokuike.SENZOKUIKE_AREA) {
+                score += MissionToolUtils.MissionSenzokuike.JUST_BONUS;
             }
-            return this.MissionSenzokuike.round(score);
+            return MissionToolUtils.MissionSenzokuike.round(score);
         },
 
         /**
