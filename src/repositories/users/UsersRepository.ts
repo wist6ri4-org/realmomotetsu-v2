@@ -14,11 +14,11 @@ export class UsersRepository extends BaseRepository {
     /**
      * 指定されたIDのユーザーを取得
      * @param {string} uuid - ユーザーのUUID
-     * @returns {Promise<UsersWithRelations | null>} ユーザー情報またはnull
+     * @returns {Promise<UsersWithRelations>} ユーザー情報
      */
-    async findByUuid(uuid: string): Promise<UsersWithRelations | null> {
+    async findByUuid(uuid: string): Promise<UsersWithRelations> {
         try {
-            return await this.prisma.users.findUnique({
+            return await this.prisma.users.findUniqueOrThrow({
                 where: { uuid },
                 include: {
                     attendances: {

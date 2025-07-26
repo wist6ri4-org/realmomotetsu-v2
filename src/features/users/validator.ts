@@ -8,4 +8,3 @@ export const postUsersRequestSchema = z.object({
     nickname: z.string().optional(),
     role: z.nativeEnum(Role).optional(),
 });
-

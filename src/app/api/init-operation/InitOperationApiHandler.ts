@@ -3,6 +3,7 @@ import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { InitOperationServiceImpl } from "@/features/init-operation/service";
 import { initOperationRequestSchema } from "@/features/init-operation/validator";
+import { InitOperationResponse } from "@/features/init-operation/types";
 
 /**
  * 初期オペレーションデータを取得するAPIハンドラー
@@ -45,7 +46,9 @@ class InitOperationApiHandler extends BaseApiHandler {
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data = await InitOperationServiceImpl.getDataForOperation(validatedParams);
+            const data: InitOperationResponse = await InitOperationServiceImpl.getDataForOperation(
+                validatedParams
+            );
 
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);

@@ -7,8 +7,8 @@ import { ClosestStation } from "@/types/ClosestStation";
 export const InitRouletteServiceImpl: InitRouletteService = {
     /**
      * ルーレット画面の初期化データを取得する
-     * @param req - リクエストデータ
-     * @returns {Promise<InitRouletteResponse>} ルーレット画面の初期化データ
+     * @param {InitRouletteRequest} req - リクエスト
+     * @return {Promise<InitRouletteResponse>} レスポンス
      */
     async getDataForRoulette(req: InitRouletteRequest): Promise<InitRouletteResponse> {
         const eventsRepository = RepositoryFactory.getEventsRepository();

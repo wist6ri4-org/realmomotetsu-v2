@@ -3,6 +3,7 @@ import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { InitFormServiceImpl } from "@/features/init-form/service";
 import { initFormRequestSchema } from "@/features/init-form/validator";
+import { InitFormResponse } from "@/features/init-form/types";
 
 /**
  * 初期フォームデータを取得するAPIハンドラー
@@ -45,7 +46,9 @@ class InitFormApiHandler extends BaseApiHandler {
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data = await InitFormServiceImpl.getDataForForm(validatedParams);
+            const data: InitFormResponse = await InitFormServiceImpl.getDataForForm(
+                validatedParams
+            );
 
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initFormResponseSchema.parse(data);

@@ -3,9 +3,9 @@ import { ClosestStation } from "@/types/ClosestStation";
 
 /**
  * ルーレット画面の初期化リクエスト
- * @param eventCode - イベントコード
- * @param longitude - 経度（オプション）
- * @param latitude - 緯度（オプション）
+ * @property { string } eventCode - イベントコード
+ * @property { number } [longitude] - 緯度（オプション）
+ * @property { number } [latitude] - 経度（オプション）
  */
 export type InitRouletteRequest = {
     eventCode: string;

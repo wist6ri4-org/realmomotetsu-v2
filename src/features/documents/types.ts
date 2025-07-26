@@ -2,7 +2,7 @@ import { Documents } from "@/generated/prisma";
 
 /**
  * ドキュメントの取得リクエスト
- * @param eventCode - イベントコード
+ * @property { string } eventCode - イベントコード
  */
 export type GetDocumentsRequest = {
     eventCode: string;
@@ -10,7 +10,7 @@ export type GetDocumentsRequest = {
 
 /**
  * ドキュメントの取得レスポンス
- * @param stations - ドキュメントの配列
+ * @property { Documents[] } documents - イベントに関連するドキュメントのリスト
  */
 export type GetDocumentsResponse = {
     documents: Documents[];

@@ -3,6 +3,7 @@ import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { getUsersByUuidRequestScheme } from "@/features/users/[uuid]/validator";
 import { UsersByUuidServiceImpl } from "@/features/users/[uuid]/service";
+import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
 
 /**
  * UUIDに紐づくユーザーに関するAPIハンドラー
@@ -43,7 +44,9 @@ class UsersByUuidApiHandler extends BaseApiHandler {
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data = await UsersByUuidServiceImpl.getUsersByUuid(validatedParams);
+            const data: GetUsersByUuidResponse = await UsersByUuidServiceImpl.getUsersByUuid(
+                validatedParams
+            );
 
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);

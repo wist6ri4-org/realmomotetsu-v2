@@ -7,6 +7,7 @@ import {
     postPointsRequestSchema,
     putPointsRequestSchema,
 } from "@/features/points/validator";
+import { GetPointsResponse, PostPointsResponse, PutPointsResponse } from "@/features/points/types";
 
 /**
  * ポイントに関するAPIハンドラー
@@ -51,9 +52,8 @@ class PointsApiHandler extends BaseApiHandler {
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data = await PointsServiceImpl.getPointsByEventCodeGroupedByTeamCode(
-                validatedParams
-            );
+            const data: GetPointsResponse =
+                await PointsServiceImpl.getPointsByEventCodeGroupedByTeamCode(validatedParams);
 
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
@@ -66,7 +66,7 @@ class PointsApiHandler extends BaseApiHandler {
             };
 
             const info: Info = {};
-            Object.entries(data).forEach(([teamCode, items]) => {
+            Object.entries(data.points).forEach(([teamCode, items]) => {
                 if (!info[teamCode]) {
                     info[teamCode] = { pointsCount: 0, scoredCount: 0 };
                 }
@@ -102,13 +102,13 @@ class PointsApiHandler extends BaseApiHandler {
             this.logDebug("Request body", validatedBody);
 
             // サービスからデータを取得
-            const data = await PointsServiceImpl.postPoints(validatedBody);
+            const data: PostPointsResponse = await PointsServiceImpl.postPoints(validatedBody);
 
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully processed points data", {
-                id: data.id,
+                id: data.point.id,
             });
 
             return this.createSuccessResponse(data);
@@ -131,7 +131,7 @@ class PointsApiHandler extends BaseApiHandler {
             this.logDebug("Request body", validatedBody);
 
             // サービスからデータを取得
-            const data = await PointsServiceImpl.putPoints(validatedBody);
+            const data: PutPointsResponse = await PointsServiceImpl.putPoints(validatedBody);
 
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);

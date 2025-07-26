@@ -3,6 +3,7 @@ import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { getLatestTransitStationsRequestSchema } from "@/features/transit-stations/latest/validator";
 import { LatestTransitStationsServiceImpl } from "@/features/transit-stations/latest/service";
+import { GetLatestTransitStationsResponse } from "@/features/transit-stations/latest/types";
 
 /**
  * 最新経由駅に関するAPIハンドラー
@@ -45,15 +46,16 @@ class LatestTransitStationsApiHandler extends BaseApiHandler {
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data = await LatestTransitStationsServiceImpl.getLatestTransitStationsByEventCode(
-                validatedParams
-            );
+            const data: GetLatestTransitStationsResponse =
+                await LatestTransitStationsServiceImpl.getLatestTransitStationsByEventCode(
+                    validatedParams
+                );
 
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved transit-stations data", {
-                transitStationsCount: data.length,
+                transitStationsCount: data.latestTransitStations.length,
             });
 
             return this.createSuccessResponse(data);

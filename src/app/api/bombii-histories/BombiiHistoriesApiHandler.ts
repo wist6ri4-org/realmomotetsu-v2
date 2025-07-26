@@ -3,6 +3,7 @@ import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { BombiiHistoriesServiceImpl } from "@/features/bombii-histories/service";
 import { postBombiiHistoriesRequestSchema } from "@/features/bombii-histories/validator";
+import { PostBombiiHistoriesResponse } from "@/features/bombii-histories/types";
 
 /**
  * ボンビー履歴に関するAPIハンドラー
@@ -44,13 +45,14 @@ class BombiiHistoriesApiHandler extends BaseApiHandler {
             this.logDebug("Request body", validatedBody);
 
             // サービスからデータを取得
-            const data = await BombiiHistoriesServiceImpl.postBombiiHistories(validatedBody);
+            const data: PostBombiiHistoriesResponse =
+                await BombiiHistoriesServiceImpl.postBombiiHistories(validatedBody);
 
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully processed bombii-histories data", {
-                id: data.id,
+                id: data.bombiiHistory.id,
             });
 
             return this.createSuccessResponse(data);

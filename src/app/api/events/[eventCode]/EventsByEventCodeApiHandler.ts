@@ -3,6 +3,7 @@ import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { EventByEventCodeServiceImpl } from "@/features/events/[eventCode]/service";
 import { getEventByEventCodeRequestScheme } from "@/features/events/[eventCode]/validator";
+import { GetEventByEventCodeResponse } from "@/features/events/[eventCode]/types";
 
 /**
  * イベントコードに紐づくイベントに関するAPIハンドラー
@@ -38,12 +39,15 @@ class EventByEventCodeApiHandler extends BaseApiHandler {
         this.logInfo("Handling GET request for events/[eventCode]");
 
         try {
-            const validatedParams = getEventByEventCodeRequestScheme.parse({ eventCode: this.eventCode });
+            const validatedParams = getEventByEventCodeRequestScheme.parse({
+                eventCode: this.eventCode,
+            });
 
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data = await EventByEventCodeServiceImpl.getEventByEventCode(validatedParams);
+            const data: GetEventByEventCodeResponse =
+                await EventByEventCodeServiceImpl.getEventByEventCode(validatedParams);
 
             // レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);

@@ -8,8 +8,8 @@ import DijkstraUtils from "@/utils/dijkstraUtils";
 export const InitHomeServiceImpl: InitHomeService = {
     /**
      * ホーム画面の初期化データを取得する
-     * @param req - リクエストデータ
-     * @returns {Promise<InitHomeResponse>} ホーム画面の初期化データ
+     * @param {InitHomeRequest} req - リクエスト
+     * @returns {Promise<InitHomeResponse>} レスポンス
      */
     async getDataForHome(req: InitHomeRequest): Promise<InitHomeResponse> {
         const teamsRepository = RepositoryFactory.getTeamsRepository();

@@ -1,11 +1,10 @@
-import { BombiiHistories } from "@/generated/prisma";
-import { PostBombiiHistoriesRequest } from "./types";
+import { PostBombiiHistoriesRequest, PostBombiiHistoriesResponse } from "./types";
 
 export interface BombiiHistoriesService {
     /**
      * ボンビー履歴を登録する
-     * @param req - リクエストデータ
-     * @return {Promise<BombiiHistories>} 登録されたボンビー履歴
+     * @param {PostBombiiHistoriesRequest} req - リクエスト
+     * @return {Promise<PostBombiiHistoriesRequest>} レスポンス
      */
-    postBombiiHistories: (req: PostBombiiHistoriesRequest) => Promise<BombiiHistories>;
+    postBombiiHistories: (req: PostBombiiHistoriesRequest) => Promise<PostBombiiHistoriesResponse>;
 }

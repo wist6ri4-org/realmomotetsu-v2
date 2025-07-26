@@ -3,6 +3,7 @@ import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { InitHomeServiceImpl } from "@/features/init-home/service";
 import { initHomeRequestSchema } from "@/features/init-home/validator";
+import { InitHomeResponse } from "@/features/init-home/types";
 
 /**
  * 初期ホームデータを取得するAPIハンドラー
@@ -45,7 +46,9 @@ class InitHomeApiHandler extends BaseApiHandler {
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data = await InitHomeServiceImpl.getDataForHome(validatedParams);
+            const data: InitHomeResponse = await InitHomeServiceImpl.getDataForHome(
+                validatedParams
+            );
 
             // レスポンスのスキーマでバリデーション
             // const validatedResponse = initHomeResponseSchema.parse(data);

@@ -1,11 +1,10 @@
-import { UsersWithRelations } from "@/repositories/users/UsersRepository";
-import { GetUsersByUuidRequest } from "./types";
+import { GetUsersByUuidRequest, GetUsersByUuidResponse } from "./types";
 
 export interface UsersByUuidService {
     /**
      * ユーザーをUUIDで取得する
-     * @param req - ユーザーを取得するためのリクエスト
-     * @returns ユーザー情報
+     * @param {GetUsersByUuidRequest} req - リクエスト
+     * @return {Promise<GetUsersByUuidResponse>} レスポンス
      */
-    getUsersByUuid: (req: GetUsersByUuidRequest) => Promise<UsersWithRelations | null>;
+    getUsersByUuid: (req: GetUsersByUuidRequest) => Promise<GetUsersByUuidResponse>;
 }

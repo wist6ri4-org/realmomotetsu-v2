@@ -2,6 +2,7 @@ import {
     GetTransitStationsRequest,
     GetTransitStationsResponse,
     PostTransitStationsRequest,
+    PostTransitStationsResponse,
 } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { TransitStationsWithRelations } from "@/repositories/transitStations/TransitStationsRepository";
@@ -11,8 +12,8 @@ import { TransitStations } from "@/generated/prisma";
 export const TransitStationsServiceImpl: TransitStationsService = {
     /**
      * イベントコードに紐づく経由駅をチームコードごとに取得する
-     * @param {GetTransitStationsRequest} req - リクエストデータ
-     * @return {Promise<GetTransitStationsResponse>} イベントコードに紐づく経由駅のレスポンス
+     * @param {GetTransitStationsRequest} req - リクエスト
+     * @return {Promise<GetTransitStationsResponse>} レスポンス
      */
     async getTransitStationsByEventCodeGroupedByTeamCode(
         req: GetTransitStationsRequest
@@ -25,13 +26,13 @@ export const TransitStationsServiceImpl: TransitStationsService = {
             const transitStations = await transitStationsRepository.findByEventCode(eventCode);
 
             // レスポンスの作成
-            const res: GetTransitStationsResponse = {};
+            const res: GetTransitStationsResponse = { transitStations: {} };
             transitStations.map((transitStation: TransitStationsWithRelations) => {
                 const teamCode = transitStation.teamCode;
-                if (!res[teamCode]) {
-                    res[teamCode] = [];
+                if (!res.transitStations[teamCode]) {
+                    res.transitStations[teamCode] = [];
                 }
-                res[teamCode].push({
+                res.transitStations[teamCode].push({
                     ...transitStation,
                 });
             });
@@ -44,19 +45,25 @@ export const TransitStationsServiceImpl: TransitStationsService = {
 
     /**
      * 経由駅を登録する
-     * @param req - リクエストデータ
-     * @return {Promise<void>} 登録完了
+     * @param {PostTransitStationsRequest} req - リクエスト
+     * @return {Promise<PostTransitStationsResponse>} レスポンス
      */
-    async postTransitStations(req: PostTransitStationsRequest): Promise<TransitStations> {
+    async postTransitStations(
+        req: PostTransitStationsRequest
+    ): Promise<PostTransitStationsResponse> {
         // Repositoryのインスタンスを取得
         const transitStationsRepository = RepositoryFactory.getTransitStationsRepository();
 
         try {
-            return await transitStationsRepository.create({
+            const transitStation = await transitStationsRepository.create({
                 eventCode: req.eventCode,
                 stationCode: req.stationCode,
                 teamCode: req.teamCode,
             });
+            const res: PostTransitStationsResponse = {
+                transitStation: transitStation as TransitStations,
+            };
+            return res;
         } catch (error) {
             console.error("Error in postTransitStations:", error);
             throw new Error("Failed to register transit station");

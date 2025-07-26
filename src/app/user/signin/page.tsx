@@ -40,20 +40,20 @@ export default function SignInPage() {
         }
     };
 
-    const fetchEventCode = async (user: User): Promise<string> => {
+    const fetchEventCode = async (sbUser: User): Promise<string> => {
         try {
             setError(null);
 
-            const uuid = user.id;
+            const uuid = sbUser.id;
             const response = await fetch(`/api/users/${uuid}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
-            const userData = data?.data || {};
+            const user = data?.data?.user || data?.user || {};
 
-            return userData.attendances[0].eventCode;
+            return user.attendances[0].eventCode;
         } catch (error) {
             console.error("Error fetching event code:", error);
             setError(error instanceof Error ? error.message : "Unknown error");

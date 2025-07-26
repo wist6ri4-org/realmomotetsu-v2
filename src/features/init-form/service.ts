@@ -7,8 +7,8 @@ import { ClosestStation } from "@/types/ClosestStation";
 export const InitFormServiceImpl: InitFormService = {
     /**
      * フォーム画面の初期化データを取得する
-     * @param req - リクエストデータ
-     * @returns {Promise<InitFormResponse>} フォーム画面の初期化データ
+     * @param {InitFormRequest} req - リクエスト
+     * @returns {Promise<InitFormResponse>} レスポンス
      */
     async getDataForForm(req: InitFormRequest): Promise<InitFormResponse> {
         const eventsRepository = RepositoryFactory.getEventsRepository();

@@ -3,6 +3,7 @@ import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { InitRouletteServiceImpl } from "@/features/init-roulette/service";
 import { initRouletteRequestSchema } from "@/features/init-roulette/validator";
+import { InitRouletteResponse } from "@/features/init-roulette/types";
 
 /**
  * 初期ルーレットデータを取得するAPIハンドラー
@@ -45,7 +46,9 @@ class InitRouletteApiHandler extends BaseApiHandler {
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data = await InitRouletteServiceImpl.getDataForRoulette(validatedParams);
+            const data: InitRouletteResponse = await InitRouletteServiceImpl.getDataForRoulette(
+                validatedParams
+            );
 
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initRouletteResponseSchema.parse(data);

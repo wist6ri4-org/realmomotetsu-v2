@@ -1,9 +1,9 @@
-import { PointStatus } from "@/generated/prisma";
+import { Points, PointStatus } from "@/generated/prisma";
 import { PointsGroupedByTeamCode } from "@/types/PointsGroupedByTeamCode";
 
 /**
  * ポイントの取得リクエスト
- * @param eventCode - イベントコード
+ * @property { string } eventCode - イベントコード
  */
 export type GetPointsRequest = {
     eventCode: string;
@@ -11,15 +11,18 @@ export type GetPointsRequest = {
 
 /**
  * ポイントの取得レスポンス
+ * @property { PointsGroupedByTeamCode } points - チームコードごとにグループ化されたポイント情報
  */
-export type GetPointsResponse = PointsGroupedByTeamCode;
+export type GetPointsResponse = {
+    points: PointsGroupedByTeamCode;
+};
 
 /**
  * ポイントの登録リクエスト
- * @param eventCode - イベントコード
- * @param teamCode - チームコード
- * @param points - ポイント数
- * @param status - ポイントのステータス
+ * @property { string } eventCode - イベントコード
+ * @property { string } teamCode - チームコード
+ * @property { number } points - ポイント数
+ * @property { PointStatus } status - ポイントのステータス
  */
 export type PostPointsRequest = {
     eventCode: string;
@@ -29,9 +32,25 @@ export type PostPointsRequest = {
 };
 
 /**
+ * ポイントの登録レスポンス
+ * @property { Points } points - 登録されたポイント情報
+ */
+export type PostPointsResponse = {
+    point: Points;
+};
+
+/**
  * ポイントの更新リクエスト
- * @param teamCode - チームコード
+ * @property { string } teamCode - チームコード
  */
 export type PutPointsRequest = {
     teamCode: string;
-}
+};
+
+/**
+ * ポイントの更新レスポンス
+ * @property { number } count - 更新されたポイントの数
+ */
+export type PutPointsResponse = {
+    count: number;
+};

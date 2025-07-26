@@ -3,9 +3,9 @@ import { ClosestStation } from "@/types/ClosestStation";
 
 /**
  * 初期化フォームのリクエスト
- * @param eventCode - イベントコード
- * @param longitude - 経度（オプション）
- * @param latitude - 緯度（オプション）
+ * @property { string } eventCode - イベントコード
+ * @property { number } [longitude] - 緯度（オプション）
+ * @property { number } [latitude] - 経度（オプション）
  */
 export type InitFormRequest = {
     eventCode: string;

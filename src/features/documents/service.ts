@@ -5,8 +5,8 @@ import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 export const DocumentsServiceImpl: DocumentsService = {
     /**
      * イベントコードに紐づくドキュメントを全件取得する
-     * @param req - リクエストデータ
-     * @return {Promise<GetDocumentsResponse>} ドキュメントのリスト
+     * @param {GetDocumentsRequest} req - リクエスト
+     * @return {Promise<GetDocumentsResponse>} レスポンス
      */
     async getDocumentsByEventCode(req: GetDocumentsRequest): Promise<GetDocumentsResponse> {
         const documentsRepository = RepositoryFactory.getDocumentsRepository();
@@ -21,7 +21,7 @@ export const DocumentsServiceImpl: DocumentsService = {
             return res;
         } catch (error) {
             console.error("Error in getDocumentsByEventCode:", error);
-            throw new Error("Failed to retrieve get goal stations");
+            throw new Error("Failed to retrieve get documents by event code");
         }
     },
 };

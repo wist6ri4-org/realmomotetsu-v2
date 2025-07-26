@@ -1,8 +1,9 @@
+import { GoalStations } from "@/generated/prisma";
 import { GoalStationsWithRelations } from "@/repositories/goalStations/GoalStationsRepository";
 
 /**
  * 目的駅の取得リクエスト
- * @param eventCode - イベントコード
+ * @property { string } eventCode - イベントコード
  */
 export type GetGoalStationsRequest = {
     eventCode: string;
@@ -10,7 +11,7 @@ export type GetGoalStationsRequest = {
 
 /**
  * 目的駅の取得レスポンス
- * @param stations - 目的駅の配列
+ * @property { GoalStationsWithRelations[] } stations - イベントに関連する目的駅のリスト
  */
 export type GetGoalStationsResponse = {
     stations: GoalStationsWithRelations[];
@@ -18,10 +19,18 @@ export type GetGoalStationsResponse = {
 
 /**
  * 目的駅の追加リクエスト
- * @param eventCode - イベントコード
- * @param stationCode - 駅コード
+ * @property { string } eventCode - イベントコード
+ * @property { string } stationCode - 目的駅のコード
  */
 export type PostGoalStationsRequest = {
     eventCode: string;
     stationCode: string;
+};
+
+/**
+ * 目的駅の追加レスポンス
+ * @property { GoalStations } goalStation - 追加された目的駅情報
+ */
+export type PostGoalStationsResponse = {
+    goalStation: GoalStations;
 };

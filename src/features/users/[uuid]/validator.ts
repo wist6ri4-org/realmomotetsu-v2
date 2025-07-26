@@ -4,4 +4,3 @@ import { z } from "zod";
 export const getUsersByUuidRequestScheme = z.object({
     uuid: z.string().min(1, "UUIDは必須です"),
 });
-

@@ -1,15 +1,21 @@
-import { GoalStations } from "@/generated/prisma";
 import { GoalStationsService } from "./interface";
-import { GetGoalStationsRequest, GetGoalStationsResponse, PostGoalStationsRequest } from "./types";
+import {
+    GetGoalStationsRequest,
+    GetGoalStationsResponse,
+    PostGoalStationsRequest,
+    PostGoalStationsResponse,
+} from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 
 export const GoalStationsServiceImpl: GoalStationsService = {
     /**
      * イベントコードに紐づく目的駅を全件取得する
-     * @param req - リクエストデータ
-     * @return {Promise<GetGoalStationsResponse>} 目的駅のリスト
+     * @param {GetGoalStationsRequest} req - リクエスト
+     * @return {Promise<GetGoalStationsResponse>} レスポンス
      */
-    async getGoalStationsByEventCode(req: GetGoalStationsRequest): Promise<GetGoalStationsResponse> {
+    async getGoalStationsByEventCode(
+        req: GetGoalStationsRequest
+    ): Promise<GetGoalStationsResponse> {
         const goalStationsRepository = RepositoryFactory.getGoalStationsRepository();
 
         try {
@@ -28,22 +34,24 @@ export const GoalStationsServiceImpl: GoalStationsService = {
 
     /**
      * 目的駅を登録する
-     * @param req - リクエストデータ
-     * @return {Promise<void>} 登録完了
+     * @param {PostGoalStationsRequest} req - リクエスト
+     * @return {Promise<PostGoalStationsResponse>} レスポンス
      */
-    async postGoalStations(req: PostGoalStationsRequest): Promise<GoalStations> {
+    async postGoalStations(req: PostGoalStationsRequest): Promise<PostGoalStationsResponse> {
         const goalStationsRepository = RepositoryFactory.getGoalStationsRepository();
 
         try {
-            return await goalStationsRepository.create({
+            const goalStation = await goalStationsRepository.create({
                 eventCode: req.eventCode,
                 stationCode: req.stationCode,
-            }
-
-            );
+            });
+            const res: PostGoalStationsResponse = {
+                goalStation: goalStation,
+            };
+            return res;
         } catch (error) {
             console.error("Error in postGoalStations:", error);
             throw new Error("Failed to register goal station");
         }
-    }
+    },
 };

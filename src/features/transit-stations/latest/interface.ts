@@ -1,13 +1,12 @@
-import { LatestTransitStations } from "@/generated/prisma";
-import { GetLatestTransitStationsRequest } from "./types";
+import { GetLatestTransitStationsRequest, GetLatestTransitStationsResponse } from "./types";
 
 export interface LatestTransitStationsService {
     /**
      * イベントコードに紐づく最新経由駅を取得する
-     * @param req - リクエストデータ
-     * @return {Promise<LatestTransitStations[]>} 最新経由駅のリスト
+     * @param {GetLatestTransitStationsRequest} req - リクエスト
+     * @return {Promise<GetLatestTransitStationsResponse>} レスポンス
      */
     getLatestTransitStationsByEventCode: (
         req: GetLatestTransitStationsRequest
-    ) => Promise<LatestTransitStations[]>;
+    ) => Promise<GetLatestTransitStationsResponse>;
 }

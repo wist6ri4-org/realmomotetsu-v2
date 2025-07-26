@@ -6,6 +6,7 @@ import {
     getGoalStationsRequestSchema,
     postGoalStationsRequestSchema,
 } from "@/features/goal-stations/validator";
+import { GetGoalStationsResponse, PostGoalStationsResponse } from "@/features/goal-stations/types";
 
 /**
  * 目的駅に関するAPIハンドラー
@@ -49,7 +50,8 @@ class GoalStationsApiHandler extends BaseApiHandler {
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data = await GoalStationsServiceImpl.getGoalStationsByEventCode(validatedParams);
+            const data: GetGoalStationsResponse =
+                await GoalStationsServiceImpl.getGoalStationsByEventCode(validatedParams);
 
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
@@ -83,7 +85,9 @@ class GoalStationsApiHandler extends BaseApiHandler {
             this.logDebug("Request body", validatedBody);
 
             // サービスからデータを取得
-            const data = await GoalStationsServiceImpl.postGoalStations(validatedBody);
+            const data: PostGoalStationsResponse = await GoalStationsServiceImpl.postGoalStations(
+                validatedBody
+            );
 
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);

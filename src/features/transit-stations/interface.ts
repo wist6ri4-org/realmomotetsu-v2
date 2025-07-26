@@ -1,21 +1,24 @@
-import { TransitStationsGroupedByTeamCode } from "@/types/TransitStationsGroupedByTeamCode";
-import { GetTransitStationsRequest, PostTransitStationsRequest } from "./types";
-import { TransitStations } from "@/generated/prisma";
+import {
+    GetTransitStationsRequest,
+    GetTransitStationsResponse,
+    PostTransitStationsRequest,
+    PostTransitStationsResponse,
+} from "./types";
 
 export interface TransitStationsService {
     /**
      * イベントコードに紐づく経由駅をチームコードごとに取得する
-     * @param req - リクエストデータ
-     * @return {Promise<TransitStationsGroupedByTeamCode[]>} チームコードごとの経由駅のリスト
+     * @param {GetTransitStationsRequest} req - リクエスト
+     * @return {Promise<GetTransitStationsResponse>} レスポンス
      */
     getTransitStationsByEventCodeGroupedByTeamCode: (
         req: GetTransitStationsRequest
-    ) => Promise<TransitStationsGroupedByTeamCode>;
+    ) => Promise<GetTransitStationsResponse>;
 
     /**
      * 経由駅を登録する
-     * @param req - リクエストデータ
-     * @return {Promise<void>} 登録完了
+     * @param {PostTransitStationsRequest} req - リクエスト
+     * @return {Promise<PostTransitStationsResponse>} レスポンス
      */
-    postTransitStations: (req: PostTransitStationsRequest) => Promise<TransitStations>;
+    postTransitStations: (req: PostTransitStationsRequest) => Promise<PostTransitStationsResponse>;
 }

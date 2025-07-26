@@ -1,5 +1,9 @@
-import { GoalStations } from "@/generated/prisma";
-import { GetGoalStationsRequest, GetGoalStationsResponse, PostGoalStationsRequest } from "./types";
+import {
+    GetGoalStationsRequest,
+    GetGoalStationsResponse,
+    PostGoalStationsRequest,
+    PostGoalStationsResponse,
+} from "./types";
 
 export interface GoalStationsService {
     /**
@@ -11,8 +15,8 @@ export interface GoalStationsService {
 
     /**
      * 目的駅を登録する
-     * @param req - リクエストデータ
-     * @return {Promise<void>} 登録完了
+     * @param {PostGoalStationsRequest} req - リクエスト
+     * @return {Promise<PostGoalStationsResponse>} レスポンス
      */
-    postGoalStations: (req: PostGoalStationsRequest) => Promise<GoalStations>;
+    postGoalStations: (req: PostGoalStationsRequest) => Promise<PostGoalStationsResponse>;
 }

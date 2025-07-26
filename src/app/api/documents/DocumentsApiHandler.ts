@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { DocumentsServiceImpl } from "@/features/documents/service";
-import {
-    getDocumentsRequestSchema,
-} from "@/features/documents/validator";
+import { getDocumentsRequestSchema } from "@/features/documents/validator";
+import { GetDocumentsResponse } from "@/features/documents/types";
 
 /**
  * ドキュメントに関するAPIハンドラー
@@ -47,7 +46,9 @@ class DocumentsApiHandler extends BaseApiHandler {
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data = await DocumentsServiceImpl.getDocumentsByEventCode(validatedParams);
+            const data: GetDocumentsResponse = await DocumentsServiceImpl.getDocumentsByEventCode(
+                validatedParams
+            );
 
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);

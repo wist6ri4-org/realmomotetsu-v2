@@ -3,7 +3,7 @@ import { TeamData } from "@/types/TeamData";
 
 /**
  * ホーム画面の初期化リクエスト
- * @param eventCode - イベントコード
+ * @property { string } eventCode - イベントコード
  */
 export type InitHomeRequest = {
     eventCode: string;
@@ -11,9 +11,9 @@ export type InitHomeRequest = {
 
 /**
  * ホーム画面の初期化レスポンス
- * @param teamData - チームデータの配列
- * @param nextGoalStation - 次の目的駅（nullの場合もあり）
- * @param bombiiTeam - ボンビーを持っているチーム（nullの場合もあり）
+ * @property { TeamData[] } teamData - チームごとのデータ配列
+ * @property { GoalStations | null } nextGoalStation - 次のゴール駅情報
+ * @property { Teams | null } bombiiTeam - Bombiiチームの情報
  */
 export type InitHomeResponse = {
     teamData: TeamData[];

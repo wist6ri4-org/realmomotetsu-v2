@@ -1,11 +1,10 @@
-import { PostUsersRequest } from "./types";
-import { Users } from "@/generated/prisma";
+import { PostUsersRequest, PostUsersResponse } from "./types";
 
 export interface UsersService {
     /**
      * ユーザーを登録する
-     * @param req - リクエストデータ
-     * @return {Promise<Users>} 登録完了したユーザー情報
+     * @param {PostUsersRequest} req - リクエスト
+     * @return {Promise<PostUsersResponse>} レスポンス
      */
-    postUsers: (req: PostUsersRequest) => Promise<Users>;
+    postUsers: (req: PostUsersRequest) => Promise<PostUsersResponse>;
 }

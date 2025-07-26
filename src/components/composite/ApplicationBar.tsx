@@ -60,8 +60,8 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
             const dataEvents = await responseEvents.json();
             const dataUsers = await responseUsers.json();
 
-            const eventData = dataEvents?.data || {};
-            const userData = dataUsers?.data || {};
+            const eventData = dataEvents?.data?.event || dataEvents?.event || {};
+            const userData = dataUsers?.data?.user || dataUsers?.user || {};
             if (!eventData || !userData) {
                 throw new Error("Event or user data not found");
             }

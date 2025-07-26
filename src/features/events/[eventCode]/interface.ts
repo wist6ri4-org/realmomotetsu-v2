@@ -1,11 +1,10 @@
-import { GetEventByEventCodeRequest } from "./types";
-import { Events } from "@/generated/prisma";
+import { GetEventByEventCodeRequest, GetEventByEventCodeResponse } from "./types";
 
 export interface EventByEventCodeService {
     /**
      * イベントコードでイベントを取得する
-     * @param req - イベントを取得するためのリクエスト
-     * @returns イベント情報
+     * @param {GetEventByEventCodeRequest} req - リクエスト
+     * @return {Promise<GetEventByEventCodeResponse>} レスポンス
      */
-    getEventByEventCode: (req: GetEventByEventCodeRequest) => Promise<Events | null>;
+    getEventByEventCode: (req: GetEventByEventCodeRequest) => Promise<GetEventByEventCodeResponse>;
 }

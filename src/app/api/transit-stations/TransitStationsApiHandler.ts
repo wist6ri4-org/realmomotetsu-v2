@@ -6,6 +6,10 @@ import {
     getTransitStationsRequestSchema,
     postTransitStationsRequestSchema,
 } from "@/features/transit-stations/validator";
+import {
+    GetTransitStationsResponse,
+    PostTransitStationsResponse,
+} from "@/features/transit-stations/types";
 
 /**
  * 経由駅に関するAPIハンドラー
@@ -49,7 +53,7 @@ class TransitStationsApiHandler extends BaseApiHandler {
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data =
+            const data: GetTransitStationsResponse =
                 await TransitStationsServiceImpl.getTransitStationsByEventCodeGroupedByTeamCode(
                     validatedParams
                 );
@@ -64,7 +68,7 @@ class TransitStationsApiHandler extends BaseApiHandler {
             };
 
             const info: Info = {};
-            Object.entries(data).forEach(([teamCode, transitStations]) => {
+            Object.entries(data.transitStations).forEach(([teamCode, transitStations]) => {
                 info[teamCode] = {
                     transitStationsCount: transitStations.length,
                 };
@@ -98,7 +102,8 @@ class TransitStationsApiHandler extends BaseApiHandler {
             this.logDebug("Request body", validatedBody);
 
             // サービスからデータを取得
-            const data = await TransitStationsServiceImpl.postTransitStations(validatedBody);
+            const data: PostTransitStationsResponse =
+                await TransitStationsServiceImpl.postTransitStations(validatedBody);
 
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
