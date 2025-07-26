@@ -17,10 +17,10 @@ interface InformationDialogProps {
 
 /**
  * チーム情報ダイアログコンポーネント
- * @param {InformationDialogProps} props - プロパティ
+ * @param {InformationDialogProps} props - InformationDialogのプロパティ
  * @returns {JSX.Element} - InformationDialogコンポーネント
  */
-const InformationDialog: React.FC<InformationDialogProps> = ({ teamData }) => {
+const InformationDialog: React.FC<InformationDialogProps> = ({ teamData }: InformationDialogProps) => {
     const [isOpen, setIsOpen] = useState(false);
 
     /**

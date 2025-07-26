@@ -23,7 +23,6 @@ class InitOperationApiHandler extends BaseApiHandler {
     protected getHandlers(): Handlers {
         return {
             GET: this.handleGet.bind(this),
-            // 必要に応じてPOST, PUT, DELETEも追加
         };
     }
 

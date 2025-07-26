@@ -260,6 +260,11 @@ model Attendances {
   @@map("attendances")
 }
 
+
+/**
+ * View
+ */
+
 /**
  * LatestTransitStations
  * 最新の経由駅情報ビュー

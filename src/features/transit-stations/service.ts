@@ -11,8 +11,8 @@ import { TransitStations } from "@/generated/prisma";
 export const TransitStationsServiceImpl: TransitStationsService = {
     /**
      * イベントコードに紐づく経由駅をチームコードごとに取得する
-     * @param req - リクエストデータ
-     * @return {Promise<TransitStationsGroupedByTeamCode>} チームコードごとの経由駅のリスト
+     * @param {GetTransitStationsRequest} req - リクエストデータ
+     * @return {Promise<GetTransitStationsResponse>} イベントコードに紐づく経由駅のレスポンス
      */
     async getTransitStationsByEventCodeGroupedByTeamCode(
         req: GetTransitStationsRequest

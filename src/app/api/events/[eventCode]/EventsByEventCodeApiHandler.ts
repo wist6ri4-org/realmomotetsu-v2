@@ -12,7 +12,8 @@ class EventByEventCodeApiHandler extends BaseApiHandler {
 
     /**
      * コンストラクタ
-     * @param req - Next.jsのリクエストオブジェクト
+     * @param {NextRequest} req - Next.jsのリクエストオブジェクト
+     * @param {{eventCode: string}} params - パスパラメータ（eventCode）
      */
     constructor(req: NextRequest, params: { eventCode: string }) {
         super(req);

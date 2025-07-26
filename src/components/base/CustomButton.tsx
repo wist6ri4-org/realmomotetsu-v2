@@ -3,15 +3,6 @@ import { Button as MuiButton, ButtonProps as MuiButtonProps } from "@mui/materia
 
 /**
  * カスタムボタンのプロパティ型定義
- * @property {string} [color] - ボタンの色
- * @property {string} [size] - ボタンのサイズ
- * @property {string} [variant] - ボタンのバリアント
- * @property {boolean} [fullWidth] - ボタンの幅を全体にするかどうか
- * @property {boolean} [loading] - ローディング状態
- */
-
-/**
- * カスタムボタンのプロパティ
  * @param {React.ReactNode} children - ボタンの子要素
  * @param {string} [color] - ボタンの色
  * @param {string} [size] - ボタンのサイズ

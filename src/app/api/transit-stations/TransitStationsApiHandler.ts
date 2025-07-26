@@ -8,7 +8,7 @@ import {
 } from "@/features/transit-stations/validator";
 
 /**
- * 目的駅に関するAPIハンドラー
+ * 経由駅に関するAPIハンドラー
  */
 class TransitStationsApiHandler extends BaseApiHandler {
     /**

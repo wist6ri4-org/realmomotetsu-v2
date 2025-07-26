@@ -7,11 +7,20 @@ import ApplicationBar from "@/components/composite/ApplicationBar";
 import Header from "@/components/composite/Header";
 import { NavigationBar } from "@/components/composite/NavigationBar";
 
+/**
+ * イベントページのレイアウトコンポーネントのプロパティ型定義
+ * @param {React.ReactNode} children - レイアウト内に表示する子要素
+ */
 interface EventsLayoutProps {
     children: React.ReactNode;
 }
 
-const EventsLayout: React.FC<EventsLayoutProps> = ({ children }): React.JSX.Element | null => {
+/**
+ * イベントページのレイアウトコンポーネント
+ * @param {EventsLayoutProps} props - レイアウトのプロパティ
+ * @return {React.JSX.Element | null} - レイアウトコンポーネント
+ */
+const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutProps): React.JSX.Element | null => {
 const { sbUser, isLoading } = useAuthGuard();
 
     return (

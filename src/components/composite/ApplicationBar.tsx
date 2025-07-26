@@ -16,11 +16,20 @@ import { Events } from "@/generated/prisma";
 import { signOut } from "@/lib/auth";
 import { UsersWithRelations } from "@/repositories/users/UsersRepository";
 
+/**
+ * アプリケーションバーのプロパティ型定義
+ * @property {sbUser} sbUser - Supabaseのユーザーオブジェクト
+ */
 interface ApplicationBarProps {
     sbUser: User;
 }
 
-const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }): React.JSX.Element => {
+/**
+ * アプリケーションバーコンポーネント
+ * @param {ApplicationBarProps} props - アプリケーションバーのプロパティ
+ * @return {React.JSX.Element} - アプリケーションバーコンポーネント
+ */
+const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBarProps): React.JSX.Element => {
     const router = useRouter();
     const { eventCode } = useParams();
 

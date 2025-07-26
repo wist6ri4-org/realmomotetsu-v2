@@ -12,7 +12,8 @@ class UsersByUuidApiHandler extends BaseApiHandler {
 
     /**
      * コンストラクタ
-     * @param req - Next.jsのリクエストオブジェクト
+     * @param {NextRequest} req - Next.jsのリクエストオブジェクト
+     * @param {{uuid: string}} params - パスパラメータ（uuid）
      */
     constructor(req: NextRequest, params: { uuid: string }) {
         super(req);
