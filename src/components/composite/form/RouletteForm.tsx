@@ -14,6 +14,7 @@ import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/Nearb
 import CustomRadio, { RadioOption } from "@/components/base/CustomRadio";
 import RouletteCard from "../../base/RouletteCard";
 import { useSelectInput } from "@/hooks/useSelectInput";
+import { ClosestStation } from "@/types/ClosestStation";
 
 /**
  * RouletteFormコンポーネントのプロパティ型定義
@@ -26,7 +27,7 @@ interface RouletteFormProps {
     stations: Stations[];
     nearbyStations: NearbyStationsWithRelations[];
     latestTransitStations: TransitStations[];
-    closestStations: Stations[];
+    closestStations: ClosestStation[];
 }
 
 // ルーレットモードのオプション
@@ -37,10 +38,7 @@ const rouletteModes: RadioOption[] = [
 
 /**
  * ルーレットフォームコンポーネント
- * @param stations - 駅のリスト
- * @param nearbyStations - 最寄り駅のリスト
- * @param latestTransitStations - 最新の乗り換え駅のリスト
- * @param closestStations - 最寄り駅のリスト
+ * @param {RouletteFormProps} props - RouletteFormのプロパティ
  * @returns {JSX.Element} - RouletteFormコンポーネント
  */
 const RouletteForm: React.FC<RouletteFormProps> = ({
@@ -48,7 +46,7 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
     nearbyStations,
     latestTransitStations,
     closestStations,
-}): React.JSX.Element => {
+}: RouletteFormProps): React.JSX.Element => {
     const startStationCodeInput = useSelectInput(closestStations?.[0]?.stationCode || "");
     const [rouletteMode, setRouletteMode] = useState<"weighted" | "random">("weighted");
     const [spinInterval, setSpinInterval] = useState<NodeJS.Timeout | null>(null);

@@ -1,4 +1,5 @@
 import { Stations } from "@/generated/prisma";
+import { ClosestStation } from "@/types/ClosestStation";
 
 export default class LocationUtils {
     static readonly R = 6371; // 地球の半径 (km)
@@ -51,15 +52,15 @@ export default class LocationUtils {
      * @param {number} latitude - 検索する位置の緯度
      * @param {number} longitude - 検索する位置の経度
      * @param {number} numberOfStations - 取得する駅の数
-     * @return {Array<{ stationCode: string; distance: number }>} 近い駅の配列
+     * @return {ClosestStation[]} 近い駅の配列
      */
     static findNearbyStations(
         locationGraph: Map<string, { latitude: number; longitude: number }>,
         latitude: number,
         longitude: number,
         numberOfStations: number
-    ): Array<{ stationCode: string; distance: number }> {
-        const distances: Array<{ stationCode: string; distance: number }> = [];
+    ): ClosestStation[] {
+        const distances: ClosestStation[] = [];
 
         for (const [stationCode, location] of locationGraph.entries()) {
             const distance = this.calculateDistance(

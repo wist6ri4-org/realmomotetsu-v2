@@ -5,6 +5,7 @@ import PageTitle from "@/components/base/PageTitle";
 import RouletteForm from "@/components/composite/form/RouletteForm";
 import { LatestTransitStations, Stations } from "@/generated/prisma";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
+import { ClosestStation } from "@/types/ClosestStation";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
 import { ArrowDropDown, Casino } from "@mui/icons-material";
 import {
@@ -28,7 +29,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
     const [stations, setStations] = useState<Stations[]>([]);
     const [nearbyStations, setNearbyStations] = useState<NearbyStationsWithRelations[]>([]);
     const [latestTransitStations, setLatestTransitStations] = useState<LatestTransitStations[]>([]);
-    const [closestStations, setClosestStations] = useState<Stations[]>([]);
+    const [closestStations, setClosestStations] = useState<ClosestStation[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -72,7 +73,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
             setStations(stations as Stations[]);
             setNearbyStations(nearbyStations as NearbyStationsWithRelations[]);
             setLatestTransitStations(latestTransitStations as LatestTransitStations[]);
-            setClosestStations(closestStations as Stations[]);
+            setClosestStations(closestStations as ClosestStation[]);
         } catch (error) {
             console.error("Error fetching data:", error);
             setError(error instanceof Error ? error.message : "Unknown error");

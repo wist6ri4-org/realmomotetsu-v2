@@ -1,4 +1,5 @@
 import { Stations, Teams } from "@/generated/prisma";
+import { ClosestStation } from "@/types/ClosestStation";
 
 /**
  * 初期化フォームのリクエスト
@@ -14,17 +15,12 @@ export type InitFormRequest = {
 
 /**
  * 初期化フォームのレスポンス
- * @param teams - チームの配列
- * @param stations - 駅の配列
- * @param closestStations - 近隣の駅の配列（オプション）
- * @param closestStations.stationCode - 駅コード
- * @param closestStations.distance - 現在位置からの距離（km）
+ * @property {Teams[]} teams - チームの配列
+ * @property {Stations[]} stations - 駅の配列
+ * @property {ClosestStation[]} [closestStations] - 最寄り駅の配列（オプション）
  */
 export type InitFormResponse = {
     teams: Teams[];
     stations: Stations[];
-    closestStations?: Array<{
-        stationCode: string;
-        distance: number;
-    }>;
+    closestStations?: ClosestStation[];
 };

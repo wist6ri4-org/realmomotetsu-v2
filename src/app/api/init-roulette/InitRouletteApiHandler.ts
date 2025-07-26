@@ -52,7 +52,7 @@ class InitRouletteApiHandler extends BaseApiHandler {
 
             this.logInfo("Successfully retrieved init-roulette data", {
                 stationsCount: data.stations.length,
-                nearbyStationsCount: data.closestStations ? data.closestStations.length : 0,
+                closestStationsCount: data.closestStations ? data.closestStations.length : 0,
             });
 
             return this.createSuccessResponse(data);

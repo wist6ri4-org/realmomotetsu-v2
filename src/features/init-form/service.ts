@@ -2,6 +2,7 @@ import LocationUtils from "@/utils/locationUtils";
 import { InitFormService } from "./interface";
 import { InitFormRequest, InitFormResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
+import { ClosestStation } from "@/types/ClosestStation";
 
 export const InitFormServiceImpl: InitFormService = {
     /**
@@ -31,7 +32,7 @@ export const InitFormServiceImpl: InitFormService = {
 
             // 位置情報が提供されている場合、近隣の駅を計算
             if (req.latitude && req.longitude) {
-                const closestStations = LocationUtils.calculate(
+                const closestStations: ClosestStation[] = LocationUtils.calculate(
                     stations,
                     req.latitude,
                     req.longitude

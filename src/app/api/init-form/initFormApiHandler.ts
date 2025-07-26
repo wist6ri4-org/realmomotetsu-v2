@@ -53,7 +53,7 @@ class InitFormApiHandler extends BaseApiHandler {
             this.logInfo("Successfully retrieved init-form data", {
                 teamsCount: data.teams.length,
                 stationsCount: data.stations.length,
-                nearbyStationsCount: data.closestStations ? data.closestStations.length : 0,
+                closestStationsCount: data.closestStations ? data.closestStations.length : 0,
             });
 
             return this.createSuccessResponse(data);

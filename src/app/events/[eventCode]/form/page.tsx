@@ -4,6 +4,7 @@ import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
 import CurrentLocationForm from "@/components/composite/form/CurrentLocationForm";
 import { Stations, Teams } from "@/generated/prisma";
+import { ClosestStation } from "@/types/ClosestStation";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
 import { ArrowDropDown, Assignment } from "@mui/icons-material";
 import {
@@ -26,7 +27,7 @@ const FormPage: React.FC = (): React.JSX.Element => {
 
     const [teams, setTeams] = useState<Teams[]>([]);
     const [stations, setStations] = useState<Stations[]>([]);
-    const [closestStations, setClosestStations] = useState<Stations[]>([]);
+    const [closestStations, setClosestStations] = useState<ClosestStation[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -66,7 +67,7 @@ const FormPage: React.FC = (): React.JSX.Element => {
             }
             setTeams(teams as Teams[]);
             setStations(stations as Stations[]);
-            setClosestStations(closestStations as Stations[]);
+            setClosestStations(closestStations as ClosestStation[]);
         } catch (error) {
             console.error("Error fetching data:", error);
             setError(error instanceof Error ? error.message : "Unknown error");

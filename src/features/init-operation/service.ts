@@ -4,6 +4,7 @@ import { InitOperationRequest, InitOperationResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import DijkstraUtils from "@/utils/dijkstraUtils";
 import { TeamData } from "@/types/TeamData";
+import { ClosestStation } from "@/types/ClosestStation";
 
 export const InitOperationServiceImpl: InitOperationService = {
     /**
@@ -63,7 +64,7 @@ export const InitOperationServiceImpl: InitOperationService = {
 
             // 位置情報が提供されている場合、近隣の駅を計算
             if (req.latitude && req.longitude) {
-                const closestStations = LocationUtils.calculate(
+                const closestStations: ClosestStation[] = LocationUtils.calculate(
                     stations,
                     req.latitude,
                     req.longitude

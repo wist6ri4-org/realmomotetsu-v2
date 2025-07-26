@@ -1,4 +1,5 @@
 import { LatestTransitStations, NearbyStations, Stations } from "@/generated/prisma";
+import { ClosestStation } from "@/types/ClosestStation";
 
 /**
  * ルーレット画面の初期化リクエスト
@@ -14,18 +15,14 @@ export type InitRouletteRequest = {
 
 /**
  * ルーレット画面の初期化レスポンス
- * @param teams - チームの配列
- * @param stations - 駅の配列
- * @param closestStations - 近隣の駅の配列（オプション）
- * @param closestStations.stationCode - 駅コード
- * @param closestStations.distance - 現在位置からの距離（km）
+ * @property {Stations[]} stations - 駅の配列
+ * @property {NearbyStations[]} nearbyStations - 近隣駅の配列
+ * @property {LatestTransitStations[]} latestTransitStations - 最新の経由駅の配列
+ * @property {ClosestStation[]} [closestStations] - 最寄り駅の配列（オプション）
  */
 export type InitRouletteResponse = {
     stations: Stations[];
     nearbyStations: NearbyStations[];
     latestTransitStations: LatestTransitStations[];
-    closestStations?: Array<{
-        stationCode: string;
-        distance: number;
-    }>;
+    closestStations?: ClosestStation[];
 };

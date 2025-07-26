@@ -7,6 +7,7 @@ import CustomButton from "@/components/base/CustomButton";
 import CustomSelect from "@/components/base/CustomSelect";
 import { Stations, Teams } from "@/generated/prisma";
 import { useSelectInput } from "@/hooks/useSelectInput";
+import { ClosestStation } from "@/types/ClosestStation";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
 import { useParams } from "next/navigation";
@@ -16,25 +17,24 @@ import React from "react";
  * CurrentLocationFormコンポーネントのプロパティ型定義
  * @property {Teams[]} teams - チームのリスト
  * @property {Stations[]} stations - 駅のリスト
- * @property {Stations[]} [nearByStations] - オプションとして最寄り駅のリスト
+ * @property {ClosestStation[]} [closestStations] - 最寄り駅のリスト（オプション）
  */
 interface CurrentLocationFormProps {
     teams: Teams[];
     stations: Stations[];
-    closestStations?: Stations[]; // オプションとして最寄り駅を受け取る
+    closestStations?: ClosestStation[];
 }
 
 /**
  * 現在地登録フォームコンポーネント
- * @param teams - チームのリスト
- * @param stations - 駅のリスト
+ * @param { CurrentLocationFormProps } props - コンポーネントのプロパティ
  * @returns {JSX.Element} - CurrentLocationFormコンポーネント
  */
 const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     teams,
     stations,
-    closestStations: closestStations,
-}): React.JSX.Element => {
+    closestStations
+}: CurrentLocationFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
     const selectedTeamCodeInput = useSelectInput("");

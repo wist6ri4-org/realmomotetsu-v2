@@ -2,6 +2,7 @@ import LocationUtils from "@/utils/locationUtils";
 import { InitRouletteService } from "./interface";
 import { InitRouletteRequest, InitRouletteResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
+import { ClosestStation } from "@/types/ClosestStation";
 
 export const InitRouletteServiceImpl: InitRouletteService = {
     /**
@@ -34,12 +35,12 @@ export const InitRouletteServiceImpl: InitRouletteService = {
 
             // 位置情報が提供されている場合、近隣の駅を計算
             if (req.latitude && req.longitude) {
-                const nearbyStations = LocationUtils.calculate(
+                const closestStations: ClosestStation[] = LocationUtils.calculate(
                     stations,
                     req.latitude,
                     req.longitude
                 );
-                res.closestStations = nearbyStations;
+                res.closestStations = closestStations;
             }
 
             return res;
