@@ -13,14 +13,13 @@ type UpdatedTimeProps = {
 
 /**
  * UpdatedTimeコンポーネント
- * @param textAlign - テキストの配置（"left" | "center" | "right"）
- * @param variant - テキストのバリアント（"body1" | "body2" | "h4" | "h5"）
+ * @param {UpdatedTimeProps} props - UpdatedTimeのプロパティ
  * @return {JSX.Element} - UpdatedTimeコンポーネント
  */
 export const UpdatedTime: React.FC<UpdatedTimeProps> = ({
     textAlign = "center",
     variant = "body1",
-}): React.JSX.Element => {
+}: UpdatedTimeProps): React.JSX.Element => {
     const [updatedAt, setUpdatedAt] = useState<string>();
 
     useEffect(() => {

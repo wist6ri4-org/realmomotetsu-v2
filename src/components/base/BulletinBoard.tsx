@@ -32,14 +32,13 @@ const slideDestination = keyframes`
 
 /**
  * BulletinBoardコンポーネント
- * @param nextStation - 次の駅名
- * @param nextStationEng - 次の駅名（英語表記、駅コード）
+ * @param {BulletinBoardProps} props - BulletinBoardのプロパティ
  * @returns {JSX.Element} - BulletinBoardコンポーネント
  */
 const BulletinBoard: React.FC<BulletinBoardProps> = ({
     nextStation,
     nextStationEng,
-}): React.JSX.Element => {
+}: BulletinBoardProps): React.JSX.Element => {
     return (
         <Box
             sx={{

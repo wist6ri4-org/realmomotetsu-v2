@@ -71,21 +71,7 @@ interface CustomSelectProps extends Omit<MuiSelectProps, "color" | "size"> {
 
 /**
  * カスタムセレクトボックスコンポーネント
- * @param props - カスタムセレクトボックスのプロパティ
- * @param props.options - セレクトボックスのオプションリスト
- * @param props.color - セレクトボックスの色
- * @param props.size - セレクトボックスのサイズ
- * @param props.variant - セレクトボックスのバリアント
- * @param props.fullWidth - セレクトボックスの幅を全体にするかどうか
- * @param props.label - セレクトボックスのラベル
- * @param props.helperText - セレクトボックスのヘルパーテキスト
- * @param props.error - エラーステータス
- * @param props.placeholder - プレースホルダーテキスト
- * @param props.loading - ローディング状態
- * @param props.disabled - セレクトボックスを無効化するかどうか
- * @param props.value - 選択されている値
- * @param props.onChange - 値が変更されたときのハンドラー
- * @param props.sx - スタイルオブジェクト
+ * @param {CustomSelectProps} props - カスタムセレクトボックスのプロパティ
  * @returns {JSX.Element} - カスタムセレクトボックスコンポーネント
  */
 export const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -104,7 +90,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
     onChange,
     sx,
     ...props
-}): React.JSX.Element => {
+}: CustomSelectProps): React.JSX.Element => {
     const id = useId();
     const labelId = `custom-select-label-${id}`;
 

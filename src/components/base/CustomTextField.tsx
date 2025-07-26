@@ -65,27 +65,7 @@ interface CustomTextFieldProps extends Omit<MuiTextFieldProps, "color" | "size">
 
 /**
  * カスタムテキストフィールドコンポーネント
- * @param props - カスタムテキストフィールドのプロパティ
- * @param props.color - テキストフィールドの色
- * @param props.size - テキストフィールドのサイズ
- * @param props.variant - テキストフィールドのバリアント
- * @param props.fullWidth - テキストフィールドの幅を全体にするかどうか
- * @param props.label - テキストフィールドのラベル
- * @param props.helperText - テキストフィールドのヘルパーテキスト
- * @param props.error - エラーステータス
- * @param props.placeholder - プレースホルダーテキスト
- * @param props.loading - ローディング状態
- * @param props.disabled - テキストフィールドを無効化するかどうか
- * @param props.value - テキストフィールドの値
- * @param props.onChange - 値が変更されたときのハンドラー
- * @param props.type - インプットタイプ
- * @param props.multiline - 複数行対応するかどうか
- * @param props.rows - 複数行の場合の行数
- * @param props.maxRows - 複数行の場合の最大行数
- * @param props.showPasswordToggle - パスワード表示切り替えボタンを表示するかどうか
- * @param props.startAdornment - 開始装飾
- * @param props.endAdornment - 終了装飾
- * @param props.sx - スタイルオブジェクト
+ * @param {CustomTextFieldProps} props - カスタムテキストフィールドのプロパティ
  * @returns {JSX.Element} - カスタムテキストフィールドコンポーネント
  */
 export const CustomTextField: React.FC<CustomTextFieldProps> = ({
@@ -110,7 +90,7 @@ export const CustomTextField: React.FC<CustomTextFieldProps> = ({
     endAdornment,
     sx,
     ...props
-}): React.JSX.Element => {
+}: CustomTextFieldProps): React.JSX.Element => {
     const id = useId();
     const [showPassword, setShowPassword] = React.useState(false);
 

@@ -34,10 +34,12 @@ const pointStatusOptions: RadioOption[] = [
 
 /**
  * ポイント移動フォームコンポーネント
- * @param teams - チームのリスト
+ * @param {PointsTransferFormProps} props - PointsTransferFormのプロパティ
  * @returns {JSX.Element} - PointsTransferFormコンポーネント
  */
-const PointsTransferForm: React.FC<PointsTransferFormProps> = ({ teams }): React.JSX.Element => {
+const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
+    teams,
+}: PointsTransferFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
     const fromTeamCodeInput = useSelectInput("");

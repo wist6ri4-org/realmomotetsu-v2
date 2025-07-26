@@ -22,12 +22,12 @@ interface RegisterBombiiAutoFormProps {
 
 /**
  * ボンビー自動設定フォームコンポーネント
- * @param teamData - チームデータのリスト
+ * @param {RegisterBombiiAutoFormProps} props - RegisterBombiiAutoFormのプロパティ
  * @returns {JSX.Element} - RegisterBombiiAutoFormコンポーネント
  */
 const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
     teamData,
-}): React.JSX.Element => {
+}: RegisterBombiiAutoFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
     /**

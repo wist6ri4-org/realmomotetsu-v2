@@ -31,15 +31,7 @@ interface CustomButtonProps extends Omit<MuiButtonProps, "color" | "size"> {
 
 /**
  * カスタムボタンコンポーネント
- * @param props - カスタムボタンのプロパティ
- * @param props.children - ボタンの子要素
- * @param props.color - ボタンの色
- * @param props.size - ボタンのサイズ
- * @param props.variant - ボタンのバリアント
- * @param props.fullWidth - ボタンの幅を全体にするかどうか
- * @param props.loading - ローディング状態
- * @param props.disabled - ボタンを無効化するかどうか
- * @param props.sx - スタイルのカスタマイズ
+ * @param {CustomButtonProps} props - カスタムボタンのプロパティ
  * @returns {JSX.Element} - カスタムボタンコンポーネント
  */
 export const CustomButton: React.FC<CustomButtonProps> = ({
@@ -52,7 +44,7 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
     disabled,
     sx,
     ...props
-}): React.JSX.Element => {
+}: CustomButtonProps): React.JSX.Element => {
     return (
         <>
             <MuiButton

@@ -23,10 +23,12 @@ interface PointsExchangeFormProps {
 
 /**
  * ポイント換金フォームコンポーネント
- * @param teams - チームのリスト
+ * @param {PointsExchangeFormProps} props - PointsExchangeFormのプロパティ
  * @returns {JSX.Element} - PointsExchangeFormコンポーネント
  */
-const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({ teams }): React.JSX.Element => {
+const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
+    teams,
+}: PointsExchangeFormProps): React.JSX.Element => {
     const teamCodeInput = useSelectInput("");
 
     /**

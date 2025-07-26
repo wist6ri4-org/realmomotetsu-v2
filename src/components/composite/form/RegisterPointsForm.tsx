@@ -34,10 +34,12 @@ const pointStatusOptions: RadioOption[] = [
 
 /**
  * ポイント登録フォームコンポーネント
- * @param teams - チームのリスト
+ * @param {RegisterPointsFormProps} props - RegisterPointsFormのプロパティ
  * @returns {JSX.Element} - RegisterPointsFormコンポーネント
  */
-const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({ teams }): React.JSX.Element => {
+const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
+    teams,
+}: RegisterPointsFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
     const teamCodeInput = useSelectInput("");

@@ -20,12 +20,12 @@ interface DisplayedStationTypographyProps {
 
 /**
  * LastStationTypographyコンポーネント
- * @param length - 駅名の文字数
+ * @param {DisplayedStationTypographyProps} props - LastStationTypographyのプロパティ
  * @returns {JSX.Element} - LastStationTypographyコンポーネント
  */
 const DisplayedStationTypography = styled(Typography, {
     shouldForwardProp: (prop) => prop !== "length",
-})<DisplayedStationTypographyProps>(({ length }) => {
+})<DisplayedStationTypographyProps>(({ length }: DisplayedStationTypographyProps) => {
     let size;
     if (length > 8) {
         size = "1.3rem";
@@ -46,10 +46,12 @@ const DisplayedStationTypography = styled(Typography, {
 
 /**
  * RouletteCardコンポーネント
- * @param displayedStation - 表示する駅情報
+ * @param {RouletteCardProps} props - RouletteCardのプロパティ
  * @return {JSX.Element} - RouletteCardコンポーネント
  */
-const RouletteCard: React.FC<RouletteCardProps> = ({ displayedStation }): React.JSX.Element => {
+const RouletteCard: React.FC<RouletteCardProps> = ({
+    displayedStation,
+}: RouletteCardProps): React.JSX.Element => {
     return (
         <>
             <Box

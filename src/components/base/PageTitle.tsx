@@ -12,10 +12,13 @@ interface PageTitleProps {
 
 /**
  * PageTitleコンポーネント
- * @param title - ページタイトルのテキスト
+ * @param {PageTitleProps} props - PageTitleのプロパティ
  * @return {JSX.Element} - PageTitleコンポーネント
  */
-const PageTitle: React.FC<PageTitleProps> = ({ title, icon }): React.JSX.Element => {
+const PageTitle: React.FC<PageTitleProps> = ({
+    title,
+    icon,
+}: PageTitleProps): React.JSX.Element => {
     return (
         <>
             <Box sx={{ display: "flex", alignItems: "left", margin: 2 }}>

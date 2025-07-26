@@ -63,19 +63,7 @@ interface CustomRadioProps extends Omit<MuiRadioGroupProps, "color" | "size"> {
 
 /**
  * カスタムラジオボタンコンポーネント
- * @param props - カスタムラジオボタンのプロパティ
- * @param props.options - ラジオボタンのオプションリスト
- * @param props.color - ラジオボタンの色
- * @param props.size - ラジオボタンのサイズ
- * @param props.row - ラジオボタンを横に並べるかどうか
- * @param props.label - ラジオボタングループのラベル
- * @param props.helperText - ラジオボタングループのヘルパーテキスト
- * @param props.error - エラーステータス
- * @param props.loading - ローディング状態
- * @param props.disabled - ラジオボタンを無効化するかどうか
- * @param props.value - 選択されている値
- * @param props.onChange - 値が変更されたときのハンドラー
- * @param props.sx - スタイルオブジェクト
+ * @param {CustomRadioProps} props - カスタムラジオボタンのプロパティ
  * @returns {JSX.Element} - カスタムラジオボタンコンポーネント
  */
 export const CustomRadio: React.FC<CustomRadioProps> = ({
@@ -92,7 +80,7 @@ export const CustomRadio: React.FC<CustomRadioProps> = ({
     onChange,
     sx,
     ...props
-}): React.JSX.Element => {
+}: CustomRadioProps): React.JSX.Element => {
     const id = useId();
     const labelId = `custom-radio-label-${id}`;
 

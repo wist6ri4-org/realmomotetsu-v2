@@ -29,7 +29,9 @@ interface ApplicationBarProps {
  * @param {ApplicationBarProps} props - アプリケーションバーのプロパティ
  * @return {React.JSX.Element} - アプリケーションバーコンポーネント
  */
-const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBarProps): React.JSX.Element => {
+const ApplicationBar: React.FC<ApplicationBarProps> = ({
+    sbUser,
+}: ApplicationBarProps): React.JSX.Element => {
     const router = useRouter();
     const { eventCode } = useParams();
 
@@ -100,7 +102,7 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
     const handlePushUserSettings = () => {
         handleUserMenuClose();
         router.push(`/events/${eventCode}/operation/user-settings`);
-    }
+    };
 
     /**
      * サインアウト処理
@@ -154,17 +156,18 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
                                 zIndex: 2000, // Ensure the menu is above other elements
                             }}
                         >
-                            {user && user.attendances.map((attendance) => (
-                                <MenuItem
-                                    key={attendance.eventCode}
-                                    onClick={() => {
-                                        handleUserMenuClose();
-                                        window.location.href = `/events/${attendance.eventCode}/home`;
-                                    }}
-                                >
-                                    {attendance.event.eventName}
-                                </MenuItem>
-                            ))}
+                            {user &&
+                                user.attendances.map((attendance) => (
+                                    <MenuItem
+                                        key={attendance.eventCode}
+                                        onClick={() => {
+                                            handleUserMenuClose();
+                                            window.location.href = `/events/${attendance.eventCode}/home`;
+                                        }}
+                                    >
+                                        {attendance.event.eventName}
+                                    </MenuItem>
+                                ))}
                         </Menu>
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                             {event ? event.eventName : "Loading..."}
@@ -199,7 +202,9 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
                                         zIndex: 2000,
                                     }}
                                 >
-                                    <MenuItem onClick={handlePushUserSettings}>ユーザー設定</MenuItem>
+                                    <MenuItem onClick={handlePushUserSettings}>
+                                        ユーザー設定
+                                    </MenuItem>
                                     <MenuItem onClick={handleSignOut}>サインアウト</MenuItem>
                                 </Menu>
                             </Box>

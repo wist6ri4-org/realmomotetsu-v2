@@ -2,7 +2,7 @@
 
 import { TeamData } from "@/types/TeamData";
 import { Info } from "@mui/icons-material";
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid } from "@mui/x-data-grid";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Fab } from "@mui/material";
 import React, { useState } from "react";
 import CustomButton from "../base/CustomButton";
@@ -20,7 +20,9 @@ interface InformationDialogProps {
  * @param {InformationDialogProps} props - InformationDialogのプロパティ
  * @returns {JSX.Element} - InformationDialogコンポーネント
  */
-const InformationDialog: React.FC<InformationDialogProps> = ({ teamData }: InformationDialogProps) => {
+const InformationDialog: React.FC<InformationDialogProps> = ({
+    teamData,
+}: InformationDialogProps): React.JSX.Element => {
     const [isOpen, setIsOpen] = useState(false);
 
     /**
@@ -39,12 +41,12 @@ const InformationDialog: React.FC<InformationDialogProps> = ({ teamData }: Infor
 
     // チームデータのフィールドとヘッダー名
     const fields = [
-        { field: "teamName", headerName: "チーム名", width: 120},
-        { field: "points", headerName: "PT", width: 80},
+        { field: "teamName", headerName: "チーム名", width: 120 },
+        { field: "points", headerName: "PT", width: 80 },
         { field: "scoredPoints", headerName: "総資産", width: 80 },
         { field: "remainingStationsNumber", headerName: "目的駅まで", width: 80 },
         { field: "bombiiCounts", headerName: "ボンビー回数", width: 80 },
-    ]
+    ];
     // ページネーションの初期設定
     const paginationModel = { page: 0, pageSize: 5 };
 
@@ -64,11 +66,10 @@ const InformationDialog: React.FC<InformationDialogProps> = ({ teamData }: Infor
                     <DataGrid
                         rows={teamData}
                         columns={fields}
-                        initialState={{ pagination: {paginationModel}}}
+                        initialState={{ pagination: { paginationModel } }}
                         pageSizeOptions={[5, 10]}
                         density="compact"
                     />
-
                 </DialogContent>
                 <DialogActions>
                     <CustomButton onClick={handleClose} color="warning">

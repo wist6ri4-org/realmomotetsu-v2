@@ -24,12 +24,12 @@ interface RegisterGoalStationsFormProps {
 
 /**
  * 目的駅登録フォームコンポーネント
- * @param stations - 駅のリスト
+ * @param {RegisterGoalStationsFormProps} props - RegisterGoalStationsFormのプロパティ
  * @returns {JSX.Element} - RegisterGoalStationsFormコンポーネント
  */
 const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
     stations,
-}): React.JSX.Element => {
+}: RegisterGoalStationsFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
     const stationCodeInput = useSelectInput("");

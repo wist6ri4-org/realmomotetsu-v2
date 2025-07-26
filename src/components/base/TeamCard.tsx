@@ -26,12 +26,12 @@ interface LastStationTypographyProps {
 
 /**
  * LastStationTypographyコンポーネント
- * @param length - 駅名の文字数
+ * @param {LastStationTypographyProps} props - LastStationTypographyのプロパティ
  * @returns {JSX.Element} - LastStationTypographyコンポーネント
  */
 const LastStationTypography = styled(Typography, {
     shouldForwardProp: (prop) => prop !== "length",
-})<LastStationTypographyProps>(({ length }) => {
+})<LastStationTypographyProps>(({ length }: LastStationTypographyProps) => {
     let size;
     if (length > 8) {
         size = "1.1rem";
@@ -52,14 +52,13 @@ const LastStationTypography = styled(Typography, {
 
 /**
  * TeamCardコンポーネント
- * @param teamData - チームのデータ
- * @param bombiiTeamData - Bombiiチームのデータ（オプション）
+ * @param {TeamCardProps} props - TeamCardのプロパティ
  * @returns {JSX.Element} - TeamCardコンポーネント
  */
 export const TeamCard: React.FC<TeamCardProps> = ({
     teamData,
     bombiiTeamData,
-}): React.JSX.Element => {
+}: TeamCardProps): React.JSX.Element => {
     const lastStation = teamData.transitStations[teamData.transitStations.length - 1] || null;
     return (
         <>

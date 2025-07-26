@@ -26,12 +26,12 @@ interface ArrivalGoalStationsFormProps {
 
 /**
  * 目的駅到着処理フォームコンポーネント
- * @param teams - チームのリスト
+ * @param {ArrivalGoalStationsFormProps} props - ArrivalGoalStationsFormのプロパティ
  * @return {JSX.Element} - ArrivalGoalStationsFormコンポーネント
  */
 const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
     teams,
-}): React.JSX.Element => {
+}: ArrivalGoalStationsFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
     const teamCodeInput = useSelectInput("");

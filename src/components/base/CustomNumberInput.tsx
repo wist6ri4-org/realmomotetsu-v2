@@ -63,26 +63,7 @@ interface CustomNumberInputProps {
 
 /**
  * カスタム数値入力コンポーネント
- * @param props - カスタム数値入力のプロパティ
- * @param props.color - 入力フィールドの色
- * @param props.size - 入力フィールドのサイズ
- * @param props.variant - 入力フィールドのバリアント
- * @param props.fullWidth - 入力フィールドの幅を全体にするかどうか
- * @param props.label - 入力フィールドのラベル
- * @param props.helperText - 入力フィールドのヘルパーテキスト
- * @param props.error - エラーステータス
- * @param props.placeholder - プレースホルダーテキスト
- * @param props.loading - ローディング状態
- * @param props.disabled - 入力フィールドを無効化するかどうか
- * @param props.value - 入力されている値
- * @param props.min - 最小値
- * @param props.max - 最大値
- * @param props.step - ステップ値
- * @param props.showSteppers - ステッパーボタンを表示するかどうか
- * @param props.onChange - 値が変更されたときのハンドラー
- * @param props.onBlur - フォーカスが外れたときのハンドラー
- * @param props.sx - スタイルオブジェクト
- * @param ref - input要素への参照
+ * @param {CustomNumberInputProps} props - カスタム数値入力のプロパティ
  * @returns {JSX.Element} - カスタム数値入力コンポーネント
  */
 export const CustomNumberInput = forwardRef<HTMLInputElement, CustomNumberInputProps>(

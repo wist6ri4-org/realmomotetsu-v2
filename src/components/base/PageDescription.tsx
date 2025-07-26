@@ -11,10 +11,12 @@ interface PageDescriptionProps {
 
 /**
  * PageDescriptionコンポーネント
- * @param children - 説明文の内容
+ * @param {PageDescriptionProps} props - PageDescriptionのプロパティ
  * @returns {JSX.Element} - PageDescriptionコンポーネント
  */
-const PageDescription: React.FC<PageDescriptionProps> = ({ children }): React.JSX.Element => {
+const PageDescription: React.FC<PageDescriptionProps> = ({
+    children,
+}: PageDescriptionProps): React.JSX.Element => {
     return (
         <>
             <Paper variant="outlined">

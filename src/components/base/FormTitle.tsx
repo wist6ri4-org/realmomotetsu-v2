@@ -13,11 +13,13 @@ interface FormTitleProps {
 
 /**
  * FormTitleコンポーネント
- * @param title - タイトルのテキスト
- * @param icon - タイトルの前に表示するアイコン
+ * @param {FormTitleProps} props - FormTitleのプロパティ
  * @returns {JSX.Element} - FormTitleコンポーネント
  */
-const FormTitle: React.FC<FormTitleProps> = ({ title, icon }): React.JSX.Element => {
+const FormTitle: React.FC<FormTitleProps> = ({
+    title,
+    icon,
+}: FormTitleProps): React.JSX.Element => {
     return (
         <>
             <Box sx={{ display: "flex", alignItems: "left", margin: 1 }}>

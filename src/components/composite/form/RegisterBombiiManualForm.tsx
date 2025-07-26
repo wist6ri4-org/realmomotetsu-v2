@@ -24,12 +24,12 @@ interface RegisterBombiiManualFormProps {
 
 /**
  * ボンビー手動設定フォームコンポーネント
- * @param teams - チームのリスト
+ * @param {RegisterBombiiManualFormProps} props - RegisterBombiiManualFormのプロパティ
  * @returns {JSX.Element} - RegisterBombiiManualFormコンポーネント
  */
 const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
     teams,
-}): React.JSX.Element => {
+}: RegisterBombiiManualFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
     const teamCodeInput = useSelectInput("");

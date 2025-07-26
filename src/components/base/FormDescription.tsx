@@ -11,10 +11,12 @@ interface FormDescriptionProps {
 
 /**
  * FormDescriptionコンポーネント
- * @param children - 説明文の内容
+ * @param {FormDescriptionProps} props - FormDescriptionのプロパティ
  * @returns {JSX.Element} - FormDescriptionコンポーネント
  */
-const FormDescription: React.FC<FormDescriptionProps> = ({ children }): React.JSX.Element => {
+const FormDescription: React.FC<FormDescriptionProps> = ({
+    children,
+}: FormDescriptionProps): React.JSX.Element => {
     return (
         <>
             <Typography variant="body2" sx={{ textAlign: "left", margin: 1 }}>
