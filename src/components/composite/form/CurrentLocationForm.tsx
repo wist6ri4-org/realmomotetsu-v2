@@ -45,7 +45,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     /**
      * データの登録
      */
-    const createTransitStation = async () => {
+    const registerTransitStation = async () => {
         const isConfirmed = confirm(
             "以下の内容で登録しますか？\n" +
                 `チーム: ${selectedTeamCodeInput.value}\n` +
@@ -117,7 +117,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
                         />
                     </Box>
                     <Box sx={{ marginTop: 5 }}>
-                        <CustomButton fullWidth onClick={createTransitStation}>
+                        <CustomButton fullWidth onClick={registerTransitStation}>
                             送信
                         </CustomButton>
                     </Box>

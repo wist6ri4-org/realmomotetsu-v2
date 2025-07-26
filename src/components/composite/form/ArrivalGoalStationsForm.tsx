@@ -40,7 +40,7 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
     /**
      * データの登録
      */
-    const createArrivalData = async () => {
+    const registerArrivalData = async () => {
         const isConfirmed = confirm(
             "以下の内容で到着処理を行いますか？\n" +
                 `チーム: ${
@@ -137,7 +137,7 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <CustomButton onClick={createArrivalData}>送信</CustomButton>
+                        <CustomButton onClick={registerArrivalData}>送信</CustomButton>
                     </Box>
                 </Box>
             </Box>

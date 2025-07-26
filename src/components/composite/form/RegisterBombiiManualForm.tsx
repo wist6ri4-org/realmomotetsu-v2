@@ -37,7 +37,7 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
     /**
      * データの登録
      */
-    const createBombiiData = async () => {
+    const registerBombiiData = async () => {
         const isConfirmed = confirm(
             "以下の内容でボンビーを登録しますか？\n" +
                 `チーム: ${
@@ -100,7 +100,7 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <CustomButton onClick={createBombiiData}>送信</CustomButton>
+                        <CustomButton onClick={registerBombiiData}>送信</CustomButton>
                     </Box>
                 </Box>
             </Box>

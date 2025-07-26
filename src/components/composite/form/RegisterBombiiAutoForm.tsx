@@ -33,7 +33,7 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
     /**
      * データの確認と登録
      */
-    const confirmBombii = async () => {
+    const confirmAndRegisterBombii = async () => {
         const bombiiTeam = GameLogicUtils.confirmBombii(teamData);
 
         const isConfirmed = confirm(
@@ -86,7 +86,7 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
                     }}
                 >
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <CustomButton onClick={confirmBombii}>送信</CustomButton>
+                        <CustomButton onClick={confirmAndRegisterBombii}>送信</CustomButton>
                     </Box>
                 </Box>
             </Box>

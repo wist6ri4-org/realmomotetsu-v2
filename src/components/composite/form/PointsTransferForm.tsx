@@ -64,7 +64,7 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
     /**
      * データの登録
      */
-    const createPointsData = async () => {
+    const registerPointsData = async () => {
         const isConfirmed = confirm(
             "以下の内容でポイントを移動しますか？\n" +
                 `移動元チーム: ${
@@ -191,7 +191,7 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <CustomButton onClick={createPointsData}>送信</CustomButton>
+                        <CustomButton onClick={registerPointsData}>送信</CustomButton>
                     </Box>
                 </Box>
             </Box>

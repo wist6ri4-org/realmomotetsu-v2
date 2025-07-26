@@ -63,7 +63,7 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
     /**
      * データの登録
      */
-    const createPointsData = async () => {
+    const registerPointsData = async () => {
         const isConfirmed = confirm(
             "以下の内容でポイントを登録しますか？\n" +
                 `チーム: ${
@@ -155,7 +155,7 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <CustomButton onClick={createPointsData}>送信</CustomButton>
+                        <CustomButton onClick={registerPointsData}>送信</CustomButton>
                     </Box>
                 </Box>
             </Box>

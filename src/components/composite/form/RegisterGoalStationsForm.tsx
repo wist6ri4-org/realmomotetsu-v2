@@ -37,7 +37,7 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
     /**
      * データの登録
      */
-    const createGoalStation = async () => {
+    const registerGoalStation = async () => {
         const isConfirmed = confirm(
             "以下の内容で登録しますか？\n" +
                 `駅: ${
@@ -102,7 +102,7 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <CustomButton onClick={createGoalStation}>送信</CustomButton>
+                        <CustomButton onClick={registerGoalStation}>送信</CustomButton>
                     </Box>
                 </Box>
             </Box>
