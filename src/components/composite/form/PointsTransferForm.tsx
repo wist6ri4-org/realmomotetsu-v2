@@ -83,39 +83,41 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
         }
 
         try {
-            const responseFrom = await fetch("/api/points", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    eventCode: eventCode,
-                    teamCode: fromTeamCodeInput.value,
-                    points: 0 - pointsInput.value,
-                    status: pointStatus,
+            const [responseOfFrom, responseOfTo] = await Promise.all([
+                fetch("/api/points", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        eventCode: eventCode,
+                        teamCode: fromTeamCodeInput.value,
+                        points: 0 - pointsInput.value,
+                        status: pointStatus,
+                    }),
                 }),
-            });
+                fetch("/api/points", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        eventCode: eventCode,
+                        teamCode: toTeamCodeInput.value,
+                        points: pointsInput.value,
+                        status: pointStatus,
+                    }),
+                }),
+            ]);
 
-            if (!responseFrom.ok) {
-                throw new Error(`HTTP error! status: ${responseFrom.status}`);
+            if (!responseOfFrom.ok) {
+                throw new Error(`HTTP error! status: ${responseOfFrom.status}`);
             }
 
-            const responseTo = await fetch("/api/points", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    eventCode: eventCode,
-                    teamCode: toTeamCodeInput.value,
-                    points: pointsInput.value,
-                    status: pointStatus,
-                }),
-            });
-
-            if (!responseTo.ok) {
-                throw new Error(`HTTP error! status: ${responseTo.status}`);
+            if (!responseOfTo.ok) {
+                throw new Error(`HTTP error! status: ${responseOfTo.status}`);
             }
+
             fromTeamCodeInput.reset();
             toTeamCodeInput.reset();
             pointsInput.reset();
