@@ -49,7 +49,7 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
             const stations = data?.data?.stations || data?.stations || [];
             const teamData = data?.data?.teamData || data?.teamData || [];
 
-            if (!Array.isArray(teams) || !Array.isArray(stations)) {
+            if (!Array.isArray(teams) || !Array.isArray(stations) || !Array.isArray(teamData)) {
                 throw new Error("Unexpected response structure");
             }
             setTeams(teams as Teams[]);
@@ -60,6 +60,7 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
             setError(error instanceof Error ? error.message : "Unknown error");
             setTeams([]);
             setStations([]);
+            setTeamData([]);
         } finally {
             setIsLoading(false);
         }
