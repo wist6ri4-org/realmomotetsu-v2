@@ -29,13 +29,16 @@ export const metadata: Metadata = {
     },
 };
 
-// RootLayoutコンポーネントは、アプリケーション全体のレイアウトを定義します
-// 各ページのコンテンツがchildrenに挿入されます
-export default function RootLayout({
+/**
+ * アプリケーションのルートレイアウト
+ * @param {Readonly<{ children: React.ReactNode }>} props - コンポーネントのプロパティ
+ * @returns {JSX.Element} - アプリケーションのルートレイアウト
+ */
+const RootLayout = ({
     children,
 }: Readonly<{
     children: React.ReactNode;
-}>) {
+}>): React.JSX.Element => {
     return (
         <html
             lang="ja"
@@ -63,4 +66,6 @@ export default function RootLayout({
             </body>
         </html>
     );
-}
+};
+
+export default RootLayout;

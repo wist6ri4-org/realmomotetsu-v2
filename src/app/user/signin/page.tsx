@@ -4,20 +4,16 @@ import { useState } from "react";
 import { signIn } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
-import {
-    Box,
-    Typography,
-    Alert,
-    Card,
-    CardContent,
-    Link,
-    Stack,
-} from "@mui/material";
+import { Box, Typography, Alert, Card, CardContent, Link, Stack } from "@mui/material";
 import { Email, Lock } from "@mui/icons-material";
 import { CustomTextField } from "@/components/base/CustomTextField";
 import CustomButton from "@/components/base/CustomButton";
 
-export default function SignInPage() {
+/**
+ * サインインページコンポーネント
+ * @returns {JSX.Element} - サインインページのコンポーネント
+ */
+const SignInPage = (): React.JSX.Element => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
@@ -131,13 +127,13 @@ export default function SignInPage() {
                     <Box sx={{ mt: 3, textAlign: "center" }}>
                         <Typography variant="body2" color="text.secondary">
                             アカウントをお持ちでない方は{" "}
-                            <Link href="/user/signup">
-                                サインアップ
-                            </Link>
+                            <Link href="/user/signup">サインアップ</Link>
                         </Typography>
                     </Box>
                 </CardContent>
             </Card>
         </Box>
     );
-}
+};
+
+export default SignInPage;
