@@ -51,10 +51,6 @@ class UsersByUuidApiHandler extends BaseApiHandler {
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
-            if (!data) {
-                return this.createErrorResponse("User not found", 404);
-            }
-
             this.logInfo("Successfully retrieved user data", { uuid: this.uuid });
 
             return this.createSuccessResponse(data);

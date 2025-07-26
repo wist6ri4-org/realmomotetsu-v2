@@ -10,20 +10,18 @@ export class PointsRepository extends BaseRepository {
      */
     async findByEventCode(eventCode: string): Promise<Points[]> {
         try {
-            return (
-                ((await this.prisma.points.findMany({
-                    where: {
-                        eventCode: eventCode,
-                    },
-                    include: {
-                        team: true, // チーム情報を含める
-                        event: true, // イベント情報を含める
-                    },
-                    orderBy: {
-                        createdAt: "desc",
-                    },
-                })) as Points[]) || null
-            );
+            return (await this.prisma.points.findMany({
+                where: {
+                    eventCode: eventCode,
+                },
+                include: {
+                    team: true, // チーム情報を含める
+                    event: true, // イベント情報を含める
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+            })) as Points[];
         } catch (error) {
             this.handleDatabaseError(error, "findByEventCode");
         }
@@ -36,20 +34,18 @@ export class PointsRepository extends BaseRepository {
      */
     async findByTeamCode(teamCode: string): Promise<Points[]> {
         try {
-            return (
-                ((await this.prisma.points.findMany({
-                    where: {
-                        teamCode: teamCode,
-                    },
-                    include: {
-                        team: true, // チーム情報を含める
-                        event: true, // イベント情報を含める
-                    },
-                    orderBy: {
-                        createdAt: "desc",
-                    },
-                })) as Points[]) || null
-            );
+            return (await this.prisma.points.findMany({
+                where: {
+                    teamCode: teamCode,
+                },
+                include: {
+                    team: true, // チーム情報を含める
+                    event: true, // イベント情報を含める
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+            })) as Points[];
         } catch (error) {
             this.handleDatabaseError(error, "findByTeamCode");
         }

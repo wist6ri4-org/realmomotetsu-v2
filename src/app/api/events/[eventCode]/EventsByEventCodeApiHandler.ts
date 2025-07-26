@@ -52,10 +52,6 @@ class EventByEventCodeApiHandler extends BaseApiHandler {
             // レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
-            if (!data) {
-                return this.createErrorResponse("Event not found", 404);
-            }
-
             this.logInfo("Successfully retrieved event data", { eventCode: this.eventCode });
 
             return this.createSuccessResponse(data);
