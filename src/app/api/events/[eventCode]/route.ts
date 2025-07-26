@@ -1,4 +1,4 @@
 import { createApiHandlerWithParams } from "@/app/api/utils/apiHandler";
-import EventByEventCodeApiHandler from "./EventsByEventCodeApiHandler";
+import EventsByEventCodeApiHandler from "./EventsByEventCodeApiHandler";
 
-export const GET = createApiHandlerWithParams(EventByEventCodeApiHandler);
+export const GET = createApiHandlerWithParams(EventsByEventCodeApiHandler);

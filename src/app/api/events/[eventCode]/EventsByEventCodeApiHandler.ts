@@ -8,7 +8,7 @@ import { GetEventByEventCodeResponse } from "@/features/events/[eventCode]/types
 /**
  * イベントコードに紐づくイベントに関するAPIハンドラー
  */
-class EventByEventCodeApiHandler extends BaseApiHandler {
+class EventsByEventCodeApiHandler extends BaseApiHandler {
     private eventCode: string;
 
     /**
@@ -62,4 +62,4 @@ class EventByEventCodeApiHandler extends BaseApiHandler {
     }
 }
 
-export default EventByEventCodeApiHandler;
+export default EventsByEventCodeApiHandler;
