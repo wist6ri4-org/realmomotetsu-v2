@@ -54,7 +54,7 @@ class TransitStationsApiHandler extends BaseApiHandler {
                     validatedParams
                 );
 
-            // レスポンスのスキーマでバリデーション
+            // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             type Info = {
@@ -100,7 +100,7 @@ class TransitStationsApiHandler extends BaseApiHandler {
             // サービスからデータを取得
             const data = await TransitStationsServiceImpl.postTransitStations(validatedBody);
 
-            // レスポンスのスキーマでバリデーション
+            // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully processed transit-stations data", {

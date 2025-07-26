@@ -48,7 +48,7 @@ class InitOperationApiHandler extends BaseApiHandler {
             // サービスからデータを取得
             const data = await InitOperationServiceImpl.getDataForOperation(validatedParams);
 
-            // レスポンスのスキーマでバリデーション
+            // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved init-operation data", {

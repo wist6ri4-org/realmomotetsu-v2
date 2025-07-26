@@ -49,7 +49,7 @@ class UsersApiHandler extends BaseApiHandler {
             // サービスからデータを取得
             const data = await UsersServiceImpl.postUsers(validatedBody);
 
-            // レスポンスのスキーマでバリデーション
+            // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully processed users data", {

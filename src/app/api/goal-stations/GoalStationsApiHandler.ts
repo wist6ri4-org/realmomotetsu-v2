@@ -51,7 +51,7 @@ class GoalStationsApiHandler extends BaseApiHandler {
             // サービスからデータを取得
             const data = await GoalStationsServiceImpl.getGoalStationsByEventCode(validatedParams);
 
-            // レスポンスのスキーマでバリデーション
+            // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved goal-stations data", {
@@ -85,7 +85,7 @@ class GoalStationsApiHandler extends BaseApiHandler {
             // サービスからデータを取得
             const data = await GoalStationsServiceImpl.postGoalStations(validatedBody);
 
-            // レスポンスのスキーマでバリデーション
+            // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully processed goal-stations data", {

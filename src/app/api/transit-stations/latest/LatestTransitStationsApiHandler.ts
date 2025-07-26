@@ -49,7 +49,7 @@ class LatestTransitStationsApiHandler extends BaseApiHandler {
                 validatedParams
             );
 
-            // レスポンスのスキーマでバリデーション
+            // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved transit-stations data", {

@@ -49,7 +49,7 @@ class DocumentsApiHandler extends BaseApiHandler {
             // サービスからデータを取得
             const data = await DocumentsServiceImpl.getDocumentsByEventCode(validatedParams);
 
-            // レスポンスのスキーマでバリデーション
+            // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved documents data", {

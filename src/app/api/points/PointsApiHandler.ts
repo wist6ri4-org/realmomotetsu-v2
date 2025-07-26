@@ -55,7 +55,7 @@ class PointsApiHandler extends BaseApiHandler {
                 validatedParams
             );
 
-            // レスポンスのスキーマでバリデーション
+            // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             type Info = {
@@ -104,7 +104,7 @@ class PointsApiHandler extends BaseApiHandler {
             // サービスからデータを取得
             const data = await PointsServiceImpl.postPoints(validatedBody);
 
-            // レスポンスのスキーマでバリデーション
+            // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully processed points data", {
@@ -133,7 +133,7 @@ class PointsApiHandler extends BaseApiHandler {
             // サービスからデータを取得
             const data = await PointsServiceImpl.putPoints(validatedBody);
 
-            // レスポンスのスキーマでバリデーション
+            // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully processed points data", {

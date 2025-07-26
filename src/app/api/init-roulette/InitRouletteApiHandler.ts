@@ -47,7 +47,7 @@ class InitRouletteApiHandler extends BaseApiHandler {
             // サービスからデータを取得
             const data = await InitRouletteServiceImpl.getDataForRoulette(validatedParams);
 
-            // レスポンスのスキーマでバリデーション
+            // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initRouletteResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved init-roulette data", {

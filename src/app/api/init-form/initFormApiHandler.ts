@@ -47,7 +47,7 @@ class InitFormApiHandler extends BaseApiHandler {
             // サービスからデータを取得
             const data = await InitFormServiceImpl.getDataForForm(validatedParams);
 
-            // レスポンスのスキーマでバリデーション
+            // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initFormResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved init-form data", {

@@ -46,7 +46,7 @@ class BombiiHistoriesApiHandler extends BaseApiHandler {
             // サービスからデータを取得
             const data = await BombiiHistoriesServiceImpl.postBombiiHistories(validatedBody);
 
-            // レスポンスのスキーマでバリデーション
+            // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully processed bombii-histories data", {
