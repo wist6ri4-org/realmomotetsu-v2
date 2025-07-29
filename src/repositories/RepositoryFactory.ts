@@ -8,6 +8,8 @@ import { StationsRepository } from "./stations/StationsRepository";
 import { NearbyStationsRepository } from "./nearbyStations/NearbyStationsRepository";
 import { TransitStationsRepository } from "./transitStations/TransitStationsRepository";
 import { PointsRepository } from "./points/PointsRepository";
+import { DocumentsRepository } from "./documents/DocumentsRepository";
+import { UsersRepository } from "./users/UsersRepository";
 
 /**
  * Repositoryのファクトリークラス
@@ -23,6 +25,8 @@ export class RepositoryFactory {
     private static nearbyStationsRepository: NearbyStationsRepository | null = null;
     private static transitStationsRepository: TransitStationsRepository | null = null;
     private static pointsRepository: PointsRepository | null = null;
+    private static documentsRepository: DocumentsRepository | null = null;
+    private static usersRepository: UsersRepository | null = null;
     /**
      * TeamsRepositoryのインスタンスを取得（シングルトン）
      * @returns {TeamsRepository} TeamsRepositoryのインスタンス
@@ -123,6 +127,28 @@ export class RepositoryFactory {
     }
 
     /**
+     * DocumentsRepositoryのインスタンスを取得（シングルトン）
+     * @returns {DocumentsRepository} DocumentsRepositoryのインスタンス
+     */
+    static getDocumentsRepository(): DocumentsRepository {
+        if (!this.documentsRepository) {
+            this.documentsRepository = new DocumentsRepository(prisma);
+        }
+        return this.documentsRepository;
+    }
+
+    /**
+     * UsersRepositoryのインスタンスを取得（シングルトン）
+     * @returns {UsersRepository} UsersRepositoryのインスタンス
+     */
+    static getUsersRepository(): UsersRepository {
+        if (!this.usersRepository) {
+            this.usersRepository = new UsersRepository(prisma);
+        }
+        return this.usersRepository;
+    }
+
+    /**
      * すべてのRepositoryをリセット（主にテスト用）
      */
     static resetAll(): void {
@@ -135,5 +161,7 @@ export class RepositoryFactory {
         this.nearbyStationsRepository = null;
         this.transitStationsRepository = null;
         this.pointsRepository = null;
+        this.documentsRepository = null;
+        this.usersRepository = null;
     }
 }

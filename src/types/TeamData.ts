@@ -1,4 +1,4 @@
-import { TransitStations } from "@/generated/prisma/client";
+import { TransitStationsWithRelations } from "@/repositories/transitStations/TransitStationsRepository";
 
 /**
  * チームデータの型定義
@@ -10,14 +10,16 @@ import { TransitStations } from "@/generated/prisma/client";
  * @property {number} remainingStationsNumber - 残りの駅数
  * @property {number} points - ポイント
  * @property {number} scoredPoints - 得点済みポイント
+ * @property {number} bombiiCounts - ボンビーの回数
  */
 export type TeamData = {
     id: number;
     teamCode: string;
     teamName: string;
     teamColor: string;
-    transitStations: TransitStations[];
+    transitStations: TransitStationsWithRelations[];
     remainingStationsNumber: number;
     points: number;
     scoredPoints: number;
+    bombiiCounts: number;
 };

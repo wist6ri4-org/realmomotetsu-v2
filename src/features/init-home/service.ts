@@ -8,11 +8,10 @@ import DijkstraUtils from "@/utils/dijkstraUtils";
 export const InitHomeServiceImpl: InitHomeService = {
     /**
      * ホーム画面の初期化データを取得する
-     * @param req - リクエストデータ
-     * @returns {Promise<InitHomeResponse>} ホーム画面の初期化データ
+     * @param {InitHomeRequest} req - リクエスト
+     * @returns {Promise<InitHomeResponse>} レスポンス
      */
     async getDataForHome(req: InitHomeRequest): Promise<InitHomeResponse> {
-        // Repositoryのインスタンスを取得
         const teamsRepository = RepositoryFactory.getTeamsRepository();
         const goalStationsRepository = RepositoryFactory.getGoalStationsRepository();
         const bombiiHistoriesRepository = RepositoryFactory.getBombiiHistoriesRepository();
@@ -29,13 +28,15 @@ export const InitHomeServiceImpl: InitHomeService = {
                 totalPoints,
                 totalScoredPoints,
                 events,
+                bombiiCounts,
             ] = await Promise.all([
                 teamsRepository.findByEventCode(req.eventCode),
                 goalStationsRepository.findNextGoalStation(req.eventCode),
                 bombiiHistoriesRepository.findCurrentBombiiTeam(req.eventCode),
-                pointsRepository.sumPointsGroupedByTeamCode(),
-                pointsRepository.sumScoredPointsGroupedByTeamCode(),
+                pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
+                pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
                 eventsRepository.findByEventCode(req.eventCode),
+                bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
             ]);
 
             const eventTypeCode = events?.eventTypeCode || "";
@@ -57,6 +58,7 @@ export const InitHomeServiceImpl: InitHomeService = {
                 points: totalPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 scoredPoints:
                     totalScoredPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
+                bombiiCounts: bombiiCounts.find((b) => b.teamCode === team.teamCode)?.count || 0,
             }));
 
             // currentBombiiHistoryからbombiiTeamを取得
@@ -74,6 +76,7 @@ export const InitHomeServiceImpl: InitHomeService = {
                 };
             }
 
+            // レスポンスの作成
             const res: InitHomeResponse = {
                 teamData: teamData,
                 nextGoalStation: nextGoalStation,

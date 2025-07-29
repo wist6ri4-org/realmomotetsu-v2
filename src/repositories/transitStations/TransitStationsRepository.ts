@@ -1,9 +1,8 @@
-import { TransitStations, Events, Stations } from "@/generated/prisma";
+import { TransitStations, Stations, LatestTransitStations } from "@/generated/prisma";
 import { BaseRepository } from "../base/BaseRepository";
 
 // includeありのTransitStationsの型定義
-type TransitStationWithRelations = TransitStations & {
-    event: Events;
+export type TransitStationsWithRelations = TransitStations & {
     station: Stations;
 };
 
@@ -14,109 +13,63 @@ export class TransitStationsRepository extends BaseRepository {
     /**
      * 指定されたイベントの経由駅を取得
      * @param eventCode - イベントコード
-     * @returns {Promise<TransitStationWithRelations[]>} 経由駅の配列
+     * @returns {Promise<TransitStationsWithRelations[]>} 経由駅の配列
      */
-    async findByEventCode(eventCode: string): Promise<TransitStationWithRelations[]> {
+    async findByEventCode(eventCode: string): Promise<TransitStationsWithRelations[]> {
         try {
             return (await this.prisma.transitStations.findMany({
                 where: {
                     eventCode: eventCode,
                 },
                 include: {
-                    event: true,
                     station: true,
                 },
                 orderBy: {
                     id: "asc",
                 },
-            })) as TransitStationWithRelations[];
+            })) as TransitStationsWithRelations[];
         } catch (error) {
             this.handleDatabaseError(error, "findByEventCode");
         }
     }
 
     /**
-     * 指定された駅が経由駅として使用されているイベントを取得
-     * @param stationCode - 駅コード
-     * @returns {Promise<TransitStationWithRelations[]>} 経由駅の配列
-     */
-    async findByStationCode(stationCode: string): Promise<TransitStationWithRelations[]> {
-        try {
-            return (await this.prisma.transitStations.findMany({
-                where: {
-                    stationCode: stationCode,
-                },
-                include: {
-                    event: true,
-                    station: true,
-                },
-                orderBy: {
-                    createdAt: "desc",
-                },
-            })) as TransitStationWithRelations[];
-        } catch (error) {
-            this.handleDatabaseError(error, "findByStationCode");
-        }
-    }
-
-    /**
-     * 特定のイベントと駅の組み合わせで経由駅を取得
+     * 指定されたイベントコードに紐づく最新の経由駅を取得
      * @param eventCode - イベントコード
-     * @param stationCode - 駅コード
-     * @returns {Promise<TransitStations | null>} 経由駅情報またはnull
+     * @returns {Promise<LatestTransitStations[]>} 最新経由駅の配列
      */
-    async findByEventAndStation(
-        eventCode: string,
-        stationCode: string
-    ): Promise<TransitStations | null> {
+    async findLatestByEventCode(eventCode: string): Promise<LatestTransitStations[]> {
         try {
-            return await this.prisma.transitStations.findFirst({
+            return (await this.prisma.latestTransitStations.findMany({
                 where: {
                     eventCode: eventCode,
-                    stationCode: stationCode,
                 },
-            });
+                orderBy: {
+                    teamCode: "asc",
+                },
+            })) as LatestTransitStations[];
         } catch (error) {
-            this.handleDatabaseError(error, "findByEventAndStation");
+            this.handleDatabaseError(error, "findLatestByEventCode");
         }
     }
 
     /**
      * IDで経由駅を取得
      * @param id - 経由駅ID
-     * @returns {Promise<TransitStationWithRelations | null>} 経由駅情報またはnull
+     * @returns {Promise<TransitStationsWithRelations | null>} 経由駅情報またはnull
      */
-    async findById(id: number): Promise<TransitStationWithRelations | null> {
+    async findById(id: number): Promise<TransitStationsWithRelations | null> {
         try {
             return (await this.prisma.transitStations.findUnique({
                 where: {
                     id: id,
                 },
                 include: {
-                    event: true,
                     station: true,
                 },
-            })) as TransitStationWithRelations | null;
+            })) as TransitStationsWithRelations | null;
         } catch (error) {
             this.handleDatabaseError(error, "findById");
-        }
-    }
-
-    /**
-     * すべての経由駅を取得
-     * @returns {Promise<TransitStationWithRelations[]>} 経由駅の配列
-     */
-    async findAll(): Promise<TransitStationWithRelations[]> {
-        try {
-            return (await this.prisma.transitStations.findMany({
-                include: {
-                    event: true,
-                    station: true,
-                },
-                orderBy: [{ eventCode: "asc" }, { id: "asc" }],
-            })) as TransitStationWithRelations[];
-        } catch (error) {
-            this.handleDatabaseError(error, "findAll");
         }
     }
 
@@ -126,8 +79,9 @@ export class TransitStationsRepository extends BaseRepository {
      * @returns {Promise<TransitStations>} 作成された経由駅
      */
     async create(transitStationData: {
-        stationCode: string;
         eventCode: string;
+        teamCode: string;
+        stationCode: string;
     }): Promise<TransitStations> {
         try {
             return await this.prisma.transitStations.create({
@@ -147,6 +101,7 @@ export class TransitStationsRepository extends BaseRepository {
         transitStationsData: {
             stationCode: string;
             eventCode: string;
+            teamCode: string;
         }[]
     ): Promise<number> {
         try {
@@ -162,7 +117,7 @@ export class TransitStationsRepository extends BaseRepository {
 
     /**
      * 経由駅を削除
-     * @param id - 削除する経由駅ID
+     * @param id - 削除対象のID
      * @returns {Promise<TransitStations>} 削除された経由駅
      */
     async delete(id: number): Promise<TransitStations> {
@@ -174,27 +129,6 @@ export class TransitStationsRepository extends BaseRepository {
             });
         } catch (error) {
             this.handleDatabaseError(error, "delete");
-        }
-    }
-
-    /**
-     * 特定のイベントと駅の組み合わせで経由駅を削除
-     * @param eventCode - イベントコード
-     * @param stationCode - 駅コード
-     * @returns {Promise<TransitStations | null>} 削除された経由駅またはnull
-     */
-    async deleteByEventAndStation(
-        eventCode: string,
-        stationCode: string
-    ): Promise<TransitStations | null> {
-        try {
-            const transitStation = await this.findByEventAndStation(eventCode, stationCode);
-            if (transitStation) {
-                return await this.delete(transitStation.id);
-            }
-            return null;
-        } catch (error) {
-            this.handleDatabaseError(error, "deleteByEventAndStation");
         }
     }
 
@@ -230,23 +164,6 @@ export class TransitStationsRepository extends BaseRepository {
             });
         } catch (error) {
             this.handleDatabaseError(error, "countByEvent");
-        }
-    }
-
-    /**
-     * 指定された駅が経由駅として使用されているイベント数を取得
-     * @param stationCode - 駅コード
-     * @returns {Promise<number>} イベントの数
-     */
-    async countEventsByStation(stationCode: string): Promise<number> {
-        try {
-            return await this.prisma.transitStations.count({
-                where: {
-                    stationCode: stationCode,
-                },
-            });
-        } catch (error) {
-            this.handleDatabaseError(error, "countEventsByStation");
         }
     }
 }

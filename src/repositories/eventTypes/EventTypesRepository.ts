@@ -2,7 +2,7 @@ import { EventTypes, Events, Stations } from "@/generated/prisma";
 import { BaseRepository } from "../base/BaseRepository";
 
 // includeありのEventTypesの型定義
-type EventTypeWithRelations = EventTypes & {
+export type EventTypeWithRelations = EventTypes & {
     events?: Events[];
     stations?: Stations[];
 };
@@ -104,12 +104,12 @@ export class EventTypesRepository extends BaseRepository {
 
     /**
      * イベント種別情報を更新
-     * @param eventTypeCode - 更新対象のイベント種別コード
+     * @param id - 更新対象のID
      * @param updateData - 更新データ
      * @returns {Promise<EventTypes>} 更新されたイベント種別
      */
     async update(
-        eventTypeCode: string,
+        id: number,
         updateData: {
             description?: string;
         }
@@ -117,7 +117,7 @@ export class EventTypesRepository extends BaseRepository {
         try {
             return await this.prisma.eventTypes.update({
                 where: {
-                    eventTypeCode: eventTypeCode,
+                    id: id,
                 },
                 data: updateData,
             });
@@ -128,14 +128,14 @@ export class EventTypesRepository extends BaseRepository {
 
     /**
      * イベント種別を削除
-     * @param eventTypeCode - 削除するイベント種別コード
+     * @param id - 削除対象のID
      * @returns {Promise<EventTypes>} 削除されたイベント種別
      */
-    async delete(eventTypeCode: string): Promise<EventTypes> {
+    async delete(id: number): Promise<EventTypes> {
         try {
             return await this.prisma.eventTypes.delete({
                 where: {
-                    eventTypeCode: eventTypeCode,
+                    id: id,
                 },
             });
         } catch (error) {

@@ -1,3 +1,6 @@
+/**
+ * ステータスコードを定義するクラス
+ */
 export class StatusCode {
     static OK = 200;
     static CREATED = 201;

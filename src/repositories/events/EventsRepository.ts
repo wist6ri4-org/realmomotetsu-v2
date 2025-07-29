@@ -25,11 +25,11 @@ export class EventsRepository extends BaseRepository {
     /**
      * イベントコードでイベントを取得
      * @param eventCode - イベントコード
-     * @returns {Promise<Events | null>} イベント情報またはnull
+     * @returns {Promise<Events>} イベント情報
      */
-    async findByEventCode(eventCode: string): Promise<Events | null> {
+    async findByEventCode(eventCode: string): Promise<Events> {
         try {
-            return await this.prisma.events.findUnique({
+            return await this.prisma.events.findUniqueOrThrow({
                 where: {
                     eventCode: eventCode,
                 },

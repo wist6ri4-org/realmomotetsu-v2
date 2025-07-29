@@ -1,4 +1,4 @@
-import { BombiiHistories, Teams } from "@/generated/prisma";
+import { BombiiCounts, BombiiHistories, Teams } from "@/generated/prisma";
 import { BaseRepository } from "../base/BaseRepository";
 
 // includeありのBombiiHistoriesの型定義
@@ -58,18 +58,38 @@ export class BombiiHistoriesRepository extends BaseRepository {
     }
 
     /**
+     * 指定されたイベントコードでグループ化されたボンビーのカウントを取得
+     * @param eventCode - イベントコード
+     * @returns {Promise<BombiiCounts[]>} ボンビーのカウントの配列
+     */
+    async countByEventCodeGroupedByTeamCode(eventCode: string): Promise<BombiiCounts[]> {
+        try {
+            return (await this.prisma.bombiiCounts.findMany({
+                where: {
+                    eventCode: eventCode,
+                },
+                orderBy: {
+                    teamCode: "asc",
+                },
+            })) as BombiiCounts[];
+        } catch (error) {
+            this.handleDatabaseError(error, "countByEventCodeGroupedByTeamCode");
+        }
+    }
+
+    /**
      * 新しいボンビー履歴を作成
      * @param teamCode - チームコード
      * @param eventCode - イベントコード
      * @returns {Promise<BombiiHistories>} 作成されたボンビー履歴
      */
-    async create(teamCode: string, eventCode: string): Promise<BombiiHistories> {
+    async create(bombiiHistoryData: {
+        teamCode: string;
+        eventCode: string;
+    }): Promise<BombiiHistories> {
         try {
             return await this.prisma.bombiiHistories.create({
-                data: {
-                    teamCode: teamCode,
-                    eventCode: eventCode,
-                },
+                data: bombiiHistoryData,
             });
         } catch (error) {
             this.handleDatabaseError(error, "create");

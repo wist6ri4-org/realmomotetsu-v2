@@ -8,24 +8,32 @@
 
 ```
 src/repositories/
+├── attendances/
+│   └── AttendancesRepository.ts       # イベント参加関連のデータアクセス
 ├── base/
 │   └── BaseRepository.ts              # 基底Repositoryクラス
+├── bombiiHistories/
+│   └── BombiiHistoriesRepository.ts   # ボンビー履歴関連のデータアクセス
+├── documents/
+│   └── DocumentsRepository.ts         # ドキュメント関連のデータアクセス
 ├── events/
 │   └── EventsRepository.ts            # イベント関連のデータアクセス
 ├── eventTypes/
 │   └── EventTypesRepository.ts        # イベント種別関連のデータアクセス
-├── stations/
-│   └── StationsRepository.ts          # 駅関連のデータアクセス
-├── nearbyStations/
-│   └── NearbyStationsRepository.ts    # 近隣駅関連のデータアクセス
-├── teams/
-│   └── TeamsRepository.ts             # チーム関連のデータアクセス
 ├── goalStations/
 │   └── GoalStationsRepository.ts      # 目的駅関連のデータアクセス
+├── nearbyStations/
+│   └── NearbyStationsRepository.ts    # 近隣駅関連のデータアクセス
+├── points/
+│   └── PointsRepository.ts            # ポイント関連のデータアクセス
+├── stations/
+│   └── StationsRepository.ts          # 駅関連のデータアクセス
+├── teams/
+│   └── TeamsRepository.ts             # チーム関連のデータアクセス
 ├── transitStations/
 │   └── TransitStationsRepository.ts   # 経由駅関連のデータアクセス
-├── bombiiHistories/
-│   └── BombiiHistoriesRepository.ts   # ボンビー履歴関連のデータアクセス
+├── users/
+│   └── UsersRepository.ts             # ユーザー関連のデータアクセス
 └── RepositoryFactory.ts               # Repositoryファクトリ
 ```
 

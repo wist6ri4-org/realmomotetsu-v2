@@ -1,2 +1,68 @@
-GET http://localhost:3001/api/init-home?eventCode=TOKYU_20250517
+### GET init-home
+GET http://localhost:3001/api/init-home
+    ?eventCode=TOKYU_20250517
 
+### GET init-form
+# latitude, longitudeあり
+GET http://localhost:3001/api/init-form
+    ?eventCode=TOKYU_20250517
+    &latitude=35.4615296
+    &longitude=139.5982336
+
+### GET init-form
+# latitude, longitudeなし
+GET http://localhost:3001/api/init-form
+    ?eventCode=TOKYU_20250517
+
+### GET goal-stations
+GET http://localhost:3001/api/goal-stations
+    ?eventCode=TOKYU_20250517
+
+### POST goal-stations
+POST http://localhost:3001/api/goal-stations
+
+{
+    "eventCode": "TOKYU_20250517",
+    "stationCode": "YOKOHAMA"
+}
+
+### GET points
+GET http://localhost:3001/api/points
+    ?eventCode=TOKYU_20250517
+
+### POST points
+POST http://localhost:3001/api/points
+
+{
+    "eventCode": "TOKYU_20250517",
+    "teamCode": "TEAM_A",
+    "points": 10,
+    "status": "points"
+}
+
+### GET transit-stations
+GET http://localhost:3001/api/transit-stations
+    ?eventCode=TOKYU_20250517
+
+### POST transit-stations
+POST http://localhost:3001/api/transit-stations
+
+{
+    "eventCode": "TOKYU_20250517",
+    "stationCode": "YOKOHAMA",
+    "teamCode": "TEAM_A"
+}
+
+### Get transit-stations/latest
+GET http://localhost:3001/api/transit-stations/latest
+    ?eventCode=TOKYU_20250517
+
+### GET documents
+GET http://localhost:3001/api/documents
+    ?eventCode=TOKYU_20250517
+
+### GET users/[uuid]
+GET http://localhost:3001/api/users/f389d9e9-81d0-46d7-84c1-d1b0cd65e764
+
+### GET events/[eventCode]
+GET http://localhost:3001/api/events/TOKYU_20250517
