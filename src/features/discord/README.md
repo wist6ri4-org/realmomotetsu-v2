@@ -1,4 +1,11 @@
-# Discord 通知機能
+# DiscDiscord 通知機能は以下の特徴を持ちます：
+
+-   **テンプレートベース**: JSON またはテキストファイルのテンプレートを使用して通知内容を管理
+-   **変数置換**: テンプレート内で変数（`{{変数名}}`）を使用して動的な内容を挿入
+-   **Embed 対応**: Discord の埋め込みメッセージ（rich embed）をサポート
+-   **キャッシュ機能**: テンプレートファイルをメモリにキャッシュして性能を向上
+-   **シングルトンパターン**: アプリケーション全体で一つの DiscordNotifier インスタンスを共有
+-   **通知制御**: 環境変数による通知の有効/無効の切り替えが可能能
 
 このプロジェクトでは、Discord の webhook 機能を使用して通知を送信する機能が実装されています。
 
@@ -39,7 +46,15 @@ src/
 
 ```env
 DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/YOUR_WEBHOOK_URL
+ENABLE_DISCORD_NOTIFICATIONS=true
 ```
+
+#### 環境変数の説明
+
+-   `DISCORD_WEBHOOK_URL`: Discord の Webhook URL（必須）
+-   `ENABLE_DISCORD_NOTIFICATIONS`: Discord 通知の有効/無効を制御（オプション、デフォルト: false）
+    -   `true`: Discord 通知を有効にする
+    -   `false`: Discord 通知を無効にする（通知は送信されない）
 
 ### 2. Webhook URL の取得方法
 
@@ -93,29 +108,56 @@ DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/YOUR_WEBHOOK_URL
 ### 1. バックエンド（サーバーサイド）での使用
 
 ```typescript
+import { getDiscordNotifier, isDiscordNotificationEnabled } from "@/utils/discordUtils";
+
+// Discord通知が有効かどうかを確認
+if (isDiscordNotificationEnabled()) {
+    // 通知を送信
+    const notifier = getDiscordNotifier();
+
+    // JSONテンプレートを使用
+    await notifier.sendNotification("api-success", {
+        endpoint: "/api/example",
+        timestamp: new Date().toISOString(),
+        user: "田中太郎",
+    });
+
+    // テキストテンプレートを使用
+    await notifier.sendNotification(
+        "registerGoalStation.txt",
+        {
+            stationName: "東京駅",
+        },
+        true
+    ); // 第3引数でテキストテンプレートを指定
+
+    // シンプルなメッセージを送信
+    await notifier.sendSimpleMessage("システムが正常に起動しました");
+} else {
+    console.log("Discord通知は無効になっています");
+}
+```
+
+#### エラーハンドリングを含む使用例
+
+```typescript
 import { getDiscordNotifier } from "@/utils/discordUtils";
 
-// 通知を送信
-const notifier = getDiscordNotifier();
-
-// JSONテンプレートを使用
-await notifier.sendNotification("api-success", {
-    endpoint: "/api/example",
-    timestamp: new Date().toISOString(),
-    user: "田中太郎",
-});
-
-// テキストテンプレートを使用
-await notifier.sendNotification(
-    "registerGoalStation.txt",
-    {
-        stationName: "東京駅",
-    },
-    true
-); // 第3引数でテキストテンプレートを指定
-
-// シンプルなメッセージを送信
-await notifier.sendSimpleMessage("システムが正常に起動しました");
+try {
+    const notifier = getDiscordNotifier();
+    await notifier.sendNotification("api-success", {
+        endpoint: "/api/example",
+        timestamp: new Date().toISOString(),
+        user: "田中太郎",
+    });
+    console.log("通知が送信されました");
+} catch (error) {
+    if (error instanceof Error && error.message.includes("Discord notifications are not enabled")) {
+        console.log("Discord通知は無効になっています");
+    } else {
+        console.error("通知の送信に失敗しました:", error);
+    }
+}
 ```
 
 ### 2. フロントエンド（クライアントサイド）での使用
@@ -243,19 +285,25 @@ curl -X POST http://localhost:3000/api/discord/notify \
 
 ### 一般的なエラー
 
-1. **DISCORD_WEBHOOK_URL が設定されていない**
+1. **Discord 通知が無効になっている**
+
+    ```
+    Discord notifications are not enabled. Set ENABLE_DISCORD_NOTIFICATIONS to true.
+    ```
+
+2. **DISCORD_WEBHOOK_URL が設定されていない**
 
     ```
     Discord notifier not initialized. Call initializeDiscordNotifier first.
     ```
 
-2. **テンプレートファイルが見つからない**
+3. **テンプレートファイルが見つからない**
 
     ```
     Failed to load JSON template "example": ENOENT: no such file or directory
     ```
 
-3. **Discord API エラー**
+4. **Discord API エラー**
     ```
     Discord API error: 400 Bad Request
     ```
@@ -263,6 +311,8 @@ curl -X POST http://localhost:3000/api/discord/notify \
 ### エラーの対処法
 
 -   環境変数が正しく設定されているか確認
+    -   `DISCORD_WEBHOOK_URL`が設定されている
+    -   `ENABLE_DISCORD_NOTIFICATIONS=true`が設定されている
 -   テンプレートファイルのパスと名前が正しいか確認
 -   Webhook URL が有効で、権限が適切に設定されているか確認
 -   テンプレートの JSON 形式が正しいか確認
@@ -324,6 +374,7 @@ export class CustomNotificationService {
 
 1. **通知が送信されない**
 
+    - `ENABLE_DISCORD_NOTIFICATIONS=true`が設定されているか確認
     - ネットワーク接続を確認
     - Webhook URL が正しいか確認
     - Discord サーバーで Webhook が有効になっているか確認
@@ -335,8 +386,13 @@ export class CustomNotificationService {
     - ファイルの存在を確認
 
 3. **変数が置換されない**
+
     - 変数名のスペルを確認
     - 変数の形式が `{{変数名}}` になっているか確認
+
+4. **通知機能を一時的に無効にしたい**
+    - `.env`ファイルで`ENABLE_DISCORD_NOTIFICATIONS=false`に設定
+    - アプリケーションを再起動（環境変数の変更を反映）
 
 ## ライセンス
 

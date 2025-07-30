@@ -258,6 +258,14 @@ export function initializeDiscordNotifier(webhookUrl: string): void {
 }
 
 /**
+ * Discord通知が有効かどうかを確認する
+ */
+export function isDiscordNotificationEnabled(): boolean {
+    const enabled = process.env.ENABLE_DISCORD_NOTIFICATIONS;
+    return enabled === "true";
+}
+
+/**
  * DiscordNotifierの初期化を確認
  */
 export function ensureDiscordNotifierInitialized(): void {
@@ -271,6 +279,10 @@ export function ensureDiscordNotifierInitialized(): void {
  * @returns {DiscordNotifier} - 初期化されたDiscordNotifierインスタンス
  */
 export function getDiscordNotifier(): DiscordNotifier {
+    if (!isDiscordNotificationEnabled()) {
+        throw new Error("Discord notifications are not enabled. Set ENABLE_DISCORD_NOTIFICATIONS to true.");
+    }
+
     ensureDiscordNotifierInitialized();
 
     if (!discordNotifier) {

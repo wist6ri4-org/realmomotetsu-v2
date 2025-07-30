@@ -20,6 +20,12 @@ export const DiscordNotifyServiceImpl: DiscordNotifyService = {
             // 成功レスポンスを返す
             return { success: true };
         } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            if (errorMessage.includes("Discord notifications are not enabled")) {
+                console.warn("Discord notifications are not enabled. Skipping notification.");
+                return { success: true }; // 成功として扱う
+            }
+
             console.error("Failed to send Discord notification:", error);
             return { success: false };
         }
