@@ -55,7 +55,7 @@ class LatestGoalStationsApiHandler extends BaseApiHandler {
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved goal-stations/latest data", {
-                latestGoalStationName: data.station.station.stationCode,
+                latestGoalStationCode: data.station.station.stationCode,
             });
 
             return this.createSuccessResponse(data);
