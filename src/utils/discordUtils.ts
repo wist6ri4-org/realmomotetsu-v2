@@ -213,8 +213,6 @@ export class DiscordNotifier {
             if (!response.ok) {
                 throw new Error(`Discord API error: ${response.status} ${response.statusText}`);
             }
-
-            console.log(`Discord notification sent using template: ${templateName}`);
         } catch (error) {
             console.error("Failed to send Discord notification:", error);
             throw error;
@@ -237,8 +235,6 @@ export class DiscordNotifier {
             if (!response.ok) {
                 throw new Error(`Discord API error: ${response.status} ${response.statusText}`);
             }
-
-            console.log("Simple Discord message sent");
         } catch (error) {
             console.error("Failed to send Discord message:", error);
             throw error;
