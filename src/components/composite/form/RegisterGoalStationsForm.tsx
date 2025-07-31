@@ -7,7 +7,9 @@ import CustomButton from "@/components/base/CustomButton";
 import CustomSelect from "@/components/base/CustomSelect";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
+import { DiscordNotificationTemplates } from "@/constants/discordNotificationTemplates";
 import { Stations } from "@/generated/prisma";
+import { useDiscordNotification } from "@/hooks/useDiscordNotification";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
@@ -34,10 +36,29 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
 
     const stationCodeInput = useSelectInput("");
 
+    const { sendNotification, clearError } = useDiscordNotification();
+
+    /**
+     * Discord通知を送信する
+     * @description
+     * 目的駅登録時
+     */
+    const notifyToDiscord = async (): Promise<void> => {
+        await sendNotification({
+            templateName: DiscordNotificationTemplates.REGISTER_GOAL_STATION,
+            variables: {
+                stationName:
+                    stations.find((station) => station.stationCode === stationCodeInput.value)
+                        ?.name || "不明",
+            },
+        });
+    };
+
     /**
      * データの登録
      */
     const registerGoalStation = async () => {
+        clearError();
         const isConfirmed = confirm(
             "以下の内容で登録しますか？\n" +
                 `駅: ${
@@ -66,6 +87,7 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
             }
 
             stationCodeInput.reset();
+            notifyToDiscord();
             alert("登録が完了しました。");
         } catch (error) {
             console.error("Error registering goal station:", error);
