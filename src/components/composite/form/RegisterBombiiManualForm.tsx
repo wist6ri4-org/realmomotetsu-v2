@@ -7,7 +7,9 @@ import CustomButton from "@/components/base/CustomButton";
 import CustomSelect from "@/components/base/CustomSelect";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
+import { DiscordNotificationTemplates } from "@/constants/discordNotificationTemplates";
 import { Teams } from "@/generated/prisma";
+import { useDiscordNotification } from "@/hooks/useDiscordNotification";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
@@ -34,10 +36,28 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
 
     const teamCodeInput = useSelectInput("");
 
+    const { sendNotification, clearError } = useDiscordNotification();
+
+    /**
+     * Discord通知を送信する
+     * @description
+     * ボンビー登録時
+     */
+    const notifyToDiscord = async (): Promise<void> => {
+        await sendNotification({
+            templateName: DiscordNotificationTemplates.REGISTER_BOMBII,
+            variables: {
+                teamName:
+                    teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明",
+            },
+        });
+    };
+
     /**
      * データの登録
      */
     const registerBombiiData = async () => {
+        clearError();
         const isConfirmed = confirm(
             "以下の内容でボンビーを登録しますか？\n" +
                 `チーム: ${
@@ -64,6 +84,7 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             teamCodeInput.reset();
+            notifyToDiscord();
             alert("ボンビーの登録が完了しました。");
         } catch (error) {
             console.error("Error registering bombii:", error);
