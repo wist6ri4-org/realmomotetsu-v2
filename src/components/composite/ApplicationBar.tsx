@@ -9,12 +9,14 @@ import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
+import Avatar from "@mui/material/Avatar";
 import { useState, MouseEvent, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
 import { useParams, useRouter } from "next/navigation";
 import { Events } from "@/generated/prisma";
 import { signOut } from "@/lib/auth";
 import { UsersWithRelations } from "@/repositories/users/UsersRepository";
+import { UserUtils } from "@/utils/userUtils";
 
 /**
  * アプリケーションバーのプロパティ型定義
@@ -37,15 +39,14 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
 
     const [event, setEvent] = useState<Events | null>(null);
     const [user, setUser] = useState<UsersWithRelations | null>(null);
-    const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [userIconUrl, setUserIconUrl] = useState<string>("");
 
     /**
      * データの取得
      */
     const fetchData = async () => {
         try {
-            setError(null);
             setIsLoading(true);
 
             const [responseEvents, responseUsers] = await Promise.all([
@@ -71,7 +72,6 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
             setEvent(eventData as Events);
         } catch (error) {
             console.error("Error fetching event data:", error);
-            setError(error instanceof Error ? error.message : "Unknown error");
             setEvent(null);
             setUser(null);
         } finally {
@@ -80,11 +80,29 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
     };
 
     /**
+     * ユーザーアイコンの取得
+     */
+    const loadUserIcon = async () => {
+        if (sbUser?.id) {
+            try {
+                const userUtils = new UserUtils();
+                const iconUrl = await userUtils.getUserIconUrlWithExtension(sbUser.id);
+                if (iconUrl) {
+                    setUserIconUrl(iconUrl);
+                }
+            } catch (error) {
+                console.log("アイコンの読み込みに失敗しました:", error);
+            }
+        }
+    };
+
+    /**
      * コンポーネントのマウント時にデータを取得
      */
     useEffect(() => {
         fetchData();
-    }, [eventCode, sbUser]);
+        loadUserIcon();
+    }, [eventCode, sbUser.id]);
 
     // イベントメニューの状態管理
     const [anchorEventMenu, setAnchorEventMenu] = useState<null | HTMLElement>(null);
@@ -118,11 +136,22 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
             setEvent(null);
         } catch (error) {
             console.error("Error signing out:", error);
-            setError(error instanceof Error ? error.message : "Unknown error");
         } finally {
             handleUserMenuClose();
         }
     };
+
+    /**
+     * コンポーネントのマウント時にデータを取得
+     */
+    useEffect(() => {
+        const fetchAllData = async () => {
+            await fetchData();
+            await loadUserIcon();
+        };
+        fetchAllData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [eventCode, sbUser.id]);
 
     return (
         <>
@@ -185,8 +214,20 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
                                     aria-haspopup="true"
                                     onClick={handleUserMenu}
                                     color="inherit"
+                                    sx={{ p: 0.5 }}
                                 >
-                                    <AccountCircle />
+                                    {userIconUrl ? (
+                                        <Avatar
+                                            src={userIconUrl}
+                                            sx={{
+                                                width: 32,
+                                                height: 32,
+                                                border: "2px solid white",
+                                            }}
+                                        />
+                                    ) : (
+                                        <AccountCircle sx={{ fontSize: "2rem" }} />
+                                    )}
                                 </IconButton>
                                 <Menu
                                     id="user-menu"

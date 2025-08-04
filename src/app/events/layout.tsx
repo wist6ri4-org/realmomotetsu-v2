@@ -20,8 +20,10 @@ interface EventsLayoutProps {
  * @param {EventsLayoutProps} props - レイアウトのプロパティ
  * @return {React.JSX.Element | null} - レイアウトコンポーネント
  */
-const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutProps): React.JSX.Element | null => {
-const { sbUser, isLoading } = useAuthGuard();
+const EventsLayout: React.FC<EventsLayoutProps> = ({
+    children,
+}: EventsLayoutProps): React.JSX.Element | null => {
+    const { sbUser, isLoading } = useAuthGuard();
 
     return (
         <>
@@ -35,7 +37,7 @@ const { sbUser, isLoading } = useAuthGuard();
             )}
             {!isLoading && sbUser && (
                 <>
-                    <ApplicationBar sbUser={sbUser}/>
+                    <ApplicationBar sbUser={sbUser} />
                     <Header />
                     <Box sx={{ flex: 1, padding: 1 }}>{children}</Box>
                     <NavigationBar />

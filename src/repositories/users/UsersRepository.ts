@@ -58,4 +58,34 @@ export class UsersRepository extends BaseRepository {
             this.handleDatabaseError(error, "create");
         }
     }
+
+    /**
+     * ユーザーをUUIDで更新する
+     * @param {string} uuid - ユーザーのUUID
+     * @param {Object} updateData - 更新するデータ
+     * @param {string} [updateData.email] - ユーザーのメールアドレス
+     * @param {string} [updateData.nickname] - ユーザーのニックネーム
+     * @param {string} [updateData.iconUrl] - ユーザーのアイコンURL
+     * @return {Promise<UsersWithRelations>} 更新されたユーザー情報
+     */
+    async updateByUuid(
+        uuid: string,
+        updateData: {
+            email?: string;
+            nickname?: string;
+            iconUrl?: string;
+        }
+    ): Promise<UsersWithRelations> {
+        try {
+            await this.prisma.users.update({
+                where: { uuid },
+                data: updateData,
+            });
+
+            // 更新後のユーザー情報を関連データと一緒に取得
+            return await this.findByUuid(uuid);
+        } catch (error) {
+            this.handleDatabaseError(error, "updateByUuid");
+        }
+    }
 }
