@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import {
     Container,
@@ -17,20 +17,28 @@ import { Save, Cancel, Email, Person } from "@mui/icons-material";
 import { UserUtils } from "@/utils/userUtils";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 
-export default function UserProfileEditPage() {
+/**
+ * ログイン中ユーザーのプロフィール編集ページコンポーネント
+ * @returns {JSX.Element} - プロフィール編集ページのコンポーネント
+ */
+const UserProfileEditPage = (): React.JSX.Element => {
     const router = useRouter();
     const params = useParams();
     const eventCode = params.eventCode as string;
 
     const { user, isLoading: authLoading } = useAuthGuard();
+
     const [nickname, setNickname] = useState<string>("");
     const [email, setEmail] = useState<string>("");
     const [originalNickname, setOriginalNickname] = useState<string>("");
     const [originalEmail, setOriginalEmail] = useState<string>("");
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string>("");
     const [success, setSuccess] = useState<string>("");
 
+    /**
+     * ユーザー情報の初期化
+     */
     useEffect(() => {
         if (user) {
             setNickname(user.nickname || "");
@@ -40,12 +48,16 @@ export default function UserProfileEditPage() {
         }
     }, [user]);
 
-    const handleSaveNickname = async () => {
+    /**
+     * ニックネーム保存ハンドラー
+     * @returns {Promise<void>} - 非同期処理
+     */
+    const handleSaveNickname = async (): Promise<void> => {
         if (!user || !user.uuid || nickname === originalNickname) {
             return;
         }
 
-        setLoading(true);
+        setIsLoading(true);
         setError("");
         setSuccess("");
 
@@ -59,11 +71,15 @@ export default function UserProfileEditPage() {
             console.error("Nickname update error:", err);
             setError(err instanceof Error ? err.message : "ニックネームの更新に失敗しました。");
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
 
-    const handleSaveEmail = async () => {
+    /**
+     * メールアドレス保存ハンドラー
+     * @returns {Promise<void>} - 非同期処理
+     */
+    const handleSaveEmail = async (): Promise<void> => {
         if (!user || !user.uuid || email === originalEmail) {
             return;
         }
@@ -75,7 +91,7 @@ export default function UserProfileEditPage() {
             return;
         }
 
-        setLoading(true);
+        setIsLoading(true);
         setError("");
         setSuccess("");
 
@@ -89,18 +105,26 @@ export default function UserProfileEditPage() {
             console.error("Email update error:", err);
             setError(err instanceof Error ? err.message : "メールアドレスの更新に失敗しました。");
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
 
-    const handleCancel = () => {
+    /**
+     * 変更を取り消す処理
+     * @returns {void}
+     */
+    const handleCancel = (): void => {
         setNickname(originalNickname);
         setEmail(originalEmail);
         setError("");
         setSuccess("");
     };
 
-    const handleBack = () => {
+    /**
+     * 設定画面に戻る処理
+     * @returns {void}
+     */
+    const handleGoBack = (): void => {
         router.push(`/events/${eventCode}/operation/user-settings`);
     };
 
@@ -151,7 +175,7 @@ export default function UserProfileEditPage() {
                             label="ニックネーム"
                             value={nickname}
                             onChange={(e) => setNickname(e.target.value)}
-                            disabled={loading}
+                            disabled={isLoading}
                             placeholder="ニックネームを入力してください"
                             variant="outlined"
                             sx={{ mb: 2 }}
@@ -159,11 +183,11 @@ export default function UserProfileEditPage() {
                         <Button
                             variant="contained"
                             onClick={handleSaveNickname}
-                            disabled={loading || !hasNicknameChanged || !nickname.trim()}
-                            startIcon={loading ? <CircularProgress size={20} /> : <Save />}
+                            disabled={isLoading || !hasNicknameChanged || !nickname.trim()}
+                            startIcon={isLoading ? <CircularProgress size={20} /> : <Save />}
                             fullWidth
                         >
-                            {loading ? "更新中..." : "ニックネームを更新"}
+                            {isLoading ? "更新中..." : "ニックネームを更新"}
                         </Button>
                     </Box>
 
@@ -185,7 +209,7 @@ export default function UserProfileEditPage() {
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            disabled={loading}
+                            disabled={isLoading}
                             placeholder="sample@example.com"
                             variant="outlined"
                             sx={{ mb: 2 }}
@@ -197,11 +221,11 @@ export default function UserProfileEditPage() {
                         <Button
                             variant="contained"
                             onClick={handleSaveEmail}
-                            disabled={loading || !hasEmailChanged || !email.trim()}
-                            startIcon={loading ? <CircularProgress size={20} /> : <Save />}
+                            disabled={isLoading || !hasEmailChanged || !email.trim()}
+                            startIcon={isLoading ? <CircularProgress size={20} /> : <Save />}
                             fullWidth
                         >
-                            {loading ? "更新中..." : "メールアドレスを更新"}
+                            {isLoading ? "更新中..." : "メールアドレスを更新"}
                         </Button>
                     </Box>
 
@@ -211,7 +235,7 @@ export default function UserProfileEditPage() {
                             <Button
                                 variant="outlined"
                                 onClick={handleCancel}
-                                disabled={loading}
+                                disabled={isLoading}
                                 startIcon={<Cancel />}
                                 sx={{ flex: 1 }}
                             >
@@ -220,11 +244,18 @@ export default function UserProfileEditPage() {
                         )}
                     </Box>
 
-                    <Button variant="text" onClick={handleBack} disabled={loading} sx={{ mt: 2 }}>
+                    <Button
+                        variant="text"
+                        onClick={handleGoBack}
+                        disabled={isLoading}
+                        sx={{ mt: 2 }}
+                    >
                         設定画面に戻る
                     </Button>
                 </Box>
             </Paper>
         </Container>
     );
-}
+};
+
+export default UserProfileEditPage;

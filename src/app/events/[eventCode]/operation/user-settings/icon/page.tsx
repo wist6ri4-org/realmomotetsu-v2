@@ -15,39 +15,53 @@ import {
 import { PhotoCamera, Save, Cancel } from "@mui/icons-material";
 import { UserUtils } from "@/utils/userUtils";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { useUserIcon } from "@/contexts/UserIconContext";
 import supabase from "@/lib/supabase";
 
-export default function UserIconEditPage() {
+/**
+ * ユーザーアイコン編集ページコンポーネント
+ * @returns {JSX.Element} - ユーザーアイコン編集ページのコンポーネント
+ */
+const UserIconEditPage = (): React.JSX.Element => {
     const router = useRouter();
     const params = useParams();
     const eventCode = params.eventCode as string;
 
     const { user, isLoading: authLoading } = useAuthGuard();
+
+    const { userIconUrl: contextIconUrl, updateUserIcon, refreshKey } = useUserIcon();
     const [currentIconUrl, setCurrentIconUrl] = useState<string>("");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string>("");
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string>("");
     const [success, setSuccess] = useState<string>("");
 
     useEffect(() => {
         const loadCurrentIcon = async () => {
             if (user && user.uuid) {
-                try {
-                    const userUtils = new UserUtils();
-                    const iconUrl = await userUtils.getUserIconUrlWithExtension(user.uuid);
-                    if (iconUrl) {
-                        setCurrentIconUrl(iconUrl);
+                // コンテキストにアイコンがある場合はそれを使用、なければ動的に取得
+                if (contextIconUrl) {
+                    setCurrentIconUrl(contextIconUrl);
+                } else {
+                    try {
+                        const userUtils = new UserUtils();
+                        const iconUrl = await userUtils.getUserIconUrlWithExtension(user.uuid);
+                        if (iconUrl) {
+                            setCurrentIconUrl(iconUrl);
+                            // コンテキストも更新
+                            await updateUserIcon(user.uuid, iconUrl);
+                        }
+                    } catch (error) {
+                        console.log("現在のアイコンの読み込みに失敗しました:", error);
+                        // エラーが発生した場合はデフォルトアイコンを使用
                     }
-                } catch (error) {
-                    console.log("現在のアイコンの読み込みに失敗しました:", error);
-                    // エラーが発生した場合はデフォルトアイコンを使用
                 }
             }
         };
 
         loadCurrentIcon();
-    }, [user]);
+    }, [user, contextIconUrl, updateUserIcon]);
 
     // コンポーネントアンマウント時のクリーンアップ
     useEffect(() => {
@@ -58,7 +72,12 @@ export default function UserIconEditPage() {
         };
     }, [previewUrl]);
 
-    const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    /**
+     * ファイル選択ハンドラー
+     * @param {React.ChangeEvent<HTMLInputElement>} event - ファイル選択イベント
+     * @returns {void} - ファイル選択処理
+     */
+    const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const file = event.target.files?.[0];
         if (file) {
             // ファイルサイズチェック（5MB制限）
@@ -82,12 +101,16 @@ export default function UserIconEditPage() {
         }
     };
 
-    const handleSave = async () => {
+    /**
+     * アイコン保存ハンドラー
+     * @returns {Promise<void>} - 非同期処理
+     */
+    const handleSave = async (): Promise<void> => {
         if (!selectedFile || !user || !user.uuid) {
             return;
         }
 
-        setLoading(true);
+        setIsLoading(true);
         setError("");
         setSuccess("");
 
@@ -126,8 +149,42 @@ export default function UserIconEditPage() {
 
                 setSuccess("アイコンが更新されました。");
 
-                // 現在のアイコンURLを新しいアイコンURLで更新
-                setCurrentIconUrl(iconUrl);
+                // アップロードされたファイルの拡張子を取得
+                const uploadedExtension = selectedFile.name.split(".").pop();
+                console.log("Uploaded file extension:", uploadedExtension);
+
+                // Supabaseストレージの更新が確実に反映されるまで待機
+                setTimeout(async () => {
+                    try {
+                        const userUtils = new UserUtils();
+                        // 最新のアイコンURLを取得
+                        const latestIconUrl = await userUtils.getUserIconUrlWithExtension(
+                            user.uuid,
+                            true
+                        );
+
+                        console.log("Retrieved latest icon URL:", latestIconUrl);
+
+                        if (latestIconUrl) {
+                            // コンテキストを使ってアプリ全体のアイコンを更新
+                            await updateUserIcon(user.uuid, latestIconUrl);
+                            // 現在のアイコンURLを新しいアイコンURLで更新
+                            setCurrentIconUrl(latestIconUrl);
+                            console.log("Successfully updated icon context");
+                        } else {
+                            // フォールバックとして元のURLを使用
+                            console.log("Fallback to original icon URL:", iconUrl);
+                            await updateUserIcon(user.uuid, iconUrl);
+                            setCurrentIconUrl(iconUrl);
+                        }
+                    } catch (error) {
+                        console.error("Failed to refresh icon:", error);
+                        // エラーの場合は元のURLを使用
+                        await updateUserIcon(user.uuid, iconUrl);
+                        setCurrentIconUrl(iconUrl);
+                    }
+                }, 1000); // 1000ms（1秒）待ってから更新
+
                 setSelectedFile(null);
                 setPreviewUrl("");
 
@@ -140,11 +197,15 @@ export default function UserIconEditPage() {
             console.error("Icon update error:", err);
             setError(err instanceof Error ? err.message : "アイコンの更新に失敗しました。");
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
 
-    const handleCancel = () => {
+    /**
+     * キャンセルハンドラー
+     * @returns {void} - キャンセル処理
+     */
+    const handleCancel = (): void => {
         // プレビューURLのメモリリークを防ぐ
         if (previewUrl) {
             URL.revokeObjectURL(previewUrl);
@@ -155,7 +216,11 @@ export default function UserIconEditPage() {
         setError("");
     };
 
-    const handleBack = () => {
+    /**
+     *  設定画面に戻るハンドラー
+     * @return {void} - 設定画面に戻る処理
+     */
+    const handleGoBack = (): void => {
         router.push(`/events/${eventCode}/operation/user-settings`);
     };
 
@@ -195,6 +260,7 @@ export default function UserIconEditPage() {
                             現在のアイコン
                         </Typography>
                         <Avatar
+                            key={`${currentIconUrl}-${refreshKey}`} // URLとrefreshKeyでキャッシュ無効化
                             src={currentIconUrl || undefined}
                             sx={{
                                 width: 120,
@@ -232,12 +298,12 @@ export default function UserIconEditPage() {
                                 variant="outlined"
                                 component="span"
                                 startIcon={<PhotoCamera />}
-                                disabled={loading}
+                                disabled={isLoading}
                             >
                                 画像を選択
                             </Button>
                         </label>
-                        <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+                        <Typography variant="body2" display="block" sx={{ mt: 1 }}>
                             JPG、PNG形式で5MB以下のファイルを選択してください
                         </Typography>
                     </Box>
@@ -249,16 +315,18 @@ export default function UserIconEditPage() {
                                 <Button
                                     variant="contained"
                                     onClick={handleSave}
-                                    disabled={loading}
-                                    startIcon={loading ? <CircularProgress size={20} /> : <Save />}
+                                    disabled={isLoading}
+                                    startIcon={
+                                        isLoading ? <CircularProgress size={20} /> : <Save />
+                                    }
                                     sx={{ flex: 1 }}
                                 >
-                                    {loading ? "保存中..." : "保存"}
+                                    {isLoading ? "保存中..." : "保存"}
                                 </Button>
                                 <Button
                                     variant="outlined"
                                     onClick={handleCancel}
-                                    disabled={loading}
+                                    disabled={isLoading}
                                     startIcon={<Cancel />}
                                     sx={{ flex: 1 }}
                                 >
@@ -268,11 +336,18 @@ export default function UserIconEditPage() {
                         )}
                     </Box>
 
-                    <Button variant="text" onClick={handleBack} disabled={loading} sx={{ mt: 2 }}>
+                    <Button
+                        variant="text"
+                        onClick={handleGoBack}
+                        disabled={isLoading}
+                        sx={{ mt: 2 }}
+                    >
                         設定画面に戻る
                     </Button>
                 </Box>
             </Paper>
         </Container>
     );
-}
+};
+
+export default UserIconEditPage;

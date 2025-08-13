@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, DotGothic16 } from "next/font/google";
 import "./globals.css";
 import { Container } from "@mui/material";
 import ThemeRegistry from "@/components/ThemeRegistry";
+import { UserIconProvider } from "@/contexts/UserIconContext";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -51,17 +52,19 @@ const RootLayout = ({
             </head>
             <body className={dotGothic16.className} suppressHydrationWarning={true}>
                 <ThemeRegistry>
-                    <Container
-                        maxWidth="md"
-                        disableGutters
-                        sx={{
-                            minHeight: "100dvh",
-                            display: "flex",
-                            flexDirection: "column",
-                        }}
-                    >
-                        {children}
-                    </Container>
+                    <UserIconProvider>
+                        <Container
+                            maxWidth="md"
+                            disableGutters
+                            sx={{
+                                minHeight: "100dvh",
+                                display: "flex",
+                                flexDirection: "column",
+                            }}
+                        >
+                            {children}
+                        </Container>
+                    </UserIconProvider>
                 </ThemeRegistry>
             </body>
         </html>

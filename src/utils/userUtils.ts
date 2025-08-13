@@ -2,83 +2,20 @@ import supabase from "@/lib/supabase";
 import { PutUsersResponse } from "@/features/users/types";
 
 export class UserUtils {
+    readonly BUCKET_NAME = "user-assets";
+    readonly USER_ICON_FOLDER = "user-icons";
+
     /**
      * ユーザーのアイコンをアップロードする
-     * @param file アップロードするファイル
-     * @param userId ユーザーID
-     * @return アップロードされたファイルの公開URL
+     * @param {File} file - アップロードする画像ファイル
+     * @param {string} userId - ユーザーのUUID
+     * @return {Promise<string | null>} - アップロードされたアイコンのURL
      */
-    // async uploadUserIcon(file: File, userId: string): Promise<string | null> {
-    //     const bucketName = "user-assets";
-
-    //     // 現在のセッションを確認
-    //     const {
-    //         data: { session },
-    //     } = await supabase.auth.getSession();
-    //     if (!session?.access_token) {
-    //         throw new Error("認証が必要です。ログインしてください。");
-    //     }
-
-    //     // 現在のユーザーがアップロード対象のユーザーと一致するかチェック
-    //     if (session.user.id !== userId) {
-    //         throw new Error("自分のアイコンのみアップロードできます。");
-    //     }
-
-    //     // バケットの存在確認と作成
-    //     await this.ensureBucketExists(bucketName);
-
-    //     const fileExtension = file.name.split(".").pop();
-    //     const fileName = `user-icons/${userId}.${fileExtension}`;
-
-    //     console.log("Uploading file:", { fileName, bucketName, userId: session.user.id });
-
-    //     const { data, error } = await supabase.storage.from(bucketName).upload(fileName, file, {
-    //         upsert: true,
-    //     });
-    //     console.log("Upload result:", data, error);
-
-    //     if (error) {
-    //         // より詳細なエラーメッセージを提供
-    //         if (error.message.includes("Bucket not found")) {
-    //             throw new Error(
-    //                 `ストレージバケット「${bucketName}」が見つかりません。` +
-    //                     `Supabaseダッシュボードでバケットを作成してください。` +
-    //                     `\n1. Supabaseダッシュボードの「Storage」セクションにアクセス` +
-    //                     `\n2. 「New bucket」をクリック` +
-    //                     `\n3. バケット名：「${bucketName}」、Public: ON で作成`
-    //             );
-    //         }
-    //         if (error.message.includes("new row violates row-level security policy")) {
-    //             throw new Error(
-    //                 `ストレージのアクセス権限が設定されていません。` +
-    //                     `Supabaseダッシュボードでストレージポリシーを設定してください。` +
-    //                     `詳細は setup_user_storage.md を参照してください。`
-    //             );
-    //         }
-    //         throw error;
-    //     }
-
-    //     const {
-    //         data: { publicUrl },
-    //     } = supabase.storage.from(bucketName).getPublicUrl(fileName);
-
-    //     return publicUrl;
-    // }
-
     async uploadUserIcon(file: File, userId: string): Promise<string | null> {
-        const bucketName = "user-assets";
-
         // 現在のセッションを確認
         const {
             data: { session },
         } = await supabase.auth.getSession();
-
-        console.log("=== デバッグ情報 ===");
-        console.log("Session:", session);
-        console.log("Session user:", session?.user);
-        console.log("Auth UID:", session?.user?.id);
-        console.log("Target userId:", userId);
-        console.log("Match:", session?.user?.id === userId);
 
         if (!session?.access_token) {
             throw new Error("認証されていません");
@@ -90,30 +27,16 @@ export class UserUtils {
         }
 
         // バケットの存在確認と作成
-        // await this.ensureBucketExists(bucketName);
+        // await this.ensureBucketExists(this.BUCKET_NAME);
 
         const fileExtension = file.name.split(".").pop();
-        const fileName = `user-icons/${userId}.${fileExtension}`;
+        const fileName = `${this.USER_ICON_FOLDER}/${userId}.${fileExtension}`;
 
-        console.log("=== アップロード情報 ===");
-        console.log("FileName:", fileName);
-        console.log("BucketName:", bucketName);
-        console.log("File size:", file.size);
-        console.log("File type:", file.type);
+        await this.deleteUserIcon(userId); // 既存のアイコンを削除
 
-        // フォルダ名の分析をテスト
-        const folderParts = fileName.split("/");
-        console.log("Folder parts:", folderParts);
-        console.log("Folder[0] (should be 'user-icons'):", folderParts[0]);
-        console.log("Folder[1] (should be userId):", folderParts[1]?.split(".")[0]);
-
-        const { data, error } = await supabase.storage.from(bucketName).upload(fileName, file, {
+        const { error } = await supabase.storage.from(this.BUCKET_NAME).upload(fileName, file, {
             upsert: true,
         });
-
-        console.log("=== アップロード結果 ===");
-        console.log("Upload data:", data);
-        console.log("Upload error:", error);
 
         if (error) {
             console.error("Upload failed:", error);
@@ -121,10 +44,13 @@ export class UserUtils {
         }
 
         // 公開URLを生成
-        const { data: urlData } = supabase.storage.from(bucketName).getPublicUrl(fileName);
-        console.log("Public URL:", urlData.publicUrl);
+        const { data: urlData } = supabase.storage.from(this.BUCKET_NAME).getPublicUrl(fileName);
 
-        return urlData.publicUrl;
+        // キャッシュ無効化のためにタイムスタンプを追加
+        const timestamp = Date.now();
+        const publicUrlWithCacheBuster = `${urlData.publicUrl}?t=${timestamp}`;
+
+        return publicUrlWithCacheBuster;
     }
 
     /**
@@ -195,7 +121,6 @@ export class UserUtils {
                 `ニックネームの更新に失敗しました: ${error.message || "Unknown error"}`
             );
         }
-
         return await response.json();
     }
 
@@ -243,7 +168,6 @@ export class UserUtils {
                 }`
             );
         }
-
         return await response.json();
     }
 
@@ -252,11 +176,51 @@ export class UserUtils {
      * @param userId ユーザーID
      */
     async deleteUserIcon(userId: string): Promise<void> {
-        const fileName = `user-icons/${userId}`;
+        try {
+            // user-iconsフォルダ内のファイルをリストアップ
+            const { data: files, error: listError } = await supabase.storage
+                .from(this.BUCKET_NAME)
+                .list(this.USER_ICON_FOLDER, {
+                    limit: 100,
+                    search: userId,
+                });
 
-        const { error } = await supabase.storage.from("user-assets").remove([fileName]);
+            if (listError) {
+                console.warn("Failed to list files:", listError);
+                return;
+            }
 
-        if (error) throw error;
+            if (!files || files.length === 0) {
+                console.log("No files found for user:", userId);
+                return;
+            }
+
+            // userIdに一致するファイルを見つけて削除
+            const filesToDelete: string[] = [];
+            for (const file of files) {
+                // ファイル名がuserIdで始まるかチェック（例: userId.png, userId.jpg など）
+                if (file.name.startsWith(userId + ".")) {
+                    filesToDelete.push(`${this.USER_ICON_FOLDER}/${file.name}`);
+                }
+            }
+
+            // 見つかったファイルを削除
+            if (filesToDelete.length > 0) {
+                const { error: removeError } = await supabase.storage
+                    .from(this.BUCKET_NAME)
+                    .remove(filesToDelete);
+
+                if (removeError) {
+                    console.error("Failed to remove files:", removeError);
+                    throw removeError;
+                }
+
+                console.log("Successfully deleted files:", filesToDelete);
+            }
+        } catch (error) {
+            console.error("Error in deleteUserIcon:", error);
+            // エラーが発生しても処理を続行（ファイルが存在しない場合など）
+        }
     }
 
     /**
@@ -265,36 +229,65 @@ export class UserUtils {
      * @return アイコンのURL
      */
     getUserIconUrl(userId: string): string {
-        return supabase.storage.from("user-assets").getPublicUrl(`user-icons/${userId}`).data
-            .publicUrl;
+        return supabase.storage
+            .from(this.BUCKET_NAME)
+            .getPublicUrl(`${this.USER_ICON_FOLDER}/${userId}`).data.publicUrl;
     }
 
     /**
      * ユーザーのアイコンのURLを動的に取得する（拡張子を推定）
      * @param userId ユーザーID
+     * @param forceRefresh キャッシュを無視して強制的に再読み込みするか（現在未使用）
      * @return アイコンのURL（存在しない場合はnull）
      */
-    async getUserIconUrlWithExtension(userId: string): Promise<string | null> {
-        const bucketName = "user-assets";
-        const possibleExtensions = ["png", "jpg", "jpeg", "gif", "webp"];
+    async getUserIconUrlWithExtension(
+        userId: string,
+        forceRefresh: boolean = false // eslint-disable-line @typescript-eslint/no-unused-vars
+    ): Promise<string | null> {
+        // より効率的な方法：listメソッドを使ってユーザーのファイルを直接検索
+        try {
+            const { data: files, error: listError } = await supabase.storage
+                .from(this.BUCKET_NAME)
+                .list("user-icons", {
+                    limit: 10,
+                    search: userId,
+                });
 
-        // 各拡張子を試してファイルが存在するかチェック
-        for (const ext of possibleExtensions) {
-            try {
-                const fileName = `user-icons/${userId}.${ext}`;
-                const { data, error } = await supabase.storage.from(bucketName).download(fileName);
-
-                if (data && !error) {
-                    // ファイルが存在する場合は公開URLを返す
-                    return supabase.storage.from(bucketName).getPublicUrl(fileName).data.publicUrl;
-                }
-            } catch {
-                // ファイルが存在しない場合は次の拡張子を試す
-                continue;
+            if (listError) {
+                console.warn("Failed to list files:", listError);
+                return null;
             }
-        }
 
-        return null; // どの拡張子でもファイルが見つからない場合
+            if (!files || files.length === 0) {
+                console.log("No files found for user:", userId);
+                return null;
+            }
+
+            // userIdで始まるファイルを検索
+            const userFile = files.find((file) => file.name.startsWith(userId + "."));
+
+            if (!userFile) {
+                console.log("No matching file found for user:", userId);
+                return null;
+            }
+
+            // 見つかったファイルの公開URLを生成
+            const fileName = `${this.USER_ICON_FOLDER}/${userFile.name}`;
+            const baseUrl = supabase.storage.from(this.BUCKET_NAME).getPublicUrl(fileName)
+                .data.publicUrl;
+
+            // キャッシュ無効化のためにタイムスタンプを追加
+            const timestamp = Date.now();
+            const publicUrl = `${baseUrl}?t=${timestamp}`;
+
+            console.log("Found file:", userFile.name);
+            console.log("Generated public URL with cache buster:", publicUrl);
+
+            return publicUrl;
+        } catch (error) {
+            console.error("Error in getUserIconUrlWithExtension:", error);
+            return null;
+        }
     }
 
     /**

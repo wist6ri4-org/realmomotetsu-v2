@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Box, Typography, Card, CardContent, CardActionArea, Avatar, Grid } from "@mui/material";
+import { Box, Typography, Card, CardContent, CardActionArea, Avatar, Grid, CircularProgress } from "@mui/material";
 import {
     Lock as LockIcon,
     Settings as SettingsIcon,
@@ -10,7 +10,7 @@ import {
 } from "@mui/icons-material";
 import PageTitle from "@/components/base/PageTitle";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
-import { UserUtils } from "@/utils/userUtils";
+import { useUserIcon } from "@/contexts/UserIconContext";
 
 interface SettingsMenuItem {
     title: string;
@@ -33,28 +33,31 @@ const UserSettingsPage = (): React.JSX.Element => {
     // 認証ガード
     const { sbUser, user, isLoading: authLoading } = useAuthGuard();
 
-    // ユーザーアイコンのURL状態管理
-    const [userIconUrl, setUserIconUrl] = useState<string>("");
+    // ユーザーアイコンのコンテキストを使用
+    const { userIconUrl, updateUserIcon, refreshKey } = useUserIcon();
 
     // ユーザーアイコンURLを取得
     useEffect(() => {
         const loadUserIcon = async () => {
             if (sbUser?.id) {
-                try {
-                    const userUtils = new UserUtils();
-                    const iconUrl = await userUtils.getUserIconUrlWithExtension(sbUser.id);
-                    if (iconUrl) {
-                        setUserIconUrl(iconUrl);
-                    }
-                } catch (error) {
-                    console.log("アイコンの読み込みに失敗しました:", error);
-                    // エラーが発生した場合はデフォルトアイコンを使用
-                }
+                await updateUserIcon(sbUser.id);
             }
         };
 
         loadUserIcon();
-    }, [sbUser?.id]);
+    }, [sbUser?.id, updateUserIcon]);
+
+    // ページがフォーカスされたときにアイコンを再読み込み（アイコン変更後の反映のため）
+    // useEffect(() => {
+    //     const handleFocus = () => {
+    //         if (sbUser?.id) {
+    //             updateUserIcon(sbUser.id);
+    //         }
+    //     };
+
+    //     window.addEventListener("focus", handleFocus);
+    //     return () => window.removeEventListener("focus", handleFocus);
+    // }, [sbUser?.id, updateUserIcon]);
 
     const settingsMenuItems: SettingsMenuItem[] = [
         {
@@ -96,7 +99,7 @@ const UserSettingsPage = (): React.JSX.Element => {
                     py: 4,
                 }}
             >
-                <Typography>読み込み中...</Typography>
+                <CircularProgress />
             </Box>
         );
     }
@@ -137,6 +140,7 @@ const UserSettingsPage = (): React.JSX.Element => {
             >
                 <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                     <Avatar
+                        key={`${userIconUrl}-${refreshKey}`} // URLとrefreshKeyの両方でキャッシュを無効化
                         src={userIconUrl || undefined}
                         sx={{
                             width: 56,
@@ -260,7 +264,7 @@ const UserSettingsPage = (): React.JSX.Element => {
                                                             py: 0.25,
                                                             bgcolor: "grey.300",
                                                             borderRadius: 1,
-                                                            fontSize: "1.6rem",
+                                                            fontSize: "1.2rem",
                                                         }}
                                                     >
                                                         近日実装予定

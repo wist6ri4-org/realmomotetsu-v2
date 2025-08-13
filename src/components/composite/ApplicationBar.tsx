@@ -10,13 +10,13 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import Avatar from "@mui/material/Avatar";
-import { useState, MouseEvent, useEffect } from "react";
+import { useState, MouseEvent, useEffect, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
 import { useParams, useRouter } from "next/navigation";
 import { Events } from "@/generated/prisma";
 import { signOut } from "@/lib/auth";
 import { UsersWithRelations } from "@/repositories/users/UsersRepository";
-import { UserUtils } from "@/utils/userUtils";
+import { useUserIcon } from "@/contexts/UserIconContext";
 
 /**
  * アプリケーションバーのプロパティ型定義
@@ -40,12 +40,14 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
     const [event, setEvent] = useState<Events | null>(null);
     const [user, setUser] = useState<UsersWithRelations | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [userIconUrl, setUserIconUrl] = useState<string>("");
+
+    // ユーザーアイコンのコンテキストを使用
+    const { userIconUrl, updateUserIcon, refreshKey } = useUserIcon();
 
     /**
      * データの取得
      */
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             setIsLoading(true);
 
@@ -77,24 +79,16 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [eventCode, sbUser.id]);
 
     /**
      * ユーザーアイコンの取得
      */
-    const loadUserIcon = async () => {
+    const loadUserIcon = useCallback(async () => {
         if (sbUser?.id) {
-            try {
-                const userUtils = new UserUtils();
-                const iconUrl = await userUtils.getUserIconUrlWithExtension(sbUser.id);
-                if (iconUrl) {
-                    setUserIconUrl(iconUrl);
-                }
-            } catch (error) {
-                console.log("アイコンの読み込みに失敗しました:", error);
-            }
+            await updateUserIcon(sbUser.id);
         }
-    };
+    }, [sbUser?.id, updateUserIcon]);
 
     /**
      * コンポーネントのマウント時にデータを取得
@@ -102,7 +96,19 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
     useEffect(() => {
         fetchData();
         loadUserIcon();
-    }, [eventCode, sbUser.id]);
+    }, [eventCode, sbUser.id, fetchData, loadUserIcon]);
+
+    // ページがフォーカスされたときにアイコンを再読み込み（アイコン変更後の反映のため）
+    useEffect(() => {
+        const handleFocus = () => {
+            if (sbUser?.id) {
+                loadUserIcon();
+            }
+        };
+
+        window.addEventListener("focus", handleFocus);
+        return () => window.removeEventListener("focus", handleFocus);
+    }, [sbUser?.id, loadUserIcon]);
 
     // イベントメニューの状態管理
     const [anchorEventMenu, setAnchorEventMenu] = useState<null | HTMLElement>(null);
@@ -140,18 +146,6 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
             handleUserMenuClose();
         }
     };
-
-    /**
-     * コンポーネントのマウント時にデータを取得
-     */
-    useEffect(() => {
-        const fetchAllData = async () => {
-            await fetchData();
-            await loadUserIcon();
-        };
-        fetchAllData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [eventCode, sbUser.id]);
 
     return (
         <>
@@ -218,6 +212,7 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
                                 >
                                     {userIconUrl ? (
                                         <Avatar
+                                            key={`${userIconUrl}-${refreshKey}`} // URLとrefreshKeyでキャッシュ無効化
                                             src={userIconUrl}
                                             sx={{
                                                 width: 32,
