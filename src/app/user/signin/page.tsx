@@ -130,6 +130,12 @@ const SignInPage = (): React.JSX.Element => {
                             <Link href="/user/signup">サインアップ</Link>
                         </Typography>
                     </Box>
+                    <Box sx={{ mt: 3, textAlign: "center" }}>
+                        <Typography variant="body2" color="text.secondary">
+                            パスワードを忘れた方は{" "}
+                            <Link href="/user/reset-password/email">パスワードリセット</Link>
+                        </Typography>
+                    </Box>
                 </CardContent>
             </Card>
         </Box>

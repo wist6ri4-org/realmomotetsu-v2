@@ -20,3 +20,23 @@ export type PostUsersRequest = {
 export type PostUsersResponse = {
     user: Users;
 };
+
+/**
+ * ユーザーの更新リクエスト
+ * @property { string } [nickname] - ユーザーのニックネーム（オプション）
+ * @property { string } [email] - ユーザーのメールアドレス（オプション）
+ * @property { string } [iconUrl] - ユーザーのアイコンURL（オプション）
+ */
+export type PutUsersRequest = {
+    nickname?: string;
+    email?: string;
+    iconUrl?: string;
+};
+
+/**
+ * ユーザーの更新レスポンス
+ * @property { Users } user - 更新されたユーザー情報
+ */
+export type PutUsersResponse = {
+    user: Users;
+};

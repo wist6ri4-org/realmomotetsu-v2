@@ -4,13 +4,49 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import supabase from "@/lib/supabase";
+import { UsersWithRelations } from "@/repositories/users/UsersRepository";
 
 const SIGN_IN_URL = "/user/signin";
 
-export const useAuthGuard = () => {
+/**
+ * 認証ガードフック
+ * @returns {User | null} sbUser - Supabaseの認証ユーザー
+ * @return {UsersWithRelations | null} user - publicスキーマのユーザーデータ
+ * @return {boolean} isLoading - 認証状態のロード中フラグ
+ *
+ * このフックは、Supabaseの認証状態を監視し、ユーザーデータを取得します。
+ * 認証されていない場合はサインインページにリダイレクトします。
+ */
+export const useAuthGuard = (): {
+    sbUser: User | null;
+    user: UsersWithRelations | null;
+    isLoading: boolean;
+} => {
     const [sbUser, setSbUser] = useState<User | null>(null);
+    const [user, setUser] = useState<UsersWithRelations | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
+
+    /**
+     * publicスキーマのユーザー情報を取得
+     * @param sbUser - Supabaseの認証ユーザー
+     * @return {Promise<UsersWithRelations | null>} - ユーザーデータまたはnull
+     */
+    const fetchUserData = async (sbUser: User): Promise<UsersWithRelations | null> => {
+        try {
+            const response = await fetch(`/api/users/${sbUser.id}`);
+            if (!response.ok) {
+                console.error(`Failed to fetch user data: ${response.status}`);
+                return null;
+            }
+
+            const data = await response.json();
+            return data?.data?.user || data?.user || null;
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+            return null;
+        }
+    };
 
     useEffect(() => {
         // 初回認証チェック
@@ -33,39 +69,39 @@ export const useAuthGuard = () => {
 
                 if (!hasAuthData) {
                     console.log("No auth data in localStorage");
-                    setSbUser(null);
-                    setIsLoading(false);
-                    router.push(SIGN_IN_URL);
-                    return;
+                    throw new Error("No auth data in localStorage");
                 }
 
                 // Supabaseの認証チェック
                 const {
-                    data: { user },
+                    data: { user: authUser },
                     error,
                 } = await supabase.auth.getUser();
 
                 if (error) {
                     console.error("Auth check error:", error);
-                    setSbUser(null);
-                    setIsLoading(false);
-                    router.push(SIGN_IN_URL);
-                    return;
+                    throw error;
                 }
 
-                if (!user) {
+                if (!authUser) {
                     console.log("No user found");
-                    setSbUser(null);
-                    setIsLoading(false);
-                    router.push(SIGN_IN_URL);
-                    return;
+                    throw new Error("No user found");
                 }
 
-                setSbUser(user);
+                // publicスキーマのユーザーデータを取得
+                const userData = await fetchUserData(authUser);
+                if (!userData) {
+                    console.log("No user data found in public schema");
+                    throw new Error("No user data found in public schema");
+                }
+
+                setSbUser(authUser);
+                setUser(userData);
                 setIsLoading(false);
             } catch (error) {
                 console.error("Initial auth check failed:", error);
                 setSbUser(null);
+                setUser(null);
                 setIsLoading(false);
                 router.push(SIGN_IN_URL);
             }
@@ -74,17 +110,20 @@ export const useAuthGuard = () => {
         // 認証状態の変更を監視
         const {
             data: { subscription },
-        } = supabase.auth.onAuthStateChange((event, session) => {
+        } = supabase.auth.onAuthStateChange(async (event, session) => {
             console.log("Auth state changed:", event, session?.user?.id);
 
             if (event === "SIGNED_OUT" || !session || !session.user) {
                 console.log("User signed out or session invalid");
                 setSbUser(null);
+                setUser(null);
                 setIsLoading(false);
                 router.push(SIGN_IN_URL);
             } else if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
                 console.log("User signed in or token refreshed");
+                const userData = await fetchUserData(session.user);
                 setSbUser(session.user);
+                setUser(userData);
                 setIsLoading(false);
             }
         });
@@ -96,6 +135,7 @@ export const useAuthGuard = () => {
                 if (!e.newValue || e.newValue === "null") {
                     console.log("Auth data removed from localStorage");
                     setSbUser(null);
+                    setUser(null);
                     setIsLoading(false);
                     router.push(SIGN_IN_URL);
                 }
@@ -103,28 +143,6 @@ export const useAuthGuard = () => {
         };
 
         window.addEventListener("storage", handleStorageChange);
-
-        // // 定期的な認証チェック
-        // const intervalCheck = setInterval(async () => {
-        //     try {
-        //         const {
-        //             data: { user },
-        //             error,
-        //         } = await supabase.auth.getUser();
-
-        //         if (error || !user) {
-        //             console.log("Periodic auth check failed");
-        //             setSbUser(null);
-        //             router.push(SIGN_IN_URL);
-        //             clearInterval(intervalCheck);
-        //         }
-        //     } catch (error) {
-        //         console.error("Periodic auth check error:", error);
-        //         setSbUser(null);
-        //         router.push(SIGN_IN_URL);
-        //         clearInterval(intervalCheck);
-        //     }
-        // }, 5000);
 
         checkInitialAuth();
 
@@ -136,5 +154,5 @@ export const useAuthGuard = () => {
         };
     }, [router]);
 
-    return { sbUser: sbUser, isLoading: isLoading };
+    return { sbUser: sbUser, user: user, isLoading: isLoading };
 };

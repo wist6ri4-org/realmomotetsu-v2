@@ -172,3 +172,39 @@ export const getUserClient = async (): Promise<User | null> => {
         return null;
     }
 };
+
+export const sendEmailForPasswordReset = async (email: string): Promise<Error | null> => {
+    try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/user/reset-password/password`,
+        });
+
+        if (error) {
+            console.error("Password reset error:", error);
+            return error;
+        }
+
+        console.log("Password reset email sent successfully");
+        return null;
+    } catch (error) {
+        console.error("Unexpected error during password reset:", error);
+        return new Error("パスワードリセットメール送信中に予期しないエラーが発生しました");
+    }
+};
+
+export const changePassword = async (newPassword: string): Promise<Error | null> => {
+    try {
+        const { error } = await supabase.auth.updateUser({
+            password: newPassword,
+        });
+        if (error) {
+            console.error("Error changing password:", error);
+            return error;
+        }
+        console.log("Password changed successfully");
+        return null;
+    } catch (error) {
+        console.error("Unexpected error changing password:", error);
+        return new Error("パスワード変更中に予期しないエラーが発生しました");
+    }
+};

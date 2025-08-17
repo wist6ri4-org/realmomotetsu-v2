@@ -9,12 +9,14 @@ import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-import { useState, MouseEvent, useEffect } from "react";
+import Avatar from "@mui/material/Avatar";
+import { useState, MouseEvent, useEffect, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
 import { useParams, useRouter } from "next/navigation";
 import { Events } from "@/generated/prisma";
 import { signOut } from "@/lib/auth";
 import { UsersWithRelations } from "@/repositories/users/UsersRepository";
+import { useUserIcon } from "@/contexts/UserIconContext";
 
 /**
  * アプリケーションバーのプロパティ型定義
@@ -37,15 +39,16 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
 
     const [event, setEvent] = useState<Events | null>(null);
     const [user, setUser] = useState<UsersWithRelations | null>(null);
-    const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    // ユーザーアイコンのコンテキストを使用
+    const { userIconUrl, updateUserIcon, refreshKey } = useUserIcon();
 
     /**
      * データの取得
      */
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
-            setError(null);
             setIsLoading(true);
 
             const [responseEvents, responseUsers] = await Promise.all([
@@ -71,20 +74,41 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
             setEvent(eventData as Events);
         } catch (error) {
             console.error("Error fetching event data:", error);
-            setError(error instanceof Error ? error.message : "Unknown error");
             setEvent(null);
             setUser(null);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [eventCode, sbUser.id]);
+
+    /**
+     * ユーザーアイコンの取得
+     */
+    const loadUserIcon = useCallback(async () => {
+        if (sbUser?.id) {
+            await updateUserIcon(sbUser.id);
+        }
+    }, [sbUser?.id, updateUserIcon]);
 
     /**
      * コンポーネントのマウント時にデータを取得
      */
     useEffect(() => {
         fetchData();
-    }, [eventCode, sbUser]);
+        loadUserIcon();
+    }, [eventCode, sbUser.id, fetchData, loadUserIcon]);
+
+    // ページがフォーカスされたときにアイコンを再読み込み（アイコン変更後の反映のため）
+    useEffect(() => {
+        const handleFocus = () => {
+            if (sbUser?.id) {
+                loadUserIcon();
+            }
+        };
+
+        window.addEventListener("focus", handleFocus);
+        return () => window.removeEventListener("focus", handleFocus);
+    }, [sbUser?.id, loadUserIcon]);
 
     // イベントメニューの状態管理
     const [anchorEventMenu, setAnchorEventMenu] = useState<null | HTMLElement>(null);
@@ -118,7 +142,6 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
             setEvent(null);
         } catch (error) {
             console.error("Error signing out:", error);
-            setError(error instanceof Error ? error.message : "Unknown error");
         } finally {
             handleUserMenuClose();
         }
@@ -185,8 +208,21 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
                                     aria-haspopup="true"
                                     onClick={handleUserMenu}
                                     color="inherit"
+                                    sx={{ p: 0.5 }}
                                 >
-                                    <AccountCircle />
+                                    {userIconUrl ? (
+                                        <Avatar
+                                            key={`${userIconUrl}-${refreshKey}`} // URLとrefreshKeyでキャッシュ無効化
+                                            src={userIconUrl}
+                                            sx={{
+                                                width: 32,
+                                                height: 32,
+                                                border: "2px solid white",
+                                            }}
+                                        />
+                                    ) : (
+                                        <AccountCircle sx={{ fontSize: "2rem" }} />
+                                    )}
                                 </IconButton>
                                 <Menu
                                     id="user-menu"

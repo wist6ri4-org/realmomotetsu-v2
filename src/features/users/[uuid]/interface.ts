@@ -1,4 +1,9 @@
-import { GetUsersByUuidRequest, GetUsersByUuidResponse } from "./types";
+import {
+    GetUsersByUuidRequest,
+    GetUsersByUuidResponse,
+    PutUsersByUuidRequest,
+    PutUsersByUuidResponse,
+} from "./types";
 
 export interface UsersByUuidService {
     /**
@@ -7,4 +12,11 @@ export interface UsersByUuidService {
      * @return {Promise<GetUsersByUuidResponse>} レスポンス
      */
     getUsersByUuid: (req: GetUsersByUuidRequest) => Promise<GetUsersByUuidResponse>;
+
+    /**
+     * ユーザーをUUIDで更新する
+     * @param {PutUsersByUuidRequest} req - リクエスト
+     * @return {Promise<PutUsersByUuidResponse>} レスポンス
+     */
+    putUsersByUuid: (req: PutUsersByUuidRequest) => Promise<PutUsersByUuidResponse>;
 }
