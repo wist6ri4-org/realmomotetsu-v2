@@ -119,6 +119,7 @@ model Teams {
   bombiiHistory   BombiiHistories[]
   points          Points[]
   transitStations TransitStations[]
+  attendances     Attendances[]
 
   @@map("teams")
 }
@@ -252,10 +253,12 @@ model Attendances {
   userId    Int      @map("user_id")
   eventCode String   @map("event_code")
   eventRole Role     @default(user) @map("event_role") // 一時的なロール
+  teamCode  String   @map("team_code")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
   user      Users    @relation(fields: [userId], references: [id])
   event     Events   @relation(fields: [eventCode], references: [eventCode])
+  team      Teams    @relation(fields: [teamCode], references: [teamCode])
 
   @@map("attendances")
 }
