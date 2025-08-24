@@ -8,6 +8,7 @@ import { Box, Typography, Alert, Card, CardContent, Link, Stack } from "@mui/mat
 import { Email, Lock } from "@mui/icons-material";
 import { CustomTextField } from "@/components/base/CustomTextField";
 import CustomButton from "@/components/base/CustomButton";
+import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
 
 /**
  * サインインページコンポーネント
@@ -46,10 +47,28 @@ const SignInPage = (): React.JSX.Element => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
-            const user = data?.data?.user || data?.user || {};
+            const data: GetUsersByUuidResponse = (await response.json()).data as GetUsersByUuidResponse;
 
-            return user.attendances[0].eventCode;
+            const user = data.user || {};
+            const attendances = user.attendances || [];
+
+            // 参加しているイベントを開催日降順またはid降順でソート
+            attendances.sort((a, b) => {
+                if (a.event.startDate && b.event.startDate) {
+                    return new Date(b.event.startDate).getTime() - new Date(a.event.startDate).getTime();
+                } else {
+                    if (!a.event.startDate && !b.event.startDate) {
+                        return b.event.id - a.event.id;
+                    } else if (!a.event.startDate) {
+                        return -1;
+                    } else if (!b.event.startDate) {
+                        return 1;
+                    }
+                    return 0;
+                }
+            });
+
+            return attendances.shift()?.eventCode || "";
         } catch (error) {
             console.error("Error fetching event code:", error);
             setError(error instanceof Error ? error.message : "Unknown error");
@@ -68,13 +87,7 @@ const SignInPage = (): React.JSX.Element => {
         >
             <Card sx={{ width: "100%", maxWidth: 400 }}>
                 <CardContent sx={{ p: 4 }}>
-                    <Typography
-                        variant="h4"
-                        component="h1"
-                        gutterBottom
-                        textAlign="center"
-                        color="primary"
-                    >
+                    <Typography variant="h4" component="h1" gutterBottom textAlign="center" color="primary">
                         ログイン
                     </Typography>
 
@@ -126,14 +139,12 @@ const SignInPage = (): React.JSX.Element => {
 
                     <Box sx={{ mt: 3, textAlign: "center" }}>
                         <Typography variant="body2" color="text.secondary">
-                            アカウントをお持ちでない方は{" "}
-                            <Link href="/user/signup">サインアップ</Link>
+                            アカウントをお持ちでない方は <Link href="/user/signup">サインアップ</Link>
                         </Typography>
                     </Box>
                     <Box sx={{ mt: 3, textAlign: "center" }}>
                         <Typography variant="body2" color="text.secondary">
-                            パスワードを忘れた方は{" "}
-                            <Link href="/user/reset-password/email">パスワードリセット</Link>
+                            パスワードを忘れた方は <Link href="/user/reset-password/email">パスワードリセット</Link>
                         </Typography>
                     </Box>
                 </CardContent>
