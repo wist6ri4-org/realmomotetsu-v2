@@ -289,6 +289,7 @@ async function main() {
             const eventCode = row.event_code?.trim();
             const userId = parseInt(row.user_id?.trim(), 10);
             const eventRole = row.event_role?.trim() || "user";
+            const teamCode = row.team_code?.trim();
             const createdAt = new Date(row.created_at?.trim());
             const updatedAt = new Date(row.updated_at?.trim());
 
@@ -297,6 +298,7 @@ async function main() {
                     eventCode,
                     userId,
                     eventRole,
+                    teamCode,
                     createdAt,
                     updatedAt,
                 },
