@@ -1,8 +1,21 @@
 import { GoalStationsWithRelations } from "@/repositories/goalStations/GoalStationsRepository";
 import { TeamData } from "@/types/TeamData";
-import { Alert, Box, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Fab } from "@mui/material";
+import {
+    Alert,
+    Box,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Fab,
+    FormControlLabel,
+    Switch,
+    Typography,
+    Paper,
+} from "@mui/material";
 import MapIcon from "@mui/icons-material/Map";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import CustomButton from "../base/CustomButton";
 import Routemap from "./Routemap";
 import { useParams } from "next/navigation";
@@ -24,11 +37,12 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
     const [error, setError] = useState<string | null>(null);
 
     const [isOpen, setIsOpen] = useState(false);
+    const [visibleTeams, setVisibleTeams] = useState<string[]>([]);
 
     /**
      * データの取得
      */
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             setIsLoading(true);
             setError(null);
@@ -59,6 +73,9 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
             setNextGoalStation(nextGoalStationData as GoalStationsWithRelations);
             setBombiiTeam(bombiiTeamData as Teams);
             setStations(stations as Stations[]);
+
+            // 初期表示では全チームを表示
+            setVisibleTeams((teamData as TeamData[]).map((team) => team.teamCode));
         } catch (error) {
             console.error("Error fetching data:", error);
             setError(error instanceof Error ? error.message : "Unknown error");
@@ -66,14 +83,14 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [eventCode]);
 
     /**
      * 初期表示
      */
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     /**
      * ダイアログを開くハンドラー
@@ -87,6 +104,16 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
      */
     const handleClose = () => {
         setIsOpen(false);
+    };
+
+    /**
+     * チーム表示切り替えハンドラー
+     * @param teamCode チームコード
+     */
+    const handleTeamVisibilityToggle = (teamCode: string) => {
+        setVisibleTeams((prev) =>
+            prev.includes(teamCode) ? prev.filter((code) => code !== teamCode) : [...prev, teamCode]
+        );
     };
 
     return (
@@ -131,12 +158,65 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
                                 nextGoalStation={nextGoalStation}
                                 bombiiTeam={bombiiTeam}
                                 stationsFromDB={stations}
+                                visibleTeams={visibleTeams}
                             />
                         </DialogContent>
-                        <DialogActions>
-                            <CustomButton onClick={handleClose} color="warning">
-                                閉じる
-                            </CustomButton>
+                        <DialogActions sx={{ flexDirection: "column", p: 2 }}>
+                            <Paper elevation={1} sx={{ p: 2, width: "100%", mb: 2 }}>
+                                <Box sx={{ display: "flex", gap: 3 }}>
+                                    <Box sx={{ flex: 1 }}>
+                                        {teamData.slice(0, Math.ceil(teamData.length / 2)).map((team) => (
+                                            <FormControlLabel
+                                                key={team.teamCode}
+                                                control={
+                                                    <Switch
+                                                        checked={visibleTeams.includes(team.teamCode)}
+                                                        onChange={() => handleTeamVisibilityToggle(team.teamCode)}
+                                                        size="small"
+                                                        sx={{
+                                                            "& .MuiSwitch-thumb": {
+                                                                backgroundColor: visibleTeams.includes(team.teamCode)
+                                                                    ? team.teamColor
+                                                                    : undefined,
+                                                            },
+                                                        }}
+                                                    />
+                                                }
+                                                label={team.teamName}
+                                                sx={{ display: "block", mb: 1 }}
+                                            />
+                                        ))}
+                                    </Box>
+                                    <Box sx={{ flex: 1 }}>
+                                        {teamData.slice(Math.ceil(teamData.length / 2)).map((team) => (
+                                            <FormControlLabel
+                                                key={team.teamCode}
+                                                control={
+                                                    <Switch
+                                                        checked={visibleTeams.includes(team.teamCode)}
+                                                        onChange={() => handleTeamVisibilityToggle(team.teamCode)}
+                                                        size="small"
+                                                        sx={{
+                                                            "& .MuiSwitch-thumb": {
+                                                                backgroundColor: visibleTeams.includes(team.teamCode)
+                                                                    ? team.teamColor
+                                                                    : undefined,
+                                                            },
+                                                        }}
+                                                    />
+                                                }
+                                                label={team.teamName}
+                                                sx={{ display: "block", mb: 1 }}
+                                            />
+                                        ))}
+                                    </Box>
+                                </Box>
+                            </Paper>
+                            <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
+                                <CustomButton onClick={handleClose} color="warning">
+                                    閉じる
+                                </CustomButton>
+                            </Box>
                         </DialogActions>
                     </Dialog>
                 </>

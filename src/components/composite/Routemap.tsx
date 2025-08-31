@@ -13,6 +13,7 @@ import RouteListSymbolSVG from "../base/symbol/RouteListSymbolSVG";
  * @param {GoalStationsWithRelations | null} nextGoalStation - 次の目的駅データ
  * @param {Teams | null} bombiiTeam - Bombiiチームデータ
  * @param {Stations[]} stationsFromDB - データベースから取得した駅データの配列
+ * @param {string[]} visibleTeams - 表示するチームコードの配列
  */
 interface RoutemapProps {
     teamData: TeamData[];
@@ -20,6 +21,7 @@ interface RoutemapProps {
     bombiiTeam: Teams | null;
     stationsFromDB: Stations[];
     configFileName?: string;
+    visibleTeams?: string[];
 }
 
 /**
@@ -138,6 +140,7 @@ const Routemap: React.FC<RoutemapProps> = ({
     bombiiTeam,
     stationsFromDB,
     configFileName = "routemap-config",
+    visibleTeams = [],
 }: RoutemapProps): React.JSX.Element => {
     const [config, setConfig] = useState<RoutemapConfig | null>(null);
     const [goalStationMapping, setGoalStationMapping] = useState<Station | null>(null);
@@ -342,41 +345,43 @@ const Routemap: React.FC<RoutemapProps> = ({
                                 {/* 路線 */}
                                 <use id="route-on-routemap" href="#route-list-symbol" x="150" y="450" />
                                 {/* チームの電車 */}
-                                {teamData.map((team, index) => {
-                                    const station = config.stations.find(
-                                        (s) => s.code === team.transitStations.slice(-1)[0].stationCode
-                                    );
-                                    if (!station) return null;
+                                {teamData
+                                    .filter((team) => visibleTeams.includes(team.teamCode))
+                                    .map((team, index) => {
+                                        const station = config.stations.find(
+                                            (s) => s.code === team.transitStations.slice(-1)[0].stationCode
+                                        );
+                                        if (!station) return null;
 
-                                    return (
-                                        <React.Fragment key={`team-${team.teamCode}`}>
-                                            {/* 電車 */}
-                                            <use
-                                                key={`train-${index}`}
-                                                id={`train-${team.teamCode}`}
-                                                href={"#train-symbol"}
-                                                x={station.box.x}
-                                                y={station.box.y}
-                                                width="200"
-                                                height="200"
-                                                transform="translate(-50, -50)"
-                                                fill={team.teamColor}
-                                            />
-                                            {/* ボンビー */}
-                                            {bombiiTeam && team.teamCode === bombiiTeam?.teamCode && (
+                                        return (
+                                            <React.Fragment key={`team-${team.teamCode}`}>
+                                                {/* 電車 */}
                                                 <use
-                                                    id={`bombii-${team.teamCode}`}
-                                                    href={"#bombii-symbol"}
+                                                    key={`train-${index}`}
+                                                    id={`train-${team.teamCode}`}
+                                                    href={"#train-symbol"}
                                                     x={station.box.x}
                                                     y={station.box.y}
-                                                    width="400"
-                                                    height="400"
-                                                    transform="translate(-30, 100)"
+                                                    width="200"
+                                                    height="200"
+                                                    transform="translate(-50, -50)"
+                                                    fill={team.teamColor}
                                                 />
-                                            )}
-                                        </React.Fragment>
-                                    );
-                                })}
+                                                {/* ボンビー */}
+                                                {bombiiTeam && team.teamCode === bombiiTeam?.teamCode && (
+                                                    <use
+                                                        id={`bombii-${team.teamCode}`}
+                                                        href={"#bombii-symbol"}
+                                                        x={station.box.x}
+                                                        y={station.box.y}
+                                                        width="400"
+                                                        height="400"
+                                                        transform="translate(-30, 100)"
+                                                    />
+                                                )}
+                                            </React.Fragment>
+                                        );
+                                    })}
                             </g>
                         </g>
                     </svg>
