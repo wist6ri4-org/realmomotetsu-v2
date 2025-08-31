@@ -11,6 +11,7 @@ import { Alert, Box, CircularProgress, Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import TransitStationsHistoryDialog from "@/components/composite/TransitStationsHistoryDialog";
+import RoutemapDialog from "@/components/composite/RoutemapDialog";
 
 /**
  * ホームページ
@@ -47,6 +48,7 @@ const HomePage: React.FC = (): React.JSX.Element => {
             }
 
             const data = await response.json();
+            console.log(data);
             const teamData = data?.data?.teamData || data?.teamData || [];
             const nextGoalStationData = data?.data?.nextGoalStation || data?.nextGoalStation || {};
             const bombiiTeamData = data?.data?.bombiiTeam || data;
@@ -123,17 +125,20 @@ const HomePage: React.FC = (): React.JSX.Element => {
                 {!isLoading && !error && (
                     <>
                         {teamData.length > 0 ? (
-                            <Grid container spacing={2}>
-                                {teamData.map((team) => (
-                                    <Grid key={team.id} size={{ xs: 6, sm: 6, md: 3, lg: 3 }}>
-                                        <TeamCard
-                                            teamData={team}
-                                            bombiiTeamData={bombiiTeamData}
-                                            onClick={() => handleTransitStationsHistoryDialogOpen(team)}
-                                        />
-                                    </Grid>
-                                ))}
-                            </Grid>
+                            <>
+                                <Grid container spacing={2}>
+                                    {teamData.map((team) => (
+                                        <Grid key={team.id} size={{ xs: 6, sm: 6, md: 3, lg: 3 }}>
+                                            <TeamCard
+                                                teamData={team}
+                                                bombiiTeamData={bombiiTeamData}
+                                                onClick={() => handleTransitStationsHistoryDialogOpen(team)}
+                                            />
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                                <RoutemapDialog />
+                            </>
                         ) : (
                             <Box sx={{ textAlign: "center", py: 8 }}>
                                 <Typography variant="body1" color="text.secondary">
