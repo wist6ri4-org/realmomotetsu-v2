@@ -137,7 +137,6 @@ const HomePage: React.FC = (): React.JSX.Element => {
                                         </Grid>
                                     ))}
                                 </Grid>
-                                <RoutemapDialog />
                             </>
                         ) : (
                             <Box sx={{ textAlign: "center", py: 8 }}>

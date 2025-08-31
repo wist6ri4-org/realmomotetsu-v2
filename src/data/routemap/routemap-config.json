@@ -1,6 +1,6 @@
 {
     "svgOverall": {
-        "viewBox": "0 0 5600 3700",
+        "viewBox": "0 0 5600 4000",
         "transform": "translate(200, 100)"
     },
     "stationBoxStyle": {
@@ -1040,7 +1040,7 @@
                 "fontWeight": "normal",
                 "fill": "rgba(0, 0, 0, 1)",
                 "stroke": "rgba(255, 255, 255, 1)",
-                "transform": "translate(25 2)"
+                "transform": "translate(0, 0)"
             }
         },
         {
@@ -1059,7 +1059,7 @@
                 "fontWeight": "normal",
                 "fill": "rgba(0, 0, 0, 1)",
                 "stroke": "rgba(255, 255, 255, 1)",
-                "transform": "translate(25 2)"
+                "transform": "translate(0, 0)"
             }
         },
         {

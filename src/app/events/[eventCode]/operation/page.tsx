@@ -9,6 +9,7 @@ import {
 } from "@mui/icons-material";
 import PageTitle from "@/components/base/PageTitle";
 import { useParams, useRouter } from "next/navigation";
+import RoutemapDialog from "@/components/composite/RoutemapDialog";
 
 /**
  * オペレーションメニューページ
@@ -114,6 +115,7 @@ const OperationPage: React.FC = (): React.JSX.Element => {
                     </Grid>
                 ))}
             </Grid>
+            <RoutemapDialog />
         </>
     );
 };

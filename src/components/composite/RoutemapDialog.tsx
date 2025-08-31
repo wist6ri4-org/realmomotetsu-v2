@@ -11,11 +11,16 @@ import {
     Fab,
     FormControlLabel,
     Switch,
-    Typography,
     Paper,
+    IconButton,
+    Slider,
+    Typography,
 } from "@mui/material";
 import MapIcon from "@mui/icons-material/Map";
-import React, { useEffect, useState, useCallback } from "react";
+import ZoomInIcon from "@mui/icons-material/ZoomIn";
+import ZoomOutIcon from "@mui/icons-material/ZoomOut";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import CustomButton from "../base/CustomButton";
 import Routemap from "./Routemap";
 import { useParams } from "next/navigation";
@@ -38,6 +43,8 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
 
     const [isOpen, setIsOpen] = useState(false);
     const [visibleTeams, setVisibleTeams] = useState<string[]>([]);
+    const [zoomLevel, setZoomLevel] = useState(1.0); // ズームレベル（0.5〜2.0）
+    const dialogContentRef = useRef<HTMLDivElement>(null);
 
     /**
      * データの取得
@@ -116,30 +123,84 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
         );
     };
 
+    /**
+     * ズームイン
+     */
+    const handleZoomIn = () => {
+        setZoomLevel((prev) => Math.min(prev + 0.25, 2.0));
+    };
+
+    /**
+     * ズームアウト
+     */
+    const handleZoomOut = () => {
+        setZoomLevel((prev) => Math.max(prev - 0.25, 0.5));
+    };
+
+    /**
+     * ズームリセット
+     */
+    const handleZoomReset = () => {
+        setZoomLevel(1.0);
+    };
+
+    /**
+     * マウスホイールでのズーム処理
+     */
+    const handleWheel = useCallback((e: React.WheelEvent) => {
+        if (e.ctrlKey) {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.1 : 0.1;
+            setZoomLevel((prev) => Math.max(0.5, Math.min(2.0, prev + delta)));
+        }
+    }, []);
+
+    /**
+     * タッチイベントでのピンチ操作
+     */
+    const handleTouchStart = useCallback(
+        (e: React.TouchEvent) => {
+            if (e.touches.length === 2) {
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const distance = Math.sqrt(
+                    Math.pow(touch2.clientX - touch1.clientX, 2) + Math.pow(touch2.clientY - touch1.clientY, 2)
+                );
+                (e.currentTarget as HTMLElement).dataset.initialPinchDistance = distance.toString();
+                (e.currentTarget as HTMLElement).dataset.initialZoom = zoomLevel.toString();
+            }
+        },
+        [zoomLevel]
+    );
+
+    const handleTouchMove = useCallback((e: React.TouchEvent) => {
+        if (e.touches.length === 2) {
+            e.preventDefault();
+            const touch1 = e.touches[0];
+            const touch2 = e.touches[1];
+            const distance = Math.sqrt(
+                Math.pow(touch2.clientX - touch1.clientX, 2) + Math.pow(touch2.clientY - touch1.clientY, 2)
+            );
+            const initialDistance = parseFloat((e.currentTarget as HTMLElement).dataset.initialPinchDistance || "0");
+            const initialZoom = parseFloat((e.currentTarget as HTMLElement).dataset.initialZoom || "1");
+
+            if (initialDistance > 0) {
+                const scale = distance / initialDistance;
+                const newZoom = Math.max(0.5, Math.min(2.0, initialZoom * scale));
+                setZoomLevel(newZoom);
+            }
+        }
+    }, []);
+
     return (
         <>
-            {/* ローディング */}
-            {isLoading && (
-                <Box sx={{ textAlign: "center", mb: 4 }}>
-                    <CircularProgress size={40} color="primary" />
-                </Box>
-            )}
-            {/* エラー */}
-            {error && (
-                <Box sx={{ mb: 4 }}>
-                    <Alert severity="error" action={<CustomButton onClick={fetchData}>再試行</CustomButton>}>
-                        {error}
-                    </Alert>
-                </Box>
-            )}
             {/* データの表示 */}
             {!isLoading && !error && (
                 <>
                     <Fab
-                        color="success"
+                        color="primary"
                         aria-label="info"
                         onClick={handleOpen}
-                        sx={{ top: 100, left: 350, zIndex: 2000 }}
                     >
                         <MapIcon />
                     </Fab>
@@ -152,16 +213,83 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
                         sx={{ zIndex: 3000 }}
                     >
                         <DialogTitle id="routemap-dialog-title">路線図</DialogTitle>
-                        <DialogContent>
-                            <Routemap
-                                teamData={teamData}
-                                nextGoalStation={nextGoalStation}
-                                bombiiTeam={bombiiTeam}
-                                stationsFromDB={stations}
-                                visibleTeams={visibleTeams}
-                            />
+                        <DialogContent
+                            ref={dialogContentRef}
+                            sx={{
+                                padding: 0,
+                                overflow: "hidden",
+                                touchAction: "none", // タッチスクロールを無効化
+                                position: "relative",
+                                border: "1px solid #000",
+                            }}
+                            onWheel={handleWheel}
+                            onTouchStart={handleTouchStart}
+                            onTouchMove={handleTouchMove}
+                        >
+                            <Box
+                                sx={{
+                                    width: "100%",
+                                    height: "100%",
+                                    overflow: zoomLevel > 1 ? "auto" : "hidden",
+                                    display: "flex",
+                                    justifyContent: zoomLevel > 1 ? "flex-start" : "center",
+                                    alignItems: zoomLevel > 1 ? "flex-start" : "center",
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        transform: `scale(${zoomLevel})`,
+                                        transformOrigin: "top left",
+                                        width: zoomLevel <= 1 ? "100%" : `${100 / zoomLevel}%`,
+                                        height: zoomLevel <= 1 ? "100%" : `${100 / zoomLevel}%`,
+                                        minWidth: zoomLevel > 1 ? `${100 * zoomLevel}%` : "auto",
+                                        minHeight: zoomLevel > 1 ? `${100 * zoomLevel}%` : "auto",
+                                        aspectRatio: "5600 / 4000", // viewBoxの比率を維持
+                                    }}
+                                >
+                                    <Routemap
+                                        teamData={teamData}
+                                        nextGoalStation={nextGoalStation}
+                                        bombiiTeam={bombiiTeam}
+                                        stationsFromDB={stations}
+                                        visibleTeams={visibleTeams}
+                                    />
+                                </Box>
+                            </Box>
                         </DialogContent>
                         <DialogActions sx={{ flexDirection: "column", p: 2 }}>
+                            {/* ズームコントロール */}
+                            <Paper elevation={1} sx={{ p: 2, width: "100%", mb: 2 }}>
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                                    <IconButton onClick={handleZoomOut} disabled={zoomLevel <= 0.5} size="medium">
+                                        <ZoomOutIcon sx={{ fontSize: 25 }} />
+                                    </IconButton>
+                                    <Box sx={{ flex: 1, mx: 2 }}>
+                                        <Slider
+                                            value={zoomLevel}
+                                            onChange={(_, newValue) => setZoomLevel(newValue as number)}
+                                            min={0.5}
+                                            max={2.0}
+                                            step={0.1}
+                                            marks={[
+                                                { value: 0.5, label: "50%" },
+                                                { value: 1.0, label: "100%" },
+                                                { value: 1.5, label: "150%" },
+                                                { value: 2.0, label: "200%" },
+                                            ]}
+                                            valueLabelDisplay="auto"
+                                            valueLabelFormat={(value) => `${Math.round(value * 100)}%`}
+                                        />
+                                    </Box>
+                                    <IconButton onClick={handleZoomIn} disabled={zoomLevel >= 2.0} size="medium">
+                                        <ZoomInIcon sx={{ fontSize: 25 }} />
+                                    </IconButton>
+                                    <IconButton onClick={handleZoomReset} size="medium" title="100%にリセット">
+                                        <RestartAltIcon sx={{ fontSize: 25 }} />
+                                    </IconButton>
+                                </Box>
+                            </Paper>
+                            {/* チーム表示設定 */}
                             <Paper elevation={1} sx={{ p: 2, width: "100%", mb: 2 }}>
                                 <Box sx={{ display: "flex", gap: 3 }}>
                                     <Box sx={{ flex: 1 }}>

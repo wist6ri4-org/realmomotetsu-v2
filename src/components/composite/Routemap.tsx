@@ -214,7 +214,14 @@ const Routemap: React.FC<RoutemapProps> = ({
                     <svg
                         id="routemap"
                         viewBox={config.svgOverall.viewBox}
+                        width="100%"
                         height="100%"
+                        preserveAspectRatio="xMidYMid meet"
+                        style={{
+                            display: "block",
+                            maxWidth: "100%",
+                            maxHeight: "100%",
+                        }}
                         xmlns="http://www.w3.org/2000/svg"
                         xmlnsXlink="http://www.w3.org/1999/xlink"
                     >

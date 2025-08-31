@@ -6,6 +6,8 @@ import { CircularProgress, Box, Typography } from "@mui/material";
 import ApplicationBar from "@/components/composite/ApplicationBar";
 import Header from "@/components/composite/Header";
 import { NavigationBar } from "@/components/composite/NavigationBar";
+import Footer from "@/components/composite/Footer";
+import RoutemapDialog from "@/components/composite/RoutemapDialog";
 
 /**
  * イベントページのレイアウトコンポーネントのプロパティ型定義
@@ -20,9 +22,7 @@ interface EventsLayoutProps {
  * @param {EventsLayoutProps} props - レイアウトのプロパティ
  * @return {React.JSX.Element | null} - レイアウトコンポーネント
  */
-const EventsLayout: React.FC<EventsLayoutProps> = ({
-    children,
-}: EventsLayoutProps): React.JSX.Element | null => {
+const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutProps): React.JSX.Element | null => {
     const { sbUser, isLoading } = useAuthGuard();
 
     return (
@@ -40,6 +40,8 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({
                     <ApplicationBar sbUser={sbUser} />
                     <Header />
                     <Box sx={{ flex: 1, padding: 1 }}>{children}</Box>
+                    <RoutemapDialog />
+                    <Footer />
                     <NavigationBar />
                 </>
             )}
