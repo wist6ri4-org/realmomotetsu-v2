@@ -22,6 +22,7 @@ interface RoutemapProps {
     stationsFromDB: Stations[];
     configFileName?: string;
     visibleTeams?: string[];
+    handleAspectRatio: (a: number, b: number) => void;
 }
 
 /**
@@ -141,6 +142,7 @@ const Routemap: React.FC<RoutemapProps> = ({
     stationsFromDB,
     configFileName = "routemap-config",
     visibleTeams = [],
+    handleAspectRatio,
 }: RoutemapProps): React.JSX.Element => {
     const [config, setConfig] = useState<RoutemapConfig | null>(null);
     const [goalStationMapping, setGoalStationMapping] = useState<Station | null>(null);
@@ -161,6 +163,10 @@ const Routemap: React.FC<RoutemapProps> = ({
                 setGoalStationMapping(
                     config.default.stations.find((station: Station) => station.code === nextGoalStation?.stationCode) ||
                         null
+                );
+                handleAspectRatio(
+                    config.default.svgOverall.viewBox.split(" ")[2],
+                    config.default.svgOverall.viewBox.split(" ")[3]
                 );
             } catch (error) {
                 console.error(`Error loading routemap config: ${configFileName}.json`, error);
