@@ -273,7 +273,7 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
                                         height: zoomLevel <= 1 ? "100%" : `${100 / zoomLevel}%`,
                                         minWidth: zoomLevel > 1 ? `${100 * zoomLevel}%` : "auto",
                                         minHeight: zoomLevel > 1 ? `${100 * zoomLevel}%` : "auto",
-                                        aspectRatio: "5600 / 4000", // viewBoxの比率を維持
+                                        aspectRatio: aspectRatio, // viewBoxの比率を維持
                                     }}
                                 >
                                     <Routemap
