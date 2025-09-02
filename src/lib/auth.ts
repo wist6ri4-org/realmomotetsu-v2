@@ -1,3 +1,4 @@
+import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
 import supabase from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@supabase/supabase-js";
@@ -56,10 +57,7 @@ export const signUp = async (email: string, password: string): Promise<Error | n
  * @param {string} password - ユーザーのパスワード
  * @return {Promise<{ user: User | null; error: Error | null }>} - ユーザー情報とエラー情報
  */
-export const signIn = async (
-    email: string,
-    password: string
-): Promise<{ user: User | null; error: Error | null }> => {
+export const signIn = async (email: string, password: string): Promise<{ user: User | null; error: Error | null }> => {
     try {
         console.log("Signing in with email:", email);
 
@@ -110,18 +108,14 @@ export const signOut = async (): Promise<Error | null> => {
  * Server Component用のSupabaseクライアントを作成
  */
 const createServerSupabaseClient = () => {
-    return createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            auth: {
-                flowType: "pkce",
-                autoRefreshToken: false,
-                detectSessionInUrl: false,
-                persistSession: false,
-            },
-        }
-    );
+    return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+        auth: {
+            flowType: "pkce",
+            autoRefreshToken: false,
+            detectSessionInUrl: false,
+            persistSession: false,
+        },
+    });
 };
 
 /**
@@ -206,5 +200,38 @@ export const changePassword = async (newPassword: string): Promise<Error | null>
     } catch (error) {
         console.error("Unexpected error changing password:", error);
         return new Error("パスワード変更中に予期しないエラーが発生しました");
+    }
+};
+
+/**
+ * 管理者ユーザーかどうかを確認
+ * @param {string} userId - ユーザーID
+ * @param {string} eventCode - イベントコード
+ * @return {Promise<boolean>} - 管理者ユーザーであればtrue、そうでなければfalse
+ * @description users.masterRoleかattendances.eventRoleが'admin'であれば管理者
+ */
+export const checkIsAdminUser = async (userId: string, eventCode: string): Promise<boolean> => {
+    if (!userId) {
+        return false;
+    }
+
+    try {
+        const response = await fetch(`/api/users/${userId}`);
+        if (!response.ok) {
+            console.error("Failed to fetch user profile for admin check");
+            return false;
+        }
+
+        const data: GetUsersByUuidResponse = (await response.json()).data;
+        const attendance = data.user.attendances?.find((att) => att.eventCode === eventCode);
+
+        if (data.user.masterRole !== "admin" && attendance?.eventRole !== "admin") {
+            return false;
+        }
+
+        return true;
+    } catch (error) {
+        console.error("Error checking admin status:", error);
+        return false;
     }
 };

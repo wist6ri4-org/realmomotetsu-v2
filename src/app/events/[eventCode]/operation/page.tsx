@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Typography, Card, CardContent, CardActionArea, Avatar, Grid } from "@mui/material";
+import { Box, Typography, Card, CardContent, CardActionArea, Avatar, Grid, CircularProgress } from "@mui/material";
 import {
     Settings as SettingsIcon,
     AccountCircle as AccountCircleIcon,
@@ -10,6 +10,9 @@ import {
 import PageTitle from "@/components/base/PageTitle";
 import { useParams, useRouter } from "next/navigation";
 import RoutemapDialog from "@/components/composite/RoutemapDialog";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { checkIsAdminUser } from "@/lib/auth";
+import { useEffect, useState } from "react";
 
 /**
  * オペレーションメニューページ
@@ -18,6 +21,34 @@ const OperationPage: React.FC = (): React.JSX.Element => {
     const router = useRouter();
     const params = useParams();
     const eventCode = params.eventCode as string;
+    const { sbUser, isLoading } = useAuthGuard();
+
+    const [isAdminUser, setIsAdminUser] = useState<boolean>(false);
+    const [isCheckingAdmin, setIsCheckingAdmin] = useState<boolean>(true);
+
+    /**
+     * 管理者ユーザーかどうかを確認
+     */
+    useEffect(() => {
+        setIsCheckingAdmin(true);
+        const checkIsAdmin = async () => {
+            if (sbUser?.id) {
+                try {
+                    const isAdminUser = await checkIsAdminUser(sbUser.id, eventCode);
+                    setIsAdminUser(isAdminUser);
+                } catch (error) {
+                    console.error("Error checking admin status:", error);
+                    setIsAdminUser(false);
+                } finally {
+                    setIsCheckingAdmin(false);
+                }
+            } else {
+                setIsAdminUser(false);
+                setIsCheckingAdmin(false);
+            }
+        };
+        checkIsAdmin();
+    }, [sbUser, eventCode, isLoading]);
 
     const menuItems = [
         {
@@ -38,83 +69,87 @@ const OperationPage: React.FC = (): React.JSX.Element => {
                 router.push(`/events/${eventCode}/operation/docs`);
             },
         },
-        {
-            title: "GMツール",
-            description: "GM用の管理機能",
-            icon: <SettingsIcon sx={{ fontSize: "1.8rem" }} />,
-            color: "#2196F3",
-            onClick: () => {
-                router.push(`/events/${eventCode}/operation/tools`);
-            },
-        },
+        ...(isAdminUser
+            ? [
+                  {
+                      title: "GMツール",
+                      description: "GM用の管理機能",
+                      icon: <SettingsIcon sx={{ fontSize: "1.8rem" }} />,
+                      color: "#2196F3",
+                      onClick: () => {
+                          router.push(`/events/${eventCode}/operation/tools`);
+                      },
+                  },
+              ]
+            : []),
     ];
 
     return (
         <>
             <Box>
-                <PageTitle
-                    title="その他"
-                    icon={<Settings sx={{ fontSize: "3.5rem", marginRight: 1 }} />}
-                />
+                <PageTitle title="その他" icon={<Settings sx={{ fontSize: "3.5rem", marginRight: 1 }} />} />
             </Box>
 
-            <Grid container spacing={2}>
-                {menuItems.map((item, index) => (
-                    <Grid size={6} key={index}>
-                        <Card
-                            variant="outlined"
-                            sx={{
-                                height: "100%",
-                                borderRadius: 3,
-                                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                                transition: "all 0.3s ease",
-                                "&:hover": {
-                                    transform: "translateY(-4px)",
-                                    boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
-                                },
-                                minHeight: 150,
-                            }}
-                        >
-                            <CardActionArea
-                                onClick={item.onClick}
+            {/* ローディング */}
+            {isLoading || isCheckingAdmin ? (
+                <Box sx={{ textAlign: "center", mb: 4 }}>
+                    <CircularProgress size={40} color="primary" />
+                </Box>
+            ) : (
+                <Grid container spacing={2}>
+                    {menuItems.map((item, index) => (
+                        <Grid size={6} key={index}>
+                            <Card
+                                variant="outlined"
                                 sx={{
                                     height: "100%",
-                                    p: 2,
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "flex-start",
-                                    justifyContent: "flex-start",
-                                    minHeight: 120,
+                                    borderRadius: 3,
+                                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                                    transition: "all 0.3s ease",
+                                    "&:hover": {
+                                        transform: "translateY(-4px)",
+                                        boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+                                    },
+                                    minHeight: 150,
                                 }}
                             >
-                                <Box sx={{ mb: 1.5 }}>
-                                    <Avatar
-                                        sx={{
-                                            bgcolor: item.color,
-                                            width: 36,
-                                            height: 36,
-                                        }}
-                                    >
-                                        {item.icon}
-                                    </Avatar>
-                                </Box>
-                                <CardContent sx={{ p: 0, "&:last-child": { pb: 0 } }}>
-                                    <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>
-                                        {item.title}
-                                    </Typography>
-                                    <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                        sx={{ lineHeight: 1.5 }}
-                                    >
-                                        {item.description}
-                                    </Typography>
-                                </CardContent>
-                            </CardActionArea>
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
+                                <CardActionArea
+                                    onClick={item.onClick}
+                                    sx={{
+                                        height: "100%",
+                                        p: 2,
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "flex-start",
+                                        justifyContent: "flex-start",
+                                        minHeight: 120,
+                                    }}
+                                >
+                                    <Box sx={{ mb: 1.5 }}>
+                                        <Avatar
+                                            sx={{
+                                                bgcolor: item.color,
+                                                width: 36,
+                                                height: 36,
+                                            }}
+                                        >
+                                            {item.icon}
+                                        </Avatar>
+                                    </Box>
+                                    <CardContent sx={{ p: 0, "&:last-child": { pb: 0 } }}>
+                                        <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>
+                                            {item.title}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>
+                                            {item.description}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>
+                    ))}
+                </Grid>
+            )}
             <RoutemapDialog />
         </>
     );
