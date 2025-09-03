@@ -125,34 +125,31 @@ const OperationPage: React.FC = (): React.JSX.Element => {
                                         minHeight: 120,
                                     }}
                                 >
-                                <Box sx={{ mb: 1.5 }}>
-                                    <Avatar
-                                        sx={{
-                                            bgcolor: item.color,
-                                            width: 36,
-                                            height: 36,
-                                        }}
-                                    >
-                                        {item.icon}
-                                    </Avatar>
-                                </Box>
-                                <CardContent sx={{ p: 0, "&:last-child": { pb: 0 } }}>
-                                    <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>
-                                        {item.title}
-                                    </Typography>
-                                    <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                        sx={{ lineHeight: 1.5 }}
-                                    >
-                                        {item.description}
-                                    </Typography>
-                                </CardContent>
-                            </CardActionArea>
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
+                                    <Box sx={{ mb: 1.5 }}>
+                                        <Avatar
+                                            sx={{
+                                                bgcolor: item.color,
+                                                width: 36,
+                                                height: 36,
+                                            }}
+                                        >
+                                            {item.icon}
+                                        </Avatar>
+                                    </Box>
+                                    <CardContent sx={{ p: 0, "&:last-child": { pb: 0 } }}>
+                                        <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>
+                                            {item.title}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>
+                                            {item.description}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>
+                    ))}
+                </Grid>
+            )}
         </>
     );
 };
