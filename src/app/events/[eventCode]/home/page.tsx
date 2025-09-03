@@ -10,6 +10,7 @@ import { TeamData } from "@/types/TeamData";
 import { Alert, Box, CircularProgress, Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import TransitStationsHistoryDialog from "@/components/composite/TransitStationsHistoryDialog";
 
 /**
  * ホームページ
@@ -22,6 +23,10 @@ const HomePage: React.FC = (): React.JSX.Element => {
         {} as GoalStationsWithRelations
     );
     const [bombiiTeamData, setBombiiTeamData] = useState<Teams>({} as Teams);
+
+    const [isTransitStationsHistoryDialogOpen, setIsTransitStationsHistoryDialogOpen] = useState(false);
+    const [selectedTeamData, setSelectedTeamData] = useState<TeamData | null>(null);
+
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -71,6 +76,25 @@ const HomePage: React.FC = (): React.JSX.Element => {
         fetchData();
     }, []);
 
+    /**
+     * 経由駅履歴ダイアログを開くハンドラー
+     * @param {TeamData} teamData - 押下されたカードのチームデータ
+     * @returns {void}
+     */
+    const handleTransitStationsHistoryDialogOpen = (teamData: TeamData): void => {
+        setSelectedTeamData(teamData);
+        setIsTransitStationsHistoryDialogOpen(true);
+    };
+
+    /**
+     * 経由駅履歴ダイアログを閉じるハンドラー
+     * @returns {void}
+     */
+    const handleTransitStationsHistoryDialogClose = (): void => {
+        setIsTransitStationsHistoryDialogOpen(false);
+        setSelectedTeamData(null);
+    };
+
     return (
         <>
             {/* サブヘッダーセクション */}
@@ -93,10 +117,7 @@ const HomePage: React.FC = (): React.JSX.Element => {
                 {/* エラー */}
                 {error && (
                     <Box sx={{ mb: 4 }}>
-                        <Alert
-                            severity="error"
-                            action={<CustomButton onClick={fetchData}>再試行</CustomButton>}
-                        >
+                        <Alert severity="error" action={<CustomButton onClick={fetchData}>再試行</CustomButton>}>
                             {error}
                         </Alert>
                     </Box>
@@ -106,11 +127,12 @@ const HomePage: React.FC = (): React.JSX.Element => {
                     <>
                         {teamData.length > 0 ? (
                             <Grid container spacing={2}>
-                                {teamData.map((teamData) => (
-                                    <Grid key={teamData.id} size={{ xs: 6, sm: 6, md: 3, lg: 3 }}>
+                                {teamData.map((team) => (
+                                    <Grid key={team.id} size={{ xs: 6, sm: 6, md: 3, lg: 3 }}>
                                         <TeamCard
-                                            teamData={teamData}
+                                            teamData={team}
                                             bombiiTeamData={bombiiTeamData}
+                                            onClick={() => handleTransitStationsHistoryDialogOpen(team)}
                                         />
                                     </Grid>
                                 ))}
@@ -125,6 +147,15 @@ const HomePage: React.FC = (): React.JSX.Element => {
                     </>
                 )}
             </Box>
+
+            {/* ダイアログ */}
+            {selectedTeamData && (
+                <TransitStationsHistoryDialog
+                    teamData={selectedTeamData}
+                    isOpen={isTransitStationsHistoryDialogOpen}
+                    onClose={handleTransitStationsHistoryDialogClose}
+                />
+            )}
 
             {/* サブフッターセクション */}
             <UpdatedTime textAlign="right" variant="body2" />

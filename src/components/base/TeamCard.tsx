@@ -10,10 +10,12 @@ import { Teams } from "@/generated/prisma";
  * TeamCardコンポーネントのプロパティ型定義
  * @property {TeamData} teamData - チームのデータ
  * @property {Teams | null} bombiiTeamData - Bombiiチームのデータ（オプション）
+ * @property {() => void} onClick - カードクリック時のハンドラー（オプション）
  */
 type TeamCardProps = {
     teamData: TeamData;
     bombiiTeamData: Teams | null;
+    onClick?: () => void;
 };
 
 /**
@@ -58,6 +60,7 @@ const LastStationTypography = styled(Typography, {
 export const TeamCard: React.FC<TeamCardProps> = ({
     teamData,
     bombiiTeamData,
+    onClick,
 }: TeamCardProps): React.JSX.Element => {
     const lastStation = teamData.transitStations[teamData.transitStations.length - 1] || null;
     return (
@@ -88,7 +91,25 @@ export const TeamCard: React.FC<TeamCardProps> = ({
                 {/* チームカード */}
                 <Card
                     variant="outlined"
-                    sx={{ borderRadius: 0.5, backgroundColor: teamData.teamColor }}
+                    onClick={onClick}
+                    sx={{
+                        borderRadius: 0.5,
+                        backgroundColor: teamData.teamColor,
+                        cursor: onClick ? "pointer" : "default",
+                        transition: "all 0.2s ease-in-out",
+                        "&:hover": onClick
+                            ? {
+                                  transform: "translateY(-4px)",
+                                  boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+                              }
+                            : {},
+                        "&:active": onClick
+                            ? {
+                                  transform: "translateY(4px)",
+                                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                              }
+                            : {},
+                    }}
                 >
                     <CardContent
                         sx={{
@@ -166,9 +187,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({
                         {/* 残り駅数と最終更新時刻 */}
                         <Grid container spacing={1} justifyContent={"space-between"}>
                             <Grid size={6}>
-                                <Typography variant="body2">
-                                    残り {teamData.remainingStationsNumber} 駅
-                                </Typography>
+                                <Typography variant="body2">残り {teamData.remainingStationsNumber} 駅</Typography>
                             </Grid>
                             <Grid size={6}>
                                 <Typography variant="body2" textAlign={"right"}>
