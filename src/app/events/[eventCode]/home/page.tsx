@@ -11,6 +11,7 @@ import { Alert, Box, CircularProgress, Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import TransitStationsHistoryDialog from "@/components/composite/TransitStationsHistoryDialog";
+import RoutemapDialog from "@/components/composite/RoutemapDialog";
 
 /**
  * ホームページ
@@ -126,17 +127,19 @@ const HomePage: React.FC = (): React.JSX.Element => {
                 {!isLoading && !error && (
                     <>
                         {teamData.length > 0 ? (
-                            <Grid container spacing={2}>
-                                {teamData.map((team) => (
-                                    <Grid key={team.id} size={{ xs: 6, sm: 6, md: 3, lg: 3 }}>
-                                        <TeamCard
-                                            teamData={team}
-                                            bombiiTeamData={bombiiTeamData}
-                                            onClick={() => handleTransitStationsHistoryDialogOpen(team)}
-                                        />
-                                    </Grid>
-                                ))}
-                            </Grid>
+                            <>
+                                <Grid container spacing={2}>
+                                    {teamData.map((team) => (
+                                        <Grid key={team.id} size={{ xs: 6, sm: 6, md: 3, lg: 3 }}>
+                                            <TeamCard
+                                                teamData={team}
+                                                bombiiTeamData={bombiiTeamData}
+                                                onClick={() => handleTransitStationsHistoryDialogOpen(team)}
+                                            />
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </>
                         ) : (
                             <Box sx={{ textAlign: "center", py: 8 }}>
                                 <Typography variant="body1" color="text.secondary">

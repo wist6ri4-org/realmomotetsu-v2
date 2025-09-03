@@ -14,6 +14,10 @@ GET http://localhost:3001/api/init-form
 GET http://localhost:3001/api/init-form
     ?eventCode=TOKYU_20250517
 
+### GET init-routemap
+GET http://localhost:3001/api/init-routemap
+    ?eventCode=TOKYU_20250517
+
 ### GET goal-stations
 GET http://localhost:3001/api/goal-stations
     ?eventCode=TOKYU_20250517

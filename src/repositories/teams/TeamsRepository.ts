@@ -28,6 +28,9 @@ export class TeamsRepository extends BaseRepository {
                         include: {
                             station: true,
                         },
+                        orderBy: {
+                            id: "asc",
+                        },
                     },
                 },
                 orderBy: {
