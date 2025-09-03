@@ -48,7 +48,6 @@ const HomePage: React.FC = (): React.JSX.Element => {
             }
 
             const data = await response.json();
-            console.log(data);
             const teamData = data?.data?.teamData || data?.teamData || [];
             const nextGoalStationData = data?.data?.nextGoalStation || data?.nextGoalStation || {};
             const bombiiTeamData = data?.data?.bombiiTeam || data;

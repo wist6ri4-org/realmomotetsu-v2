@@ -115,7 +115,6 @@ const OperationPage: React.FC = (): React.JSX.Element => {
                     </Grid>
                 ))}
             </Grid>
-            <RoutemapDialog />
         </>
     );
 };
