@@ -80,16 +80,19 @@ const HomePage: React.FC = (): React.JSX.Element => {
 
     /**
      * 経由駅履歴ダイアログを開くハンドラー
+     * @param {TeamData} teamData - 押下されたカードのチームデータ
+     * @returns {void}
      */
-    const handleTransitStationsHistoryDialogOpen = (teamData: TeamData) => {
+    const handleTransitStationsHistoryDialogOpen = (teamData: TeamData): void => {
         setSelectedTeamData(teamData);
         setIsTransitStationsHistoryDialogOpen(true);
     };
 
     /**
      * 経由駅履歴ダイアログを閉じるハンドラー
+     * @returns {void}
      */
-    const handleTransitStationsHistoryDialogClose = () => {
+    const handleTransitStationsHistoryDialogClose = (): void => {
         setIsTransitStationsHistoryDialogOpen(false);
         setSelectedTeamData(null);
     };
