@@ -18,6 +18,9 @@ import CustomButton from "../base/CustomButton";
 
 /**
  * TransitStationsHistoryDialogコンポーネントのプロパティ型定義
+ * @param {TeamData} teamData - チームデータ
+ * @param {boolean} isOpen - ダイアログの開閉状態
+ * @param {() => void} onClose - ダイアログを閉じるハンドラー
  */
 interface TransitStationsHistoryDialogProps {
     teamData: TeamData;
@@ -25,11 +28,16 @@ interface TransitStationsHistoryDialogProps {
     onClose: () => void;
 }
 
+/**
+ * 経由駅履歴ダイアログコンポーネント
+ * @param {TransitStationsHistoryDialogProps} props - 経由駅履歴ダイアログのプロパティ
+ * @return {JSX.Element} - 経由駅履歴ダイアログコンポーネント
+ */
 const TransitStationsHistoryDialog: React.FC<TransitStationsHistoryDialogProps> = ({
     teamData,
     isOpen,
     onClose,
-}): React.JSX.Element => {
+}: TransitStationsHistoryDialogProps): React.JSX.Element => {
     return (
         <>
             <Dialog
@@ -41,7 +49,7 @@ const TransitStationsHistoryDialog: React.FC<TransitStationsHistoryDialogProps> 
                 sx={{ zIndex: 3000 }}
             >
                 <DialogTitle id="transit-stations-history-dialog-title">
-                    <Typography variant="h4">{teamData.teamName} の履歴</Typography>
+                    <Typography>{teamData.teamName} の履歴</Typography>
                 </DialogTitle>
                 <DialogContentText align="right" sx={{ marginRight: 2 }}>
                     {teamData.transitStations.length}駅を通過しました
@@ -52,10 +60,14 @@ const TransitStationsHistoryDialog: React.FC<TransitStationsHistoryDialogProps> 
                             <TableHead>
                                 <TableRow>
                                     <TableCell>
-                                        <Typography variant="body1" fontWeight="bold">時間</Typography>
+                                        <Typography variant="body1" fontWeight="bold">
+                                            時間
+                                        </Typography>
                                     </TableCell>
                                     <TableCell>
-                                        <Typography variant="body1" fontWeight="bold">駅名</Typography>
+                                        <Typography variant="body1" fontWeight="bold">
+                                            駅名
+                                        </Typography>
                                     </TableCell>
                                 </TableRow>
                             </TableHead>
