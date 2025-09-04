@@ -6,6 +6,7 @@ import { TeamData } from "@/types/TeamData";
 import { GoalStationsWithRelations } from "@/repositories/goalStations/GoalStationsRepository";
 import { Stations, Teams } from "@/generated/prisma";
 import RouteListSymbolSVG from "../base/symbol/RouteListSymbolSVG";
+import styles from "../../styles/Routemap.module.css";
 
 /**
  * Routemapのプロパティ
@@ -219,6 +220,7 @@ const Routemap: React.FC<RoutemapProps> = ({
                 <>
                     <svg
                         id="routemap"
+                        className={styles.routemap}
                         viewBox={config.svgOverall.viewBox}
                         width="100%"
                         height="100%"
