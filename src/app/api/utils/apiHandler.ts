@@ -22,8 +22,8 @@ export function createApiHandler(
  */
 export function createApiHandlerWithParams<T extends Record<string, string>>(
     HandlerClass: new (req: NextRequest, params: T) => BaseApiHandler
-): (req: NextRequest, context: { params: T }) => Promise<Response> {
-    return async function (req: NextRequest, { params }: { params: T }) {
+): (req: NextRequest, context: { params: Promise<T> }) => Promise<Response> {
+    return async function (req: NextRequest, { params }: { params: Promise<T> }) {
         const resolvedParams = await params; // paramsをawaitしてからハンドラーを作成
         const handler = new HandlerClass(req, resolvedParams);
         return await handler.handle();
