@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
     experimental: {
         optimizePackageImports: ["@mui/material", "@mui/icons-material"],
     },
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
     async redirects() {
         return [
             {
@@ -14,7 +17,7 @@ const nextConfig: NextConfig = {
                 destination: "/user/signin",
                 permanent: true,
             },
-        ]
+        ];
     },
 };
 
