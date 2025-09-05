@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { changePassword } from "@/lib/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Box, Typography, Alert, Card, CardContent, Stack } from "@mui/material";
@@ -9,10 +9,9 @@ import { CustomTextField } from "@/components/base/CustomTextField";
 import CustomButton from "@/components/base/CustomButton";
 
 /**
- * パスワード変更ページコンポーネント（リセット用）
- * @returns {JSX.Element} - パスワード変更ページのコンポーネント
+ * パスワード変更ページのメインコンテンツ
  */
-const ResetPasswordPage = (): React.JSX.Element => {
+const ResetPasswordContent = (): React.JSX.Element => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
@@ -178,6 +177,35 @@ const ResetPasswordPage = (): React.JSX.Element => {
                 </CardContent>
             </Card>
         </Box>
+    );
+};
+
+/**
+ * パスワード変更ページコンポーネント（リセット用）
+ * @returns {JSX.Element} - パスワード変更ページのコンポーネント
+ */
+const ResetPasswordPage = (): React.JSX.Element => {
+    return (
+        <Suspense
+            fallback={
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        py: 4,
+                    }}
+                >
+                    <Card sx={{ width: "100%", maxWidth: 400 }}>
+                        <CardContent sx={{ p: 4, textAlign: "center" }}>
+                            <Typography>読み込み中...</Typography>
+                        </CardContent>
+                    </Card>
+                </Box>
+            }
+        >
+            <ResetPasswordContent />
+        </Suspense>
     );
 };
 
