@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Box } from "@mui/material";
+import SignupHeader from "@/components/SignupHeader";
 
 /**
  * ユーザー関連ページのレイアウトコンポーネントのプロパティ型定義
@@ -20,6 +21,7 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }: UserLayoutProps): R
 
     return (
         <>
+            <SignupHeader />
             <Box sx={{ flex: 1, padding: 1 }}>
                 {children}
             </Box>

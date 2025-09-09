@@ -7,9 +7,10 @@ import { createClient } from "@supabase/supabase-js";
  * サインアップ
  * @param {string} email - ユーザーのメールアドレス
  * @param {string} password - ユーザーのパスワード
+ * @param {string} nickname - ユーザーのニックネーム
  * @return {Promise<Error | null>} - エラーが発生した場合はエラーオブジェクト、成功した場合はnull
  */
-export const signUp = async (email: string, password: string): Promise<Error | null> => {
+export const signUp = async (email: string, password: string, nickname: string): Promise<Error | null> => {
     try {
         // Authenticationに認証ユーザーを作成
         const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -32,7 +33,7 @@ export const signUp = async (email: string, password: string): Promise<Error | n
                 body: JSON.stringify({
                     uuid: authData.user.id,
                     email: authData.user.email,
-                    nickname: email.split("@")[0], // デフォルトのニックネームをメールのローカル部分に設定
+                    nickname: nickname ? nickname : email.split("@")[0], // デフォルトのニックネームをメールのローカル部分に設定
                 }),
             });
 

@@ -55,8 +55,7 @@ const ResetPasswordEmailPage = (): React.JSX.Element => {
                         </Typography>
 
                         <Alert severity="success" sx={{ mt: 3, mb: 3 }}>
-                            パスワードリセット用のメールを送信しました。
-                            メールボックスをご確認ください。
+                            パスワードリセット用のメールを送信しました。 メールボックスをご確認ください。
                         </Alert>
 
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
@@ -89,24 +88,12 @@ const ResetPasswordEmailPage = (): React.JSX.Element => {
         >
             <Card sx={{ width: "100%", maxWidth: 400 }}>
                 <CardContent sx={{ p: 4 }}>
-                    <Typography
-                        variant="h4"
-                        component="h1"
-                        gutterBottom
-                        textAlign="center"
-                        color="primary"
-                    >
+                    <Typography variant="h4" component="h1" gutterBottom textAlign="center" color="error">
                         パスワードリセット
                     </Typography>
 
-                    <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        textAlign="center"
-                        sx={{ mb: 3 }}
-                    >
-                        登録されているメールアドレスを入力してください。
-                        パスワードリセット用のリンクをお送りします。
+                    <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ mb: 3 }}>
+                        登録されているメールアドレスを入力してください。 パスワードリセット用のリンクをお送りします。
                     </Typography>
 
                     <Box component="form" onSubmit={handleResetPassword} sx={{ mt: 3 }}>
@@ -114,13 +101,13 @@ const ResetPasswordEmailPage = (): React.JSX.Element => {
                             <CustomTextField
                                 type="email"
                                 label="メールアドレス"
-                                placeholder="sample@mail.com"
+                                placeholder="realmomotetsu@email.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
                                 fullWidth
                                 variant="outlined"
-                                startAdornment={<Email />}
+                                startAdornment={<Email sx={{ fontSize: "2.4rem" }} />}
                             />
 
                             {error && (
@@ -130,7 +117,7 @@ const ResetPasswordEmailPage = (): React.JSX.Element => {
                             )}
 
                             <CustomButton
-                                color="primary"
+                                color="error"
                                 type="submit"
                                 variant="contained"
                                 size="large"

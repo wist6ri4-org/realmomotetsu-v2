@@ -108,22 +108,11 @@ const ResetPasswordContent = (): React.JSX.Element => {
         >
             <Card sx={{ width: "100%", maxWidth: 400 }}>
                 <CardContent sx={{ p: 4 }}>
-                    <Typography
-                        variant="h4"
-                        component="h1"
-                        gutterBottom
-                        textAlign="center"
-                        color="primary"
-                    >
+                    <Typography variant="h4" component="h1" gutterBottom textAlign="center" color="primary">
                         新しいパスワード設定
                     </Typography>
 
-                    <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        textAlign="center"
-                        sx={{ mb: 3 }}
-                    >
+                    <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ mb: 3 }}>
                         新しいパスワードを入力してください。
                     </Typography>
 
@@ -139,20 +128,20 @@ const ResetPasswordContent = (): React.JSX.Element => {
                                 fullWidth
                                 variant="outlined"
                                 showPasswordToggle
-                                startAdornment={<Lock />}
+                                startAdornment={<Lock sx={{ fontSize: "2.4rem" }} />}
                             />
 
                             <CustomTextField
                                 type="password"
                                 label="パスワード確認"
-                                placeholder="パスワードを再入力"
+                                placeholder="再度新しいパスワードを入力"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 required
                                 fullWidth
                                 variant="outlined"
                                 showPasswordToggle
-                                startAdornment={<Lock />}
+                                startAdornment={<Lock sx={{ fontSize: "2.4rem" }} />}
                             />
 
                             {error && (
