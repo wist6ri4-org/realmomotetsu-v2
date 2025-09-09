@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
@@ -20,7 +20,15 @@ const SignInPage: React.FC = (): React.JSX.Element => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
     const router = useRouter();
+
+    /**
+     * 初期表示
+     */
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     /**
      * ログイン処理を実行するハンドラー
@@ -91,6 +99,22 @@ const SignInPage: React.FC = (): React.JSX.Element => {
         }
     };
 
+    // コンポーネントがマウントされるまでローディング表示
+    if (!isMounted) {
+        return (
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: "50vh",
+                }}
+            >
+                <CircularProgress size={40} color="primary" />
+            </Box>
+        );
+    }
+
     return (
         <Box
             sx={{
@@ -98,6 +122,8 @@ const SignInPage: React.FC = (): React.JSX.Element => {
                 alignItems: "center",
                 justifyContent: "center",
                 py: 4,
+                opacity: isMounted ? 1 : 0,
+                transition: "opacity 0.3s ease-in-out",
             }}
         >
             <Card sx={{ width: "100%", maxWidth: 400 }}>

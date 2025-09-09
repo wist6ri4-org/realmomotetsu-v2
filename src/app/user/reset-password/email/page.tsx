@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { sendEmailForPasswordReset } from "@/lib/auth";
 import { useRouter } from "next/navigation";
-import { Box, Typography, Alert, Card, CardContent, Link, Stack } from "@mui/material";
+import { Box, Typography, Alert, Card, CardContent, Link, Stack, CircularProgress } from "@mui/material";
 import { Email } from "@mui/icons-material";
 import { CustomTextField } from "@/components/base/CustomTextField";
 import CustomButton from "@/components/base/CustomButton";
@@ -17,7 +17,15 @@ const ResetPasswordEmailPage = (): React.JSX.Element => {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
     const router = useRouter();
+
+    /**
+     * 初期表示
+     */
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const handleResetPassword = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -38,6 +46,22 @@ const ResetPasswordEmailPage = (): React.JSX.Element => {
         }
     };
 
+    // コンポーネントがマウントされるまでローディング表示
+    if (!isMounted) {
+        return (
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: "50vh",
+                }}
+            >
+                <CircularProgress size={40} color="error" />
+            </Box>
+        );
+    }
+
     if (success) {
         return (
             <Box
@@ -46,6 +70,8 @@ const ResetPasswordEmailPage = (): React.JSX.Element => {
                     alignItems: "center",
                     justifyContent: "center",
                     py: 4,
+                    opacity: isMounted ? 1 : 0,
+                    transition: "opacity 0.3s ease-in-out",
                 }}
             >
                 <Card sx={{ width: "100%", maxWidth: 400 }}>
@@ -84,6 +110,8 @@ const ResetPasswordEmailPage = (): React.JSX.Element => {
                 alignItems: "center",
                 justifyContent: "center",
                 py: 4,
+                opacity: isMounted ? 1 : 0,
+                transition: "opacity 0.3s ease-in-out",
             }}
         >
             <Card sx={{ width: "100%", maxWidth: 400 }}>
