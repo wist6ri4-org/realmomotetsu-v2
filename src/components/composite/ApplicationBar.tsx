@@ -151,7 +151,7 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
         <>
             <Box
                 component="header"
-                sx={{ width: "100%", position: "sticky", top: 0, zIndex: 2000 }}
+                sx={{ width: "100%", position: "sticky", top: 0, zIndex: 3000 }}
             >
                 <AppBar position="sticky">
                     <Toolbar>
@@ -180,7 +180,7 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
                             open={Boolean(anchorEventMenu)}
                             onClose={handleEventMenuClose}
                             sx={{
-                                zIndex: 2000, // Ensure the menu is above other elements
+                                zIndex: 4000, // Ensure the menu is above other elements
                             }}
                         >
                             {user &&

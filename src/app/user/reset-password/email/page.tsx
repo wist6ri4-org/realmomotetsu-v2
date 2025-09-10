@@ -81,22 +81,20 @@ const ResetPasswordEmailPage = (): React.JSX.Element => {
                         </Typography>
 
                         <Alert severity="success" sx={{ mt: 3, mb: 3 }}>
-                            パスワードリセット用のメールを送信しました。 メールボックスをご確認ください。
+                            パスワードリセット用のメールを送信しました。
+                            <br />
+                            メールボックスをご確認ください。
                         </Alert>
 
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                             メールが届かない場合は、迷惑メールフォルダもご確認ください。
                         </Typography>
 
-                        <CustomButton
-                            color="primary"
-                            variant="contained"
-                            size="large"
-                            fullWidth
-                            onClick={() => router.push("/user/signin")}
-                        >
-                            ログイン画面に戻る
-                        </CustomButton>
+                        <Box sx={{ mt: 3, textAlign: "center" }}>
+                            <Typography variant="body2" color="text.secondary">
+                                <Link href="/user/signin">ログイン画面に戻る</Link>
+                            </Typography>
+                        </Box>
                     </CardContent>
                 </Card>
             </Box>

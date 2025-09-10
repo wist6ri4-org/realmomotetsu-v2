@@ -16,7 +16,7 @@ export const SignupHeader: React.FC = (): React.JSX.Element => {
                 sx={{
                     width: "100%",
                     top: 0,
-                    zIndex: 1100,
+                    zIndex: 3000,
                     backgroundColor: "background.paper",
                     boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
                 }}

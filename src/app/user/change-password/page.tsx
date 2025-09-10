@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { changePassword } from "@/lib/auth";
 import { useRouter } from "next/navigation";
-import { Box, Typography, Alert, Card, CardContent, Stack } from "@mui/material";
+import { Box, Typography, Alert, Card, CardContent, Stack, Divider } from "@mui/material";
 import { Lock } from "@mui/icons-material";
 import { CustomTextField } from "@/components/base/CustomTextField";
 import CustomButton from "@/components/base/CustomButton";
@@ -178,7 +178,7 @@ const ChangePasswordPage = (): React.JSX.Element => {
                                 showPasswordToggle
                                 startAdornment={<Lock />}
                             />
-
+                            <Divider />
                             <CustomTextField
                                 type="password"
                                 label="新しいパスワード"
