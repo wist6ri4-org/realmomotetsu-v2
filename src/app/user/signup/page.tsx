@@ -37,13 +37,13 @@ const SignUpPage: React.FC = (): React.JSX.Element => {
      */
     const handleSignUp = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
+        setError(null);
+        setIsLoading(true);
+
         if (password !== confirmPassword) {
             setError(Messages.MSG_PASSWORD_NOT_MATCH);
             return;
         }
-
-        setError(null);
-        setIsLoading(true);
 
         try {
             const error = await signUp(email, password, nickname);

@@ -45,13 +45,13 @@ const SignInPage: React.FC = (): React.JSX.Element => {
             if (error) {
                 setError(Messages.MSG_LOGIN_FAILED);
             } else {
-                fetchEventCode(user as User).then((eventCode) => {
-                    if (eventCode) {
-                        router.push(`/events/${eventCode}/home`);
-                    } else {
-                        setError(Messages.MSG_ATTENDANCES_NOT_REGISTERED);
-                    }
-                });
+                const eventCode = await fetchEventCode(user as User);
+                if (eventCode) {
+                    router.push(`/events/${eventCode}/home`);
+                    return;
+                } else {
+                    setError(Messages.MSG_ATTENDANCES_NOT_REGISTERED);
+                }
             }
         } catch {
             setError(Messages.MSG_UNEXPECTED_ERROR);
@@ -182,7 +182,7 @@ const SignInPage: React.FC = (): React.JSX.Element => {
                                 startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
                                 sx={{ mt: 3, py: 1.5 }}
                             >
-                                ログイン
+                                {isLoading ? "ログイン中..." : "ログイン"}
                             </CustomButton>
                         </Stack>
                     </Box>
