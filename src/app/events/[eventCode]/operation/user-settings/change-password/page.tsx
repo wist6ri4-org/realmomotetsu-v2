@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { changePassword } from "@/lib/auth";
 import { useRouter, useParams } from "next/navigation";
-import { Container, Paper, Typography, Alert, Box, CircularProgress, Button } from "@mui/material";
+import { Container, Paper, Typography, Alert, Box, CircularProgress, Button, Divider } from "@mui/material";
 import { Lock, Save } from "@mui/icons-material";
 import { CustomTextField } from "@/components/base/CustomTextField";
 import CustomButton from "@/components/base/CustomButton";
@@ -151,7 +151,7 @@ const ChangePasswordPage = (): React.JSX.Element => {
                         startAdornment={<Lock />}
                         disabled={isLoading}
                     />
-
+                    <Divider />
                     <CustomTextField
                         type="password"
                         label="新しいパスワード"

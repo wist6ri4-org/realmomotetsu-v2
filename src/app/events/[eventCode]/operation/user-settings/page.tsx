@@ -166,9 +166,6 @@ const UserSettingsPage = (): React.JSX.Element => {
                         <Box
                             sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 1 }}
                         >
-                            <Typography variant="body2" color="text.secondary">
-                                {sbUser.email}
-                            </Typography>
                             <Box
                                 sx={{
                                     px: 1.5,
