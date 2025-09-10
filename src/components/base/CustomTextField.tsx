@@ -32,17 +32,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
  * @property {object} [sx] - スタイルオブジェクト
  */
 interface CustomTextFieldProps extends Omit<MuiTextFieldProps, "color" | "size"> {
-    color?:
-        | "primary"
-        | "secondary"
-        | "success"
-        | "error"
-        | "warning"
-        | "info"
-        | "team1"
-        | "team2"
-        | "team3"
-        | "team4";
+    color?: "primary" | "secondary" | "success" | "error" | "warning" | "info" | "team1" | "team2" | "team3" | "team4";
     size?: "small" | "medium";
     variant?: "outlined" | "filled" | "standard";
     fullWidth?: boolean;
@@ -106,8 +96,7 @@ export const CustomTextField: React.FC<CustomTextFieldProps> = ({
     };
 
     // パスワードフィールドの場合のtype調整
-    const inputType =
-        showPasswordToggle && type === "password" ? (showPassword ? "text" : "password") : type;
+    const inputType = showPasswordToggle && type === "password" ? (showPassword ? "text" : "password") : type;
 
     // エンドアドーンメントの組み立て
     const finalEndAdornment = React.useMemo(() => {
@@ -128,9 +117,7 @@ export const CustomTextField: React.FC<CustomTextFieldProps> = ({
             );
             return passwordToggle;
         }
-        return endAdornment ? (
-            <InputAdornment position="end">{endAdornment}</InputAdornment>
-        ) : undefined;
+        return endAdornment ? <InputAdornment position="end">{endAdornment}</InputAdornment> : undefined;
     }, [showPasswordToggle, type, showPassword, endAdornment, size]);
 
     // スタートアドーンメントの組み立て
@@ -166,6 +153,9 @@ export const CustomTextField: React.FC<CustomTextFieldProps> = ({
                 sx={{
                     "&:disabled": {
                         opacity: 0.6,
+                    },
+                    "& .MuiInputLabel-asterisk": {
+                        color: "red",
                     },
                     ...sx,
                 }}

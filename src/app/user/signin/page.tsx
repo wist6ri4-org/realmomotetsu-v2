@@ -60,6 +60,11 @@ const SignInPage: React.FC = (): React.JSX.Element => {
         }
     };
 
+    /**
+     * 参加している最新のイベントコードを取得する
+     * @param {User} sbUser - Supabaseのユーザーオブジェクト
+     * @return {Promise<string>} - 参加しているイベントコード
+     */
     const fetchEventCode = async (sbUser: User): Promise<string> => {
         try {
             setError(null);

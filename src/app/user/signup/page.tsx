@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { signUp } from "@/lib/auth";
 import { useRouter } from "next/navigation";
-import { Box, Typography, Alert, Card, CardContent, Link, Stack, CircularProgress } from "@mui/material";
+import { Box, Typography, Alert, Card, CardContent, Link, Stack, CircularProgress, Divider } from "@mui/material";
 import { Email, Lock, Person } from "@mui/icons-material";
 import { CustomTextField } from "@/components/base/CustomTextField";
 import CustomButton from "@/components/base/CustomButton";
@@ -132,10 +132,11 @@ const SignUpPage: React.FC = (): React.JSX.Element => {
                                 showPasswordToggle
                                 startAdornment={<Lock sx={{ fontSize: "2.4rem" }} />}
                             />
+                            <Divider />
                             <CustomTextField
                                 type="text"
                                 label="ニックネーム"
-                                placeholder="桃鉄太郎"
+                                placeholder="桃鉄たろう"
                                 value={nickname}
                                 onChange={(e) => setNickname(e.target.value)}
                                 required
