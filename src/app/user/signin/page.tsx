@@ -1,42 +1,70 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
-import { Box, Typography, Alert, Card, CardContent, Link, Stack } from "@mui/material";
+import { Box, Typography, Alert, Card, CardContent, Link, Stack, CircularProgress } from "@mui/material";
 import { Email, Lock } from "@mui/icons-material";
 import { CustomTextField } from "@/components/base/CustomTextField";
 import CustomButton from "@/components/base/CustomButton";
 import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
+import { Messages } from "@/constants/messages";
 
 /**
  * サインインページコンポーネント
- * @returns {JSX.Element} - サインインページのコンポーネント
+ * @returns {React.JSX.Element} - サインインページのコンポーネント
  */
-const SignInPage = (): React.JSX.Element => {
+const SignInPage: React.FC = (): React.JSX.Element => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
     const router = useRouter();
 
-    const handleLogin = async (e: React.FormEvent) => {
+    /**
+     * 初期表示
+     */
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    /**
+     * ログイン処理を実行するハンドラー
+     * @param {React.FormEvent} e - フォームの送信イベント
+     * @return {Promise<void>} - ログイン処理の完了を示すPromise
+     */
+    const handleLogin = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
         setError(null);
-        const { user, error } = await signIn(email, password);
-        if (error) {
-            setError(error.message);
-        } else {
-            fetchEventCode(user as User).then((eventCode) => {
-                if (eventCode) {
-                    router.push(`/events/${eventCode}/home`);
-                } else {
-                    setError("Event code not found for user");
-                }
-            });
+        setIsLoading(true);
+
+        try {
+            const { user, error } = await signIn(email, password);
+            if (error) {
+                setError(Messages.MSG_LOGIN_FAILED);
+            } else {
+                fetchEventCode(user as User).then((eventCode) => {
+                    if (eventCode) {
+                        router.push(`/events/${eventCode}/home`);
+                    } else {
+                        setError(Messages.MSG_ATTENDANCES_NOT_REGISTERED);
+                    }
+                });
+            }
+        } catch {
+            setError(Messages.MSG_UNEXPECTED_ERROR);
+        } finally {
+            setIsLoading(false);
         }
     };
 
+    /**
+     * 参加している最新のイベントコードを取得する
+     * @param {User} sbUser - Supabaseのユーザーオブジェクト
+     * @return {Promise<string>} - 参加しているイベントコード
+     */
     const fetchEventCode = async (sbUser: User): Promise<string> => {
         try {
             setError(null);
@@ -60,9 +88,9 @@ const SignInPage = (): React.JSX.Element => {
                     if (!a.event.startDate && !b.event.startDate) {
                         return b.event.id - a.event.id;
                     } else if (!a.event.startDate) {
-                        return -1;
-                    } else if (!b.event.startDate) {
                         return 1;
+                    } else if (!b.event.startDate) {
+                        return -1;
                     }
                     return 0;
                 }
@@ -76,6 +104,22 @@ const SignInPage = (): React.JSX.Element => {
         }
     };
 
+    // コンポーネントがマウントされるまでローディング表示
+    if (!isMounted) {
+        return (
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: "50vh",
+                }}
+            >
+                <CircularProgress size={40} color="primary" />
+            </Box>
+        );
+    }
+
     return (
         <Box
             sx={{
@@ -83,6 +127,8 @@ const SignInPage = (): React.JSX.Element => {
                 alignItems: "center",
                 justifyContent: "center",
                 py: 4,
+                opacity: isMounted ? 1 : 0,
+                transition: "opacity 0.3s ease-in-out",
             }}
         >
             <Card sx={{ width: "100%", maxWidth: 400 }}>
@@ -96,26 +142,28 @@ const SignInPage = (): React.JSX.Element => {
                             <CustomTextField
                                 type="email"
                                 label="メールアドレス"
-                                placeholder="sample@mail.com"
+                                placeholder="realmomotetsu@email.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
                                 fullWidth
                                 variant="outlined"
-                                startAdornment={<Email />}
+                                disabled={isLoading}
+                                startAdornment={<Email sx={{ fontSize: "2.4rem" }} />}
                             />
 
                             <CustomTextField
                                 type="password"
                                 label="パスワード"
-                                placeholder="*****"
+                                placeholder="********"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                                 fullWidth
                                 variant="outlined"
+                                disabled={isLoading}
                                 showPasswordToggle
-                                startAdornment={<Lock />}
+                                startAdornment={<Lock sx={{ fontSize: "2.4rem" }} />}
                             />
 
                             {error && (
@@ -130,6 +178,8 @@ const SignInPage = (): React.JSX.Element => {
                                 variant="contained"
                                 size="large"
                                 fullWidth
+                                disabled={isLoading}
+                                startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
                                 sx={{ mt: 3, py: 1.5 }}
                             >
                                 ログイン
@@ -139,7 +189,7 @@ const SignInPage = (): React.JSX.Element => {
 
                     <Box sx={{ mt: 3, textAlign: "center" }}>
                         <Typography variant="body2" color="text.secondary">
-                            アカウントをお持ちでない方は <Link href="/user/signup">サインアップ</Link>
+                            アカウントをお持ちでない方は <Link href="/user/signup">登録</Link>
                         </Typography>
                     </Box>
                     <Box sx={{ mt: 3, textAlign: "center" }}>

@@ -39,17 +39,7 @@ export interface RadioOption {
  */
 interface CustomRadioProps extends Omit<MuiRadioGroupProps, "color" | "size"> {
     options: RadioOption[];
-    color?:
-        | "primary"
-        | "secondary"
-        | "success"
-        | "error"
-        | "warning"
-        | "info"
-        | "team1"
-        | "team2"
-        | "team3"
-        | "team4";
+    color?: "primary" | "secondary" | "success" | "error" | "warning" | "info" | "team1" | "team2" | "team3" | "team4";
     size?: "small" | "medium";
     row?: boolean;
     label?: string;
@@ -92,12 +82,7 @@ export const CustomRadio: React.FC<CustomRadioProps> = ({
     return (
         <>
             <Box sx={{ width: "stretch" }}>
-                <FormControl
-                    component="fieldset"
-                    error={error}
-                    disabled={disabled || loading}
-                    sx={sx}
-                >
+                <FormControl component="fieldset" error={error} disabled={disabled || loading} sx={sx}>
                     {label && (
                         <FormLabel
                             id={labelId}
@@ -117,16 +102,14 @@ export const CustomRadio: React.FC<CustomRadioProps> = ({
                             "&.Mui-disabled": {
                                 opacity: 0.6,
                             },
+                            "& .MuiInputLabel-asterisk": {
+                                color: "red",
+                            },
                         }}
                         {...props}
                     >
                         {loading ? (
-                            <FormControlLabel
-                                value=""
-                                control={<MuiRadio />}
-                                label="Loading..."
-                                disabled
-                            />
+                            <FormControlLabel value="" control={<MuiRadio />} label="Loading..." disabled />
                         ) : (
                             options.map((option) => (
                                 <FormControlLabel

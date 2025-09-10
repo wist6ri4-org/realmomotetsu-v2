@@ -40,17 +40,7 @@ export interface SelectOption {
  */
 interface CustomSelectProps extends Omit<MuiSelectProps, "color" | "size"> {
     options: SelectOption[];
-    color?:
-        | "primary"
-        | "secondary"
-        | "success"
-        | "error"
-        | "warning"
-        | "info"
-        | "team1"
-        | "team2"
-        | "team3"
-        | "team4";
+    color?: "primary" | "secondary" | "success" | "error" | "warning" | "info" | "team1" | "team2" | "team3" | "team4";
     size?: "small" | "medium";
     variant?: "outlined" | "filled" | "standard";
     fullWidth?: boolean;
@@ -62,9 +52,7 @@ interface CustomSelectProps extends Omit<MuiSelectProps, "color" | "size"> {
     disabled?: boolean;
     value?: string | number;
     onChange?: (
-        event:
-            | React.ChangeEvent<HTMLInputElement>
-            | (Event & { target: { value: unknown; name: string } }),
+        event: React.ChangeEvent<HTMLInputElement> | (Event & { target: { value: unknown; name: string } }),
         child?: React.ReactNode
     ) => void;
 }
@@ -126,6 +114,9 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
                             "&:disabled": {
                                 opacity: 0.6,
                             },
+                            "& .MuiInputLabel-asterisk": {
+                                color: "red",
+                            },
                         }}
                         {...props}
                     >
@@ -140,11 +131,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
                             </MenuItem>
                         ) : (
                             options.map((option) => (
-                                <MenuItem
-                                    key={option.value}
-                                    value={option.value}
-                                    disabled={option.disabled}
-                                >
+                                <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
                                     {option.label}
                                 </MenuItem>
                             ))
