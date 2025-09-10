@@ -52,7 +52,7 @@ const InformationDialog: React.FC<InformationDialogProps> = ({
 
     return (
         <>
-            <Fab color="success" aria-label="info" onClick={handleClickOpen} sx={{ bottom: 175 }}>
+            <Fab color="success" aria-label="info" onClick={handleClickOpen} sx={{ bottom: 175, zIndex: 4000 }}>
                 <Info />
             </Fab>
             <Dialog

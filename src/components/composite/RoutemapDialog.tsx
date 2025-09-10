@@ -239,7 +239,7 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
                         aria-labelledby="routemap-dialog-title"
                         aria-describedby="routemap-dialog-description"
                         fullScreen
-                        sx={{ zIndex: 3000 }}
+                        sx={{ zIndex: 5000 }}
                     >
                         <DialogTitle id="routemap-dialog-title">路線図</DialogTitle>
                         <DialogContent
