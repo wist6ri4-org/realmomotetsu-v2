@@ -239,7 +239,7 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
                                     open={Boolean(anchorUserMenu)}
                                     onClose={handleUserMenuClose}
                                     sx={{
-                                        zIndex: 2000,
+                                        zIndex: 4000,
                                     }}
                                 >
                                     <MenuItem onClick={handlePushUserSettings}>
