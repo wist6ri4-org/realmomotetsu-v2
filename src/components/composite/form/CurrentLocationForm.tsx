@@ -3,16 +3,22 @@
  */
 "use client";
 
+import AlertDialog from "@/components/base/AlertDialog";
+import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
 import CustomSelect from "@/components/base/CustomSelect";
+import { DialogConstants } from "@/constants/dialogConstants";
 import { DiscordNotificationTemplates } from "@/constants/discordNotificationTemplates";
 import { Stations, Teams } from "@/generated/prisma";
+import { useAlertDialog } from "@/hooks/useAlertDialog";
+import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useDiscordNotification } from "@/hooks/useDiscordNotification";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { ClosestStation } from "@/types/ClosestStation";
 import { TypeConverter } from "@/utils/typeConverter";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 
 /**
  * CurrentLocationFormコンポーネントのプロパティ型定義
@@ -43,10 +49,17 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
         closestStations?.[0]?.stationCode ? String(closestStations?.[0]?.stationCode) : ""
     );
 
+    const { isConfirmOpen, dialogOptions, showConfirmDialog, handleConfirm, handleCancel } = useConfirmDialog();
+    const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
+
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+
     const { sendNotification, clearError } = useDiscordNotification();
 
     /**
      * Discord通知を送信する
+     * @returns {Promise<void>} - 通知送信の完了を示すPromise
      * @description
      * 目的駅到着時
      */
@@ -54,13 +67,9 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
         await sendNotification({
             templateName: DiscordNotificationTemplates.ARRIVAL_GOAL_STATION,
             variables: {
-                teamName:
-                    teams.find((team) => team.teamCode === selectedTeamCodeInput.value)?.teamName ||
-                    "不明",
+                teamName: teams.find((team) => team.teamCode === selectedTeamCodeInput.value)?.teamName || "不明",
                 stationName:
-                    stations.find(
-                        (station) => station.stationCode === selectedStationCodeInput.value
-                    )?.name || "不明",
+                    stations.find((station) => station.stationCode === selectedStationCodeInput.value)?.name || "不明",
             },
         });
     };
@@ -80,25 +89,38 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
             return nextGoalStation.stationCode;
         } catch (error) {
             console.error("Error fetching next goal station:", error);
-            alert("次の目的駅の取得に失敗しました。");
+            throw error;
             return "";
         }
     };
 
     /**
      * データの登録
+     * @param {React.FormEvent<HTMLFormElement>} e - フォームの送信イベント
+     * @returns {Promise<void>} - 登録処理の完了を示すPromise
      */
-    const registerTransitStation = async () => {
+    const registerTransitStation = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+        e.preventDefault();
         clearError();
-        const isConfirmed = confirm(
-            "以下の内容で登録しますか？\n" +
-                `チーム: ${selectedTeamCodeInput.value}\n` +
-                `駅: ${selectedStationCodeInput.value}`
-        );
+
+        const teamName = teams.find((team) => team.teamCode === selectedTeamCodeInput.value)?.teamName || "不明";
+        const stationName =
+            stations.find((station) => station.stationCode === selectedStationCodeInput.value)?.name || "不明";
+
+        const confirmMessage = "以下の内容で登録しますか？\n" + `チーム: ${teamName}\n` + `駅: ${stationName}`;
+        const isConfirmed = await showConfirmDialog({
+            message: confirmMessage,
+        });
+
         if (!isConfirmed) {
             return;
         }
+
         try {
+            setIsLoading(true);
+            setError(null);
+
+            // 経由駅の登録
             const response = await fetch("/api/transit-stations", {
                 method: "POST",
                 headers: {
@@ -124,11 +146,21 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
 
             selectedTeamCodeInput.reset();
             selectedStationCodeInput.reset();
-            alert("登録されました。");
-        } catch (error) {
-            console.error("Error creating transit station:", error);
-            alert("登録に失敗しました。");
+
+            await showAlertDialog({
+                title: DialogConstants.DIALOG_TITLE_REGISTERED,
+                message: DialogConstants.DIALOG_MESSAGE_REGISTER_SUCCESS,
+            });
             return;
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Unknown error");
+            await showAlertDialog({
+                title: DialogConstants.DIALOG_TITLE_ERROR,
+                message: `${DialogConstants.DIALOG_MESSAGE_REGISTER_FAILURE}\n${error}`,
+            });
+            return;
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -136,8 +168,10 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
         <>
             <Box>
                 <Box
+                    component="form"
                     border={1}
                     borderRadius={1}
+                    onSubmit={registerTransitStation}
                     sx={{
                         display: "flex",
                         flexDirection: "column",
@@ -155,6 +189,8 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
                             variant="outlined"
                             label="チーム名"
                             fullWidth
+                            required
+                            disabled={isLoading}
                         />
                     </Box>
                     <Box sx={{ marginBottom: 2 }}>
@@ -166,15 +202,36 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
                             variant="outlined"
                             label="今いる駅"
                             fullWidth
+                            required
+                            disabled={isLoading}
                         />
                     </Box>
                     <Box sx={{ marginTop: 5 }}>
-                        <CustomButton fullWidth onClick={registerTransitStation}>
-                            送信
+                        <CustomButton
+                            type="submit"
+                            disabled={isLoading}
+                            fullWidth
+                            startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
+                        >
+                            {isLoading ? "送信中..." : "送信"}
                         </CustomButton>
                     </Box>
                 </Box>
             </Box>
+            <ConfirmDialog
+                isConfirmOpen={isConfirmOpen}
+                title={dialogOptions.title}
+                message={dialogOptions.message}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            />
+            <AlertDialog
+                isAlertOpen={isAlertOpen}
+                title={alertOptions.title}
+                message={alertOptions.message}
+                onOk={handleAlertOk}
+                okText={alertOptions.okText}
+            />
         </>
     );
 };

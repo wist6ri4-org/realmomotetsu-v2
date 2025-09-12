@@ -3,18 +3,23 @@
  */
 "use client";
 
+import AlertDialog from "@/components/base/AlertDialog";
+import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
 import CustomNumberInput from "@/components/base/CustomNumberInput";
 import CustomSelect from "@/components/base/CustomSelect";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
+import { DialogConstants } from "@/constants/dialogConstants";
 import { Teams } from "@/generated/prisma";
+import { useAlertDialog } from "@/hooks/useAlertDialog";
+import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useNumberInput } from "@/hooks/useNumberInput";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { useParams } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 
 /**
  * ArrivalGoalStationsFormコンポーネントのプロパティ型定義
@@ -37,22 +42,41 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
     const teamCodeInput = useSelectInput("");
     const pointsInput = useNumberInput(0);
 
+    const { isConfirmOpen, dialogOptions, showConfirmDialog, handleConfirm, handleCancel } = useConfirmDialog();
+    const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
+
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+
     /**
      * データの登録
+     * @param {React.FormEvent<HTMLFormElement>} e - フォームの送信イベント
+     * @return {Promise<void>} - 登録処理の完了を示すPromise
      */
-    const registerArrivalData = async () => {
-        const isConfirmed = confirm(
+    const registerArrivalData = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+        e.preventDefault();
+
+        const confirmMessage =
             "以下の内容で到着処理を行いますか？\n" +
-                `チーム: ${
-                    teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"
-                }\n` +
-                `ポイント: ${pointsInput.value || "不明"}`
-        );
+            `チーム: ${teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"}\n` +
+            `ポイント: ${pointsInput.value}`;
+        const isConfirmed = await showConfirmDialog({
+            message: confirmMessage,
+        });
+
         if (!isConfirmed) {
             return;
         }
 
         try {
+            setIsLoading(true);
+            setError(null);
+
+            if (pointsInput.value <= 0) {
+                throw new Error("到着ポイントは0以上の値で入力してください。");
+            }
+
+            // 到着ポイントの登録
             const responseCreatePoints = await fetch("/api/points", {
                 method: "POST",
                 headers: {
@@ -70,6 +94,7 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
                 throw new Error(`HTTP error! status: ${responseCreatePoints.status}`);
             }
 
+            // 既存のポイントステータスをscoredに更新
             const responseUpdatePoints = await fetch("/api/points", {
                 method: "PUT",
                 headers: {
@@ -86,11 +111,21 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
 
             teamCodeInput.reset();
             pointsInput.reset();
-            alert("登録が完了しました。");
-        } catch (error) {
-            console.error("Error registering:", error);
-            alert("登録に失敗しました。");
+
+            await showAlertDialog({
+                title: DialogConstants.DIALOG_TITLE_REGISTERED,
+                message: "目的駅到着処理が完了しました。",
+            });
             return;
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Unknown error");
+            await showAlertDialog({
+                title: DialogConstants.DIALOG_TITLE_ERROR,
+                message: `"目的駅到着処理に失敗しました。\n${error}`,
+            });
+            return;
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -106,8 +141,10 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
                     換金も同時に実行される。
                 </FormDescription>
                 <Box
+                    component="form"
                     border={1}
                     borderRadius={1}
+                    onSubmit={registerArrivalData}
                     sx={{
                         display: "flex",
                         flexDirection: "column",
@@ -124,6 +161,8 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
                             onChange={teamCodeInput.handleChange}
                             size="small"
                             variant="outlined"
+                            required
+                            disabled={isLoading}
                             sx={{ minWidth: 200 }}
                         />
                     </Box>
@@ -134,13 +173,34 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
                             showSteppers={true}
                             step={5}
                             onChange={pointsInput.handleChange}
+                            disabled={isLoading}
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <CustomButton onClick={registerArrivalData}>送信</CustomButton>
+                        <CustomButton
+                            type="submit"
+                            disabled={isLoading}
+                            startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
+                        >
+                            {isLoading ? "送信中..." : "送信"}
+                        </CustomButton>
                     </Box>
                 </Box>
             </Box>
+            <ConfirmDialog
+                isConfirmOpen={isConfirmOpen}
+                title={dialogOptions.title}
+                message={dialogOptions.message}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            />
+            <AlertDialog
+                isAlertOpen={isAlertOpen}
+                title={alertOptions.title}
+                message={alertOptions.message}
+                onOk={handleAlertOk}
+                okText={alertOptions.okText}
+            />
         </>
     );
 };
