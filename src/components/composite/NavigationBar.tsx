@@ -63,7 +63,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     ];
 
     return (
-        <Box component="footer" sx={{ width: "100%", position: "sticky", bottom: 0, zIndex: 3000 }}>
+        <Box component="footer" sx={{ width: "100%", position: "sticky", bottom: 0, zIndex: 300 }}>
             <BottomNavigation showLabels value={activeTab} onChange={handleNavChange}>
                 {navigation.map((nav) => (
                     <BottomNavigationAction
