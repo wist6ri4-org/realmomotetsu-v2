@@ -3,18 +3,23 @@
  */
 "use client";
 
+import AlertDialog from "@/components/base/AlertDialog";
+import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
 import CustomNumberInput from "@/components/base/CustomNumberInput";
 import CustomRadio, { RadioOption } from "@/components/base/CustomRadio";
 import CustomSelect from "@/components/base/CustomSelect";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
+import { DialogConstants } from "@/constants/dialogConstants";
 import { GameConstants } from "@/constants/gameConstants";
 import { PointStatus, Teams } from "@/generated/prisma";
+import { useAlertDialog } from "@/hooks/useAlertDialog";
+import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useNumberInput } from "@/hooks/useNumberInput";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 
@@ -46,14 +51,18 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
     const pointsInput = useNumberInput(0);
     const [pointStatus, setPointStatus] = useState<PointStatus>(GameConstants.POINT_STATUS.POINTS);
 
+    const { isConfirmOpen, dialogOptions, showConfirmDialog, handleConfirm, handleCancel } = useConfirmDialog();
+    const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
+
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+
     /**
      * ポイント状態の変更ハンドラー
      * @param {React.ChangeEvent<HTMLInputElement> | Event} event - イベントオブジェクト
      */
     const handlePointStatusChange = (
-        event:
-            | React.ChangeEvent<HTMLInputElement>
-            | (Event & { target: { value: unknown; name: string } })
+        event: React.ChangeEvent<HTMLInputElement> | (Event & { target: { value: unknown; name: string } })
     ) => {
         const newValue = event.target.value as PointStatus;
         setPointStatus(newValue);
@@ -62,21 +71,34 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
 
     /**
      * データの登録
+     * @param {React.FormEvent<HTMLFormElement>} e - フォームの送信イベント
+     *  @return {Promise<void>} - 登録処理の完了を示すPromise
      */
-    const registerPointsData = async () => {
-        const isConfirmed = confirm(
+    const registerPointsData = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+        e.preventDefault();
+
+        const confirmMessage =
             "以下の内容でポイントを登録しますか？\n" +
-                `チーム: ${
-                    teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"
-                }\n` +
-                `ポイント: ${pointsInput.value || "不明"}\n` +
-                `状態: ${pointStatus}`
-        );
+            `チーム: ${teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"}\n` +
+            `ポイント: ${pointsInput.value}\n` +
+            `ステータス: ${pointStatus}`;
+        const isConfirmed = await showConfirmDialog({
+            message: confirmMessage,
+        });
+
         if (!isConfirmed) {
             return;
         }
 
         try {
+            setIsLoading(true);
+            setError(null);
+
+            if (pointsInput.value <= 0) {
+                throw new Error("ポイントは0より大きい値で入力してください。");
+            }
+
+            // ポイントの登録
             const response = await fetch("/api/points", {
                 method: "POST",
                 headers: {
@@ -93,14 +115,25 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
+
             teamCodeInput.reset();
             pointsInput.reset();
             setPointStatus(GameConstants.POINT_STATUS.POINTS);
-            alert("ポイントが登録されました。");
-        } catch (error) {
-            console.error("ポイント登録エラー:", error);
-            alert("ポイントの登録に失敗しました。");
+
+            await showAlertDialog({
+                title: DialogConstants.DIALOG_TITLE_REGISTERED,
+                message: "ポイントの登録が完了しました。",
+            });
             return;
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Unknown error");
+            await showAlertDialog({
+                title: DialogConstants.DIALOG_TITLE_ERROR,
+                message: `ポイントの登録に失敗しました。\n${error}`,
+            });
+            return;
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -114,8 +147,10 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
                     ポイントまたは総資産として登録することができる。
                 </FormDescription>
                 <Box
+                    component="form"
                     border={1}
                     borderRadius={1}
+                    onSubmit={registerPointsData}
                     sx={{
                         display: "flex",
                         flexDirection: "column",
@@ -132,6 +167,8 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
                             onChange={teamCodeInput.handleChange}
                             size="small"
                             variant="outlined"
+                            required
+                            disabled={isLoading}
                             sx={{ minWidth: 200 }}
                         />
                     </Box>
@@ -141,6 +178,7 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
                             label="ポイント"
                             showSteppers={true}
                             step={5}
+                            disabled={isLoading}
                             onChange={pointsInput.handleChange}
                         />
                     </Box>
@@ -155,10 +193,30 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <CustomButton onClick={registerPointsData}>送信</CustomButton>
+                        <CustomButton
+                            type="submit"
+                            disabled={isLoading}
+                            startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
+                        >
+                            {isLoading ? "送信中..." : "送信"}
+                        </CustomButton>
                     </Box>
                 </Box>
             </Box>
+            <ConfirmDialog
+                isConfirmOpen={isConfirmOpen}
+                title={dialogOptions.title}
+                message={dialogOptions.message}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            />
+            <AlertDialog
+                isAlertOpen={isAlertOpen}
+                title={alertOptions.title}
+                message={alertOptions.message}
+                onOk={handleAlertOk}
+                okText={alertOptions.okText}
+            />
         </>
     );
 };

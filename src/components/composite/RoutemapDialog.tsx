@@ -230,7 +230,7 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
             {/* データの表示 */}
             {!isLoading && !error && (
                 <>
-                    <Fab color="primary" aria-label="info" onClick={handleOpen} sx={{ zIndex: 4000 }}>
+                    <Fab color="primary" aria-label="info" onClick={handleOpen} sx={{ zIndex: 400 }}>
                         <MapIcon />
                     </Fab>
                     <Dialog
@@ -239,7 +239,7 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
                         aria-labelledby="routemap-dialog-title"
                         aria-describedby="routemap-dialog-description"
                         fullScreen
-                        sx={{ zIndex: 5000 }}
+                        sx={{ zIndex: 500 }}
                     >
                         <DialogTitle id="routemap-dialog-title">路線図</DialogTitle>
                         <DialogContent

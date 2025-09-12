@@ -3,15 +3,20 @@
  */
 "use client";
 
+import AlertDialog from "@/components/base/AlertDialog";
+import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
 import CustomSelect from "@/components/base/CustomSelect";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
+import { DialogConstants } from "@/constants/dialogConstants";
 import { Teams } from "@/generated/prisma";
+import { useAlertDialog } from "@/hooks/useAlertDialog";
+import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
-import { Box } from "@mui/material";
-import React from "react";
+import { Box, CircularProgress } from "@mui/material";
+import React, { useState } from "react";
 
 /**
  * PointsExchangeFormコンポーネントのプロパティ型定義
@@ -31,21 +36,34 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
 }: PointsExchangeFormProps): React.JSX.Element => {
     const teamCodeInput = useSelectInput("");
 
+    const { isConfirmOpen, dialogOptions, showConfirmDialog, handleConfirm, handleCancel } = useConfirmDialog();
+    const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
+
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+
     /**
      * データの更新
      */
-    const updatePointStatus = async () => {
-        const isConfirmed = confirm(
+    const updatePointStatus = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const confirmMessage =
             "以下の内容でポイントを換金しますか？\n" +
-                `チーム: ${
-                    teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"
-                }`
-        );
+            `チーム: ${teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"}`;
+        const isConfirmed = await showConfirmDialog({
+            message: confirmMessage,
+        });
+
         if (!isConfirmed) {
             return;
         }
 
         try {
+            setIsLoading(true);
+            setError(null);
+
+            // ポイントステータスをscoredに更新
             const response = await fetch("/api/points", {
                 method: "PUT",
                 headers: {
@@ -59,12 +77,22 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
+
             teamCodeInput.reset();
-            alert("ポイントの換金が完了しました。");
-        } catch (error) {
-            console.error("Error exchanging points:", error);
-            alert("ポイントの換金に失敗しました。");
+
+            await showAlertDialog({
+                title: DialogConstants.DIALOG_TITLE_UPDATED,
+                message: "ポイントの換金が完了しました。",
+            });
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Unknown error");
+            await showAlertDialog({
+                title: DialogConstants.DIALOG_TITLE_ERROR,
+                message: `ポイントの換金に失敗しました。\n${error}`,
+            });
             return;
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -74,8 +102,10 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
                 <FormTitle title="ポイント換金" />
                 <FormDescription>チームを選択し、ポイントを総資産化する。</FormDescription>
                 <Box
+                    component="form"
                     border={1}
                     borderRadius={1}
+                    onSubmit={updatePointStatus}
                     sx={{
                         display: "flex",
                         flexDirection: "column",
@@ -92,14 +122,36 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
                             onChange={teamCodeInput.handleChange}
                             size="small"
                             variant="outlined"
+                            required
+                            disabled={false}
                             sx={{ minWidth: 200 }}
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <CustomButton onClick={updatePointStatus}>送信</CustomButton>
+                        <CustomButton
+                            type="submit"
+                            disabled={isLoading}
+                            startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
+                        >
+                            {isLoading ? "送信中..." : "送信"}
+                        </CustomButton>
                     </Box>
                 </Box>
             </Box>
+            <ConfirmDialog
+                isConfirmOpen={isConfirmOpen}
+                title={dialogOptions.title}
+                message={dialogOptions.message}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            />
+            <AlertDialog
+                isAlertOpen={isAlertOpen}
+                title={alertOptions.title}
+                message={alertOptions.message}
+                onOk={handleAlertOk}
+                okText={alertOptions.okText}
+            />
         </>
     );
 };

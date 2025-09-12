@@ -264,7 +264,7 @@ export const theme = createTheme({
                     position: "fixed",
                     bottom: 100,
                     left: 25,
-                    zIndex: 1000, // 他の要素より前面に表示
+                    zIndex: 100, // 他の要素より前面に表示
                     boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
                     "&:hover": {
                         boxShadow: "0 4px 12px rgba(0,0,0,0.3)",

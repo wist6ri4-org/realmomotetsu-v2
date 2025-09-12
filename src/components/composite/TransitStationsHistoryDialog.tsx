@@ -46,7 +46,7 @@ const TransitStationsHistoryDialog: React.FC<TransitStationsHistoryDialogProps> 
                 aria-labelledby="transit-stations-history-dialog-title"
                 aria-describedby="transit-stations-history-dialog-description"
                 fullWidth
-                sx={{ zIndex: 3000 }}
+                sx={{ zIndex: 500 }}
             >
                 <DialogTitle id="transit-stations-history-dialog-title">
                     <Typography>{teamData.teamName} の履歴</Typography>
