@@ -16,7 +16,12 @@ interface AlertDialogOptions {
  * カスタムフック: アラートダイアログの管理
  * @return {object} - アラートダイアログの管理に必要な関数と状態
  */
-export const useAlertDialog = (): object => {
+export const useAlertDialog = (): {
+    isAlertOpen: boolean;
+    alertOptions: AlertDialogOptions;
+    showAlertDialog: (options: AlertDialogOptions) => Promise<void>;
+    handleAlertOk: () => void;
+} => {
     const [isAlertOpen, setIsAlertOpen] = useState(false);
     const [alertOptions, setAlertOptions] = useState<AlertDialogOptions>({
         message: "",

@@ -18,7 +18,13 @@ interface ConfirmDialogOptions {
  * カスタムフック: 確認ダイアログの管理
  * @return {object} - 確認ダイアログの管理に必要な関数と状態
  */
-export const useConfirmDialog = (): object => {
+export const useConfirmDialog = (): {
+    isConfirmOpen: boolean;
+    dialogOptions: ConfirmDialogOptions;
+    showConfirmDialog: (options: ConfirmDialogOptions) => Promise<boolean>;
+    handleConfirm: () => void;
+    handleCancel: () => void;
+} => {
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [dialogOptions, setDialogOptions] = useState<ConfirmDialogOptions>({
         message: "",
