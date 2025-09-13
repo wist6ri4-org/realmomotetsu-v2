@@ -10,15 +10,16 @@ const nextConfig: NextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
     },
-    async redirects() {
-        return [
-            {
-                source: "/",
-                destination: "/user/signin",
-                permanent: true,
-            },
-        ];
-    },
+    // ルートパスのリダイレクト設定
+    // async redirects() {
+    //     return [
+    //         {
+    //             source: "/",
+    //             destination: "/user/signin",
+    //             permanent: true,
+    //         },
+    //     ];
+    // },
 };
 
 export default nextConfig;
