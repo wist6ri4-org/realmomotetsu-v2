@@ -62,7 +62,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({
     bombiiTeamData,
     onClick,
 }: TeamCardProps): React.JSX.Element => {
-    const lastStation = teamData.transitStations[teamData.transitStations.length - 1] || null;
+    const lastStation = teamData.transitStations[0] || null;
     return (
         <>
             <Box
@@ -78,7 +78,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({
                     {bombiiTeamData && bombiiTeamData.teamCode === teamData.teamCode && (
                         <Image
                             alt="Bombii"
-                            src={"/moving_bombii.png?" + new Date().getTime()}
+                            src={"/moving_bombii.png?" + new Date().getMinutes()}
                             width={0}
                             height={0}
                             unoptimized
