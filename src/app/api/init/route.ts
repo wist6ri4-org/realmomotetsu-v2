@@ -1,6 +1,6 @@
 import { createApiHandler } from "@/app/api/utils/apiHandler";
-import InitFormApiHandler from "./InitFormApiHandler";
+import InitApiHandler from "./InitApiHandler";
 
-export const GET = createApiHandler(InitFormApiHandler);
+export const GET = createApiHandler(InitApiHandler);
 
 export {}; // 明示的にモジュールとして認識させる

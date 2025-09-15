@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
-import { InitFormServiceImpl } from "@/features/init-form/service";
-import { initFormRequestSchema } from "@/features/init-form/validator";
-import { InitFormResponse } from "@/features/init-form/types";
+import { InitServiceImpl } from "@/features/init/service";
+import { initRequestSchema } from "@/features/init/validator";
+import { InitResponse } from "@/features/init/types";
 
 /**
- * 初期フォームデータを取得するAPIハンドラー
+ * 初期データを取得するAPIハンドラー
  */
-class InitFormApiHandler extends BaseApiHandler {
+class InitApiHandler extends BaseApiHandler {
     /**
      * コンストラクタ
      * @param req - Next.jsのリクエストオブジェクト
@@ -33,7 +33,7 @@ class InitFormApiHandler extends BaseApiHandler {
      * @return {Promise<NextResponse>} - レスポンスオブジェクト
      */
     private async handleGet(req: NextRequest): Promise<NextResponse> {
-        this.logInfo("Handling GET request for init-form");
+        this.logInfo("Handling GET request for init");
 
         try {
             // クエリパラメータを取得
@@ -41,20 +41,24 @@ class InitFormApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
             const queryParams = Object.fromEntries(searchParams.entries());
-            const validatedParams = initFormRequestSchema.parse(queryParams);
+            const validatedParams = initRequestSchema.parse(queryParams);
 
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data: InitFormResponse = await InitFormServiceImpl.getDataForForm(
+            const data: InitResponse = await InitServiceImpl.getDataForInit(
                 validatedParams
             );
 
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initFormResponseSchema.parse(data);
 
-            this.logInfo("Successfully retrieved init-form data", {
-                closestStationsCount: data.closestStations ? data.closestStations.length : 0,
+            this.logInfo("Successfully retrieved init data", {
+                teamsCount: data.teams.length,
+                stationsCount: data.stations.length,
+                nearbyStationsCount: data.nearbyStations.length,
+                documentsCount: data.documents.length,
+                userId: data.user.id,
             });
 
             return this.createSuccessResponse(data);
@@ -65,4 +69,4 @@ class InitFormApiHandler extends BaseApiHandler {
     }
 }
 
-export default InitFormApiHandler;
+export default InitApiHandler;

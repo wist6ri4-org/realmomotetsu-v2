@@ -64,8 +64,6 @@ export const InitOperationServiceImpl: InitOperationService = {
             }));
 
             const res: InitOperationResponse = {
-                teams: teams,
-                stations: stations,
                 teamData: teamData,
             };
 
