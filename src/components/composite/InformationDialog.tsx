@@ -63,7 +63,7 @@ const InformationDialog: React.FC<InformationDialogProps> = ({
                 sx={{ zIndex: 500 }}
             >
                 <DialogTitle id="information-dialog-title">チーム情報</DialogTitle>
-                <DialogContent>
+                <DialogContent sx={{ padding: 1 }}>
                     <DataGrid
                         rows={teamData}
                         columns={fields}

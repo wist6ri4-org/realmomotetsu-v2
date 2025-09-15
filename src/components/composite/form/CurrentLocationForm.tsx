@@ -25,11 +25,13 @@ import { useState } from "react";
  * @property {Teams[]} teams - チームのリスト
  * @property {Stations[]} stations - 駅のリスト
  * @property {ClosestStation[]} [closestStations] - 最寄り駅のリスト（オプション）
+ * @property {string} [initialTeamCode] - 初期選択されるチームコード（オプション）
  */
 interface CurrentLocationFormProps {
     teams: Teams[];
     stations: Stations[];
     closestStations?: ClosestStation[];
+    initialTeamCode?: string;
 }
 
 /**
@@ -41,10 +43,11 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     teams,
     stations,
     closestStations,
+    initialTeamCode,
 }: CurrentLocationFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
-    const selectedTeamCodeInput = useSelectInput("");
+    const selectedTeamCodeInput = useSelectInput(initialTeamCode || "");
     const selectedStationCodeInput = useSelectInput(
         closestStations?.[0]?.stationCode ? String(closestStations?.[0]?.stationCode) : ""
     );

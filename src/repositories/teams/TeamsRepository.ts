@@ -29,7 +29,7 @@ export class TeamsRepository extends BaseRepository {
                             station: true,
                         },
                         orderBy: {
-                            id: "asc",
+                            id: "desc",
                         },
                     },
                 },
