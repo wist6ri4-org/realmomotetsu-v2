@@ -1,5 +1,6 @@
 import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
 import supabase from "@/lib/supabase";
+import { UsersWithRelations } from "@/repositories/users/UsersRepository";
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@supabase/supabase-js";
 
@@ -205,7 +206,7 @@ export const changePassword = async (newPassword: string): Promise<Error | null>
 };
 
 /**
- * 管理者ユーザーかどうかを確認
+ * 管理者ユーザーかどうかを確認（API）
  * @param {string} userId - ユーザーID
  * @param {string} eventCode - イベントコード
  * @return {Promise<boolean>} - 管理者ユーザーであればtrue、そうでなければfalse
@@ -236,3 +237,18 @@ export const checkIsAdminUser = async (userId: string, eventCode: string): Promi
         return false;
     }
 };
+
+/**
+ * 管理者ユーザーかどうかを確認（UsersWithRelations使用）
+ * @param {UsersWithRelations} user - ユーザーオブジェクト
+ * @param {string} eventCode - イベントコード
+ */
+export const checkIsAdminUserWithUsers = (user: UsersWithRelations, eventCode: string): boolean =>{
+    const attendance = user.attendances?.find((att) => att.eventCode === eventCode);
+
+    if (user.masterRole !== "admin" && attendance?.eventRole !== "admin") {
+        return false;
+    }
+
+    return true;
+}

@@ -54,8 +54,6 @@ class InitOperationApiHandler extends BaseApiHandler {
             // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved init-operation data", {
-                teamsCount: data.teams.length,
-                stationsCount: data.stations.length,
                 closestStationsCount: data.closestStations ? data.closestStations.length : 0,
                 teamDataCount: data.teamData ? data.teamData.length : 0,
             });

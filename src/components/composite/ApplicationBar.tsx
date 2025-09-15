@@ -17,6 +17,8 @@ import { Events } from "@/generated/prisma";
 import { signOut } from "@/lib/auth";
 import { UsersWithRelations } from "@/repositories/users/UsersRepository";
 import { useUserIcon } from "@/contexts/UserIconContext";
+import { GetEventByEventCodeResponse } from "@/features/events/[eventCode]/types";
+import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
 
 /**
  * アプリケーションバーのプロパティ型定義
@@ -62,11 +64,11 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
             if (!responseUsers.ok) {
                 throw new Error(`HTTP error! status: ${responseUsers.status}`);
             }
-            const dataEvents = await responseEvents.json();
-            const dataUsers = await responseUsers.json();
+            const dataEvents: GetEventByEventCodeResponse = (await responseEvents.json()).data;
+            const dataUsers: GetUsersByUuidResponse = (await responseUsers.json()).data;
 
-            const eventData = dataEvents?.data?.event || dataEvents?.event || {};
-            const userData = dataUsers?.data?.user || dataUsers?.user || {};
+            const eventData = dataEvents.event || {};
+            const userData = dataUsers.user || {};
             if (!eventData || !userData) {
                 throw new Error("Event or user data not found");
             }

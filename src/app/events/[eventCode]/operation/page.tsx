@@ -2,17 +2,16 @@
 
 import { Box, Typography, Card, CardContent, CardActionArea, Avatar, Grid, CircularProgress } from "@mui/material";
 import {
-    Settings as SettingsIcon,
     AccountCircle as AccountCircleIcon,
     Settings,
     Description,
+    Construction,
 } from "@mui/icons-material";
 import PageTitle from "@/components/base/PageTitle";
 import { useParams, useRouter } from "next/navigation";
-import RoutemapDialog from "@/components/composite/RoutemapDialog";
-import { useAuthGuard } from "@/hooks/useAuthGuard";
-import { checkIsAdminUser } from "@/lib/auth";
+import { checkIsAdminUserWithUsers } from "@/lib/auth";
 import { useEffect, useState } from "react";
+import { useEventContext } from "../../layout";
 
 /**
  * オペレーションメニューページ
@@ -21,7 +20,8 @@ const OperationPage: React.FC = (): React.JSX.Element => {
     const router = useRouter();
     const params = useParams();
     const eventCode = params.eventCode as string;
-    const { sbUser, isLoading } = useAuthGuard();
+
+    const { user, isInitDataLoading, contextError } = useEventContext();
 
     const [isAdminUser, setIsAdminUser] = useState<boolean>(false);
     const [isCheckingAdmin, setIsCheckingAdmin] = useState<boolean>(true);
@@ -31,10 +31,10 @@ const OperationPage: React.FC = (): React.JSX.Element => {
      */
     useEffect(() => {
         setIsCheckingAdmin(true);
-        const checkIsAdmin = async () => {
-            if (sbUser?.id) {
+        const checkIsAdmin = () => {
+            if (user) {
                 try {
-                    const isAdminUser = await checkIsAdminUser(sbUser.id, eventCode);
+                    const isAdminUser = checkIsAdminUserWithUsers(user, eventCode);
                     setIsAdminUser(isAdminUser);
                 } catch (error) {
                     console.error("Error checking admin status:", error);
@@ -43,12 +43,12 @@ const OperationPage: React.FC = (): React.JSX.Element => {
                     setIsCheckingAdmin(false);
                 }
             } else {
-                setIsAdminUser(false);
                 setIsCheckingAdmin(false);
+                setIsAdminUser(false);
             }
         };
         checkIsAdmin();
-    }, [sbUser, eventCode, isLoading]);
+    }, [user, eventCode, isInitDataLoading]);
 
     const menuItems = [
         {
@@ -74,7 +74,7 @@ const OperationPage: React.FC = (): React.JSX.Element => {
                   {
                       title: "GMツール",
                       description: "GM用の管理機能",
-                      icon: <SettingsIcon sx={{ fontSize: "1.8rem" }} />,
+                      icon: <Construction sx={{ fontSize: "1.8rem" }} />,
                       color: "#2196F3",
                       onClick: () => {
                           router.push(`/events/${eventCode}/operation/tools`);
@@ -91,11 +91,22 @@ const OperationPage: React.FC = (): React.JSX.Element => {
             </Box>
 
             {/* ローディング */}
-            {isLoading || isCheckingAdmin ? (
-                <Box sx={{ textAlign: "center", mb: 4 }}>
-                    <CircularProgress size={40} color="primary" />
+            {isInitDataLoading ||
+                (isCheckingAdmin && (
+                    <Box sx={{ textAlign: "center", mb: 4 }}>
+                        <CircularProgress size={40} color="primary" />
+                    </Box>
+                ))}
+            {/* エラー */}
+            {contextError && (
+                <Box sx={{ mb: 4 }}>
+                    <Typography variant="body1" color="error">
+                        エラーが発生しました: {contextError}
+                    </Typography>
                 </Box>
-            ) : (
+            )}
+            {/* データの表示 */}
+            {!isInitDataLoading && !isCheckingAdmin && !contextError && (
                 <Grid container spacing={2}>
                     {menuItems.map((item, index) => (
                         <Grid size={6} key={index}>

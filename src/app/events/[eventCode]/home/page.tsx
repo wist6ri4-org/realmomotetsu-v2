@@ -11,10 +11,11 @@ import { Alert, Box, CircularProgress, Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import TransitStationsHistoryDialog from "@/components/composite/TransitStationsHistoryDialog";
-import RoutemapDialog from "@/components/composite/RoutemapDialog";
+import { InitHomeResponse } from "@/features/init-home/types";
 
 /**
  * ホームページ
+ * @returns {React.JSX.Element} ホームページのコンポーネント
  */
 const HomePage: React.FC = (): React.JSX.Element => {
     const { eventCode } = useParams();
@@ -33,8 +34,9 @@ const HomePage: React.FC = (): React.JSX.Element => {
 
     /**
      * データの取得
+     * @returns {Promise<void>} データ取得の非同期処理
      */
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
         try {
             setIsLoading(true);
             setError(null);
@@ -47,10 +49,10 @@ const HomePage: React.FC = (): React.JSX.Element => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
-            const teamData = data?.data?.teamData || data?.teamData || [];
-            const nextGoalStationData = data?.data?.nextGoalStation || data?.nextGoalStation || {};
-            const bombiiTeamData = data?.data?.bombiiTeam || data;
+            const data: InitHomeResponse = (await response.json()).data;
+            const teamData = data.teamData || [];
+            const nextGoalStationData = data.nextGoalStation || {};
+            const bombiiTeamData = data.bombiiTeam || {};
             if (
                 !Array.isArray(teamData) ||
                 typeof nextGoalStationData !== "object" ||

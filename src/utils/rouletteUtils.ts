@@ -14,9 +14,7 @@ export class RouletteUtils {
         if (stations.length === 0) {
             throw new Error("No stations available to select from.");
         }
-        const filteredStations = stations.filter(
-            (station) => station.stationCode !== startStationCode
-        );
+        const filteredStations = stations.filter((station) => station.stationCode !== startStationCode);
         const randomIndex = Math.floor(Math.random() * filteredStations.length);
         return filteredStations[randomIndex].stationCode;
     }

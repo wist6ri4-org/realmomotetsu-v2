@@ -3,38 +3,36 @@
 import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
 import CurrentLocationForm from "@/components/composite/form/CurrentLocationForm";
-import { Stations, Teams } from "@/generated/prisma";
 import { ClosestStation } from "@/types/ClosestStation";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
 import { ArrowDropDown, Assignment } from "@mui/icons-material";
-import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Alert,
-    Box,
-    CircularProgress,
-    Typography,
-} from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, CircularProgress, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useEventContext } from "../../layout";
+import { InitFormResponse } from "@/features/init-form/types";
+import { AttendancesWithRelations } from "@/repositories/attendances/AttendancesRepository";
 
 /**
  * フォームページ
+ * @returns {React.JSX.Element} フォームページのコンポーネント
  */
 const FormPage: React.FC = (): React.JSX.Element => {
     const { eventCode } = useParams();
 
-    const [teams, setTeams] = useState<Teams[]>([]);
-    const [stations, setStations] = useState<Stations[]>([]);
+    const { teams, stations, user, isInitDataLoading, contextError } = useEventContext();
+
     const [closestStations, setClosestStations] = useState<ClosestStation[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
+    const attendance: AttendancesWithRelations | undefined = user?.attendances?.find((a) => a.eventCode === eventCode);
+
     /**
      * データの取得
+     * @returns {Promise<void>} データ取得の非同期処理
      */
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
         try {
             setIsLoading(true);
             setError(null);
@@ -42,10 +40,16 @@ const FormPage: React.FC = (): React.JSX.Element => {
             const params = new URLSearchParams();
             params.append("eventCode", eventCode as string);
 
-            const { latitude, longitude } = await CurrentLocationUtils.getCurrentLocation();
-            if (latitude && longitude) {
-                params.append("latitude", latitude.toString());
-                params.append("longitude", longitude.toString());
+            try {
+                const { latitude, longitude } = await CurrentLocationUtils.getCurrentLocation();
+                if (latitude && longitude) {
+                    params.append("latitude", latitude.toString());
+                    params.append("longitude", longitude.toString());
+                }
+            } catch (locationError) {
+                console.warn("Could not get current location:", locationError);
+                // 位置情報が取得できない場合、APIを実行せずに処理終了
+                return;
             }
 
             const response = await fetch("/api/init-form?" + params.toString());
@@ -53,26 +57,16 @@ const FormPage: React.FC = (): React.JSX.Element => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
-            const teams = data?.data?.teams || data?.teams || [];
-            const stations = data?.data?.stations || data?.stations || [];
-            const closestStations = data?.data?.closestStations || data?.closestStations || [];
+            const data: InitFormResponse = (await response.json()).data;
+            const closestStations = data.closestStations || [];
 
-            if (
-                !Array.isArray(teams) ||
-                !Array.isArray(stations) ||
-                !Array.isArray(closestStations)
-            ) {
+            if (!Array.isArray(closestStations)) {
                 throw new Error("Unexpected response structure");
             }
-            setTeams(teams as Teams[]);
-            setStations(stations as Stations[]);
             setClosestStations(closestStations as ClosestStation[]);
         } catch (error) {
             console.error("Error fetching data:", error);
             setError(error instanceof Error ? error.message : "Unknown error");
-            setTeams([]);
-            setStations([]);
             setClosestStations([]);
         } finally {
             setIsLoading(false);
@@ -90,15 +84,10 @@ const FormPage: React.FC = (): React.JSX.Element => {
         <>
             {/* サブヘッダーセクション */}
             <Box>
-                <PageTitle
-                    title="到着報告フォーム"
-                    icon={<Assignment sx={{ fontSize: "3.5rem", marginRight: 1 }} />}
-                />
-                <Box sx={{ margin: 4}}>
+                <PageTitle title="到着報告フォーム" icon={<Assignment sx={{ fontSize: "3.5rem", marginRight: 1 }} />} />
+                <Box sx={{ margin: 4 }}>
                     <Accordion>
-                        <AccordionSummary
-                            expandIcon={<ArrowDropDown sx={{ fontSize: "2.5rem" }} />}
-                        >
+                        <AccordionSummary expandIcon={<ArrowDropDown sx={{ fontSize: "2.5rem" }} />}>
                             <Typography variant="body2" fontWeight={700}>
                                 いつ送る？
                             </Typography>
@@ -123,30 +112,28 @@ const FormPage: React.FC = (): React.JSX.Element => {
             {/* コンテンツセクション */}
             <Box>
                 {/* ローディング */}
-                {isLoading && (
+                {(isLoading || isInitDataLoading) && (
                     <Box sx={{ textAlign: "center", margin: 4 }}>
                         <CircularProgress size={40} color="primary" />
                     </Box>
                 )}
                 {/* エラー */}
-                {error && (
+                {(error || contextError) && (
                     <Box sx={{ margin: 4 }}>
-                        <Alert
-                            severity="error"
-                            action={<CustomButton onClick={fetchData}>再試行</CustomButton>}
-                        >
+                        <Alert severity="error" action={<CustomButton onClick={fetchData}>再試行</CustomButton>}>
                             {error}
                         </Alert>
                     </Box>
                 )}
                 {/* データの表示 */}
-                {!isLoading && !error && (
+                {!isLoading && !isInitDataLoading && !error && !contextError && (
                     <>
                         <Box sx={{ marginX: 2 }}>
                             <CurrentLocationForm
                                 teams={teams}
                                 stations={stations}
                                 closestStations={closestStations}
+                                initialTeamCode={attendance?.teamCode}
                             />
                         </Box>
                     </>

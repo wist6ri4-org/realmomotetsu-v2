@@ -1,6 +1,8 @@
 "use client";
 
+import { useEventContext } from "@/app/events/layout";
 import CustomButton from "@/components/base/CustomButton";
+import PageTitle from "@/components/base/PageTitle";
 import ArrivalGoalStationsForm from "@/components/composite/form/ArrivalGoalStationsForm";
 import MissionFormSenzokuike from "@/components/composite/form/MissionFormSenzokuike";
 import PointsExchangeForm from "@/components/composite/form/PointsExchangeForm";
@@ -10,8 +12,9 @@ import RegisterBombiiManualForm from "@/components/composite/form/RegisterBombii
 import RegisterGoalStationsForm from "@/components/composite/form/RegisterGoalStationsForm";
 import RegisterPointsForm from "@/components/composite/form/RegisterPointsForm";
 import InformationDialog from "@/components/composite/InformationDialog";
-import { Stations, Teams } from "@/generated/prisma";
+import { InitOperationResponse } from "@/features/init-operation/types";
 import { TeamData } from "@/types/TeamData";
+import { Construction } from "@mui/icons-material";
 import { Alert, Box, CircularProgress, Divider } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -22,16 +25,17 @@ import { useEffect, useState } from "react";
 const ToolsPage: React.FC = (): React.JSX.Element => {
     const { eventCode } = useParams();
 
-    const [teams, setTeams] = useState<Teams[]>([]);
-    const [stations, setStations] = useState<Stations[]>([]);
+    const { teams, stations, isInitDataLoading, contextError } = useEventContext();
+
     const [teamData, setTeamData] = useState<TeamData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     /**
      * データの取得
+     * @returns {Promise<void>} データ取得の非同期処理
      */
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
         try {
             setIsLoading(true);
             setError(null);
@@ -44,22 +48,16 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
-            const teams = data?.data?.teams || data?.teams || [];
-            const stations = data?.data?.stations || data?.stations || [];
-            const teamData = data?.data?.teamData || data?.teamData || [];
+            const data: InitOperationResponse = (await response.json()).data;
+            const teamData = data.teamData || [];
 
-            if (!Array.isArray(teams) || !Array.isArray(stations) || !Array.isArray(teamData)) {
+            if (!Array.isArray(teamData)) {
                 throw new Error("Unexpected response structure");
             }
-            setTeams(teams as Teams[]);
-            setStations(stations as Stations[]);
             setTeamData(teamData as TeamData[]);
         } catch (error) {
             console.error("Error fetching data:", error);
             setError(error instanceof Error ? error.message : "Unknown error");
-            setTeams([]);
-            setStations([]);
             setTeamData([]);
         } finally {
             setIsLoading(false);
@@ -76,28 +74,30 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
     return (
         <>
             {/* サブヘッダーセクション */}
-
+            <Box>
+                <PageTitle
+                    title="GMツール"
+                    icon={<Construction sx={{ fontSize: "3.5rem", marginRight: 1 }} />}
+                />
+            </Box>
             {/* コンテンツセクション */}
             <Box>
                 {/* ローディング */}
-                {isLoading && (
+                {(isLoading || isInitDataLoading) && (
                     <Box sx={{ textAlign: "center", margin: 4 }}>
                         <CircularProgress size={40} color="primary" />
                     </Box>
                 )}
                 {/* エラー */}
-                {error && (
+                {(error || contextError) && (
                     <Box sx={{ margin: 4 }}>
-                        <Alert
-                            severity="error"
-                            action={<CustomButton onClick={fetchData}>再試行</CustomButton>}
-                        >
+                        <Alert severity="error" action={<CustomButton onClick={fetchData}>再試行</CustomButton>}>
                             {error}
                         </Alert>
                     </Box>
                 )}
                 {/* メインコンテンツ */}
-                {!isLoading && !error && (
+                {!isLoading && !isInitDataLoading && !error && !contextError && (
                     <>
                         <RegisterGoalStationsForm stations={stations} />
                         <Divider />

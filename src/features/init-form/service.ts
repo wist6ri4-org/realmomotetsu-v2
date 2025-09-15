@@ -12,7 +12,6 @@ export const InitFormServiceImpl: InitFormService = {
      */
     async getDataForForm(req: InitFormRequest): Promise<InitFormResponse> {
         const eventsRepository = RepositoryFactory.getEventsRepository();
-        const teamsRepository = RepositoryFactory.getTeamsRepository();
         const stationsRepository = RepositoryFactory.getStationsRepository();
 
         try {
@@ -21,14 +20,10 @@ export const InitFormServiceImpl: InitFormService = {
             const eventTypeCode = events?.eventTypeCode || "";
 
             // レスポンスの作成
-            const [teams, stations] = await Promise.all([
-                teamsRepository.findByEventCode(req.eventCode),
+            const [stations] = await Promise.all([
                 stationsRepository.findByEventTypeCode(eventTypeCode),
             ]);
-            const res: InitFormResponse = {
-                teams: teams,
-                stations: stations,
-            };
+            const res: InitFormResponse = {};
 
             // 位置情報が提供されている場合、近隣の駅を計算
             if (req.latitude && req.longitude) {

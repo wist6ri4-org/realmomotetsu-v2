@@ -54,7 +54,7 @@ class InitRouletteApiHandler extends BaseApiHandler {
             // const validatedResponse = initRouletteResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved init-roulette data", {
-                stationsCount: data.stations.length,
+                latestTransitStationsCount: data.latestTransitStations.length,
                 closestStationsCount: data.closestStations ? data.closestStations.length : 0,
             });
 

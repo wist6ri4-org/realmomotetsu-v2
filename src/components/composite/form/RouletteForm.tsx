@@ -15,6 +15,8 @@ import CustomRadio, { RadioOption } from "@/components/base/CustomRadio";
 import RouletteCard from "../../base/RouletteCard";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { ClosestStation } from "@/types/ClosestStation";
+import { useAlertDialog } from "@/hooks/useAlertDialog";
+import AlertDialog from "@/components/base/AlertDialog";
 
 /**
  * RouletteFormコンポーネントのプロパティ型定義
@@ -52,6 +54,8 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
     const [spinInterval, setSpinInterval] = useState<NodeJS.Timeout | null>(null);
     const [isRolling, setIsRolling] = useState<boolean>(false);
 
+    const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
+
     /**
      * ルーレットの次の駅を取得するための関数
      * @return {Stations | null} - 次の駅
@@ -70,10 +74,7 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
      * @return {Stations | null} - ランダムな駅
      */
     const getRandomStation = (): Stations | null => {
-        const randomStationCode = RouletteUtils.getRandomStationCode(
-            stations,
-            startStationCodeInput.value
-        );
+        const randomStationCode = RouletteUtils.getRandomStationCode(stations, startStationCodeInput.value);
         return stations.find((station) => station.stationCode === randomStationCode) || null;
     };
 
@@ -84,10 +85,7 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
      * @param {string} action.type - アクションのタイプ（"weighted" または "random"）
      * @return {Stations | null} - 更新された状態
      */
-    const reducer = (
-        state: Stations | null,
-        action: { type: "weighted" | "random" }
-    ): Stations | null => {
+    const reducer = (state: Stations | null, action: { type: "weighted" | "random" }): Stations | null => {
         switch (action.type) {
             case "weighted":
                 return getWeightedStation();
@@ -102,9 +100,7 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
      * @param {React.ChangeEvent<HTMLInputElement> | Event} event - イベントオブジェクト
      */
     const handleRouletteModeChange = (
-        event:
-            | React.ChangeEvent<HTMLInputElement>
-            | (Event & { target: { value: unknown; name: string } })
+        event: React.ChangeEvent<HTMLInputElement> | (Event & { target: { value: unknown; name: string } })
     ) => {
         const newValue = event.target.value as "weighted" | "random";
         setRouletteMode(newValue);
@@ -121,6 +117,13 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
                 console.log("Stopping roulette, displaying next station:", displayedStation);
             }
         } else {
+            if (startStationCodeInput.value === "") {
+                setIsRolling(false);
+                showAlertDialog({
+                    message: "今いる駅を選択してください。",
+                });
+                return;
+            }
             console.log(
                 "Starting roulette with mode:",
                 rouletteMode,
@@ -187,6 +190,13 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
                     )}
                 </Box>
             </Box>
+            <AlertDialog
+                isAlertOpen={isAlertOpen}
+                title={alertOptions.title}
+                message={alertOptions.message}
+                onOk={handleAlertOk}
+                okText={alertOptions.okText}
+            />
         </>
     );
 };
