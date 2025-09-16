@@ -18,7 +18,6 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
         const pointsRepository = RepositoryFactory.getPointsRepository();
         const eventsRepository = RepositoryFactory.getEventsRepository();
         const nearbyStationsRepository = RepositoryFactory.getNearbyStationsRepository();
-        const stationsRepository = RepositoryFactory.getStationsRepository();
 
         try {
             // 並列でデータを取得
@@ -33,12 +32,9 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
                     bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
                 ]);
 
-            // イベント種別コードで並列でデータを取得
+            // イベント種別コードでデータを取得
             const eventTypeCode = events?.eventTypeCode || "";
-            const [stationGraph, stations] = await Promise.all([
-                nearbyStationsRepository.findByEventTypeCode(eventTypeCode),
-                stationsRepository.findByEventTypeCode(eventTypeCode),
-            ]);
+            const stationGraph = await nearbyStationsRepository.findByEventTypeCode(eventTypeCode);
             const convertedStationGraph = DijkstraUtils.convertToStationGraph(stationGraph);
 
             // TeamsをTeamDataに変換
@@ -78,7 +74,6 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
                 teamData: teamData,
                 nextGoalStation: nextGoalStation,
                 bombiiTeam: bombiiTeam,
-                stations: stations,
             };
 
             return res;
