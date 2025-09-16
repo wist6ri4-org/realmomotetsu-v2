@@ -13,6 +13,7 @@ import {
     IconButton,
     Slider,
     Stack,
+    Grid,
 } from "@mui/material";
 import MapIcon from "@mui/icons-material/Map";
 import ZoomInIcon from "@mui/icons-material/ZoomIn";
@@ -325,11 +326,10 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
                                 </Paper>
                                 {/* チーム表示設定 */}
                                 <Paper elevation={3} sx={{ p: 2, width: "100%" }}>
-                                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                                        <Box sx={{ flex: 1 }}>
-                                            {teamData.slice(0, Math.ceil(teamData.length / 2)).map((team) => (
+                                    <Grid container spacing={1} mb={0}>
+                                        {teamData.map((team) => (
+                                            <Grid size={6} key={team.teamCode}>
                                                 <FormControlLabel
-                                                    key={team.teamCode}
                                                     control={
                                                         <Switch
                                                             checked={visibleTeams.includes(team.teamCode)}
@@ -347,36 +347,17 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
                                                         />
                                                     }
                                                     label={team.teamName}
-                                                    sx={{ display: "block", mb: 1 }}
+                                                    sx={{
+                                                        display: "block",
+                                                        mb: 1,
+                                                        whiteSpace: "nowrap",
+                                                        overflow: "hidden",
+                                                        textOverflow: "ellipsis",
+                                                    }}
                                                 />
-                                            ))}
-                                        </Box>
-                                        <Box sx={{ flex: 1 }}>
-                                            {teamData.slice(Math.ceil(teamData.length / 2)).map((team) => (
-                                                <FormControlLabel
-                                                    key={team.teamCode}
-                                                    control={
-                                                        <Switch
-                                                            checked={visibleTeams.includes(team.teamCode)}
-                                                            onChange={() => handleTeamVisibilityToggle(team.teamCode)}
-                                                            size="small"
-                                                            sx={{
-                                                                "& .MuiSwitch-thumb": {
-                                                                    backgroundColor: visibleTeams.includes(
-                                                                        team.teamCode
-                                                                    )
-                                                                        ? team.teamColor
-                                                                        : undefined,
-                                                                },
-                                                            }}
-                                                        />
-                                                    }
-                                                    label={team.teamName}
-                                                    sx={{ display: "block", mb: 1 }}
-                                                />
-                                            ))}
-                                        </Box>
-                                    </Box>
+                                            </Grid>
+                                        ))}
+                                    </Grid>
                                 </Paper>
                                 <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
                                     <CustomButton onClick={handleClose} color="warning">

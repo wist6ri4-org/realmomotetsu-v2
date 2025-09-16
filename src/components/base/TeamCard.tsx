@@ -74,7 +74,12 @@ export const TeamCard: React.FC<TeamCardProps> = ({
                 }}
             >
                 {/* チーム名 */}
-                <Box sx={{ display: "flex", justifyContent: "start" }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "start",
+                    }}
+                >
                     {bombiiTeamData && bombiiTeamData.teamCode === teamData.teamCode && (
                         <Image
                             alt="Bombii"
@@ -85,7 +90,12 @@ export const TeamCard: React.FC<TeamCardProps> = ({
                             style={{ width: "auto", height: "2.5rem", marginRight: "0.5rem" }}
                         />
                     )}
-                    <Typography variant="h5">{teamData.teamName}</Typography>
+                    <Typography
+                        variant="h5"
+                        sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+                    >
+                        {teamData.teamName}
+                    </Typography>
                 </Box>
 
                 {/* チームカード */}
