@@ -55,7 +55,6 @@ class InitRoutemapApiHandler extends BaseApiHandler {
                 teamDataCount: data.teamData.length,
                 hasNextGoal: !!data.nextGoalStation,
                 hasBombiiTeam: !!data.bombiiTeam,
-                stationsCount: data.stations.length,
             });
 
             return this.createSuccessResponse(data);

@@ -24,14 +24,15 @@ import CustomButton from "../base/CustomButton";
 import Routemap from "./Routemap";
 import { useParams } from "next/navigation";
 import { InitRoutemapResponse } from "@/features/init-routemap/types";
-import { Stations, Teams } from "@/generated/prisma";
+import { Teams } from "@/generated/prisma";
+import { useEventContext } from "@/app/events/layout";
 
 // ZOOMデフォルト値
 const DEFAULT_ZOOM = 1.0;
 // ZOOM最大値
-const MAX_ZOOM = 2.0;
+const MAX_ZOOM = 2.5;
 // ZOOM最小値
-const MIN_ZOOM = 0.5;
+const MIN_ZOOM = 1.0;
 // ZOOMステップ値
 const ZOOM_STEP = 0.25;
 // スライダーのステップ値
@@ -42,7 +43,7 @@ const SLIDER_MARKS = [...Array(((MAX_ZOOM - MIN_ZOOM) / ZOOM_STEP) * 2 + 1)].map
     return { value, label: `${Math.round(value * 100)}%` };
 });
 // マウスホイールズームステップ値
-const MOUSE_WHEEL_ZOOM_STEP = 0.05;
+const MOUSE_WHEEL_ZOOM_STEP = 0.1;
 
 /**
  * 路線図ダイアログコンポーネント
@@ -51,10 +52,11 @@ const MOUSE_WHEEL_ZOOM_STEP = 0.05;
 const RoutemapDialog: React.FC = (): React.JSX.Element => {
     const { eventCode } = useParams();
 
+    const { stations, isInitDataLoading, contextError } = useEventContext();
+
     const [teamData, setTeamData] = useState<TeamData[]>([]);
     const [nextGoalStation, setNextGoalStation] = useState<GoalStationsWithRelations | null>(null);
     const [bombiiTeam, setBombiiTeam] = useState<Teams | null>(null);
-    const [stations, setStations] = useState<Stations[]>([]);
 
     const [aspectRatio, setAspectRatio] = useState<number>(5600 / 4000);
 
@@ -64,6 +66,7 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
     const [isOpen, setIsOpen] = useState(false);
     const [visibleTeams, setVisibleTeams] = useState<string[]>([]);
     const [zoomLevel, setZoomLevel] = useState(DEFAULT_ZOOM);
+    const [scrollPosition, setScrollPosition] = useState({ x: 0, y: 0 });
     const dialogContentRef = useRef<HTMLDivElement>(null);
 
     /**
@@ -86,19 +89,16 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
             const teamData = data?.teamData || [];
             const nextGoalStationData = data?.nextGoalStation || {};
             const bombiiTeamData = data?.bombiiTeam || {};
-            const stations = data?.stations || [];
             if (
                 !Array.isArray(teamData) ||
                 typeof nextGoalStationData !== "object" ||
-                typeof bombiiTeamData !== "object" ||
-                !Array.isArray(stations)
+                typeof bombiiTeamData !== "object"
             ) {
                 throw new Error("Unexpected response structure");
             }
             setTeamData(teamData as TeamData[]);
             setNextGoalStation(nextGoalStationData as GoalStationsWithRelations);
             setBombiiTeam(bombiiTeamData as Teams);
-            setStations(stations as Stations[]);
 
             // 初期表示では全チームを表示
             setVisibleTeams((teamData as TeamData[]).map((team) => team.teamCode));
@@ -143,17 +143,82 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
     };
 
     /**
+     * スクロール位置の更新
+     */
+    const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+        const target = e.target as HTMLDivElement;
+        setScrollPosition({ x: target.scrollLeft, y: target.scrollTop });
+    }, []);
+
+    /**
+     * ズームレベル変更時のスクロール位置調整
+     */
+    const handleZoomChange = useCallback(
+        (newZoomLevel: number) => {
+            if (dialogContentRef.current) {
+                const container = dialogContentRef.current.querySelector("[data-scroll-container]") as HTMLDivElement;
+                if (container) {
+                    const containerRect = container.getBoundingClientRect();
+                    const centerX = containerRect.width / 2;
+                    const centerY = containerRect.height / 2;
+
+                    // 現在の表示中央の実際の座標を計算（center centerの場合）
+                    const currentCenterX = (scrollPosition.x + centerX) / zoomLevel;
+                    const currentCenterY = (scrollPosition.y + centerY) / zoomLevel;
+
+                    setZoomLevel(newZoomLevel);
+
+                    // 次のフレームでスクロール位置を調整
+                    requestAnimationFrame(() => {
+                        // 新しいズームレベルでの必要なスクロール位置を計算
+                        const newScrollX = currentCenterX * newZoomLevel - centerX;
+                        const newScrollY = currentCenterY * newZoomLevel - centerY;
+
+                        container.scrollTo(newScrollX, newScrollY);
+                    });
+                }
+            }
+        },
+        [scrollPosition, zoomLevel]
+    );
+
+    /**
+     * ホイールイベントリスナーの設定（passive: falseで）
+     */
+    useEffect(() => {
+        const dialogContent = dialogContentRef.current;
+        if (!dialogContent) return;
+
+        const wheelHandler = (e: WheelEvent) => {
+            if (e.ctrlKey) {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -MOUSE_WHEEL_ZOOM_STEP : MOUSE_WHEEL_ZOOM_STEP;
+                const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoomLevel + delta));
+                handleZoomChange(newZoom);
+            }
+        };
+
+        dialogContent.addEventListener("wheel", wheelHandler, { passive: false });
+
+        return () => {
+            dialogContent.removeEventListener("wheel", wheelHandler);
+        };
+    }, [zoomLevel, handleZoomChange]);
+
+    /**
      * ズームイン
      */
     const handleZoomIn = (): void => {
-        setZoomLevel((prev) => Math.min(prev + ZOOM_STEP, MAX_ZOOM));
+        const newZoom = Math.min(zoomLevel + ZOOM_STEP, MAX_ZOOM);
+        handleZoomChange(newZoom);
     };
 
     /**
      * ズームアウト
      */
     const handleZoomOut = (): void => {
-        setZoomLevel((prev) => Math.max(prev - ZOOM_STEP, MIN_ZOOM));
+        const newZoom = Math.max(zoomLevel - ZOOM_STEP, MIN_ZOOM);
+        handleZoomChange(newZoom);
     };
 
     /**
@@ -162,17 +227,6 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
     const handleZoomReset = () => {
         setZoomLevel(DEFAULT_ZOOM);
     };
-
-    /**
-     * マウスホイールでのズーム処理
-     */
-    const handleWheel = useCallback((e: React.WheelEvent) => {
-        if (e.ctrlKey) {
-            e.preventDefault();
-            const delta = e.deltaY > 0 ? -MOUSE_WHEEL_ZOOM_STEP : MOUSE_WHEEL_ZOOM_STEP;
-            setZoomLevel((prev) => Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, prev + delta)));
-        }
-    }, []);
 
     /**
      * タッチイベントでのピンチ操作
@@ -199,7 +253,6 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
      */
     const handleTouchMove = useCallback((e: React.TouchEvent) => {
         if (e.touches.length === 2) {
-            e.preventDefault();
             const touch1 = e.touches[0];
             const touch2 = e.touches[1];
             const distance = Math.sqrt(
@@ -229,7 +282,7 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
     return (
         <>
             {/* データの表示 */}
-            {!isLoading && !error && (
+            {!isLoading && !isInitDataLoading && !error && !contextError && (
                 <>
                     <Fab color="primary" aria-label="info" onClick={handleOpen} sx={{ zIndex: 400 }}>
                         <MapIcon />
@@ -248,43 +301,57 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
                             sx={{
                                 padding: 0,
                                 overflow: "hidden",
-                                touchAction: "none", // タッチスクロールを無効化
+                                touchAction: "pinch-zoom", // ピンチズームのみ許可
                                 position: "relative",
                                 border: "1px solid #000",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
                             }}
-                            onWheel={handleWheel}
                             onTouchStart={handleTouchStart}
                             onTouchMove={handleTouchMove}
                         >
                             <Box
+                                data-scroll-container
                                 sx={{
                                     width: "100%",
                                     height: "100%",
                                     overflow: zoomLevel > 1 ? "auto" : "hidden",
                                     display: "flex",
-                                    justifyContent: zoomLevel > 1 ? "flex-start" : "center",
-                                    alignItems: zoomLevel > 1 ? "flex-start" : "center",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    touchAction: "pan-x pan-y pinch-zoom", // スクロールとピンチズームを許可
                                 }}
+                                onScroll={handleScroll}
                             >
                                 <Box
                                     sx={{
                                         transform: `scale(${zoomLevel})`,
-                                        transformOrigin: "top left",
-                                        width: zoomLevel <= 1 ? "100%" : `${100 / zoomLevel}%`,
-                                        height: zoomLevel <= 1 ? "100%" : `${100 / zoomLevel}%`,
-                                        minWidth: zoomLevel > 1 ? `${100 * zoomLevel}%` : "auto",
-                                        minHeight: zoomLevel > 1 ? `${100 * zoomLevel}%` : "auto",
+                                        transformOrigin: "25% 25%",
+                                        width: zoomLevel > 1 ? `${100 * zoomLevel}%` : "100%",
+                                        height: zoomLevel > 1 ? `${100 * zoomLevel}%` : "100%",
                                         aspectRatio: aspectRatio, // viewBoxの比率を維持
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
                                     }}
                                 >
-                                    <Routemap
-                                        teamData={teamData}
-                                        nextGoalStation={nextGoalStation}
-                                        bombiiTeam={bombiiTeam}
-                                        stationsFromDB={stations}
-                                        visibleTeams={visibleTeams}
-                                        handleAspectRatio={handleAspectRatio}
-                                    />
+                                    <Box
+                                        sx={{
+                                            width: zoomLevel > 1 ? `${100 / zoomLevel}%` : "100%",
+                                            height: zoomLevel > 1 ? `${100 / zoomLevel}%` : "100%",
+                                            aspectRatio: aspectRatio,
+                                        }}
+                                    >
+                                        <Routemap
+                                            teamData={teamData}
+                                            nextGoalStation={nextGoalStation}
+                                            bombiiTeam={bombiiTeam}
+                                            stationsFromDB={stations}
+                                            visibleTeams={visibleTeams}
+                                            handleAspectRatio={handleAspectRatio}
+                                        />
+                                    </Box>
                                 </Box>
                             </Box>
                         </DialogContent>
@@ -303,7 +370,7 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
                                         <Box sx={{ flex: 1, mx: 2 }}>
                                             <Slider
                                                 value={zoomLevel}
-                                                onChange={(_, newValue) => setZoomLevel(newValue as number)}
+                                                onChange={(_, newValue) => handleZoomChange(newValue as number)}
                                                 min={MIN_ZOOM}
                                                 max={MAX_ZOOM}
                                                 step={SLIDER_ZOOM_STEP}
