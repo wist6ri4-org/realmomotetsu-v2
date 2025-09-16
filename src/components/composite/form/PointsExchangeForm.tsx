@@ -21,9 +21,11 @@ import React, { useState } from "react";
 /**
  * PointsExchangeFormコンポーネントのプロパティ型定義
  * @property {Teams[]} teams - チームのリスト
+ * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
  */
 interface PointsExchangeFormProps {
     teams: Teams[];
+    onSubmit?: () => void;
 }
 
 /**
@@ -33,6 +35,7 @@ interface PointsExchangeFormProps {
  */
 const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
     teams,
+    onSubmit,
 }: PointsExchangeFormProps): React.JSX.Element => {
     const teamCodeInput = useSelectInput("");
 
@@ -84,6 +87,10 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
                 title: DialogConstants.DIALOG_TITLE_UPDATED,
                 message: "ポイントの換金が完了しました。",
             });
+
+            onSubmit?.();
+
+            return;
         } catch (err) {
             setError(err instanceof Error ? err.message : "Unknown error");
             await showAlertDialog({

@@ -24,9 +24,11 @@ import React, { useState } from "react";
 /**
  * RegisterGoalStationsFormコンポーネントのプロパティ型定義
  * @property {Stations[]} stations - 駅のリスト
+ * @property {() => void} [onFormSubmit] - フォーム送信後のコールバック関数
  */
 interface RegisterGoalStationsFormProps {
     stations: Stations[];
+    onSubmit?: () => void;
 }
 
 /**
@@ -36,6 +38,7 @@ interface RegisterGoalStationsFormProps {
  */
 const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
     stations,
+    onSubmit,
 }: RegisterGoalStationsFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
@@ -112,6 +115,9 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
                 title: DialogConstants.DIALOG_TITLE_REGISTERED,
                 message: "目的駅の登録が完了しました。",
             });
+
+            onSubmit?.();
+
             return;
         } catch (err) {
             setError(err instanceof Error ? err.message : "Unknown error");

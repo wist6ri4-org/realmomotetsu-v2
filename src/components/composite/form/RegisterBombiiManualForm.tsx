@@ -24,9 +24,11 @@ import React, { useState } from "react";
 /**
  * RegisterBombiiManualFormコンポーネントのプロパティ型定義
  * @property {Teams[]} teams - チームのリスト
+ * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
  */
 interface RegisterBombiiManualFormProps {
     teams: Teams[];
+    onSubmit?: () => void;
 }
 
 /**
@@ -36,6 +38,7 @@ interface RegisterBombiiManualFormProps {
  */
 const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
     teams,
+    onSubmit,
 }: RegisterBombiiManualFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
@@ -110,6 +113,9 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
                 title: DialogConstants.DIALOG_TITLE_REGISTERED,
                 message: "ボンビーの登録が完了しました。",
             });
+
+            onSubmit?.();
+
             return;
         } catch (err) {
             setError(err instanceof Error ? err.message : "Unknown error");

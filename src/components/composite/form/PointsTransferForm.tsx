@@ -26,9 +26,11 @@ import React, { useState } from "react";
 /**
  * PointsTransferFormコンポーネントのプロパティ型定義
  * @property {Teams[]} teams - チームのリスト
+ * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
  */
 interface PointsTransferFormProps {
     teams: Teams[];
+    onSubmit?: () => void;
 }
 
 // ポイント状態のオプション
@@ -44,6 +46,7 @@ const pointStatusOptions: RadioOption[] = [
  */
 const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
     teams,
+    onSubmit,
 }: PointsTransferFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
@@ -147,6 +150,9 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
                 title: DialogConstants.DIALOG_TITLE_UPDATED,
                 message: "ポイントの移動が完了しました。",
             });
+
+            onSubmit?.();
+
             return;
         } catch (err) {
             setError(err instanceof Error ? err.message : "Unknown error");

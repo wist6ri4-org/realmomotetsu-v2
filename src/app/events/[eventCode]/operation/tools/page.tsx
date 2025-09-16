@@ -17,7 +17,7 @@ import { TeamData } from "@/types/TeamData";
 import { Construction } from "@mui/icons-material";
 import { Alert, Box, CircularProgress, Divider } from "@mui/material";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 /**
  * GMツールページ
@@ -35,7 +35,7 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
      * データの取得
      * @returns {Promise<void>} データ取得の非同期処理
      */
-    const fetchData = async (): Promise<void> => {
+    const fetchData = useCallback(async (): Promise<void> => {
         try {
             setIsLoading(true);
             setError(null);
@@ -62,7 +62,7 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [eventCode]);
 
     /**
      * 初期表示
@@ -71,14 +71,18 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
         fetchData();
     }, []);
 
+    /**
+     * データ更新用ハンドラー
+     */
+    const handleUpdate = (): void => {
+        fetchData();
+    };
+
     return (
         <>
             {/* サブヘッダーセクション */}
             <Box>
-                <PageTitle
-                    title="GMツール"
-                    icon={<Construction sx={{ fontSize: "3.5rem", marginRight: 1 }} />}
-                />
+                <PageTitle title="GMツール" icon={<Construction sx={{ fontSize: "3.5rem", marginRight: 1 }} />} />
             </Box>
             {/* コンテンツセクション */}
             <Box>
@@ -99,22 +103,26 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                 {/* メインコンテンツ */}
                 {!isLoading && !isInitDataLoading && !error && !contextError && (
                     <>
-                        <RegisterGoalStationsForm stations={stations} />
+                        <RegisterGoalStationsForm stations={stations} onSubmit={handleUpdate} />
                         <Divider />
-                        <ArrivalGoalStationsForm teams={teams} />
+                        <ArrivalGoalStationsForm teams={teams} onSubmit={handleUpdate} />
                         <Divider />
-                        <RegisterBombiiAutoForm teamData={teamData} />
+                        <RegisterBombiiAutoForm teamData={teamData} onSubmit={handleUpdate} />
                         <Divider />
-                        <RegisterPointsForm teams={teams} />
+                        <RegisterPointsForm teams={teams} onSubmit={handleUpdate} />
                         <Divider />
-                        <PointsTransferForm teams={teams} />
+                        <PointsTransferForm teams={teams} onSubmit={handleUpdate} />
                         <Divider />
-                        <PointsExchangeForm teams={teams} />
+                        <PointsExchangeForm teams={teams} onSubmit={handleUpdate} />
                         <Divider />
-                        <RegisterBombiiManualForm teams={teams} />
+                        <RegisterBombiiManualForm teams={teams} onSubmit={handleUpdate} />
                         <Divider />
                         <MissionFormSenzokuike />
-                        <InformationDialog teamData={teamData} />
+                        <InformationDialog
+                            teamData={teamData}
+                            eventCode={eventCode as string}
+                            onDataUpdate={setTeamData}
+                        />
                     </>
                 )}
             </Box>

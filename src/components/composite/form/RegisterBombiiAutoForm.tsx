@@ -22,9 +22,11 @@ import React, { useState } from "react";
 /**
  * RegisterBombiiAutoFormコンポーネントのプロパティ型定義
  * @property {TeamData[]} teamData - チームデータのリスト
+ * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
  */
 interface RegisterBombiiAutoFormProps {
     teamData: TeamData[];
+    onSubmit?: () => void;
 }
 
 /**
@@ -34,6 +36,7 @@ interface RegisterBombiiAutoFormProps {
  */
 const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
     teamData,
+    onSubmit,
 }: RegisterBombiiAutoFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
@@ -110,6 +113,9 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
                 title: DialogConstants.DIALOG_TITLE_REGISTERED,
                 message: "ボンビーの登録が完了しました。",
             });
+
+            onSubmit?.();
+
             return;
         } catch (err) {
             setError(err instanceof Error ? err.message : "Unknown error");

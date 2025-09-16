@@ -26,9 +26,11 @@ import React, { useState } from "react";
 /**
  * RegisterPointsFormコンポーネントのプロパティ型定義
  * @property {Teams[]} teams - チームのリスト
+ * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
  */
 interface RegisterPointsFormProps {
     teams: Teams[];
+    onSubmit?: () => void;
 }
 
 // ポイント状態のオプション
@@ -44,6 +46,7 @@ const pointStatusOptions: RadioOption[] = [
  */
 const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
     teams,
+    onSubmit,
 }: RegisterPointsFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
@@ -124,6 +127,9 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
                 title: DialogConstants.DIALOG_TITLE_REGISTERED,
                 message: "ポイントの登録が完了しました。",
             });
+
+            onSubmit?.();
+
             return;
         } catch (err) {
             setError(err instanceof Error ? err.message : "Unknown error");
