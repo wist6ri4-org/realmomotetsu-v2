@@ -38,8 +38,9 @@ export class LogService {
             responseTime,
         };
 
+        const now = new Date().toISOString();
         console.log(
-            `[ACCESS] ${accessLog.requestId} ${accessLog.method} ${accessLog.url} - ${statusCode} (${responseTime}ms)`
+            `[ACCESS] ${now} ${accessLog.requestId} ${accessLog.method} ${accessLog.url} - ${statusCode} (${responseTime}ms)`
         );
 
         // 本番環境では外部ログサービスに送信
@@ -60,7 +61,8 @@ export class LogService {
             stackTrace: error instanceof Error ? error.stack : undefined,
         };
 
-        console.error(`[ERROR] ${errorLog.requestId} ${errorLog.method} ${errorLog.url}:`, {
+        const now = new Date().toISOString();
+        console.error(`[ERROR] ${now} ${errorLog.requestId} ${errorLog.method} ${errorLog.url}:`, {
             error: error instanceof Error ? error.message : String(error),
             stack: errorLog.stackTrace,
         });
@@ -78,10 +80,8 @@ export class LogService {
      * @param data - 追加データ（オプション）
      */
     static logInfo(context: LogContext, message: string, data?: unknown): void {
-        console.log(
-            `[INFO] ${context.requestId} ${context.method} ${context.url}: ${message}`,
-            data
-        );
+        const now = new Date().toISOString();
+        console.log(`[INFO] ${now} ${context.requestId} ${context.method} ${context.url}: ${message}`, data);
     }
 
     /**
@@ -91,11 +91,9 @@ export class LogService {
      * @param data - 追加データ（オプション）
      */
     static logDebug(context: LogContext, message: string, data?: unknown): void {
+        const now = new Date().toISOString();
         if (process.env.NODE_ENV === "development") {
-            console.debug(
-                `[DEBUG] ${context.requestId} ${context.method} ${context.url}: ${message}`,
-                data
-            );
+            console.debug(`[DEBUG] ${now} ${context.requestId} ${context.method} ${context.url}: ${message}`, data);
         }
     }
 }
