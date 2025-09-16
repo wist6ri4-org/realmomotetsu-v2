@@ -364,7 +364,7 @@ const Routemap: React.FC<RoutemapProps> = ({
                                     .filter((team) => visibleTeams.includes(team.teamCode))
                                     .map((team, index) => {
                                         const station = config.stations.find(
-                                            (s) => s.code === team.transitStations.slice(-1)[0].stationCode
+                                            (s) => s.code === team.transitStations.slice(0)[0].stationCode
                                         );
                                         if (!station) return null;
 
