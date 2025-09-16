@@ -116,7 +116,7 @@ const RoutemapDialog: React.FC = (): React.JSX.Element => {
      */
     useEffect(() => {
         fetchData();
-    }, [fetchData]);
+    }, [fetchData, isOpen]);
 
     /**
      * ダイアログを開くハンドラー
