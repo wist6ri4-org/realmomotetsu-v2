@@ -46,7 +46,7 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
                 transitStations: team.transitStations,
                 remainingStationsNumber: DijkstraUtils.calculateRemainingStationsNumber(
                     convertedStationGraph,
-                    team.transitStations.at(-1)?.stationCode || "",
+                    team.transitStations.at(0)?.stationCode || "",
                     nextGoalStation?.stationCode || ""
                 ),
                 points: totalPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
