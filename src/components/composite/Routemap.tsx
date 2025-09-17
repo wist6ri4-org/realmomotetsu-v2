@@ -23,7 +23,7 @@ interface RoutemapProps {
     stationsFromDB: Stations[];
     configFileName?: string;
     visibleTeams?: string[];
-    handleAspectRatio: (a: number, b: number) => void;
+    handleAspectRatio?: (a: number, b: number) => void;
 }
 
 /**
@@ -165,10 +165,12 @@ const Routemap: React.FC<RoutemapProps> = ({
                     config.default.stations.find((station: Station) => station.code === nextGoalStation?.stationCode) ||
                         null
                 );
-                handleAspectRatio(
-                    config.default.svgOverall.viewBox.split(" ")[2],
-                    config.default.svgOverall.viewBox.split(" ")[3]
-                );
+                if (handleAspectRatio) {
+                    handleAspectRatio(
+                        config.default.svgOverall.viewBox.split(" ")[2],
+                        config.default.svgOverall.viewBox.split(" ")[3]
+                    );
+                }
             } catch (error) {
                 console.error(`Error loading routemap config: ${configFileName}.json`, error);
                 try {
@@ -183,7 +185,7 @@ const Routemap: React.FC<RoutemapProps> = ({
         };
 
         loadRoutemapConfig();
-    }, [configFileName, nextGoalStation]);
+    }, [configFileName, nextGoalStation, handleAspectRatio]);
 
     /**
      * 路線を描画
@@ -227,8 +229,11 @@ const Routemap: React.FC<RoutemapProps> = ({
                         preserveAspectRatio="xMidYMid meet"
                         style={{
                             display: "block",
-                            maxWidth: "100%",
-                            maxHeight: "100%",
+                            margin: 0,
+                            padding: 0,
+                            width: "100%",
+                            height: "100%",
+                            border: "1px solid #ccc",
                         }}
                         xmlns="http://www.w3.org/2000/svg"
                         xmlnsXlink="http://www.w3.org/1999/xlink"
