@@ -2,31 +2,40 @@
 ---
 ## 概要
 
-このプロジェクトは、Next.js を使用して構築された Web アプリケーションで、Prisma を ORM として使用し、Supabase をバックエンドサービスとして利用しています。
+このプロジェクトは、Next.js で構築された Web アプリケーションで、Prisma を ORM 、Supabase をバックエンドサービスとして利用している。
 
 ### ディレクトリ構成
 
 ```plaintext
-├─node_modules      node.jsのモジュール
+├─data              DB用初期投入データ、SQLファイル
+├─docs              ドキュメント
+├─node_modules      【Git管理外】node.jsのモジュール
 ├─prisma            Prisma関連
 |  ├─csv            シード用CSVファイル
 │  └─migrations     データベースマイグレーション
 ├─public            静的ファイル（画像、フォントなど）
 ├─src               アプリケーションのソースコード
-│  ├─app            Next.jsのアプリケーションディレクトリ。page.tsxによってルーティングされる。
-│  │  └─api         APIエンドポイント。route.tsによってルーティングされる。
-│  ├─components     再利用可能なUIコンポーネント。
-│  │  ├─base        基本的なUIコンポーネント。ボタン、入力フィールド、カードなど。
-│  │  └─composites  複合的なUIコンポーネント。ヘッダー、フッター、フォームなど。
+│  ├─app            Next.jsのアプリケーションディレクトリ、page.tsxによってルーティングされる
+│  │  └─api         APIエンドポイント、route.tsによってルーティングされる
+│  ├─components     再利用可能なUIコンポーネント
+│  │  ├─base        基本的なUIコンポーネント（ボタン、入力フィールド、カードなど）
+│  │  └─composites  複合的なUIコンポーネント（ヘッダー、フッター、フォームなど）
 │  ├─constants      定数定義
-│  ├─features       機能ごとのサービス層。特定の機能に関連するファイルを集約する。APIに対応する。
-│  ├─hooks          ドメインに依存しないカスタムフック。共通のロジックを再利用するために使用。
-│  ├─lib            ライブラリ関数。APIクライアントなど。
-│  ├─repositories   データアクセス層。
-|  ├─templates      通知用テンプレート。通知メッセージのテンプレートを定義する。
-│  ├─theme          テーマ設定。アプリケーションのテーマやスタイルを定義する。
-│  ├─types          TypeScriptの型定義。
-│  └─utils          ユーティリティ関数。共通して使用される関数やヘルパー。
+│  ├─contexts       Reactコンテキストプロバイダー
+│  ├─data           静的データ、モックデータ
+│  │  └─routemap    路線図用設定ファイル
+│  ├─features       機能ごとのサービス層、APIエンドポイントごとに特定の機能に関連するファイルを集約する
+│  ├─generated      【Git管理外】Prismaクライアントの自動生成コード
+│  ├─hooks          カスタムReactフック
+│  ├─lib            ライブラリ設定（Prismaクライアント、Supabaseクライアントなど）
+│  ├─repositories   データアクセス層
+│  ├─styles         スタイル、テーマ設定（CSS、Sass、MUIテーマなど）
+|  ├─templates      通知用テンプレート、通知メッセージのテンプレートを定義する
+│  │  ├─discord     Discord通知テンプレート
+│  │  └─email       メール通知テンプレート（Supabase Authentication）
+│  ├─theme          テーマ設定、アプリケーションのテーマやスタイルを定義する
+│  ├─types          TypeScriptの型定義
+│  └─utils          ユーティリティ関数、共通して使用される関数やヘルパー
 ├─supabase          Supabaseの設定と一時ファイル
 └─test              テスト関連
    └─http           HTTPリクエストのテスト
@@ -116,7 +125,7 @@ graph TB
 
 #### init-home
 
-ホーム画面の初期データを取得・表示する処理フローです。
+ホーム画面の初期データを取得・表示する処理フロー
 
 ##### 処理フロー図
 ```mermaid
@@ -420,7 +429,7 @@ return (
 ```
 
 **バリデーション**
-リクエストパラメータは Zod スキーマでバリデーションされます：
+リクエストパラメータは Zod スキーマでバリデーションされる：
 
 ```typescript
 // src/features/init-home/validator.ts
@@ -442,11 +451,18 @@ export const initHomeRequestSchema = z.object({
     # または
     bun install
     ```
-3. **環境変数の設定**: `.env`ファイルを作成し、必要な環境変数を設定する（別途連携）。例:
+3. **環境変数の設定**: `.env`ファイルを作成し、必要な環境変数を設定する（別途連携）。
+    ※ルートディレクトリ直下（/realmomotetsu-v2/）に作成する。
+    例:
     ```yaml
     DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
     NEXT_PUBLIC_API_URL=http://localhost:3000/api
     ```
+    作成するのは以下の３ファイル
+    - .env      ： 環境共通
+    - .env.prod ： 本番環境用
+    - .env.local： 開発環境用
+
 4. **データベースのセットアップ**: Supabase と Prisma を使用してデータベースをセットアップする。
     ### Supabase のプロジェクトの作成
     1. Supabase のプロジェクトを作成し、データベースの接続情報を取得する。
@@ -458,19 +474,21 @@ export const initHomeRequestSchema = z.object({
     3. Prisma マイグレーションを実行して、データベースを初期化する。
     ```bash
     npx prisma migrate dev --name init
+
+    # .env.localの環境変数を使用してマイグレーションを実行する場合
+    npx dotenv -e .env.local -- npx prisma migrate dev --name init
     ```
-    これにより、データベースが初期化され、必要なテーブルが作成されます。
+    これにより、データベースが初期化され、必要なテーブルが作成される。
 5. **ビューの作成**: 必要なビューを作成する。supabase 起動後、supabase の SQL エディタで以下の SQL を実行。
-   /supabase/sql/auth_hooks.sql
    /supabase/sql/views.sql
 
-    これによりビューが作成されます。
+    これによりビューが作成される。
 
-6. **シードスクリプトの実行**: 初期データを挿入するためにシードスクリプトを実行します。
+6. **シードスクリプトの実行**: 初期データを挿入するためにシードスクリプトを実行。
     ```bash
     npm run seed
     ```
-7. **開発サーバーの起動**: 以下のコマンドで開発サーバーを起動します。
+7. **開発サーバーの起動**: 以下のコマンドで開発サーバーを起動。
     ```bash
     npm run dev
     # または
@@ -482,21 +500,23 @@ export const initHomeRequestSchema = z.object({
     ```
 8. **DB の変更を反映**: 【Prisma スキーマを変更した場合】マイグレーションを再実行する。
     ```bash
+    # 開発環境用
     npx prisma migrate dev --name <migration_name>
     ```
 
 ## Prisma の使用方法
 
-Prisma は ORM（Object-Relational Mapping）ツールで、データベースとのやり取りを簡素化します。以下は Prisma の基本的な使用方法です。
+Prisma は ORM（Object-Relational Mapping）ツールで、データベースとのやり取りを簡素化する。以下は Prisma の基本的な使用方法。
 
 ### Prisma のセットアップ
 
 1. **Prisma のインストール**: プロジェクトに Prisma を追加します。
+    ※ `npm install`等を実行して、既にインストールされている場合は不要。
     ```bash
     npm install prisma --save-dev
     npx prisma init
     ```
-2. **スキーマの定義**: `prisma/schema.prisma` ファイルを編集して、データベースのモデルやビューを定義します。例えば、以下のようにユーザーモデル、ビューを定義できます。
+2. **スキーマの定義**: `prisma/schema.prisma` ファイルを編集して、データベースのモデルやビューを定義する。例えば、以下のようにユーザーモデル、ビューを定義できる。
 
     ```prisma
     model User {
@@ -516,6 +536,7 @@ Prisma は ORM（Object-Relational Mapping）ツールで、データベース�
 
 3. **マイグレーションの実行**: スキーマをデータベースに適用するためにマイグレーションを実行します。
     ```bash
+    # 開発環境用
     npx prisma migrate dev --name <migration_name>
     ```
 4. **クライアントの生成**: Prisma クライアントを生成します。（現状では npm run dev で自動的に実行される）

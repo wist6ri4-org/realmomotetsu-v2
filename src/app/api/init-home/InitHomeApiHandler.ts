@@ -50,7 +50,7 @@ class InitHomeApiHandler extends BaseApiHandler {
                 validatedParams
             );
 
-            // レスポンスのスキーマでバリデーション
+            // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initHomeResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved init-home data", {

@@ -5,15 +5,6 @@ import { Box } from "@mui/material";
 import Image from "next/image";
 
 /**
- * Headerコンポーネントのプロパティ型定義
- * @property {string} [currentTab] - 現在のタブ名（オプション）
- * @returns {JSX.Element} - Headerコンポーネント
- */
-// interface HeaderProps {
-//     currentTab?: string;
-// }
-
-/**
  * Headerコンポーネント
  * @returns {JSX.Element} - ヘッダーコンポーネント
  */
@@ -51,17 +42,6 @@ export const Header: React.FC = (): React.JSX.Element => {
                         }}
                         priority
                     />
-                    {/* オーバーレイで可読性向上
-                    <Box
-                        sx={{
-                            position: "absolute",
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            height: "50%",
-                            background: "linear-gradient(transparent, rgba(0,0,0,0.3))",
-                        }}
-                    /> */}
                 </Box>
             </Box>
         </>

@@ -16,10 +16,7 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-/**
- * Model
- */
-
+/* ===== Model ===== */
 /**
  * Events
  * イベント
@@ -265,10 +262,8 @@ model Attendances {
   @@map("attendances")
 }
 
-/**
- * View
- */
 
+/* ===== View ===== */
 /**
  * LatestTransitStations
  * 最新の経由駅情報ビュー

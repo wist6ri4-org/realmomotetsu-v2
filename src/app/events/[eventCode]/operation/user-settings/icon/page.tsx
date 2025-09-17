@@ -304,7 +304,7 @@ const UserIconEditPage = (): React.JSX.Element => {
                             </Button>
                         </label>
                         <Typography variant="body2" display="block" sx={{ mt: 1 }}>
-                            JPG、PNG形式で5MB以下のファイルを選択してください
+                            JPG、PNG形式で5MB以下のファイルを選択してください。
                         </Typography>
                     </Box>
 

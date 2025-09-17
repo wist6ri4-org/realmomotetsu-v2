@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Box } from "@mui/material";
-import SignupHeader from "@/components/SignupHeader";
+import SignupHeader from "@/components/composite/SignupHeader";
 
 /**
  * ユーザー関連ページのレイアウトコンポーネントのプロパティ型定義

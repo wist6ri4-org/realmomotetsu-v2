@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
-import {
-    getUsersByUuidRequestScheme,
-    putUsersByUuidRequestScheme,
-} from "@/features/users/[uuid]/validator";
+import { getUsersByUuidRequestScheme, putUsersByUuidRequestScheme } from "@/features/users/[uuid]/validator";
 import { UsersByUuidServiceImpl } from "@/features/users/[uuid]/service";
 import { GetUsersByUuidResponse, PutUsersByUuidResponse } from "@/features/users/[uuid]/types";
 import supabase from "@/lib/supabase";
@@ -49,9 +46,7 @@ class UsersByUuidApiHandler extends BaseApiHandler {
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data: GetUsersByUuidResponse = await UsersByUuidServiceImpl.getUsersByUuid(
-                validatedParams
-            );
+            const data: GetUsersByUuidResponse = await UsersByUuidServiceImpl.getUsersByUuid(validatedParams);
 
             // TODO レスポンスのスキーマでバリデーション
             // const validatedResponse = initOperationResponseSchema.parse(data);
@@ -106,9 +101,10 @@ class UsersByUuidApiHandler extends BaseApiHandler {
             this.logDebug("Request parameters", validatedParams);
 
             // サービスでユーザーを更新
-            const data: PutUsersByUuidResponse = await UsersByUuidServiceImpl.putUsersByUuid(
-                validatedParams
-            );
+            const data: PutUsersByUuidResponse = await UsersByUuidServiceImpl.putUsersByUuid(validatedParams);
+
+            // TODO レスポンスのスキーマでバリデーション
+            // const validatedResponse = initOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully updated user data", { uuid: this.uuid });
 

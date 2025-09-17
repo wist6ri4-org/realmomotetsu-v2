@@ -26,7 +26,7 @@ export class UserUtils {
             throw new Error("他のユーザーのアイコンは変更できません");
         }
 
-        // バケットの存在確認と作成
+        // TODO バケットの存在確認と作成
         // await this.ensureBucketExists(this.BUCKET_NAME);
 
         const fileExtension = file.name.split(".").pop();

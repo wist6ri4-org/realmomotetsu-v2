@@ -13,9 +13,9 @@ const SIGN_IN_URL = "/user/signin";
  * @returns {User | null} sbUser - Supabaseの認証ユーザー
  * @return {UsersWithRelations | null} user - publicスキーマのユーザーデータ
  * @return {boolean} isLoading - 認証状態のロード中フラグ
- *
- * このフックは、Supabaseの認証状態を監視し、ユーザーデータを取得します。
- * 認証されていない場合はサインインページにリダイレクトします。
+ * @description
+ * Supabaseの認証状態を監視し、ユーザーデータを取得する。
+ * 認証されていない場合はサインインページにリダイレクトする。
  */
 export const useAuthGuard = (): {
     sbUser: User | null;

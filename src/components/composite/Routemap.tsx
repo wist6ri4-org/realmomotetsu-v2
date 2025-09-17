@@ -301,8 +301,8 @@ const Routemap: React.FC<RoutemapProps> = ({
                                             return ["南町田", "グランベリーパーク"];
                                         }
 
-                                        // デフォルトの改行ロジック（6文字以上で中間で分割）
-                                        if (name.length > 6) {
+                                        // デフォルトの改行ロジック（7文字以上で中間で分割）
+                                        if (name.length >= 7) {
                                             const mid = Math.ceil(name.length / 2);
                                             return [name.substring(0, mid), name.substring(mid)];
                                         }

@@ -48,18 +48,6 @@ const UserSettingsPage = (): React.JSX.Element => {
         loadUserIcon();
     }, [sbUser?.id, updateUserIcon]);
 
-    // ページがフォーカスされたときにアイコンを再読み込み（アイコン変更後の反映のため）
-    // useEffect(() => {
-    //     const handleFocus = () => {
-    //         if (sbUser?.id) {
-    //             updateUserIcon(sbUser.id);
-    //         }
-    //     };
-
-    //     window.addEventListener("focus", handleFocus);
-    //     return () => window.removeEventListener("focus", handleFocus);
-    // }, [sbUser?.id, updateUserIcon]);
-
     const settingsMenuItems: SettingsMenuItem[] = [
         {
             title: "プロフィール設定",

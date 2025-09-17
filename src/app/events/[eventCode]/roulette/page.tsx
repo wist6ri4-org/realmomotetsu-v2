@@ -136,7 +136,6 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
                                 latestTransitStations={latestTransitStations}
                                 closestStations={closestStations}
                             />
-                            {/* <CustomButton onClick={fetchData}>データを再取得</CustomButton> */}
                         </Box>
                     </>
                 )}

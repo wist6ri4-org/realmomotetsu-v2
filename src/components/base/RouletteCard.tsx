@@ -49,9 +49,7 @@ const DisplayedStationTypography = styled(Typography, {
  * @param {RouletteCardProps} props - RouletteCardのプロパティ
  * @return {JSX.Element} - RouletteCardコンポーネント
  */
-const RouletteCard: React.FC<RouletteCardProps> = ({
-    displayedStation,
-}: RouletteCardProps): React.JSX.Element => {
+const RouletteCard: React.FC<RouletteCardProps> = ({ displayedStation }: RouletteCardProps): React.JSX.Element => {
     return (
         <>
             <Box
@@ -99,10 +97,7 @@ const RouletteCard: React.FC<RouletteCardProps> = ({
                             }}
                         >
                             <Box sx={{ margin: 1 }}>
-                                <Typography
-                                    variant="body1"
-                                    sx={{ color: "white", fontWeight: "bold" }}
-                                >
+                                <Typography variant="body1" sx={{ color: "white", fontWeight: "bold" }}>
                                     次の目的地は
                                 </Typography>
                             </Box>
