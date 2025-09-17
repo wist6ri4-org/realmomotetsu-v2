@@ -59,6 +59,7 @@ class InitApiHandler extends BaseApiHandler {
                 nearbyStationsCount: data.nearbyStations.length,
                 documentsCount: data.documents.length,
                 userId: data.user.id,
+                eventId: data.event.eventCode,
             });
 
             return this.createSuccessResponse(data);

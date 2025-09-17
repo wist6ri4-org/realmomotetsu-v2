@@ -35,6 +35,7 @@ export const InitServiceImpl: InitService = {
                 nearbyStations: nearbyStations,
                 documents: documents,
                 user: user,
+                event: events,
             };
 
             return res;

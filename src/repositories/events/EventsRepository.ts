@@ -10,7 +10,7 @@ import {
 import { BaseRepository } from "../base/BaseRepository";
 
 // includeありのEventsの型定義
-type EventWithRelations = Events & {
+export type EventWithRelations = Events & {
     eventType: EventTypes;
     teams?: Teams[];
     goalStations?: (GoalStations & { station: Stations })[];
@@ -42,9 +42,9 @@ export class EventsRepository extends BaseRepository {
     /**
      * 関連データ込みでイベントコードでイベントを取得
      * @param eventCode - イベントコード
-     * @returns {Promise<EventWithRelations | null>} イベント情報またはnull
+     * @returns {Promise<EventWithRelations>} イベント情報
      */
-    async findByEventCodeWithRelations(eventCode: string): Promise<EventWithRelations | null> {
+    async findByEventCodeWithRelations(eventCode: string): Promise<EventWithRelations> {
         try {
             return (await this.prisma.events.findUnique({
                 where: {
@@ -69,7 +69,7 @@ export class EventsRepository extends BaseRepository {
                         },
                     },
                 },
-            })) as EventWithRelations | null;
+            })) as EventWithRelations;
         } catch (error) {
             this.handleDatabaseError(error, "findByEventCodeWithRelations");
         }

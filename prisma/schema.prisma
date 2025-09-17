@@ -49,14 +49,15 @@ model Events {
  * イベント種別
  */
 model EventTypes {
-  id             Int              @id @default(autoincrement()) @map("id")
-  eventTypeCode  String           @unique @map("event_type_code")
-  description    String?          @map("description")
-  createdAt      DateTime         @default(now()) @map("created_at")
-  updatedAt      DateTime         @default(now()) @updatedAt @map("updated_at")
-  events         Events[]
-  stations       Stations[]
-  nearbyStations NearbyStations[]
+  id                 Int              @id @default(autoincrement()) @map("id")
+  eventTypeCode      String           @unique @map("event_type_code")
+  description        String?          @map("description")
+  routemapConfigFile String?          @map("routemap_config")
+  createdAt          DateTime         @default(now()) @map("created_at")
+  updatedAt          DateTime         @default(now()) @updatedAt @map("updated_at")
+  events             Events[]
+  stations           Stations[]
+  nearbyStations     NearbyStations[]
 
   @@map("event_types")
 }

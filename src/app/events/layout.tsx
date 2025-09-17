@@ -13,6 +13,7 @@ import { InitResponse } from "@/features/init/types";
 import { Documents, Stations, Teams } from "@/generated/prisma";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 import { UsersWithRelations } from "@/repositories/users/UsersRepository";
+import { EventWithRelations } from "@/repositories/events/EventsRepository";
 
 /**
  * Contextの型定義
@@ -30,6 +31,7 @@ interface EventContextType {
     nearbyStations: NearbyStationsWithRelations[];
     documents: Documents[];
     user: UsersWithRelations | null;
+    event: EventWithRelations | null;
 
     // 状態管理
     isInitDataLoading: boolean;
@@ -74,6 +76,7 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
     const [nearbyStations, setNearbyStations] = useState<NearbyStationsWithRelations[]>([]);
     const [documents, setDocuments] = useState<Documents[]>([]);
     const [user, setUser] = useState<UsersWithRelations | null>(null);
+    const [event, setEvent] = useState<EventWithRelations | null>(null);
     const [rawInitData, setRawInitData] = useState<InitResponse | null>(null);
     const [isInitDataLoading, setIsInitDataLoading] = useState(true);
     const [contextError, setContextError] = useState<string | null>(null);
@@ -101,6 +104,7 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
                 setNearbyStations(initData.nearbyStations || []);
                 setDocuments(initData.documents || []);
                 setUser(initData.user || null);
+                setEvent(initData.event || null);
 
                 setRawInitData(initData);
             } catch (err) {
@@ -138,6 +142,7 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
         nearbyStations,
         documents,
         user,
+        event,
         rawInitData,
         isInitDataLoading,
         contextError,

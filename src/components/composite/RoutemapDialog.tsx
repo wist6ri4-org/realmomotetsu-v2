@@ -43,7 +43,7 @@ const ZOOM_CONFIG = {
 const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
     const { eventCode } = useParams();
 
-    const { stations, isInitDataLoading, contextError } = useEventContext();
+    const { stations, event, isInitDataLoading, contextError } = useEventContext();
 
     const [teamData, setTeamData] = useState<TeamData[]>([]);
     const [nextGoalStation, setNextGoalStation] = useState<GoalStationsWithRelations | null>(null);
@@ -79,6 +79,7 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
             bombiiTeam,
             stationsFromDB: stations,
             visibleTeams,
+            configFileName: event?.eventType.routemapConfigFile || "routemap-config",
         }),
         [teamData, nextGoalStation, bombiiTeam, stations, visibleTeams]
     );

@@ -141,7 +141,7 @@ const Routemap: React.FC<RoutemapProps> = ({
     nextGoalStation,
     bombiiTeam,
     stationsFromDB,
-    configFileName = "routemap-config",
+    configFileName,
     visibleTeams = [],
     handleAspectRatio,
 }: RoutemapProps): React.JSX.Element => {
