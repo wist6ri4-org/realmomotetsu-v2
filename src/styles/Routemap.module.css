@@ -1,4 +1,12 @@
 /* グローバルセレクターとして明示的に指定 */
+.routemap {
+    display: block;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
 .routemap :global(line.bg) {
     stroke: rgba(3, 148, 172, 0.7);
     stroke-width: 1;

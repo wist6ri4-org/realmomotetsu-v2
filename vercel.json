@@ -4,6 +4,8 @@
         "deploymentEnabled": {
             "develop": true,
             "feature/*": false,
+            "fix/*": false,
+            "release/*": true,
             "main": true
         }
     }

@@ -94,35 +94,33 @@ const InformationDialog: React.FC<InformationDialogProps> = ({
 
     return (
         <>
+            <Fab color="success" aria-label="info" onClick={handleClickOpen} sx={{ bottom: 175, zIndex: 400 }}>
+                <Info />
+            </Fab>
             {!isLoading && !error && (
-                <>
-                    <Fab color="success" aria-label="info" onClick={handleClickOpen} sx={{ bottom: 175, zIndex: 400 }}>
-                        <Info />
-                    </Fab>
-                    <Dialog
-                        open={isOpen}
-                        onClose={handleClose}
-                        aria-labelledby="information-dialog-title"
-                        aria-describedby="information-dialog-description"
-                        sx={{ zIndex: 500 }}
-                    >
-                        <DialogTitle id="information-dialog-title">チーム情報</DialogTitle>
-                        <DialogContent sx={{ padding: 1 }}>
-                            <DataGrid
-                                rows={teamData}
-                                columns={fields}
-                                initialState={{ pagination: { paginationModel } }}
-                                pageSizeOptions={[5, 10]}
-                                density="compact"
-                            />
-                        </DialogContent>
-                        <DialogActions>
-                            <CustomButton onClick={handleClose} color="warning">
-                                閉じる
-                            </CustomButton>
-                        </DialogActions>
-                    </Dialog>
-                </>
+                <Dialog
+                    open={isOpen}
+                    onClose={handleClose}
+                    aria-labelledby="information-dialog-title"
+                    aria-describedby="information-dialog-description"
+                    sx={{ zIndex: 500 }}
+                >
+                    <DialogTitle id="information-dialog-title">チーム情報</DialogTitle>
+                    <DialogContent sx={{ padding: 1 }}>
+                        <DataGrid
+                            rows={teamData}
+                            columns={fields}
+                            initialState={{ pagination: { paginationModel } }}
+                            pageSizeOptions={[5, 10]}
+                            density="compact"
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <CustomButton onClick={handleClose} color="warning">
+                            閉じる
+                        </CustomButton>
+                    </DialogActions>
+                </Dialog>
             )}
         </>
     );
