@@ -110,7 +110,7 @@ model NearbyStations {
 model Teams {
   id              Int               @id @default(autoincrement()) @map("id")
   teamCode        String            @unique @map("team_code")
-  teamName        String            @unique @map("team_name")
+  teamName        String            @map("team_name")
   teamColor       String?           @map("team_color")
   eventCode       String            @map("event_code")
   createdAt       DateTime          @default(now()) @map("created_at")
