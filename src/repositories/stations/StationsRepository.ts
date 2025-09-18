@@ -189,6 +189,7 @@ export class StationsRepository extends BaseRepository {
         stationCode: string;
         name: string;
         kana: string;
+        englishName: string;
         latitude?: number;
         longitude?: number;
         isMissionSet?: boolean;

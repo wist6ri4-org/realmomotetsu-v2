@@ -25,6 +25,18 @@ export class UsersRepository extends BaseRepository {
                         include: {
                             event: true,
                         },
+                        where: {
+                            event: {
+                                startDate: {
+                                    not: null,
+                                },
+                            },
+                        },
+                        orderBy: {
+                            event: {
+                                startDate: "desc"
+                            },
+                        },
                     },
                 },
             });
