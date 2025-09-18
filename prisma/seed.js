@@ -67,11 +67,12 @@ async function main() {
         for (const row of eventTypesData) {
             const eventTypeCode = row.event_type_code?.trim();
             const description = row.description?.trim();
+            const routemapConfig = row.routemap_config?.trim() || null;
             const createdAt = new Date(row.created_at?.trim());
             const updatedAt = new Date(row.updated_at?.trim());
 
             await prisma.eventTypes.create({
-                data: { eventTypeCode, description, createdAt, updatedAt },
+                data: { eventTypeCode, description, routemapConfig, createdAt, updatedAt },
             });
         }
         console.log(`✅ ${eventTypesData.length}件のEventTypesを挿入しました`);
@@ -84,6 +85,7 @@ async function main() {
             const name = row.name?.trim();
             const isMissionSet = row.is_mission_set?.trim() === "TRUE";
             const kana = row.kana?.trim();
+            const englishName = row.english_name?.trim();
             const latitude = parseFloat(row.latitude?.trim()) || null;
             const longitude = parseFloat(row.longitude?.trim()) || null;
             const eventTypeCode = row.event_type_code?.trim();
@@ -94,6 +96,7 @@ async function main() {
                     name,
                     isMissionSet,
                     kana,
+                    englishName,
                     latitude,
                     longitude,
                     eventTypeCode,

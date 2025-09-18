@@ -104,7 +104,7 @@ const HomePage: React.FC = (): React.JSX.Element => {
             <Box>
                 <BulletinBoard
                     nextStation={nextGoalStationData.station?.name || "ー"}
-                    nextStationEng={nextGoalStationData.station?.stationCode || "ー"}
+                    nextStationEng={nextGoalStationData.station?.englishName || "ー"}
                 />
                 <CustomButton onClick={fetchData}>更新</CustomButton>
             </Box>

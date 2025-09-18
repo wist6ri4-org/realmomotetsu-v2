@@ -68,6 +68,7 @@ model Stations {
   stationCode     String            @unique @map("station_code")
   name            String            @map("name")
   kana            String            @map("kana")
+  englishName     String            @map("english_name")
   latitude        Float?            @map("latitude")
   longitude       Float?            @map("longitude")
   isMissionSet    Boolean           @default(false) @map("is_mission_set")
