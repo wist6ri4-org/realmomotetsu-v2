@@ -11,7 +11,7 @@
         "start": "next start",
         "lint": "next lint",
         "format:fix": "prettier --write \"**/*.{ts,tsx,js,jsx,cjs,mjs,md,json,lintstagedrc,yml,yaml}\" --cache && prisma format",
-        "seed": "node prisma/seed.js"
+        "seed": "dotenv -e .env.local -- node prisma/seed.js"
     },
     "dependencies": {
         "@base-ui-components/react": "^1.0.0-beta.1",
