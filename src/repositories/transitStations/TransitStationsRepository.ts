@@ -1,4 +1,4 @@
-import { TransitStations, Stations, LatestTransitStations } from "@/generated/prisma";
+import { TransitStations, Stations, LatestTransitStations, PointStatus, Points } from "@/generated/prisma";
 import { BaseRepository } from "../base/BaseRepository";
 
 // includeありのTransitStationsの型定義
@@ -164,6 +164,36 @@ export class TransitStationsRepository extends BaseRepository {
             });
         } catch (error) {
             this.handleDatabaseError(error, "countByEvent");
+        }
+    }
+
+    /**
+     * 経由駅とポイントをトランザクションで同時に作成
+     * @param transitStationData - 経由駅作成データ
+     * @param pointsData - ポイント作成データ
+     * @returns {Promise<{ transitStation: TransitStations; point: Points }>} 作成された経由駅とポイント
+     */
+    async createWithPoints(
+        transitStationData: {
+            eventCode: string;
+            teamCode: string;
+            stationCode: string;
+        },
+        pointsData: {
+            eventCode: string;
+            teamCode: string;
+            points: number;
+            status: PointStatus;
+        }
+    ): Promise<{ transitStation: TransitStations; point: Points }> {
+        try {
+            return await this.executeTransaction(async (tx) => {
+                const transitStation: TransitStations = await tx.transitStations.create({ data: transitStationData });
+                const point: Points = await tx.points.create({ data: pointsData });
+                return { transitStation, point };
+            });
+        } catch (error) {
+            this.handleDatabaseError(error, "createWithPoints");
         }
     }
 }

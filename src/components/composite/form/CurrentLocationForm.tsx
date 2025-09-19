@@ -9,6 +9,7 @@ import CustomButton from "@/components/base/CustomButton";
 import CustomSelect from "@/components/base/CustomSelect";
 import { DialogConstants } from "@/constants/dialogConstants";
 import { DiscordNotificationTemplates } from "@/constants/discordNotificationTemplates";
+import { GameConstants } from "@/constants/gameConstants";
 import { Stations, Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
@@ -123,8 +124,8 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
             setIsLoading(true);
             setError(null);
 
-            // 経由駅の登録
-            const response = await fetch("/api/transit-stations", {
+            // 経由駅と移動ポイントの登録
+            const response = await fetch("/api/current-location", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -133,6 +134,8 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
                     eventCode: eventCode,
                     teamCode: selectedTeamCodeInput.value,
                     stationCode: selectedStationCodeInput.value,
+                    points: GameConstants.POINT_FOR_MOVING,
+                    status: GameConstants.POINT_STATUS.POINTS,
                 }),
             });
 
