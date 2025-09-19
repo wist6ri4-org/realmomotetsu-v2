@@ -10,7 +10,8 @@ import CustomSelect from "@/components/base/CustomSelect";
 import { DialogConstants } from "@/constants/dialogConstants";
 import { DiscordNotificationTemplates } from "@/constants/discordNotificationTemplates";
 import { GameConstants } from "@/constants/gameConstants";
-import { Stations, Teams } from "@/generated/prisma";
+import { GetLatestTransitStationsResponse } from "@/features/transit-stations/latest/types";
+import { LatestTransitStations, Stations, Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useDiscordNotification } from "@/hooks/useDiscordNotification";
@@ -107,9 +108,11 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
         e.preventDefault();
         clearError();
 
-        const teamName = teams.find((team) => team.teamCode === selectedTeamCodeInput.value)?.teamName || "不明";
-        const stationName =
-            stations.find((station) => station.stationCode === selectedStationCodeInput.value)?.name || "不明";
+        const team = teams.find((team) => team.teamCode === selectedTeamCodeInput.value) as Teams;
+        const station = stations.find((station) => station.stationCode === selectedStationCodeInput.value) as Stations;
+
+        const teamName = team.teamName || "不明";
+        const stationName = station.name || "不明";
 
         const confirmMessage = "以下の内容で登録しますか？\n" + `チーム: ${teamName}\n` + `駅: ${stationName}`;
         const isConfirmed = await showConfirmDialog({
@@ -123,6 +126,29 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
         try {
             setIsLoading(true);
             setError(null);
+
+            // 二重登録チェック
+            const params = new URLSearchParams();
+            params.append("eventCode", eventCode as string);
+            const responseForCheck = await fetch("/api/transit-stations/latest?" + params.toString());
+            if (!responseForCheck.ok) {
+                throw new Error(`HTTP error! status: ${responseForCheck.status}`);
+            }
+            const data: GetLatestTransitStationsResponse = (await responseForCheck.json()).data;
+            const latestTransitStations: LatestTransitStations[] = data.latestTransitStations || [];
+
+            if (checkIsRegistered(latestTransitStations, team.teamCode, station.stationCode)) {
+                const confirmDoubleRegistrationMessage =
+                    "直近に登録した駅と同じ駅を登録しようとしています。\n再度登録しますか？";
+
+                const isDoubleRegistrationConfirmed = await showConfirmDialog({
+                    message: confirmDoubleRegistrationMessage,
+                });
+
+                if (!isDoubleRegistrationConfirmed) {
+                    return;
+                }
+            }
 
             // 経由駅と移動ポイントの登録
             const response = await fetch("/api/current-location", {
@@ -168,6 +194,23 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
         } finally {
             setIsLoading(false);
         }
+    };
+
+    /**
+     * 直近の登録と同じかどうかを確認する
+     * @param {LatestTransitStations[]} latestTransitStations - 最新の経由駅のリスト
+     * @param {string} teamCode - チームコード
+     * @param {string} stationCode - 駅コード
+     * @returns {boolean} - 同じ場合はtrue、異なる場合はfalse
+     */
+    const checkIsRegistered = (
+        latestTransitStations: LatestTransitStations[],
+        teamCode: string,
+        stationCode: string
+    ): boolean => {
+        return latestTransitStations.some((item) => {
+            return item.teamCode === teamCode && item.stationCode === stationCode;
+        });
     };
 
     return (
