@@ -1,0 +1,3 @@
+station_code,name,is_mission_set,kana,englishName,latitude,longitude,event_type_code
+DUMMY_STATION,ダミーステーション,FALSE,だみーすてーしょん,DUMMY_STATION,35.000000,139.000000,DUMMY
+DUMMY_NEARBY_STATION,ダミー近隣駅,FALSE,だみーきんりんえき,DUMMY_NEARBY_STATION,35.000000,139.000000,DUMMY
