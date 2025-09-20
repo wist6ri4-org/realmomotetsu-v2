@@ -103,6 +103,16 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
         }
     };
 
+    /**
+     * フォームのリセット
+     * @return {void}
+     */
+    const resetForm = (): void => {
+        teamCodeInput.reset();
+        setIsLoading(false);
+        setError(null);
+    };
+
     return (
         <>
             <Box>
@@ -135,6 +145,16 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <CustomButton
+                            type="button"
+                            variant="outlined"
+                            color="secondary"
+                            onClick={resetForm}
+                            disabled={isLoading}
+                            sx={{ marginRight: 1 }}
+                        >
+                            リセット
+                        </CustomButton>
                         <CustomButton
                             type="submit"
                             disabled={isLoading}

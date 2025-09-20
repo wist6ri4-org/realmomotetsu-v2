@@ -129,6 +129,17 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
         }
     };
 
+    /**
+     * フォームのリセット
+     * @return {void}
+     */
+    const resetForm = (): void => {
+        teamCodeInput.reset();
+        clearError();
+        setIsLoading(false);
+        setError(null);
+    };
+
     return (
         <>
             <Box>
@@ -161,6 +172,16 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <CustomButton
+                            type="button"
+                            variant="outlined"
+                            color="secondary"
+                            onClick={resetForm}
+                            disabled={isLoading}
+                            sx={{ marginRight: 1 }}
+                        >
+                            リセット
+                        </CustomButton>
                         <CustomButton
                             type="submit"
                             disabled={isLoading}
