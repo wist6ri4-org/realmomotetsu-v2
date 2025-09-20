@@ -131,6 +131,16 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
         }
     };
 
+    /**
+     * フォームのリセット
+     * @return {void}
+     */
+    const resetForm = (): void => {
+        stationCodeInput.reset();
+        setIsLoading(false);
+        setError(null);
+    };
+
     return (
         <>
             <Box>
@@ -163,6 +173,16 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <CustomButton
+                            type="button"
+                            variant="outlined"
+                            color="secondary"
+                            onClick={resetForm}
+                            disabled={isLoading}
+                            sx={{ marginRight: 1 }}
+                        >
+                            リセット
+                        </CustomButton>
                         <CustomButton
                             type="submit"
                             disabled={isLoading}

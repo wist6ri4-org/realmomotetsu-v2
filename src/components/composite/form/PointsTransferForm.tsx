@@ -11,6 +11,7 @@ import CustomRadio, { RadioOption } from "@/components/base/CustomRadio";
 import CustomSelect from "@/components/base/CustomSelect";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
+import PointExchangerDisplay from "@/components/base/PointExchangerDisplay";
 import { DialogConstants } from "@/constants/dialogConstants";
 import { GameConstants } from "@/constants/gameConstants";
 import { PointStatus, Teams } from "@/generated/prisma";
@@ -85,7 +86,7 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
             `移動元チーム: ${teams.find((team) => team.teamCode === fromTeamCodeInput.value)?.teamName || "不明"}\n` +
             `移動先チーム: ${teams.find((team) => team.teamCode === toTeamCodeInput.value)?.teamName || "不明"}\n` +
             `ポイント: ${pointsInput.value}\n` +
-            `ステータス: ${pointStatus}`;
+            `ステータス: ${pointStatus === GameConstants.POINT_STATUS.POINTS ? "ポイント" : "総資産"}`;
         const isConfirmed = await showConfirmDialog({
             message: confirmMessage,
         });
@@ -166,6 +167,18 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
         }
     };
 
+    /**
+     * フォームのリセット
+     * @return {void}
+     */
+    const resetForm = (): void => {
+        fromTeamCodeInput.reset();
+        toTeamCodeInput.reset();
+        pointsInput.reset();
+        setIsLoading(false);
+        setError(null);
+    };
+
     return (
         <>
             <Box>
@@ -224,6 +237,9 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
                             onChange={pointsInput.handleChange}
                             disabled={isLoading}
                         />
+                        {pointStatus === GameConstants.POINT_STATUS.SCORED && (
+                            <PointExchangerDisplay points={pointsInput.value} />
+                        )}
                     </Box>
                     <Box sx={{ marginBottom: 2 }}>
                         <CustomRadio
@@ -236,6 +252,16 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <CustomButton
+                            type="button"
+                            variant="outlined"
+                            color="secondary"
+                            onClick={resetForm}
+                            disabled={isLoading}
+                            sx={{ marginRight: 1 }}
+                        >
+                            リセット
+                        </CustomButton>
                         <CustomButton
                             type="submit"
                             disabled={isLoading}
