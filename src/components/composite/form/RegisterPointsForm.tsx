@@ -11,6 +11,7 @@ import CustomRadio, { RadioOption } from "@/components/base/CustomRadio";
 import CustomSelect from "@/components/base/CustomSelect";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
+import PointExchangerDisplay from "@/components/base/PointExchangerDisplay";
 import { DialogConstants } from "@/constants/dialogConstants";
 import { GameConstants } from "@/constants/gameConstants";
 import { PointStatus, Teams } from "@/generated/prisma";
@@ -84,7 +85,7 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
             "以下の内容でポイントを登録しますか？\n" +
             `チーム: ${teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"}\n` +
             `ポイント: ${pointsInput.value}\n` +
-            `ステータス: ${pointStatus}`;
+            `ステータス: ${pointStatus === GameConstants.POINT_STATUS.POINTS ? "ポイント" : "総資産"}`;
         const isConfirmed = await showConfirmDialog({
             message: confirmMessage,
         });
@@ -143,6 +144,17 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
         }
     };
 
+    /**
+     * フォームのリセット
+     * @return {void}
+     */
+    const resetForm = (): void => {
+        teamCodeInput.reset();
+        pointsInput.reset();
+        setIsLoading(false);
+        setError(null);
+    };
+
     return (
         <>
             <Box>
@@ -187,6 +199,9 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
                             disabled={isLoading}
                             onChange={pointsInput.handleChange}
                         />
+                        {pointStatus === GameConstants.POINT_STATUS.SCORED && (
+                            <PointExchangerDisplay points={pointsInput.value} />
+                        )}
                     </Box>
                     <Box sx={{ marginBottom: 2 }}>
                         <CustomRadio
@@ -199,6 +214,16 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <CustomButton
+                            type="button"
+                            variant="outlined"
+                            color="secondary"
+                            onClick={resetForm}
+                            disabled={isLoading}
+                            sx={{ marginRight: 1 }}
+                        >
+                            リセット
+                        </CustomButton>
                         <CustomButton
                             type="submit"
                             disabled={isLoading}
