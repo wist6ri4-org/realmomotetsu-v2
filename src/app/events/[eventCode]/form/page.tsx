@@ -10,8 +10,8 @@ import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, CircularProg
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useEventContext } from "../../layout";
-import { InitFormResponse } from "@/features/init-form/types";
 import { AttendancesWithRelations } from "@/repositories/attendances/AttendancesRepository";
+import LocationUtils from "@/utils/locationUtils";
 
 /**
  * フォームページ
@@ -28,47 +28,31 @@ const FormPage: React.FC = (): React.JSX.Element => {
 
     const attendance: AttendancesWithRelations | undefined = user?.attendances?.find((a) => a.eventCode === eventCode);
 
+    // NOTE TSK-37 通信頻度最適化対応でAPIの呼び出しは削除
+
     /**
-     * データの取得
-     * @returns {Promise<void>} データ取得の非同期処理
+     * 初期化処理
+     * @returns {Promise<void>} 初期化の非同期処理
      */
-    const fetchData = async (): Promise<void> => {
+    const initialize = async (): Promise<void> => {
+        let closestStations: ClosestStation[] = [{ stationCode: stations[0].stationCode || "", distance: 0 }];
         try {
-            setIsLoading(true);
-            setError(null);
-
-            const params = new URLSearchParams();
-            params.append("eventCode", eventCode as string);
-
             try {
+                setIsLoading(true);
+                setError(null);
+
                 const { latitude, longitude } = await CurrentLocationUtils.getCurrentLocation();
                 if (latitude && longitude) {
-                    params.append("latitude", latitude.toString());
-                    params.append("longitude", longitude.toString());
+                    closestStations = LocationUtils.calculate(stations, latitude, longitude);
                 }
             } catch (locationError) {
                 console.warn("Could not get current location:", locationError);
-                // 位置情報が取得できない場合、APIを実行せずに処理終了
-                return;
             }
-
-            const response = await fetch("/api/init-form?" + params.toString());
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data: InitFormResponse = (await response.json()).data;
-            const closestStations = data.closestStations || [];
-
-            if (!Array.isArray(closestStations)) {
-                throw new Error("Unexpected response structure");
-            }
-            setClosestStations(closestStations as ClosestStation[]);
         } catch (error) {
-            console.error("Error fetching data:", error);
-            setError(error instanceof Error ? error.message : "Unknown error");
-            setClosestStations([]);
+            console.error("Error in initialize:", error);
+            setError("初期化に失敗しました。");
         } finally {
+            setClosestStations(closestStations);
             setIsLoading(false);
         }
     };
@@ -77,7 +61,7 @@ const FormPage: React.FC = (): React.JSX.Element => {
      * 初期表示
      */
     useEffect(() => {
-        fetchData();
+        initialize();
     }, []);
 
     return (
@@ -120,7 +104,7 @@ const FormPage: React.FC = (): React.JSX.Element => {
                 {/* エラー */}
                 {(error || contextError) && (
                     <Box sx={{ margin: 4 }}>
-                        <Alert severity="error" action={<CustomButton onClick={fetchData}>再試行</CustomButton>}>
+                        <Alert severity="error" action={<CustomButton onClick={initialize}>再試行</CustomButton>}>
                             {error}
                         </Alert>
                     </Box>
