@@ -32,6 +32,7 @@ class InitFormApiHandler extends BaseApiHandler {
      * @param req - Next.jsのリクエストオブジェクト
      * @return {Promise<NextResponse>} - レスポンスオブジェクト
      */
+    // NOTE TSK-37 通信頻度最適化対応により本APIは使用しないが、将来の拡張に備えて残す
     private async handleGet(req: NextRequest): Promise<NextResponse> {
         this.logInfo("Handling GET request for init-form");
 

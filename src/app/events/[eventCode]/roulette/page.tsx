@@ -12,6 +12,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useEventContext } from "../../layout";
 import { InitRouletteResponse } from "@/features/init-roulette/types";
+import LocationUtils from "@/utils/locationUtils";
 
 /**
  * 駅ルーレットページ
@@ -31,6 +32,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
      * @return {Promise<void>} データ取得のPromise
      */
     const fetchData = async (): Promise<void> => {
+        let closestStations: ClosestStation[] = [{ stationCode: stations[0].stationCode || "", distance: 0 }];
         try {
             setIsLoading(true);
             setError(null);
@@ -41,8 +43,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
             try {
                 const { latitude, longitude } = await CurrentLocationUtils.getCurrentLocation();
                 if (latitude && longitude) {
-                    params.append("latitude", latitude.toString());
-                    params.append("longitude", longitude.toString());
+                    closestStations = LocationUtils.calculate(stations, latitude, longitude);
                 }
             } catch (locationError) {
                 console.warn("Could not get current location:", locationError);
@@ -56,12 +57,8 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
             const data: InitRouletteResponse = (await response.json()).data;
             const latestTransitStations = data.latestTransitStations || [];
 
-            const firstStation: ClosestStation = { stationCode: stations[0].stationCode || "", distance: 0 };
-            const closestStations = data.closestStations || [firstStation];
-
             if (
-                !Array.isArray(latestTransitStations) ||
-                !Array.isArray(closestStations)
+                !Array.isArray(latestTransitStations)
             ) {
                 throw new Error("Unexpected response structure");
             }

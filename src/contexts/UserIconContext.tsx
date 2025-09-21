@@ -15,6 +15,7 @@ import React, { createContext, useContext, useState, useCallback, ReactNode } fr
 interface UserIconContextType {
     userIconUrl: string;
     updateUserIcon: (userId: string, newIconUrl?: string) => Promise<void>;
+    forceRefreshUserIcon: (userId: string) => Promise<void>;
     clearUserIcon: () => void;
     refreshKey: number;
 }
@@ -51,30 +52,46 @@ export const UserIconProvider: React.FC<UserIconProviderProps> = ({ children }) 
      * @param {string} [newIconUrl] - 新しいアイコンのURL（オプション）
      * @returns {Promise<void>} - 非同期処理
      */
-    const updateUserIcon = useCallback(
-        async (userId: string, newIconUrl?: string): Promise<void> => {
-            try {
-                const { UserUtils } = await import("@/utils/userUtils");
-                const userUtils = new UserUtils();
+    const updateUserIcon = useCallback(async (userId: string, newIconUrl?: string): Promise<void> => {
+        try {
+            const { UserUtils } = await import("@/utils/userUtils");
+            const userUtils = new UserUtils();
 
-                if (newIconUrl) {
-                    // 新しいURLが提供された場合はそれを使用
-                    setUserIconUrl(newIconUrl);
-                    setRefreshKey(Date.now()); // 再レンダリングを強制
-                } else {
-                    // URLが提供されていない場合は動的に取得
-                    const iconUrl = await userUtils.getUserIconUrlWithExtension(userId, true);
-                    setUserIconUrl(iconUrl || "");
-                    setRefreshKey(Date.now()); // 再レンダリングを強制
-                }
-            } catch (error) {
-                console.error("Failed to update user icon:", error);
-                setUserIconUrl("");
-                setRefreshKey(Date.now());
+            if (newIconUrl) {
+                // 新しいURLが提供された場合はそれを使用
+                setUserIconUrl(newIconUrl);
+                setRefreshKey(Date.now()); // 再レンダリングを強制
+            } else {
+                // URLが提供されていない場合は動的に取得（通常はキャッシュを使用）
+                const iconUrl = await userUtils.getUserIconUrlWithExtension(userId, false);
+                setUserIconUrl(iconUrl || "");
+                setRefreshKey(Date.now()); // 再レンダリングを強制
             }
-        },
-        []
-    );
+        } catch (error) {
+            console.error("Failed to update user icon:", error);
+            setUserIconUrl("");
+            setRefreshKey(Date.now());
+        }
+    }, []);
+
+    /**
+     * ユーザーアイコンを強制リフレッシュする関数
+     * @param {string} userId - ユーザーのID
+     * @returns {Promise<void>} - 非同期処理
+     */
+    const forceRefreshUserIcon = useCallback(async (userId: string): Promise<void> => {
+        try {
+            const { UserUtils } = await import("@/utils/userUtils");
+            const userUtils = new UserUtils();
+            const iconUrl = await userUtils.getUserIconUrlWithExtension(userId, true);
+            setUserIconUrl(iconUrl || "");
+            setRefreshKey(Date.now()); // 再レンダリングを強制
+        } catch (error) {
+            console.error("Failed to force refresh user icon:", error);
+            setUserIconUrl("");
+            setRefreshKey(Date.now());
+        }
+    }, []);
 
     /**
      * ユーザーアイコンをクリアする関数
@@ -87,7 +104,7 @@ export const UserIconProvider: React.FC<UserIconProviderProps> = ({ children }) 
 
     return (
         <UserIconContext.Provider
-            value={{ userIconUrl, updateUserIcon, clearUserIcon, refreshKey }}
+            value={{ userIconUrl, updateUserIcon, forceRefreshUserIcon, clearUserIcon, refreshKey }}
         >
             {children}
         </UserIconContext.Provider>
