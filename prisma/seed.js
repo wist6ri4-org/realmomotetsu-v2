@@ -155,7 +155,6 @@ async function main() {
         console.log("👤 Usersを挿入中...");
         const usersData = await readCSV(usersPath);
         for (const row of usersData) {
-            const id = parseInt(row.id?.trim(), 10);
             const originalUuid = row.uuid?.trim();
             const nickname = row.nickname?.trim();
             const email = row.email?.trim();
@@ -169,13 +168,13 @@ async function main() {
             const finalUuid = dynamicUuid || originalUuid;
 
             await prisma.users.create({
-                data: { id, uuid: finalUuid, nickname, email, createdAt, updatedAt },
+                data: { uuid: finalUuid, nickname, email, createdAt, updatedAt },
             });
 
             if (dynamicUuid) {
-                console.log(`   🔄 User ID ${id}: ${originalUuid} → ${dynamicUuid}`);
+                console.log(`   🔄 User ID ${nickname}: ${originalUuid} → ${dynamicUuid}`);
             } else {
-                console.log(`   ℹ️  User ID ${id}: UUID ${originalUuid} (変換なし)`);
+                console.log(`   ℹ️  User ID ${nickname}: UUID ${originalUuid} (変換なし)`);
             }
         }
         console.log(`✅ ${usersData.length}件のUsersを挿入しました`);
