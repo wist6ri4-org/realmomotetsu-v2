@@ -1,3 +1,2 @@
 email,nickname,icon_url,created_at,updated_at,master_role,uuid,id
-sg1106.footballdrummer.51046@gmail.com,wisteria,http://127.0.0.1:54321/storage/v1/object/public/user-assets/user-icons/a48997e9-3276-4fa4-a679-ff00836b179b.png?t=1756486813141,2025-07-26 17:34:21.067,2025-08-29 17:00:13.374,admin,a48997e9-3276-4fa4-a679-ff00836b179b,1
-sample@mail.com,wisteria,,2025-09-09 14:57:47.378,2025-09-09 14:57:47.378,user,4c4af3ae-f783-43b1-8230-461569857e65,4
+test@email.com,test-user,http://127.0.0.1:54321/storage/v1/object/public/user-assets/user-icons/a48997e9-3276-4fa4-a679-ff00836b179b.png?t=1756486813141,,,admin,a48997e9-3276-4fa4-a679-ff00836b179b,1

@@ -2,8 +2,14 @@ import { PrismaClient } from "../src/generated/prisma/index.js";
 import fs from "fs";
 import { join } from "path";
 import csv from "csv-parser";
+import { createClient } from "@supabase/supabase-js";
 
 const prisma = new PrismaClient();
+
+// Supabaseクライアント（サービスロールキー使用）
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY;
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 const csvEventTypesPath = join(process.cwd(), "./prisma/csv/event_types.csv");
 const csvStationsPath = join(process.cwd(), "./prisma/csv/stations.csv");
@@ -16,6 +22,8 @@ const csvTransitStationsPath = join(process.cwd(), "./prisma/csv/transit_station
 const csvBombiiHistoriesPath = join(process.cwd(), "./prisma/csv/bombii_histories.csv");
 const csvDocumentsPath = join(process.cwd(), "./prisma/csv/documents.csv");
 const csvAttendancesPath = join(process.cwd(), "./prisma/csv/attendances.csv");
+const csvAuthenticationPath = join(process.cwd(), "./prisma/csv/authentication.csv");
+const usersPath = join(process.cwd(), "./prisma/csv/users.csv");
 
 // CSVを読み込む関数
 function readCSV(filePath) {
@@ -33,22 +41,103 @@ async function main() {
     try {
         console.log("🌱 データベースのシードを開始します...");
 
+        // 認証ユーザーUUIDを格納するマップ
+        const authUserMap = new Map();
+
+        // 0-1. 既存のAuthenticationユーザーを全削除
+        console.log("🗑️ 既存のAuthenticationユーザーを削除中...");
+        try {
+            const { data: existingUsers, error: listError } = await supabase.auth.admin.listUsers();
+
+            if (listError) {
+                console.error("❌ ユーザー一覧取得に失敗:", listError.message);
+            } else if (existingUsers && existingUsers.users.length > 0) {
+                console.log(`🔍 ${existingUsers.users.length}件のユーザーが見つかりました`);
+
+                for (const user of existingUsers.users) {
+                    try {
+                        const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id);
+                        if (deleteError) {
+                            console.error(`❌ ユーザー ${user.email} の削除に失敗:`, deleteError.message);
+                        } else {
+                            console.log(`✅ ユーザー ${user.email} を削除しました`);
+                        }
+                    } catch (error) {
+                        console.error(`❌ ユーザー ${user.email} の削除中にエラー:`, error.message);
+                    }
+                }
+            } else {
+                console.log("ℹ️ 削除対象のユーザーはありませんでした");
+            }
+        } catch (error) {
+            console.error("❌ 認証ユーザー削除処理中にエラー:", error.message);
+        }
+
+        // 0-2. Authenticationユーザーを作成
+        console.log("🔐 Authenticationユーザーを作成中...");
+        const authenticationData = await readCSV(csvAuthenticationPath);
+        for (const row of authenticationData) {
+            const email = row.mail?.trim();
+            const password = row.pass?.trim();
+            const userId = row.id?.trim();
+
+            if (email && password) {
+                try {
+                    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+                        email,
+                        password,
+                        user_metadata: {
+                            custom_id: userId,
+                        },
+                        email_confirm: true, // 自動でメール確認済みにする
+                    });
+
+                    if (authError) {
+                        console.error(`❌ ユーザー ${email} の作成に失敗:`, authError.message);
+                    } else {
+                        // custom_id → Supabase UUIDのマッピングを保存
+                        authUserMap.set(userId, authData.user.id);
+                        console.log(`✅ ユーザー ${email} を作成しました（ID: ${authData.user.id}）`);
+                        console.log(`   🏷️  Custom ID: ${userId} → Supabase UUID: ${authData.user.id}`);
+                    }
+                } catch (error) {
+                    console.error(`❌ ユーザー ${email} の作成中にエラー:`, error.message);
+                }
+            }
+        }
+        console.log(`✅ ${authenticationData.length}件のAuthenticationユーザーを処理しました`);
+
         // 依存関係を考慮して逆順で削除
-        console.log("🗑️ 既存データを削除中...");
+        console.log("🗑️ 既存のPrismaデータを削除中...");
+        console.log("  📋 attendancesテーブルを削除中...");
         await prisma.attendances.deleteMany({});
+        console.log("  📄 documentsテーブルを削除中...");
         await prisma.documents.deleteMany({});
+        console.log("  💣 bombiiHistoriesテーブルを削除中...");
         await prisma.bombiiHistories.deleteMany({});
+        console.log("  🚏 transitStationsテーブルを削除中...");
         await prisma.transitStations.deleteMany({});
+        console.log("  🎯 goalStationsテーブルを削除中...");
         await prisma.goalStations.deleteMany({});
+        console.log("  💰 pointsテーブルを削除中...");
         await prisma.points.deleteMany({});
+        console.log("  🔄 nearbyStationsテーブルを削除中...");
         await prisma.nearbyStations.deleteMany({});
+        console.log("  👥 teamsテーブルを削除中...");
         await prisma.teams.deleteMany({});
+        console.log("  📅 eventsテーブルを削除中...");
         await prisma.events.deleteMany({});
+        console.log("  🚉 stationsテーブルを削除中...");
         await prisma.stations.deleteMany({});
+        console.log("  📊 eventTypesテーブルを削除中...");
         await prisma.eventTypes.deleteMany({});
+        console.log("  👤 usersテーブルを削除中...");
+        await prisma.users.deleteMany({});
+        console.log("✅ 全てのPrismaデータを削除しました");
 
         // autoincrementシーケンスをリセット
         console.log("🔄 IDシーケンスをリセット中...");
+        await prisma.$executeRaw`ALTER SEQUENCE users_id_seq RESTART WITH 1;`;
         await prisma.$executeRaw`ALTER SEQUENCE event_types_id_seq RESTART WITH 1;`;
         await prisma.$executeRaw`ALTER SEQUENCE stations_id_seq RESTART WITH 1;`;
         await prisma.$executeRaw`ALTER SEQUENCE events_id_seq RESTART WITH 1;`;
@@ -60,6 +149,36 @@ async function main() {
         await prisma.$executeRaw`ALTER SEQUENCE bombii_histories_id_seq RESTART WITH 1;`;
         await prisma.$executeRaw`ALTER SEQUENCE documents_id_seq RESTART WITH 1;`;
         await prisma.$executeRaw`ALTER SEQUENCE attendances_id_seq RESTART WITH 1;`;
+        console.log("✅ 全てのIDシーケンスをリセットしました");
+
+        // 0. usersを挿入
+        console.log("👤 Usersを挿入中...");
+        const usersData = await readCSV(usersPath);
+        for (const row of usersData) {
+            const id = parseInt(row.id?.trim(), 10);
+            const originalUuid = row.uuid?.trim();
+            const nickname = row.nickname?.trim();
+            const email = row.email?.trim();
+            const createdAtStr = row.created_at?.trim();
+            const createdAt = createdAtStr && createdAtStr !== "" ? new Date(createdAtStr) : new Date();
+            const updatedAtStr = row.updated_at?.trim();
+            const updatedAt = updatedAtStr && updatedAtStr !== "" ? new Date(updatedAtStr) : new Date();
+
+            // authUserMapから対応するSupabase UUIDを取得
+            const dynamicUuid = authUserMap.get(originalUuid);
+            const finalUuid = dynamicUuid || originalUuid;
+
+            await prisma.users.create({
+                data: { id, uuid: finalUuid, nickname, email, createdAt, updatedAt },
+            });
+
+            if (dynamicUuid) {
+                console.log(`   🔄 User ID ${id}: ${originalUuid} → ${dynamicUuid}`);
+            } else {
+                console.log(`   ℹ️  User ID ${id}: UUID ${originalUuid} (変換なし)`);
+            }
+        }
+        console.log(`✅ ${usersData.length}件のUsersを挿入しました`);
 
         // 1. EventTypesを挿入
         console.log("📊 EventTypesを挿入中...");
