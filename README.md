@@ -493,6 +493,7 @@ export const initHomeRequestSchema = z.object({
     2. `prisma/schema.prisma` ファイルを編集して、データベースのモデルを定義する（作成済みなので不要）。
     3. Prisma マイグレーションを実行して、データベースを初期化する。
     ```bash
+    # .envの環境変数を使用してマイグレーションを実行する場合
     npx prisma migrate dev --name init
 
     # .env.localの環境変数を使用してマイグレーションを実行する場合
@@ -515,6 +516,7 @@ export const initHomeRequestSchema = z.object({
     作成するのは以下の３ファイル
     - .env      ： 環境共通
     - .env.prod ： 本番環境用
+    - .env.dev  ： プレビュー環境用
     - .env.local： 開発環境用
 
     .env.localを作成後、3.で確認したSupabase のローカル環境の接続情報を設定する。
@@ -522,6 +524,7 @@ export const initHomeRequestSchema = z.object({
     NEXT_PUBLIC_SUPABASE_ANON_KEY= [Supabaseのanon key]
     NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY= [Supabaseのservice_role key]
     ```
+    控え忘れた場合は、`npx supabase status` コマンドで確認可能。
 
 6. **シードスクリプトの実行**: 初期データを挿入するためにシードスクリプトを実行。
     ```bash
