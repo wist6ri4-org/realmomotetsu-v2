@@ -201,7 +201,7 @@ async function main() {
         for (const row of stationsData) {
             const stationCode = row.station_code?.trim();
             const name = row.name?.trim();
-            const isMissionSet = row.is_mission_set?.trim() === "TRUE";
+            const isMissionSet = ["true", "TRUE"].includes(row.is_mission_set?.trim());
             const kana = row.kana?.trim();
             const englishName = row.english_name?.trim();
             const latitude = parseFloat(row.latitude?.trim()) || null;
