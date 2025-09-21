@@ -6,7 +6,7 @@ import RouletteForm from "@/components/composite/form/RouletteForm";
 import { LatestTransitStations } from "@/generated/prisma";
 import { ClosestStation } from "@/types/ClosestStation";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
-import { ArrowDropDown, Casino } from "@mui/icons-material";
+import { ArrowDropDown, Casino, Help } from "@mui/icons-material";
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, CircularProgress, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -57,9 +57,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
             const data: InitRouletteResponse = (await response.json()).data;
             const latestTransitStations = data.latestTransitStations || [];
 
-            if (
-                !Array.isArray(latestTransitStations)
-            ) {
+            if (!Array.isArray(latestTransitStations)) {
                 throw new Error("Unexpected response structure");
             }
             setLatestTransitStations(latestTransitStations as LatestTransitStations[]);
@@ -89,6 +87,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
                     <Accordion>
                         <AccordionSummary expandIcon={<ArrowDropDown sx={{ fontSize: "2.5rem" }} />}>
                             <Typography variant="body2" fontWeight={700}>
+                                <Help sx={{ fontSize: "1.8rem", marginRight: 1 }} />
                                 使い方
                             </Typography>
                         </AccordionSummary>

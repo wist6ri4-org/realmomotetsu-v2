@@ -32,6 +32,7 @@ interface CustomNumberInputProps {
         | "error"
         | "warning"
         | "info"
+        | "light"
         | "team1"
         | "team2"
         | "team3"
@@ -95,19 +96,14 @@ export const CustomNumberInput = forwardRef<HTMLInputElement, CustomNumberInputP
         const lastValueRef = useRef<number | null>(value ?? null);
 
         // MUIの標準カラーのみを許可
-        const standardColor = ["team1", "team2", "team3", "team4"].includes(color)
+        const standardColor = ["light", "team1", "team2", "team3", "team4"].includes(color)
             ? "primary"
             : (color as "primary" | "secondary" | "success" | "error" | "warning" | "info");
 
         return (
             <>
                 <Box sx={{ width: fullWidth ? "100%" : "auto" }}>
-                    <FormControl
-                        error={error}
-                        disabled={disabled || loading}
-                        fullWidth={fullWidth}
-                        variant={variant}
-                    >
+                    <FormControl error={error} disabled={disabled || loading} fullWidth={fullWidth} variant={variant}>
                         {label && (
                             <InputLabel
                                 htmlFor={id}

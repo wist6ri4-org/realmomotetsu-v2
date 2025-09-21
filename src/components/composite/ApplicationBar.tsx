@@ -33,9 +33,7 @@ interface ApplicationBarProps {
  * @param {ApplicationBarProps} props - アプリケーションバーのプロパティ
  * @return {React.JSX.Element} - アプリケーションバーコンポーネント
  */
-const ApplicationBar: React.FC<ApplicationBarProps> = ({
-    sbUser,
-}: ApplicationBarProps): React.JSX.Element => {
+const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBarProps): React.JSX.Element => {
     const router = useRouter();
     const { eventCode } = useParams();
 
@@ -151,10 +149,7 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
 
     return (
         <>
-            <Box
-                component="header"
-                sx={{ width: "100%", position: "sticky", top: 0, zIndex: 300 }}
-            >
+            <Box component="header" sx={{ width: "100%", position: "sticky", top: 0, zIndex: 300 }}>
                 <AppBar position="sticky">
                     <Toolbar>
                         <IconButton
@@ -198,7 +193,11 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
                                     </MenuItem>
                                 ))}
                         </Menu>
-                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        <Typography
+                            variant="h6"
+                            component="div"
+                            sx={{ flexGrow: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+                        >
                             {!isLoading && event ? event.eventName : "..."}
                         </Typography>
                         {user && (
@@ -244,10 +243,10 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
                                         zIndex: 400,
                                     }}
                                 >
-                                    <MenuItem onClick={handlePushUserSettings}>
-                                        ユーザー設定
+                                    <MenuItem onClick={handlePushUserSettings}>ユーザー設定</MenuItem>
+                                    <MenuItem onClick={handleSignOut} sx={{ color: "red" }}>
+                                        サインアウト
                                     </MenuItem>
-                                    <MenuItem onClick={handleSignOut}>サインアウト</MenuItem>
                                 </Menu>
                             </Box>
                         )}

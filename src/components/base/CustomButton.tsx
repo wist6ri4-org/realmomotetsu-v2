@@ -19,6 +19,7 @@ interface CustomButtonProps extends Omit<MuiButtonProps, "color" | "size"> {
         | "error"
         | "warning"
         | "info"
+        | "light"
         | "team1"
         | "team2"
         | "team3"

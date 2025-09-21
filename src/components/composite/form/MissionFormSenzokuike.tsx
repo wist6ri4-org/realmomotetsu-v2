@@ -42,6 +42,14 @@ const MissionFormSenzokuike: React.FC = (): React.JSX.Element => {
         setIsLoading(false);
     };
 
+    /**
+     * フォームをリセットする
+     * @return {void}
+     */
+    const resetForm = (): void => {
+        answerInput.setValue(MissionToolUtils.MissionSenzokuike.SENZOKUIKE_AREA);
+    };
+
     return (
         <>
             <FormTitle title="洗足池ミッション得点計算ツール" />
@@ -70,6 +78,15 @@ const MissionFormSenzokuike: React.FC = (): React.JSX.Element => {
                     </Typography>
                 </Box>
                 <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <CustomButton
+                        type="button"
+                        color="light"
+                        onClick={resetForm}
+                        disabled={isLoading}
+                        sx={{ marginRight: 1 }}
+                    >
+                        リセット
+                    </CustomButton>
                     <CustomButton onClick={calculatePoints} disabled={isLoading}>
                         送信
                     </CustomButton>

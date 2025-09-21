@@ -5,7 +5,7 @@ import PageTitle from "@/components/base/PageTitle";
 import CurrentLocationForm from "@/components/composite/form/CurrentLocationForm";
 import { ClosestStation } from "@/types/ClosestStation";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
-import { ArrowDropDown, Assignment } from "@mui/icons-material";
+import { ArrowDropDown, Assignment, Help } from "@mui/icons-material";
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, CircularProgress, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -73,6 +73,7 @@ const FormPage: React.FC = (): React.JSX.Element => {
                     <Accordion>
                         <AccordionSummary expandIcon={<ArrowDropDown sx={{ fontSize: "2.5rem" }} />}>
                             <Typography variant="body2" fontWeight={700}>
+                                <Help sx={{ fontSize: "1.8rem", marginRight: 1 }} />
                                 いつ送る？
                             </Typography>
                         </AccordionSummary>
@@ -84,9 +85,7 @@ const FormPage: React.FC = (): React.JSX.Element => {
                                 <br />
                                 ３．もう一度サイコロを振って行き先を決定
                                 <br />
-                                ４．移動したら移動先の駅（今いる駅）をこのフォームから送信
-                                <br />
-                                ５．１～４を繰り返す
+                                ４．移動したら移動先の駅（今いる駅）で送信
                             </Typography>
                         </AccordionDetails>
                     </Accordion>

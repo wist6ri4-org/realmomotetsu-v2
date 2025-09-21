@@ -32,7 +32,18 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
  * @property {object} [sx] - スタイルオブジェクト
  */
 interface CustomTextFieldProps extends Omit<MuiTextFieldProps, "color" | "size"> {
-    color?: "primary" | "secondary" | "success" | "error" | "warning" | "info" | "team1" | "team2" | "team3" | "team4";
+    color?:
+        | "primary"
+        | "secondary"
+        | "success"
+        | "error"
+        | "warning"
+        | "info"
+        | "light"
+        | "team1"
+        | "team2"
+        | "team3"
+        | "team4";
     size?: "small" | "medium";
     variant?: "outlined" | "filled" | "standard";
     fullWidth?: boolean;
@@ -85,7 +96,7 @@ export const CustomTextField: React.FC<CustomTextFieldProps> = ({
     const [showPassword, setShowPassword] = React.useState(false);
 
     // MUIの標準カラーのみを許可
-    const standardColor = ["team1", "team2", "team3", "team4"].includes(color)
+    const standardColor = ["light", "team1", "team2", "team3", "team4"].includes(color)
         ? "primary"
         : (color as "primary" | "secondary" | "success" | "error" | "warning" | "info");
 

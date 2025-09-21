@@ -6,6 +6,7 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
+    Divider,
     Table,
     TableBody,
     TableCell,
@@ -14,16 +15,20 @@ import {
     TableRow,
     Typography,
 } from "@mui/material";
+import { Timeline } from "@mui/icons-material";
 import CustomButton from "../base/CustomButton";
+import { Teams } from "@/generated/prisma";
 
 /**
  * TransitStationsHistoryDialogコンポーネントのプロパティ型定義
  * @param {TeamData} teamData - チームデータ
+ * @param {Teams} teams - チーム
  * @param {boolean} isOpen - ダイアログの開閉状態
  * @param {() => void} onClose - ダイアログを閉じるハンドラー
  */
 interface TransitStationsHistoryDialogProps {
     teamData: TeamData;
+    team: Teams;
     isOpen: boolean;
     onClose: () => void;
 }
@@ -35,6 +40,7 @@ interface TransitStationsHistoryDialogProps {
  */
 const TransitStationsHistoryDialog: React.FC<TransitStationsHistoryDialogProps> = ({
     teamData,
+    team,
     isOpen,
     onClose,
 }: TransitStationsHistoryDialogProps): React.JSX.Element => {
@@ -48,9 +54,13 @@ const TransitStationsHistoryDialog: React.FC<TransitStationsHistoryDialogProps> 
                 fullWidth
                 sx={{ zIndex: 500 }}
             >
-                <DialogTitle id="transit-stations-history-dialog-title">
-                    <Typography>{teamData.teamName} の履歴</Typography>
+                <DialogTitle id="transit-stations-history-dialog-title" sx={{ pb: 0 }}>
+                    <Typography>
+                        <Timeline sx={{ fontSize: "2rem", marginRight: 1 }} />
+                        <strong>{teamData.teamName}</strong> の履歴
+                    </Typography>
                 </DialogTitle>
+                <Divider variant="middle" sx={{ backgroundColor: team.teamColor, height: 3, mt: 1 }} />
                 <DialogContentText align="right" sx={{ marginRight: 2 }}>
                     {teamData.transitStations.length}駅を通過しました
                 </DialogContentText>

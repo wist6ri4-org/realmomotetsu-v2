@@ -52,7 +52,7 @@ const UserSettingsPage = (): React.JSX.Element => {
         {
             title: "プロフィール設定",
             description: "プロフィールの設定",
-            icon: <AccountBoxIcon sx={{ fontSize: "1.8rem" }} />,
+            icon: <AccountBoxIcon sx={{ width: "50%", height: "50%" }} />,
             color: "#4CAF50",
             onClick: () => {
                 router.push(`/events/${eventCode}/operation/user-settings/profile`);
@@ -61,7 +61,7 @@ const UserSettingsPage = (): React.JSX.Element => {
         {
             title: "パスワード変更",
             description: "アカウントのパスワードを変更",
-            icon: <LockIcon sx={{ fontSize: "1.8rem" }} />,
+            icon: <LockIcon sx={{ width: "50%", height: "50%" }} />,
             color: "#F44336",
             onClick: () => {
                 router.push(`/events/${eventCode}/operation/user-settings/change-password`);
@@ -70,7 +70,7 @@ const UserSettingsPage = (): React.JSX.Element => {
         {
             title: "アイコン設定",
             description: "アイコンの設定",
-            icon: <InsertEmoticonIcon sx={{ fontSize: "1.8rem" }} />,
+            icon: <InsertEmoticonIcon sx={{ width: "50%", height: "50%" }} />,
             color: "#2196F3",
             onClick: () => {
                 router.push(`/events/${eventCode}/operation/user-settings/icon`);
@@ -138,7 +138,7 @@ const UserSettingsPage = (): React.JSX.Element => {
                                     bgcolor: userIconUrl ? "transparent" : "primary.main",
                                 }}
                             >
-                                {!userIconUrl && <AccountCircleIcon sx={{ fontSize: "2rem" }} />}
+                                {!userIconUrl && <AccountCircleIcon sx={{ width: "70%", height: "70%" }} />}
                             </Avatar>
                             <Box sx={{ flex: 1 }}>
                                 <Typography

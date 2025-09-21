@@ -2,17 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import {
-    Container,
-    Paper,
-    Typography,
-    Button,
-    Box,
-    Avatar,
-    Alert,
-    CircularProgress,
-} from "@mui/material";
-import { PhotoCamera, Save, Cancel } from "@mui/icons-material";
+import { Container, Paper, Typography, Button, Box, Avatar, Alert, CircularProgress } from "@mui/material";
+import { PhotoCamera, Save, Cancel, AccountCircle } from "@mui/icons-material";
 import { UserUtils } from "@/utils/userUtils";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { useUserIcon } from "@/contexts/UserIconContext";
@@ -142,9 +133,7 @@ const UserIconEditPage = (): React.JSX.Element => {
 
                 if (!response.ok) {
                     const error = await response.json();
-                    throw new Error(
-                        `アイコンURLの更新に失敗しました: ${error.message || "Unknown error"}`
-                    );
+                    throw new Error(`アイコンURLの更新に失敗しました: ${error.message || "Unknown error"}`);
                 }
 
                 setSuccess("アイコンが更新されました。");
@@ -158,10 +147,7 @@ const UserIconEditPage = (): React.JSX.Element => {
                     try {
                         const userUtils = new UserUtils();
                         // 最新のアイコンURLを取得
-                        const latestIconUrl = await userUtils.getUserIconUrlWithExtension(
-                            user.uuid,
-                            true
-                        );
+                        const latestIconUrl = await userUtils.getUserIconUrlWithExtension(user.uuid, true);
 
                         console.log("Retrieved latest icon URL:", latestIconUrl);
 
@@ -251,9 +237,7 @@ const UserIconEditPage = (): React.JSX.Element => {
                     </Alert>
                 )}
 
-                <Box
-                    sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}
-                >
+                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
                     {/* 現在のアイコン */}
                     <Box sx={{ textAlign: "center" }}>
                         <Typography variant="h6" gutterBottom>
@@ -270,7 +254,7 @@ const UserIconEditPage = (): React.JSX.Element => {
                                 fontSize: "3rem",
                             }}
                         >
-                            {!currentIconUrl && "👤"}
+                            {!currentIconUrl && <AccountCircle sx={{ width: "100%", height: "100%" }} />}
                         </Avatar>
                     </Box>
 
@@ -316,9 +300,7 @@ const UserIconEditPage = (): React.JSX.Element => {
                                     variant="contained"
                                     onClick={handleSave}
                                     disabled={isLoading}
-                                    startIcon={
-                                        isLoading ? <CircularProgress size={20} /> : <Save />
-                                    }
+                                    startIcon={isLoading ? <CircularProgress size={20} /> : <Save />}
                                     sx={{ flex: 1 }}
                                 >
                                     {isLoading ? "保存中..." : "保存"}
@@ -336,12 +318,7 @@ const UserIconEditPage = (): React.JSX.Element => {
                         )}
                     </Box>
 
-                    <Button
-                        variant="text"
-                        onClick={handleGoBack}
-                        disabled={isLoading}
-                        sx={{ mt: 2 }}
-                    >
+                    <Button variant="text" onClick={handleGoBack} disabled={isLoading} sx={{ mt: 2 }}>
                         設定画面に戻る
                     </Button>
                 </Box>
