@@ -40,7 +40,18 @@ export interface SelectOption {
  */
 interface CustomSelectProps extends Omit<MuiSelectProps, "color" | "size"> {
     options: SelectOption[];
-    color?: "primary" | "secondary" | "success" | "error" | "warning" | "info" | "team1" | "team2" | "team3" | "team4";
+    color?:
+        | "primary"
+        | "secondary"
+        | "success"
+        | "error"
+        | "warning"
+        | "info"
+        | "light"
+        | "team1"
+        | "team2"
+        | "team3"
+        | "team4";
     size?: "small" | "medium";
     variant?: "outlined" | "filled" | "standard";
     fullWidth?: boolean;
@@ -83,7 +94,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
     const labelId = `custom-select-label-${id}`;
 
     // MUIの標準カラーのみを許可
-    const standardColor = ["team1", "team2", "team3", "team4"].includes(color)
+    const standardColor = ["light", "team1", "team2", "team3", "team4"].includes(color)
         ? "primary"
         : (color as "primary" | "secondary" | "success" | "error" | "warning" | "info");
 

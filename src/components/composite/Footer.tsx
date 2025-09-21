@@ -1,10 +1,14 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import React from "react";
 
 const Footer: React.FC = (): React.JSX.Element => {
     return (
         <>
-            <Box sx={{ height: "10dvh" }}></Box>
+            <Box sx={{ marginY: 2 }}>
+                <Typography variant="body2" color="textSecondary" align="center">
+                    &copy; 2025 KANGAERU HITOBITO.
+                </Typography>
+            </Box>
         </>
     );
 };

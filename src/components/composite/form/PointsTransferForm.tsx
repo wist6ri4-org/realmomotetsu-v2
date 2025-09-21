@@ -254,8 +254,7 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                         <CustomButton
                             type="button"
-                            variant="outlined"
-                            color="secondary"
+                            color="light"
                             onClick={resetForm}
                             disabled={isLoading}
                             sx={{ marginRight: 1 }}

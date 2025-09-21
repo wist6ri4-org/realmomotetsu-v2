@@ -174,8 +174,7 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                         <CustomButton
                             type="button"
-                            variant="outlined"
-                            color="secondary"
+                            color="light"
                             onClick={resetForm}
                             disabled={isLoading}
                             sx={{ marginRight: 1 }}

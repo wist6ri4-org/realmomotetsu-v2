@@ -39,6 +39,12 @@ export const colors = {
         dark: "#01579b",
         contrastText: "#ffffff",
     },
+    light: {
+        main: "#f5f5f5",
+        light: "#ffffff",
+        dark: "#c2c2c2",
+        contrastText: "#000000",
+    },
     team1: {
         main: "rgb(0 ,89 ,255)",
         dark: "rgb(0 ,60 ,180)",
@@ -91,6 +97,7 @@ export const theme = createTheme({
         error: colors.error,
         warning: colors.warning,
         info: colors.info,
+        light: colors.light,
         team1: colors.team1,
         team2: colors.team2,
         team3: colors.team3,
@@ -193,12 +200,7 @@ export const theme = createTheme({
                             boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
                         },
                     }),
-                    fontSize:
-                        ownerState.size === "small"
-                            ? "1rem"
-                            : ownerState.size === "large"
-                            ? "2rem"
-                            : "1.5rem",
+                    fontSize: ownerState.size === "small" ? "1rem" : ownerState.size === "large" ? "2rem" : "1.5rem",
                 }),
                 contained: {
                     boxShadow: "0 2px 4px rgba(0,0,0,0.1)",

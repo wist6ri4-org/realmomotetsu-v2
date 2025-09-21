@@ -168,7 +168,10 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
                     fullScreen
                     sx={{ zIndex: 500 }}
                 >
-                    <DialogTitle id="routemap-dialog-title">路線図</DialogTitle>
+                    <DialogTitle id="routemap-dialog-title">
+                        <MapIcon sx={{ fontSize: "2rem", marginRight: 1 }} />
+                        路線図
+                    </DialogTitle>
                     <DialogContent
                         sx={{
                             padding: 0,
@@ -293,7 +296,7 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
                                     ))}
                                 </Grid>
                             </Paper>
-                            <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
+                            <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%", paddingBottom: 4 }}>
                                 <CustomButton onClick={handleClose} color="warning">
                                     閉じる
                                 </CustomButton>

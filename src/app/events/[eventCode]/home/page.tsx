@@ -7,11 +7,12 @@ import { TeamCard } from "@/components/base/TeamCard";
 import { Teams } from "@/generated/prisma";
 import { GoalStationsWithRelations } from "@/repositories/goalStations/GoalStationsRepository";
 import { TeamData } from "@/types/TeamData";
-import { Alert, Box, CircularProgress, Grid, Typography } from "@mui/material";
+import { Alert, Box, CircularProgress, Divider, Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import TransitStationsHistoryDialog from "@/components/composite/TransitStationsHistoryDialog";
 import { InitHomeResponse } from "@/features/init-home/types";
+import { useEventContext } from "../../layout";
 
 /**
  * ホームページ
@@ -19,6 +20,8 @@ import { InitHomeResponse } from "@/features/init-home/types";
  */
 const HomePage: React.FC = (): React.JSX.Element => {
     const { eventCode } = useParams();
+
+    const { teams, isInitDataLoading, contextError } = useEventContext();
 
     const [teamData, setTeamData] = useState<TeamData[]>([]);
     const [nextGoalStationData, setNextGoalStationData] = useState<GoalStationsWithRelations>(
@@ -106,19 +109,19 @@ const HomePage: React.FC = (): React.JSX.Element => {
                     nextStation={nextGoalStationData.station?.name || "ー"}
                     nextStationEng={nextGoalStationData.station?.englishName || "ー"}
                 />
-                <CustomButton onClick={fetchData}>更新</CustomButton>
             </Box>
+            <Divider sx={{ marginY: 2 }} />
 
             {/* コンテンツセクション */}
             <Box>
                 {/* ローディング */}
-                {isLoading && (
+                {(isLoading || isInitDataLoading) && (
                     <Box sx={{ textAlign: "center", mb: 4 }}>
                         <CircularProgress size={40} color="primary" />
                     </Box>
                 )}
                 {/* エラー */}
-                {error && (
+                {(error || contextError) && (
                     <Box sx={{ mb: 4 }}>
                         <Alert severity="error" action={<CustomButton onClick={fetchData}>再試行</CustomButton>}>
                             {error}
@@ -126,7 +129,7 @@ const HomePage: React.FC = (): React.JSX.Element => {
                     </Box>
                 )}
                 {/* データの表示 */}
-                {!isLoading && !error && (
+                {!isLoading && !isInitDataLoading && !error && !contextError && (
                     <>
                         {teamData.length > 0 ? (
                             <>
@@ -157,13 +160,22 @@ const HomePage: React.FC = (): React.JSX.Element => {
             {selectedTeamData && (
                 <TransitStationsHistoryDialog
                     teamData={selectedTeamData}
+                    team={teams.find((team) => team.id === selectedTeamData.id) as Teams}
                     isOpen={isTransitStationsHistoryDialogOpen}
                     onClose={handleTransitStationsHistoryDialogClose}
                 />
             )}
 
             {/* サブフッターセクション */}
-            <UpdatedTime textAlign="right" variant="body2" />
+            <Divider sx={{ marginY: 2 }} />
+            <Box>
+                <Box sx={{ display: "flex", justifyContent: "flex-end", marginY: 1 }}>
+                    <CustomButton onClick={fetchData} color="light" variant="contained">
+                        更新
+                    </CustomButton>
+                </Box>
+                <UpdatedTime textAlign="right" variant="body2" />
+            </Box>
         </>
     );
 };

@@ -1,12 +1,7 @@
 "use client";
 
 import { Box, Typography, Card, CardContent, CardActionArea, Avatar, Grid, CircularProgress } from "@mui/material";
-import {
-    AccountCircle as AccountCircleIcon,
-    Settings,
-    Description,
-    Construction,
-} from "@mui/icons-material";
+import { AccountCircle as AccountCircleIcon, Settings, Description, Construction } from "@mui/icons-material";
 import PageTitle from "@/components/base/PageTitle";
 import { useParams, useRouter } from "next/navigation";
 import { checkIsAdminUserWithUsers } from "@/lib/auth";
@@ -54,7 +49,7 @@ const OperationPage: React.FC = (): React.JSX.Element => {
         {
             title: "ユーザー設定",
             description: "アカウントとプロフィール設定",
-            icon: <AccountCircleIcon sx={{ fontSize: "1.8rem" }} />,
+            icon: <AccountCircleIcon sx={{ width: "50%", height: "50%" }} />,
             color: "#4CAF50",
             onClick: () => {
                 router.push(`/events/${eventCode}/operation/user-settings`);
@@ -63,7 +58,7 @@ const OperationPage: React.FC = (): React.JSX.Element => {
         {
             title: "配布資料",
             description: "各種配布資料の確認",
-            icon: <Description sx={{ fontSize: "1.8rem" }} />,
+            icon: <Description sx={{ width: "50%", height: "50%" }} />,
             color: "#FF9800",
             onClick: () => {
                 router.push(`/events/${eventCode}/operation/docs`);
@@ -74,7 +69,7 @@ const OperationPage: React.FC = (): React.JSX.Element => {
                   {
                       title: "GMツール",
                       description: "GM用の管理機能",
-                      icon: <Construction sx={{ fontSize: "1.8rem" }} />,
+                      icon: <Construction sx={{ width: "50%", height: "50%" }} />,
                       color: "#2196F3",
                       onClick: () => {
                           router.push(`/events/${eventCode}/operation/tools`);
