@@ -180,15 +180,15 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
             selectedStationCodeInput.reset();
 
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_REGISTERED,
-                message: DialogConstants.DIALOG_MESSAGE_REGISTER_SUCCESS,
+                title: DialogConstants.TITLE.REGISTERED,
+                message: DialogConstants.MESSAGE.REGISTER_SUCCESS,
             });
             return;
         } catch (err) {
             setError(err instanceof Error ? err.message : "Unknown error");
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_ERROR,
-                message: `${DialogConstants.DIALOG_MESSAGE_REGISTER_FAILURE}\n${error}`,
+                title: DialogConstants.TITLE.ERROR,
+                message: `${DialogConstants.MESSAGE.REGISTER_FAILURE}\n${error}`,
             });
             return;
         } finally {

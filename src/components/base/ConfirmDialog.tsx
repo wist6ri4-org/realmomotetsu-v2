@@ -33,8 +33,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     message,
     onConfirm,
     onCancel,
-    confirmText = DialogConstants.DIALOG_TEXT_OK,
-    cancelText = DialogConstants.DIALOG_TEXT_CANCEL,
+    confirmText = DialogConstants.TEXT.OK,
+    cancelText = DialogConstants.TEXT.CANCEL,
 }: ConfirmDialogProps): React.JSX.Element => {
     /**
      * 確認ボタンがクリックされたときのハンドラー

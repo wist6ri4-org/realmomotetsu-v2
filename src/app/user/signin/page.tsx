@@ -43,18 +43,18 @@ const SignInPage: React.FC = (): React.JSX.Element => {
         try {
             const { user, error } = await signIn(email, password);
             if (error) {
-                setError(Messages.MSG_LOGIN_FAILED);
+                setError(Messages.LOGIN_FAILED);
             } else {
                 const eventCode = await fetchEventCode(user as User);
                 if (eventCode) {
                     router.push(`/events/${eventCode}/home`);
                     return;
                 } else {
-                    setError(Messages.MSG_ATTENDANCES_NOT_REGISTERED);
+                    setError(Messages.ATTENDANCES_NOT_REGISTERED);
                 }
             }
         } catch {
-            setError(Messages.MSG_UNEXPECTED_ERROR);
+            setError(Messages.UNEXPECTED_ERROR);
         } finally {
             setIsLoading(false);
         }

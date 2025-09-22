@@ -148,7 +148,7 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
             setPointStatus(GameConstants.POINT_STATUS.POINTS);
 
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_UPDATED,
+                title: DialogConstants.TITLE.UPDATED,
                 message: "ポイントの移動が完了しました。",
             });
 
@@ -158,7 +158,7 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
         } catch (err) {
             setError(err instanceof Error ? err.message : "Unknown error");
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_ERROR,
+                title: DialogConstants.TITLE.ERROR,
                 message: `ポイントの移動に失敗しました。\n${error}`,
             });
             return;

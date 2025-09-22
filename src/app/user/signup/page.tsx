@@ -41,7 +41,7 @@ const SignUpPage: React.FC = (): React.JSX.Element => {
         setIsLoading(true);
 
         if (password !== confirmPassword) {
-            setError(Messages.MSG_PASSWORD_NOT_MATCH);
+            setError(Messages.PASSWORD_NOT_MATCH);
             return;
         }
 
@@ -53,7 +53,7 @@ const SignUpPage: React.FC = (): React.JSX.Element => {
                 router.push("/user/signin");
             }
         } catch {
-            setError(Messages.MSG_UNEXPECTED_ERROR);
+            setError(Messages.UNEXPECTED_ERROR);
         } finally {
             setIsLoading(false);
         }

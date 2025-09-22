@@ -125,7 +125,7 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
             setPointStatus(GameConstants.POINT_STATUS.POINTS);
 
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_REGISTERED,
+                title: DialogConstants.TITLE.REGISTERED,
                 message: "ポイントの登録が完了しました。",
             });
 
@@ -135,7 +135,7 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
         } catch (err) {
             setError(err instanceof Error ? err.message : "Unknown error");
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_ERROR,
+                title: DialogConstants.TITLE.ERROR,
                 message: `ポイントの登録に失敗しました。\n${error}`,
             });
             return;
