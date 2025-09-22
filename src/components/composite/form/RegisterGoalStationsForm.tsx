@@ -112,7 +112,7 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
             notifyToDiscord();
 
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_REGISTERED,
+                title: DialogConstants.TITLE.REGISTERED,
                 message: "目的駅の登録が完了しました。",
             });
 
@@ -122,7 +122,7 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
         } catch (err) {
             setError(err instanceof Error ? err.message : "Unknown error");
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_ERROR,
+                title: DialogConstants.TITLE.ERROR,
                 message: `目的駅の登録に失敗しました。\n${error}`,
             });
             return;

@@ -19,6 +19,7 @@ import { UsersWithRelations } from "@/repositories/users/UsersRepository";
 import { useUserIcon } from "@/contexts/UserIconContext";
 import { GetEventByEventCodeResponse } from "@/features/events/[eventCode]/types";
 import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
+import { CommonConstants } from "@/constants/commonConstants";
 
 /**
  * アプリケーションバーのプロパティ型定義
@@ -96,37 +97,81 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
     useEffect(() => {
         fetchData();
         loadUserIcon();
-    }, [eventCode, sbUser.id, fetchData, loadUserIcon]);
+    }, [fetchData, loadUserIcon]);
 
-    // ページがフォーカスされたときにアイコンを再読み込み（アイコン変更後の反映のため）
+    /**
+     * ApplicationBarの高さをCSS変数として設定
+     */
     useEffect(() => {
-        const handleFocus = () => {
+        const updateAppBarHeight = () => {
+            const appBarElement = document.querySelector("[data-app-bar]") as HTMLElement;
+            if (appBarElement) {
+                const height = appBarElement.offsetHeight;
+                document.documentElement.style.setProperty(
+                    CommonConstants.CSS.VARIABLES.APPLICATION_BAR_HEIGHT,
+                    `${height}px`
+                );
+            }
+        };
+
+        // 初期設定
+        updateAppBarHeight();
+
+        // リサイズ時に更新
+        window.addEventListener("resize", updateAppBarHeight);
+
+        return () => {
+            window.removeEventListener("resize", updateAppBarHeight);
+        };
+    }, []);
+
+    /**
+     * ページがフォーカスされたときにアイコンを再読み込み（アイコン変更後の反映のため）
+     */
+    useEffect(() => {
+        const handleFocus = async () => {
             if (sbUser?.id) {
-                loadUserIcon();
+                await updateUserIcon(sbUser.id);
             }
         };
 
         window.addEventListener("focus", handleFocus);
         return () => window.removeEventListener("focus", handleFocus);
-    }, [sbUser?.id, loadUserIcon]);
+    }, [sbUser?.id, updateUserIcon]);
 
     // イベントメニューの状態管理
     const [anchorEventMenu, setAnchorEventMenu] = useState<null | HTMLElement>(null);
     const handleEventMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorEventMenu(event.currentTarget);
     };
+
+    /**
+     * イベントメニューを閉じる処理
+     */
     const handleEventMenuClose = () => {
         setAnchorEventMenu(null);
     };
 
     // ユーザーメニューの状態管理
     const [anchorUserMenu, setAnchorUserMenu] = useState<null | HTMLElement>(null);
+
+    /**
+     * ユーザーメニューを開く処理
+     */
     const handleUserMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorUserMenu(event.currentTarget);
     };
+
+    /**
+     * ユーザーメニューを閉じる処理
+     */
     const handleUserMenuClose = () => {
         setAnchorUserMenu(null);
     };
+
+    /**
+     * ユーザー設定ページへ遷移する処理
+     */
     const handlePushUserSettings = () => {
         handleUserMenuClose();
         router.push(`/events/${eventCode}/operation/user-settings`);
@@ -149,8 +194,8 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
 
     return (
         <>
-            <Box component="header" sx={{ width: "100%", position: "sticky", top: 0, zIndex: 300 }}>
-                <AppBar position="sticky">
+            <Box component="header" data-app-bar sx={{ width: "100%", position: "fixed", top: 0, zIndex: 300 }}>
+                <AppBar position="static">
                     <Toolbar>
                         <IconButton
                             size="large"

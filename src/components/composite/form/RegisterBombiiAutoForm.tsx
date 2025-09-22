@@ -110,7 +110,7 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
             notifyToDiscord(bombiiTeam.teamName);
 
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_REGISTERED,
+                title: DialogConstants.TITLE.REGISTERED,
                 message: "ボンビーの登録が完了しました。",
             });
 
@@ -120,7 +120,7 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
         } catch (err) {
             setError(err instanceof Error ? err.message : "Unknown error");
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_ERROR,
+                title: DialogConstants.TITLE.ERROR,
                 message: `ボンビーの登録に失敗しました。\n${error}`,
             });
             return;

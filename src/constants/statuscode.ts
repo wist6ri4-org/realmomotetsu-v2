@@ -1,21 +1,23 @@
 /**
- * ステータスコードを定義するクラス
+ * ステータスコード
  */
-export class StatusCode {
-    static OK = 200;
-    static CREATED = 201;
-    static ACCEPTED = 202;
-    static NO_CONTENT = 204;
+export const StatusCode = {
+    OK: 200,
+    CREATED: 201,
+    ACCEPTED: 202,
+    NO_CONTENT: 204,
 
-    static BAD_REQUEST = 400;
-    static UNAUTHORIZED = 401;
-    static FORBIDDEN = 403;
-    static NOT_FOUND = 404;
-    static METHOD_NOT_ALLOWED = 405;
-    static CONFLICT = 409;
+    BAD_REQUEST: 400,
+    UNAUTHORIZED: 401,
+    FORBIDDEN: 403,
+    NOT_FOUND: 404,
+    METHOD_NOT_ALLOWED: 405,
+    CONFLICT: 409,
 
-    static INTERNAL_SERVER_ERROR = 500;
-    static NOT_IMPLEMENTED = 501;
-    static BAD_GATEWAY = 502;
-    static SERVICE_UNAVAILABLE = 503;
-}
+    INTERNAL_SERVER_ERROR: 500,
+    NOT_IMPLEMENTED: 501,
+    BAD_GATEWAY: 502,
+    SERVICE_UNAVAILABLE: 503,
+} as const;
+
+export type StatusCode = typeof StatusCode;

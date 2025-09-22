@@ -84,7 +84,7 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
             teamCodeInput.reset();
 
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_UPDATED,
+                title: DialogConstants.TITLE.UPDATED,
                 message: "ポイントの換金が完了しました。",
             });
 
@@ -94,7 +94,7 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
         } catch (err) {
             setError(err instanceof Error ? err.message : "Unknown error");
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_ERROR,
+                title: DialogConstants.TITLE.ERROR,
                 message: `ポイントの換金に失敗しました。\n${error}`,
             });
             return;
