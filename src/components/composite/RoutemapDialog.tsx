@@ -221,7 +221,7 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
                                             position: "absolute",
                                             bottom: 16,
                                             right: 16,
-                                            zIndex: 1000,
+                                            zIndex: 600,
                                         }}
                                     >
                                         <Paper elevation={3} sx={{ p: 1 }}>

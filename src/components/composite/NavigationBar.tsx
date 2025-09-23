@@ -97,7 +97,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ currentTab }: Navi
                 position: "fixed",
                 bottom: 0,
                 left: 0,
-                zIndex: 1100,
+                zIndex: 400,
                 backgroundColor: "background.paper",
                 borderTop: 1,
                 borderColor: "divider",
