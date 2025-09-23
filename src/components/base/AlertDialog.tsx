@@ -28,7 +28,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
     title,
     message,
     onOk,
-    okText = DialogConstants.DIALOG_TEXT_CLOSE,
+    okText = DialogConstants.TEXT.CLOSE,
 }: AlertDialogProps): React.JSX.Element => {
     const handleOk = () => {
         onOk();

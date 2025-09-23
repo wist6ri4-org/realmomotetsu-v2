@@ -16,7 +16,9 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-/* ===== Model ===== */
+/**
+ * ===== Model =====
+ */
 /**
  * Events
  * イベント
@@ -263,20 +265,22 @@ model Attendances {
   @@map("attendances")
 }
 
-
-/* ===== View ===== */
+/**
+ * ===== View =====
+ */
 /**
  * LatestTransitStations
  * 最新の経由駅情報ビュー
  */
 view LatestTransitStations {
-  id          Int      @id @map("id")
+  id          Int      @map("id")
   teamCode    String   @map("team_code")
   stationCode String   @map("station_code")
   eventCode   String   @map("event_code")
   createdAt   DateTime @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
+  @@unique([id])
   @@map("latest_transit_stations")
 }
 
@@ -286,8 +290,9 @@ view LatestTransitStations {
  */
 view BombiiCounts {
   eventCode String @map("event_code")
-  teamCode  String @id @map("team_code")
+  teamCode  String @map("team_code")
   count     Int    @map("count")
 
+  @@unique([eventCode, teamCode])
   @@map("bombii_counts")
 }

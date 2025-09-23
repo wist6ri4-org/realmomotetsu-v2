@@ -28,7 +28,7 @@ export class RouletteUtils {
      */
     static getWeightedStationCode(
         nearbyStations: NearbyStationsWithRelations[],
-        latestTransitStations: LatestTransitStations[],
+        latestTransitStations: LatestTransitStations[] = [],
         startStationCode: string
     ): string {
         const graph = DijkstraUtils.convertToStationGraph(nearbyStations);
@@ -38,10 +38,13 @@ export class RouletteUtils {
         const filteredTimes = new Map(
             [...times].filter(([key, { timeMinutes }]) => {
                 return (
+                    // 開始駅と同じ駅は除外
+                    key !== startStationCode &&
                     // 時間が範囲外であること
-                    timeMinutes >= GameConstants.ELIMINATION_TIME_RANGE_MINUTES &&
-                    // 各チームの最新経由駅に含まれないこと
-                    latestTransitStations.some((station) => station.stationCode !== key)
+                    timeMinutes > GameConstants.ELIMINATION_TIME_RANGE_MINUTES &&
+                    // 各チームの最新経由駅に含まれないこと（空配列の場合はすべて選択可能）
+                    (latestTransitStations.length === 0 ||
+                        !latestTransitStations.some((station) => station.stationCode === key))
                 );
             })
         );
