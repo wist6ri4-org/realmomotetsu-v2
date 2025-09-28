@@ -10,8 +10,8 @@ export type GetLatestGoalStationsRequest = {
 
 /**
  * 最新目的駅の取得レスポンス
- * @property { GoalStationsWithRelations } station - 最新目的駅
+ * @property { GoalStationsWithRelations } goalStation - 最新目的駅
  */
 export type GetLatestGoalStationsResponse = {
-    station: GoalStationsWithRelations;
+    goalStation: GoalStationsWithRelations;
 };

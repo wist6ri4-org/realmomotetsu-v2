@@ -11,10 +11,10 @@ export type GetGoalStationsRequest = {
 
 /**
  * 目的駅の取得レスポンス
- * @property { GoalStationsWithRelations[] } stations - イベントに関連する目的駅のリスト
+ * @property { GoalStationsWithRelations[] } goalStations - イベントに関連する目的駅のリスト
  */
 export type GetGoalStationsResponse = {
-    stations: GoalStationsWithRelations[];
+    goalStations: GoalStationsWithRelations[];
 };
 
 /**

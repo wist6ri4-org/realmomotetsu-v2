@@ -8,9 +8,7 @@ export const LatestGoalStationsServiceImpl: LatestGoalStationsService = {
      * @param {GetLatestGoalStationsRequest} req - リクエスト
      * @return {Promise<GetLatestGoalStationsResponse>} - レスポンス
      */
-    async getLatestGoalStationByEventCode(
-        req: GetLatestGoalStationsRequest
-    ): Promise<GetLatestGoalStationsResponse> {
+    async getLatestGoalStationByEventCode(req: GetLatestGoalStationsRequest): Promise<GetLatestGoalStationsResponse> {
         const goalStationsRepository = RepositoryFactory.getGoalStationsRepository();
 
         try {
@@ -21,7 +19,7 @@ export const LatestGoalStationsServiceImpl: LatestGoalStationsService = {
                 throw new Error(`No latest goal station found for event code: ${eventCode}`);
             }
             const res: GetLatestGoalStationsResponse = {
-                station: latestGoalStation,
+                goalStation: latestGoalStation,
             };
 
             return res;

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { InitServiceImpl } from "@/features/init/service";
-import { initRequestSchema } from "@/features/init/validator";
+import { InitRequestSchema, InitResponseSchema } from "@/features/init/validator";
 import { InitResponse } from "@/features/init/types";
 
 /**
@@ -41,28 +41,26 @@ class InitApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
             const queryParams = Object.fromEntries(searchParams.entries());
-            const validatedParams = initRequestSchema.parse(queryParams);
+            const validatedParams = InitRequestSchema.parse(queryParams);
 
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data: InitResponse = await InitServiceImpl.getDataForInit(
-                validatedParams
-            );
+            const data: InitResponse = await InitServiceImpl.getDataForInit(validatedParams);
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initFormResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: InitResponse = InitResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved init data", {
-                teamsCount: data.teams.length,
-                stationsCount: data.stations.length,
-                nearbyStationsCount: data.nearbyStations.length,
-                documentsCount: data.documents.length,
-                userId: data.user.id,
-                eventId: data.event.eventCode,
+                teamsCount: validatedResponse.teams.length,
+                stationsCount: validatedResponse.stations.length,
+                nearbyStationsCount: validatedResponse.nearbyStations.length,
+                documentsCount: validatedResponse.documents.length,
+                userId: validatedResponse.user.id,
+                eventId: validatedResponse.event.eventCode,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);

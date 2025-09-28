@@ -1,10 +1,8 @@
-import LocationUtils from "@/utils/locationUtils";
 import { InitOperationService } from "./interface";
 import { InitOperationRequest, InitOperationResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import DijkstraUtils from "@/utils/dijkstraUtils";
 import { TeamData } from "@/types/TeamData";
-import { ClosestStation } from "@/types/ClosestStation";
 
 export const InitOperationServiceImpl: InitOperationService = {
     /**
@@ -15,7 +13,6 @@ export const InitOperationServiceImpl: InitOperationService = {
     async getDataForOperation(req: InitOperationRequest): Promise<InitOperationResponse> {
         const eventsRepository = RepositoryFactory.getEventsRepository();
         const teamsRepository = RepositoryFactory.getTeamsRepository();
-        const stationsRepository = RepositoryFactory.getStationsRepository();
         const nearbyStationsRepository = RepositoryFactory.getNearbyStationsRepository();
         const pointsRepository = RepositoryFactory.getPointsRepository();
         const goalStationsRepository = RepositoryFactory.getGoalStationsRepository();
@@ -29,7 +26,6 @@ export const InitOperationServiceImpl: InitOperationService = {
             // レスポンスの作成
             const [
                 teams,
-                stations,
                 nearbyStations,
                 totalPoints,
                 totalScoredPoints,
@@ -37,7 +33,6 @@ export const InitOperationServiceImpl: InitOperationService = {
                 bombiiCounts,
             ] = await Promise.all([
                 teamsRepository.findByEventCode(req.eventCode),
-                stationsRepository.findByEventTypeCode(eventTypeCode),
                 nearbyStationsRepository.findByEventTypeCode(eventTypeCode),
                 pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
                 pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
@@ -66,16 +61,6 @@ export const InitOperationServiceImpl: InitOperationService = {
             const res: InitOperationResponse = {
                 teamData: teamData,
             };
-
-            // 位置情報が提供されている場合、近隣の駅を計算
-            if (req.latitude && req.longitude) {
-                const closestStations: ClosestStation[] = LocationUtils.calculate(
-                    stations,
-                    req.latitude,
-                    req.longitude
-                );
-                res.closestStations = closestStations;
-            }
 
             return res;
         } catch (error) {

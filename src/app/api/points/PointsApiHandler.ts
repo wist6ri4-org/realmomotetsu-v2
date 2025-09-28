@@ -3,11 +3,14 @@ import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { PointsServiceImpl } from "@/features/points/service";
 import {
-    getPointsRequestSchema,
-    postPointsRequestSchema,
-    putPointsRequestSchema,
+    GetPointsRequestSchema,
+    GetPointsResponseSchema,
+    PostPointsRequestSchema,
+    PostPointsResponseSchema,
+    PutPointsRequestSchema,
 } from "@/features/points/validator";
 import { GetPointsResponse, PostPointsResponse, PutPointsResponse } from "@/features/points/types";
+import { PutPointsResponseSchema } from "../../../features/points/validator";
 
 /**
  * ポイントに関するAPIハンドラー
@@ -47,16 +50,17 @@ class PointsApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
             const queryParams = Object.fromEntries(searchParams.entries());
-            const validatedParams = getPointsRequestSchema.parse(queryParams);
+            const validatedParams = GetPointsRequestSchema.parse(queryParams);
 
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data: GetPointsResponse =
-                await PointsServiceImpl.getPointsByEventCodeGroupedByTeamCode(validatedParams);
+            const data: GetPointsResponse = await PointsServiceImpl.getPointsByEventCodeGroupedByTeamCode(
+                validatedParams
+            );
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initOperationResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: GetPointsResponse = GetPointsResponseSchema.parse(data);
 
             type LogObject = {
                 [teamCode: string]: {
@@ -66,7 +70,7 @@ class PointsApiHandler extends BaseApiHandler {
             };
 
             const logObject: LogObject = {};
-            Object.entries(data.points).forEach(([teamCode, items]) => {
+            Object.entries(validatedResponse.points).forEach(([teamCode, items]) => {
                 if (!logObject[teamCode]) {
                     logObject[teamCode] = { pointsCount: 0, scoredCount: 0 };
                 }
@@ -77,7 +81,7 @@ class PointsApiHandler extends BaseApiHandler {
                 ...logObject,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);
@@ -97,27 +101,32 @@ class PointsApiHandler extends BaseApiHandler {
             const body = await req.json();
 
             // Zodでバリデーション
-            const validatedBody = postPointsRequestSchema.parse(body);
+            const validatedBody = PostPointsRequestSchema.parse(body);
 
             this.logDebug("Request body", validatedBody);
 
             // サービスからデータを取得
             const data: PostPointsResponse = await PointsServiceImpl.postPoints(validatedBody);
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initOperationResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: PostPointsResponse = PostPointsResponseSchema.parse(data);
 
             this.logInfo("Successfully processed points data", {
-                id: data.point.id,
+                id: validatedResponse.point.id,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);
         }
     }
 
+    /**
+     * PUTリクエストを処理するメソッド
+     * @param req - Next.jsのリクエストオブジェクト
+     * @return {Promise<NextResponse>} - レスポンスオブジェクト
+     */
     private async handlePut(req: NextRequest): Promise<NextResponse> {
         this.logInfo("Handling PUT request for points");
 
@@ -126,21 +135,21 @@ class PointsApiHandler extends BaseApiHandler {
             const body = await req.json();
 
             // Zodでバリデーション
-            const validatedBody = putPointsRequestSchema.parse(body);
+            const validatedBody = PutPointsRequestSchema.parse(body);
 
             this.logDebug("Request body", validatedBody);
 
             // サービスからデータを取得
             const data: PutPointsResponse = await PointsServiceImpl.putPoints(validatedBody);
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initOperationResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: PutPointsResponse = PutPointsResponseSchema.parse(data);
 
             this.logInfo("Successfully updated points data", {
-                count: data.count,
+                count: validatedResponse.count,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);

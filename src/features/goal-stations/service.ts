@@ -22,7 +22,7 @@ export const GoalStationsServiceImpl: GoalStationsService = {
             const eventCode = req.eventCode;
             const goalStations = await goalStationsRepository.findByEventCode(eventCode);
             const res: GetGoalStationsResponse = {
-                stations: goalStations,
+                goalStations: goalStations,
             };
 
             return res;

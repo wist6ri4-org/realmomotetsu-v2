@@ -9,8 +9,8 @@ export type GetEventByEventCodeRequest = {
 
 /**
  * イベントコードでイベントを取得するレスポンス
- * @property { Events | null } event - イベント情報
+ * @property { Events } event - イベント情報
  */
 export type GetEventByEventCodeResponse = {
-    event: Events | null;
+    event: Events;
 };

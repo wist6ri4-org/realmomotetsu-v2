@@ -9,3 +9,11 @@ export const PostDiscordNotifyRequestSchema = z.object({
     templateName: z.string(),
     variables: z.record(z.string()).optional(),
 });
+
+/**
+ * Discord通知のレスポンス
+ * @property { boolean } success - 通知が成功したかどうか
+ */
+export const PostDiscordNotifyResponseSchema = z.object({
+    success: z.boolean(),
+});

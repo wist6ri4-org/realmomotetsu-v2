@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { InitRouletteServiceImpl } from "@/features/init-roulette/service";
-import { initRouletteRequestSchema } from "@/features/init-roulette/validator";
+import { InitRouletteRequestSchema, InitRouletteResponseSchema } from "@/features/init-roulette/validator";
 import { InitRouletteResponse } from "@/features/init-roulette/types";
 
 /**
@@ -41,23 +41,21 @@ class InitRouletteApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
             const queryParams = Object.fromEntries(searchParams.entries());
-            const validatedParams = initRouletteRequestSchema.parse(queryParams);
+            const validatedParams = InitRouletteRequestSchema.parse(queryParams);
 
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data: InitRouletteResponse = await InitRouletteServiceImpl.getDataForRoulette(
-                validatedParams
-            );
+            const data: InitRouletteResponse = await InitRouletteServiceImpl.getDataForRoulette(validatedParams);
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initRouletteResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: InitRouletteResponse = InitRouletteResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved init-roulette data", {
-                latestTransitStationsCount: data.latestTransitStations.length,
+                latestTransitStationsCount: validatedResponse.latestTransitStations.length,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);

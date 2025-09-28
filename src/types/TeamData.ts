@@ -1,4 +1,6 @@
+import { StationsSchema, TransitStationsSchema } from "@/generated/zod";
 import { TransitStationsWithRelations } from "@/repositories/transitStations/TransitStationsRepository";
+import z from "zod";
 
 /**
  * チームデータの型定義
@@ -23,3 +25,18 @@ export type TeamData = {
     scoredPoints: number;
     bombiiCounts: number;
 };
+
+// チームデータのバリデーションスキーマ
+export const TeamDataSchema = z.object({
+    id: z.number(),
+    teamCode: z.string(),
+    teamName: z.string(),
+    teamColor: z.string(),
+    transitStations: TransitStationsSchema.extend({
+        station: StationsSchema,
+    }).array(),
+    remainingStationsNumber: z.number(),
+    points: z.number(),
+    scoredPoints: z.number(),
+    bombiiCounts: z.number(),
+});

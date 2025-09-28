@@ -3,13 +3,12 @@ import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { TransitStationsServiceImpl } from "@/features/transit-stations/service";
 import {
-    getTransitStationsRequestSchema,
-    postTransitStationsRequestSchema,
+    GetTransitStationsRequestSchema,
+    GetTransitStationsResponseSchema,
+    PostTransitStationsRequestSchema,
+    PostTransitStationsResponseSchema,
 } from "@/features/transit-stations/validator";
-import {
-    GetTransitStationsResponse,
-    PostTransitStationsResponse,
-} from "@/features/transit-stations/types";
+import { GetTransitStationsResponse, PostTransitStationsResponse } from "@/features/transit-stations/types";
 
 /**
  * 経由駅に関するAPIハンドラー
@@ -48,18 +47,16 @@ class TransitStationsApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
             const queryParams = Object.fromEntries(searchParams.entries());
-            const validatedParams = getTransitStationsRequestSchema.parse(queryParams);
+            const validatedParams = GetTransitStationsRequestSchema.parse(queryParams);
 
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
             const data: GetTransitStationsResponse =
-                await TransitStationsServiceImpl.getTransitStationsByEventCodeGroupedByTeamCode(
-                    validatedParams
-                );
+                await TransitStationsServiceImpl.getTransitStationsByEventCodeGroupedByTeamCode(validatedParams);
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initOperationResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: GetTransitStationsResponse = GetTransitStationsResponseSchema.parse(data);
 
             type LogObject = {
                 [teamCode: string]: {
@@ -68,7 +65,7 @@ class TransitStationsApiHandler extends BaseApiHandler {
             };
 
             const logObject: LogObject = {};
-            Object.entries(data.transitStations).forEach(([teamCode, transitStations]) => {
+            Object.entries(validatedResponse.transitStations).forEach(([teamCode, transitStations]) => {
                 logObject[teamCode] = {
                     transitStationsCount: transitStations.length,
                 };
@@ -77,7 +74,7 @@ class TransitStationsApiHandler extends BaseApiHandler {
                 ...logObject,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);
@@ -97,23 +94,24 @@ class TransitStationsApiHandler extends BaseApiHandler {
             const body = await req.json();
 
             // Zodでバリデーション
-            const validatedBody = postTransitStationsRequestSchema.parse(body);
+            const validatedBody = PostTransitStationsRequestSchema.parse(body);
 
             this.logDebug("Request body", validatedBody);
 
             // サービスからデータを取得
-            const data: PostTransitStationsResponse =
-                await TransitStationsServiceImpl.postTransitStations(validatedBody);
+            const data: PostTransitStationsResponse = await TransitStationsServiceImpl.postTransitStations(
+                validatedBody
+            );
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initOperationResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: PostTransitStationsResponse = PostTransitStationsResponseSchema.parse(data);
 
             this.logInfo("Successfully processed transit-stations data", {
-                eventCode: validatedBody.eventCode,
-                stationCode: validatedBody.stationCode,
+                eventCode: validatedResponse.transitStation.eventCode,
+                stationCode: validatedResponse.transitStation.stationCode,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);

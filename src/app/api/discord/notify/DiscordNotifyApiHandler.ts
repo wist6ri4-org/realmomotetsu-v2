@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "../../utils/BaseApiHandler";
-import { PostDiscordNotifyRequestSchema } from "@/features/discord/notify/validator";
+import { PostDiscordNotifyRequestSchema, PostDiscordNotifyResponseSchema } from "@/features/discord/notify/validator";
 import { DiscordNotifyServiceImpl } from "@/features/discord/notify/service";
 import { PostDiscordNotifyResponse } from "@/features/discord/notify/types";
 
@@ -44,17 +44,16 @@ class DiscordNotifyApiHandler extends BaseApiHandler {
             this.logDebug("Request body", validatedBody);
 
             // サービスからデータを取得
-            const data: PostDiscordNotifyResponse =
-                await DiscordNotifyServiceImpl.postDiscordNotify(validatedBody);
+            const data: PostDiscordNotifyResponse = await DiscordNotifyServiceImpl.postDiscordNotify(validatedBody);
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initOperationResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: PostDiscordNotifyResponse = PostDiscordNotifyResponseSchema.parse(data);
 
             this.logInfo("Successfully processed Discord notification", {
-                success: data.success,
+                success: validatedResponse.success,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);
