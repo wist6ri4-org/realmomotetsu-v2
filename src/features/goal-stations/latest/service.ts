@@ -1,3 +1,4 @@
+import { ApiError, InternalServerError, ResourceNotFoundError } from "@/error";
 import { LatestGoalStationsService } from "./interface";
 import { GetLatestGoalStationsRequest, GetLatestGoalStationsResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
@@ -16,7 +17,7 @@ export const LatestGoalStationsServiceImpl: LatestGoalStationsService = {
             const latestGoalStation = await goalStationsRepository.findNextGoalStation(eventCode);
 
             if (!latestGoalStation) {
-                throw new Error(`No latest goal station found for event code: ${eventCode}`);
+                throw new ResourceNotFoundError("latest_goal_station", eventCode);
             }
             const res: GetLatestGoalStationsResponse = {
                 goalStation: latestGoalStation,
@@ -24,8 +25,13 @@ export const LatestGoalStationsServiceImpl: LatestGoalStationsService = {
 
             return res;
         } catch (error) {
-            console.error("Error in getLatestGoalStationByEventCode:", error);
-            throw new Error("Failed to retrieve get latest goal station");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };

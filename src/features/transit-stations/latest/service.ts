@@ -1,6 +1,7 @@
 import { GetLatestTransitStationsRequest, GetLatestTransitStationsResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { LatestTransitStationsService } from "./interface";
+import { ApiError, InternalServerError } from "@/error";
 
 export const LatestTransitStationsServiceImpl: LatestTransitStationsService = {
     /**
@@ -16,9 +17,7 @@ export const LatestTransitStationsServiceImpl: LatestTransitStationsService = {
         try {
             // 最新経由駅を取得
             const eventCode = req.eventCode;
-            const latestTransitStations = await transitStationsRepository.findLatestByEventCode(
-                eventCode
-            );
+            const latestTransitStations = await transitStationsRepository.findLatestByEventCode(eventCode);
 
             // レスポンスの作成
             const res: GetLatestTransitStationsResponse = {
@@ -26,8 +25,13 @@ export const LatestTransitStationsServiceImpl: LatestTransitStationsService = {
             };
             return res;
         } catch (error) {
-            console.error("Error fetching latest transit stations by event code:", error);
-            throw new Error("Failed to fetch latest transit stations");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };

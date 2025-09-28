@@ -1,11 +1,7 @@
 import { UsersByUuidService } from "./interface";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
-import {
-    GetUsersByUuidRequest,
-    GetUsersByUuidResponse,
-    PutUsersByUuidRequest,
-    PutUsersByUuidResponse,
-} from "./types";
+import { GetUsersByUuidRequest, GetUsersByUuidResponse, PutUsersByUuidRequest, PutUsersByUuidResponse } from "./types";
+import { ApiError, InternalServerError } from "@/error";
 
 export const UsersByUuidServiceImpl: UsersByUuidService = {
     /**
@@ -23,8 +19,13 @@ export const UsersByUuidServiceImpl: UsersByUuidService = {
             };
             return res;
         } catch (error) {
-            console.error("Error in getUsersByUuid:", error);
-            throw new Error("Failed to get users by uuid");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 
@@ -51,8 +52,13 @@ export const UsersByUuidServiceImpl: UsersByUuidService = {
             };
             return res;
         } catch (error) {
-            console.error("Error in putUsersByUuid:", error);
-            throw new Error("Failed to update user by uuid");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };

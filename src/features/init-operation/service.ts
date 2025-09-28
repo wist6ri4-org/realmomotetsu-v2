@@ -3,6 +3,7 @@ import { InitOperationRequest, InitOperationResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import DijkstraUtils from "@/utils/dijkstraUtils";
 import { TeamData } from "@/types/TeamData";
+import { ApiError, InternalServerError } from "@/error";
 
 export const InitOperationServiceImpl: InitOperationService = {
     /**
@@ -24,21 +25,15 @@ export const InitOperationServiceImpl: InitOperationService = {
             const eventTypeCode = events?.eventTypeCode || "";
 
             // レスポンスの作成
-            const [
-                teams,
-                nearbyStations,
-                totalPoints,
-                totalScoredPoints,
-                nextGoalStation,
-                bombiiCounts,
-            ] = await Promise.all([
-                teamsRepository.findByEventCode(req.eventCode),
-                nearbyStationsRepository.findByEventTypeCode(eventTypeCode),
-                pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
-                pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
-                goalStationsRepository.findNextGoalStation(req.eventCode),
-                bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
-            ]);
+            const [teams, nearbyStations, totalPoints, totalScoredPoints, nextGoalStation, bombiiCounts] =
+                await Promise.all([
+                    teamsRepository.findByEventCode(req.eventCode),
+                    nearbyStationsRepository.findByEventTypeCode(eventTypeCode),
+                    pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
+                    pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
+                    goalStationsRepository.findNextGoalStation(req.eventCode),
+                    bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
+                ]);
 
             const convertedStationGraph = DijkstraUtils.convertToStationGraph(nearbyStations);
             const teamData: TeamData[] = teams.map((team) => ({
@@ -53,8 +48,7 @@ export const InitOperationServiceImpl: InitOperationService = {
                     nextGoalStation?.stationCode || ""
                 ),
                 points: totalPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
-                scoredPoints:
-                    totalScoredPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
+                scoredPoints: totalScoredPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 bombiiCounts: bombiiCounts.find((b) => b.teamCode === team.teamCode)?.count || 0,
             }));
 
@@ -64,8 +58,13 @@ export const InitOperationServiceImpl: InitOperationService = {
 
             return res;
         } catch (error) {
-            console.error("Error in getDataForOperation:", error);
-            throw new Error("Failed to retrieve init operation data");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };

@@ -1,6 +1,7 @@
 import { EventByEventCodeService } from "./interface";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { GetEventByEventCodeRequest, GetEventByEventCodeResponse } from "./types";
+import { ApiError, InternalServerError } from "@/error";
 
 export const EventByEventCodeServiceImpl: EventByEventCodeService = {
     /**
@@ -8,9 +9,7 @@ export const EventByEventCodeServiceImpl: EventByEventCodeService = {
      * @param {GetEventByEventCodeRequest} req - リクエスト
      * @return {Promise<GetEventByEventCodeResponse>} レスポンス
      */
-    async getEventByEventCode(
-        req: GetEventByEventCodeRequest
-    ): Promise<GetEventByEventCodeResponse> {
+    async getEventByEventCode(req: GetEventByEventCodeRequest): Promise<GetEventByEventCodeResponse> {
         const eventsRepository = RepositoryFactory.getEventsRepository();
 
         try {
@@ -20,8 +19,13 @@ export const EventByEventCodeServiceImpl: EventByEventCodeService = {
             };
             return res;
         } catch (error) {
-            console.error("Error in getEventByEventCode:", error);
-            throw new Error("Failed to get events by event code");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };

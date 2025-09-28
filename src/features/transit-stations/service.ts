@@ -8,6 +8,7 @@ import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { TransitStationsWithRelations } from "@/repositories/transitStations/TransitStationsRepository";
 import { TransitStationsService } from "./interface";
 import { TransitStations } from "@/generated/prisma";
+import { ApiError, InternalServerError } from "@/error";
 
 export const TransitStationsServiceImpl: TransitStationsService = {
     /**
@@ -38,8 +39,13 @@ export const TransitStationsServiceImpl: TransitStationsService = {
             });
             return res;
         } catch (error) {
-            console.error("Error fetching transit stations by event code:", error);
-            throw new Error("Failed to fetch transit stations");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 
@@ -48,9 +54,7 @@ export const TransitStationsServiceImpl: TransitStationsService = {
      * @param {PostTransitStationsRequest} req - リクエスト
      * @return {Promise<PostTransitStationsResponse>} レスポンス
      */
-    async postTransitStations(
-        req: PostTransitStationsRequest
-    ): Promise<PostTransitStationsResponse> {
+    async postTransitStations(req: PostTransitStationsRequest): Promise<PostTransitStationsResponse> {
         // Repositoryのインスタンスを取得
         const transitStationsRepository = RepositoryFactory.getTransitStationsRepository();
 
@@ -65,8 +69,13 @@ export const TransitStationsServiceImpl: TransitStationsService = {
             };
             return res;
         } catch (error) {
-            console.error("Error in postTransitStations:", error);
-            throw new Error("Failed to register transit station");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };

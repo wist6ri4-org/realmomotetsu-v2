@@ -3,6 +3,7 @@ import { InitFormService } from "./interface";
 import { InitFormRequest, InitFormResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { ClosestStation } from "@/types/ClosestStation";
+import { ApiError, InternalServerError } from "@/error";
 
 export const InitFormServiceImpl: InitFormService = {
     /**
@@ -20,9 +21,7 @@ export const InitFormServiceImpl: InitFormService = {
             const eventTypeCode = events?.eventTypeCode || "";
 
             // レスポンスの作成
-            const [stations] = await Promise.all([
-                stationsRepository.findByEventTypeCode(eventTypeCode),
-            ]);
+            const [stations] = await Promise.all([stationsRepository.findByEventTypeCode(eventTypeCode)]);
             const res: InitFormResponse = {};
 
             // 位置情報が提供されている場合、近隣の駅を計算
@@ -37,8 +36,13 @@ export const InitFormServiceImpl: InitFormService = {
 
             return res;
         } catch (error) {
-            console.error("Error in getDataForForm:", error);
-            throw new Error("Failed to retrieve init form data");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };

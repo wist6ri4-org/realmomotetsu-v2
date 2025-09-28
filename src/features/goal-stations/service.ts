@@ -1,3 +1,4 @@
+import { ApiError, InternalServerError } from "@/error";
 import { GoalStationsService } from "./interface";
 import {
     GetGoalStationsRequest,
@@ -13,9 +14,7 @@ export const GoalStationsServiceImpl: GoalStationsService = {
      * @param {GetGoalStationsRequest} req - リクエスト
      * @return {Promise<GetGoalStationsResponse>} レスポンス
      */
-    async getGoalStationsByEventCode(
-        req: GetGoalStationsRequest
-    ): Promise<GetGoalStationsResponse> {
+    async getGoalStationsByEventCode(req: GetGoalStationsRequest): Promise<GetGoalStationsResponse> {
         const goalStationsRepository = RepositoryFactory.getGoalStationsRepository();
 
         try {
@@ -27,8 +26,13 @@ export const GoalStationsServiceImpl: GoalStationsService = {
 
             return res;
         } catch (error) {
-            console.error("Error in getGoalStationsByEventCode:", error);
-            throw new Error("Failed to retrieve get goal stations");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 
@@ -50,8 +54,13 @@ export const GoalStationsServiceImpl: GoalStationsService = {
             };
             return res;
         } catch (error) {
-            console.error("Error in postGoalStations:", error);
-            throw new Error("Failed to register goal station");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };

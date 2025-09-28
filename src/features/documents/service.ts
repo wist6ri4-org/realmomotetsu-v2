@@ -1,3 +1,4 @@
+import { ApiError, InternalServerError } from "@/error";
 import { DocumentsService } from "./interface";
 import { GetDocumentsRequest, GetDocumentsResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
@@ -20,8 +21,13 @@ export const DocumentsServiceImpl: DocumentsService = {
 
             return res;
         } catch (error) {
-            console.error("Error in getDocumentsByEventCode:", error);
-            throw new Error("Failed to retrieve get documents by event code");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };
