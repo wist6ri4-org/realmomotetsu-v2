@@ -46,10 +46,7 @@ export function useDiscordNotification(): {
      * @param {NotificationOptions} options - 通知の送信オプション
      * @return {Promise<NotificationResult>} - 通知送信の結果
      */
-    const sendNotification = async ({
-        templateName,
-        variables,
-    }: NotificationOptions): Promise<NotificationResult> => {
+    const sendNotification = async ({ templateName, variables }: NotificationOptions): Promise<NotificationResult> => {
         setIsLoading(true);
         setError(null);
 
@@ -74,7 +71,7 @@ export function useDiscordNotification(): {
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : "通知の送信に失敗しました";
             setError(errorMessage);
-            throw err;
+            return { success: false };
         } finally {
             setIsLoading(false);
         }

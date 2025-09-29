@@ -10,6 +10,8 @@ import { CustomTextField } from "@/components/base/CustomTextField";
 import CustomButton from "@/components/base/CustomButton";
 import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
 import { Messages } from "@/constants/messages";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 
 /**
  * サインインページコンポーネント
@@ -72,7 +74,7 @@ const SignInPage: React.FC = (): React.JSX.Element => {
             const uuid = sbUser.id;
             const response = await fetch(`/api/users/${uuid}`);
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw ApplicationErrorFactory.createFromResponse(response);
             }
 
             const data: GetUsersByUuidResponse = (await response.json()).data as GetUsersByUuidResponse;
@@ -98,8 +100,9 @@ const SignInPage: React.FC = (): React.JSX.Element => {
 
             return attendances.shift()?.eventCode || "";
         } catch (error) {
-            console.error("Error fetching event code:", error);
-            setError(error instanceof Error ? error.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(error);
+            ApplicationErrorHandler.logError(appError);
+
             return "";
         }
     };

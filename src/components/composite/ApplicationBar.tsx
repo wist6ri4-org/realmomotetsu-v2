@@ -20,6 +20,8 @@ import { useUserIcon } from "@/contexts/UserIconContext";
 import { GetEventByEventCodeResponse } from "@/features/events/[eventCode]/types";
 import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
 import { CommonConstants } from "@/constants/commonConstants";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 
 /**
  * アプリケーションバーのプロパティ型定義
@@ -58,23 +60,23 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
             ]);
 
             if (!responseEvents.ok) {
-                throw new Error(`HTTP error! status: ${responseEvents.status}`);
+                throw ApplicationErrorFactory.createFromResponse(responseEvents);
             }
             if (!responseUsers.ok) {
-                throw new Error(`HTTP error! status: ${responseUsers.status}`);
+                throw ApplicationErrorFactory.createFromResponse(responseUsers);
             }
             const dataEvents: GetEventByEventCodeResponse = (await responseEvents.json()).data;
             const dataUsers: GetUsersByUuidResponse = (await responseUsers.json()).data;
 
             const eventData = dataEvents.event || {};
             const userData = dataUsers.user || {};
-            if (!eventData || !userData) {
-                throw new Error("Event or user data not found");
-            }
+
             setUser(userData as UsersWithRelations);
             setEvent(eventData as Events);
         } catch (error) {
-            console.error("Error fetching event data:", error);
+            const appError = ApplicationErrorFactory.normalize(error);
+            ApplicationErrorHandler.logError(appError);
+
             setEvent(null);
             setUser(null);
         } finally {

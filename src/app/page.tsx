@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
 import { Box, CircularProgress } from "@mui/material";
 import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 
 /**
  * ルートページコンポーネント
@@ -43,7 +45,6 @@ const RootPage: React.FC = (): React.JSX.Element => {
                 router.replace("/user/signin");
             } finally {
                 setIsLoading(false);
-                console.log("Redirected based on authentication status");
             }
         };
 
@@ -59,7 +60,7 @@ const RootPage: React.FC = (): React.JSX.Element => {
         try {
             const response = await fetch(`/api/users/${userId}`);
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw ApplicationErrorFactory.createFromResponse(response);
             }
 
             const data: GetUsersByUuidResponse = (await response.json()).data as GetUsersByUuidResponse;
@@ -85,7 +86,8 @@ const RootPage: React.FC = (): React.JSX.Element => {
 
             return attendances.shift()?.eventCode || "";
         } catch (error) {
-            console.error("Error fetching event code:", error);
+            const appError = ApplicationErrorFactory.normalize(error);
+            ApplicationErrorHandler.logError(appError, "WARN");
             return "";
         }
     };

@@ -13,7 +13,11 @@ import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
 import PointExchangerDisplay from "@/components/base/PointExchangerDisplay";
 import { DialogConstants } from "@/constants/dialogConstants";
+import { ErrorCodes } from "@/constants/errorCodes";
 import { GameConstants } from "@/constants/gameConstants";
+import { getMessage } from "@/constants/messages";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler, ValidationErrorHandler } from "@/error/errorHandler";
 import { PointStatus, Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
@@ -60,7 +64,6 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
 
     /**
      * ポイント状態の変更ハンドラー
@@ -97,14 +100,15 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
 
         try {
             setIsLoading(true);
-            setError(null);
 
-            if (pointsInput.value <= 0) {
-                throw new Error("移動ポイントは0より大きい値で入力してください。");
-            }
+            // バリデーション
+            ValidationErrorHandler.validatePositive(pointsInput.value, "ポイント");
 
             if (fromTeamCodeInput.value === toTeamCodeInput.value) {
-                throw new Error("移動元と移動先のチームは異なるチームでなければなりません。");
+                throw ApplicationErrorFactory.create(
+                    ErrorCodes.VALIDATION_ERROR,
+                    getMessage("SAME_TEAM_ERROR")
+                );
             }
 
             const [responseOfFrom, responseOfTo] = await Promise.all([
@@ -135,11 +139,11 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
             ]);
 
             if (!responseOfFrom.ok) {
-                throw new Error(`HTTP error! status: ${responseOfFrom.status}`);
+                throw ApplicationErrorFactory.createFromResponse(responseOfFrom);
             }
 
             if (!responseOfTo.ok) {
-                throw new Error(`HTTP error! status: ${responseOfTo.status}`);
+                throw ApplicationErrorFactory.createFromResponse(responseOfTo);
             }
 
             fromTeamCodeInput.reset();
@@ -149,17 +153,19 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
 
             await showAlertDialog({
                 title: DialogConstants.TITLE.UPDATED,
-                message: "ポイントの移動が完了しました。",
+                message: getMessage("POINTS_TRANSFER_SUCCESS"),
             });
 
             onSubmit?.();
 
             return;
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(err);
+            ApplicationErrorHandler.logError(appError);
+
             await showAlertDialog({
                 title: DialogConstants.TITLE.ERROR,
-                message: `ポイントの移動に失敗しました。\n${error}`,
+                message: `${getMessage("POINTS_TRANSFER_FAILED")}\n${appError.message}`,
             });
             return;
         } finally {
@@ -176,7 +182,6 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
         toTeamCodeInput.reset();
         pointsInput.reset();
         setIsLoading(false);
-        setError(null);
     };
 
     return (

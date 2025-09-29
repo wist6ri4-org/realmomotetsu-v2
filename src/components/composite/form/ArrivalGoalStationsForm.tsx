@@ -11,12 +11,15 @@ import CustomSelect from "@/components/base/CustomSelect";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
 import { DialogConstants } from "@/constants/dialogConstants";
+import { getMessage } from "@/constants/messages";
+import { ApplicationErrorFactory } from "@/error/applicationError";
 import { Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useNumberInput } from "@/hooks/useNumberInput";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
+import { ApplicationErrorHandler, ValidationErrorHandler } from "@/error/errorHandler";
 import { Box, CircularProgress } from "@mui/material";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
@@ -49,7 +52,6 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
 
     /**
      * データの登録
@@ -62,7 +64,7 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
         const confirmMessage =
             "以下の内容で到着処理を行いますか？\n" +
             `チーム: ${teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"}\n` +
-            `ポイント: ${pointsInput.value}`;
+            `到着ポイント: ${pointsInput.value}`;
         const isConfirmed = await showConfirmDialog({
             message: confirmMessage,
         });
@@ -73,11 +75,9 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
 
         try {
             setIsLoading(true);
-            setError(null);
 
-            if (pointsInput.value <= 0) {
-                throw new Error("到着ポイントは0以上の値で入力してください。");
-            }
+            // バリデーション
+            ValidationErrorHandler.validatePositive(pointsInput.value, "到着ポイント");
 
             // 到着ポイントの登録
             const responseCreatePoints = await fetch("/api/points", {
@@ -94,7 +94,7 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
             });
 
             if (!responseCreatePoints.ok) {
-                throw new Error(`HTTP error! status: ${responseCreatePoints.status}`);
+                throw ApplicationErrorFactory.createFromResponse(responseCreatePoints);
             }
 
             // 既存のポイントステータスをscoredに更新
@@ -109,7 +109,7 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
             });
 
             if (!responseUpdatePoints.ok) {
-                throw new Error(`HTTP error! status: ${responseUpdatePoints.status}`);
+                throw ApplicationErrorFactory.createFromResponse(responseUpdatePoints);
             }
 
             teamCodeInput.reset();
@@ -117,17 +117,19 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
 
             await showAlertDialog({
                 title: DialogConstants.TITLE.REGISTERED,
-                message: "目的駅到着処理が完了しました。",
+                message: getMessage("ARRIVAL_GOAL_STATIONS_SUCCESS"),
             });
 
             onSubmit?.();
 
             return;
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(err);
+            ApplicationErrorHandler.logError(appError);
+
             await showAlertDialog({
                 title: DialogConstants.TITLE.ERROR,
-                message: `"目的駅到着処理に失敗しました。\n${error}`,
+                message: `${getMessage("ARRIVAL_GOAL_STATIONS_FAILED")}\n${appError.message}`,
             });
             return;
         } finally {
@@ -143,7 +145,6 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
         teamCodeInput.reset();
         pointsInput.reset();
         setIsLoading(false);
-        setError(null);
     };
 
     return (

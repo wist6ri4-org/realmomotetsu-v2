@@ -12,6 +12,8 @@ import RegisterBombiiManualForm from "@/components/composite/form/RegisterBombii
 import RegisterGoalStationsForm from "@/components/composite/form/RegisterGoalStationsForm";
 import RegisterPointsForm from "@/components/composite/form/RegisterPointsForm";
 import InformationDialog from "@/components/composite/InformationDialog";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { InitOperationResponse } from "@/features/init-operation/types";
 import { TeamData } from "@/types/TeamData";
 import { Construction } from "@mui/icons-material";
@@ -45,19 +47,18 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
 
             const response = await fetch("/api/init-operation?" + params.toString());
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw ApplicationErrorFactory.createFromResponse(response);
             }
 
             const data: InitOperationResponse = (await response.json()).data;
             const teamData = data.teamData || [];
 
-            if (!Array.isArray(teamData)) {
-                throw new Error("Unexpected response structure");
-            }
             setTeamData(teamData as TeamData[]);
         } catch (error) {
-            console.error("Error fetching data:", error);
-            setError(error instanceof Error ? error.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(error);
+            ApplicationErrorHandler.logError(appError);
+
+            setError(appError.message);
             setTeamData([]);
         } finally {
             setIsLoading(false);
