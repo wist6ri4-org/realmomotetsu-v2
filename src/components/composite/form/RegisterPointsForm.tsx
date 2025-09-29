@@ -31,10 +31,12 @@ import React, { useState } from "react";
  * RegisterPointsFormコンポーネントのプロパティ型定義
  * @property {Teams[]} teams - チームのリスト
  * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
+ * @property {boolean} isOperating - 操作権限があるかどうか
  */
 interface RegisterPointsFormProps {
     teams: Teams[];
     onSubmit?: () => void;
+    isOperating: boolean;
 }
 
 // ポイント状態のオプション
@@ -51,6 +53,7 @@ const pointStatusOptions: RadioOption[] = [
 const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
     teams,
     onSubmit,
+    isOperating,
 }: RegisterPointsFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
@@ -223,10 +226,10 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
                         </CustomButton>
                         <CustomButton
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || !isOperating}
                             startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
                         >
-                            {isLoading ? "送信中..." : "送信"}
+                            {isLoading ? "送信中..." : !isOperating ? "開催前" : "送信"}
                         </CustomButton>
                     </Box>
                 </Box>

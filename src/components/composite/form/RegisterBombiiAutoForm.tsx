@@ -26,10 +26,12 @@ import React, { useState } from "react";
  * RegisterBombiiAutoFormコンポーネントのプロパティ型定義
  * @property {TeamData[]} teamData - チームデータのリスト
  * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
+ * @property {boolean} isOperating - 操作権限があるかどうか
  */
 interface RegisterBombiiAutoFormProps {
     teamData: TeamData[];
     onSubmit?: () => void;
+    isOperating: boolean;
 }
 
 /**
@@ -40,6 +42,7 @@ interface RegisterBombiiAutoFormProps {
 const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
     teamData,
     onSubmit,
+    isOperating,
 }: RegisterBombiiAutoFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
@@ -153,10 +156,10 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                         <CustomButton
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || !isOperating}
                             startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
                         >
-                            {isLoading ? "送信中..." : "送信"}
+                            {isLoading ? "送信中..." : !isOperating ? "開催前" : "送信"}
                         </CustomButton>
                     </Box>
                 </Box>

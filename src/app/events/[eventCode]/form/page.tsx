@@ -12,6 +12,9 @@ import { useEffect, useState } from "react";
 import { useEventContext } from "../../layout";
 import { AttendancesWithRelations } from "@/repositories/attendances/AttendancesRepository";
 import LocationUtils from "@/utils/locationUtils";
+import { checkIsOperatingUser } from "@/lib/auth";
+import { UsersWithRelations } from "@/repositories/users/UsersRepository";
+import { Events } from "@/generated/prisma";
 
 /**
  * フォームページ
@@ -20,13 +23,15 @@ import LocationUtils from "@/utils/locationUtils";
 const FormPage: React.FC = (): React.JSX.Element => {
     const { eventCode } = useParams();
 
-    const { teams, stations, user, isInitDataLoading, contextError } = useEventContext();
+    const { teams, stations, user, event, isInitDataLoading, contextError } = useEventContext();
 
     const [closestStations, setClosestStations] = useState<ClosestStation[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     const attendance: AttendancesWithRelations | undefined = user?.attendances?.find((a) => a.eventCode === eventCode);
+
+    const isOperating: boolean = checkIsOperatingUser(user as UsersWithRelations, event as Events)
 
     // NOTE TSK-37 通信頻度最適化対応でAPIの呼び出しは削除
 
@@ -117,6 +122,7 @@ const FormPage: React.FC = (): React.JSX.Element => {
                                 stations={stations}
                                 closestStations={closestStations}
                                 initialTeamCode={attendance?.teamCode}
+                                isOperating={isOperating}
                             />
                         </Box>
                     </>

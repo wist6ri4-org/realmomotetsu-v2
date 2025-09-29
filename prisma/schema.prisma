@@ -11,10 +11,10 @@ generator client {
 }
 
 generator zod {
-  provider = "zod-prisma-types"
-  output   = "../src/generated/zod"
+  provider         = "zod-prisma-types"
+  output           = "../src/generated/zod"
   createInputTypes = false
-  createModelTypes  = true
+  createModelTypes = true
 }
 
 datasource db {
@@ -26,6 +26,29 @@ datasource db {
 /**
  * ===== Model =====
  */
+
+/**
+ * VisibilityLevel
+ * 表示レベル
+ */
+enum VisibilityLevel {
+  hidden // 非公開
+  admin // 管理者以上
+  organizer // イベント管理者以上
+  participant // 参加者以上
+}
+
+/**
+ * OperationLevel
+ * 操作権限レベル
+ */
+enum OperationLevel {
+  readonly // 読み取り専用
+  admin // 管理者以上
+  organizer // イベント管理者以上
+  participant // 参加者以上
+}
+
 /**
  * Events
  * イベント
@@ -36,6 +59,8 @@ model Events {
   eventTypeCode   String            @map("event_type_code")
   eventName       String            @map("event_name")
   startDate       DateTime?         @map("start_date") @db.Timestamptz(3)
+  visibilityLevel VisibilityLevel   @default(hidden) @map("visibility_level")
+  operationLevel  OperationLevel    @default(readonly) @map("operation_level")
   createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   eventType       EventTypes        @relation(fields: [eventTypeCode], references: [eventTypeCode])

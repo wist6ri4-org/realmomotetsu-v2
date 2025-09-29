@@ -32,10 +32,12 @@ import React, { useState } from "react";
  * PointsTransferFormコンポーネントのプロパティ型定義
  * @property {Teams[]} teams - チームのリスト
  * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
+ * @property {boolean} isOperating - 操作権限があるかどうか
  */
 interface PointsTransferFormProps {
     teams: Teams[];
     onSubmit?: () => void;
+    isOperating: boolean;
 }
 
 // ポイント状態のオプション
@@ -52,6 +54,7 @@ const pointStatusOptions: RadioOption[] = [
 const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
     teams,
     onSubmit,
+    isOperating,
 }: PointsTransferFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
@@ -268,10 +271,10 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
                         </CustomButton>
                         <CustomButton
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || !isOperating}
                             startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
                         >
-                            {isLoading ? "送信中..." : "送信"}
+                            {isLoading ? "送信中..." : !isOperating ? "開催前" : "送信"}
                         </CustomButton>
                     </Box>
                 </Box>

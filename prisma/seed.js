@@ -285,6 +285,8 @@ async function main() {
             const eventTypeCode = row.event_type_code?.trim();
             const startDateStr = row.start_date?.trim();
             const startDate = startDateStr && startDateStr !== "" ? new Date(startDateStr) : null;
+            const visibilityLevel = row.visibility_level?.trim() || "admin";
+            const operationLevel = row.operation_level?.trim() || "admin";
             const createdAt = new Date(row.created_at?.trim());
             const updatedAt = new Date(row.updated_at?.trim());
 
@@ -294,6 +296,8 @@ async function main() {
                     eventName,
                     eventTypeCode,
                     startDate,
+                    visibilityLevel,
+                    operationLevel,
                     createdAt,
                     updatedAt,
                 },
