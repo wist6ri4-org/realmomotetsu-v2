@@ -7,6 +7,8 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, Fab } from "@mui/mat
 import React, { useCallback, useState } from "react";
 import CustomButton from "../base/CustomButton";
 import { InitOperationResponse } from "@/features/init-operation/types";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 
 /**
  * InformationDialogコンポーネントのプロパティ型定義
@@ -47,19 +49,18 @@ const InformationDialog: React.FC<InformationDialogProps> = ({
 
             const response = await fetch("/api/init-operation?" + params.toString());
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw ApplicationErrorFactory.createFromResponse(response);
             }
 
             const data: InitOperationResponse = (await response.json()).data;
             const teamData = data.teamData || [];
 
-            if (!Array.isArray(teamData)) {
-                throw new Error("Unexpected response structure");
-            }
             setTeamData(teamData as TeamData[]);
         } catch (error) {
-            console.error("Error fetching data:", error);
-            setError(error instanceof Error ? error.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(error);
+            ApplicationErrorHandler.logError(appError);
+
+            setError(appError.message);
             setTeamData([]);
         } finally {
             setIsLoading(false);

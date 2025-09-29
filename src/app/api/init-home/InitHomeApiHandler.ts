@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { InitHomeServiceImpl } from "@/features/init-home/service";
-import { initHomeRequestSchema } from "@/features/init-home/validator";
+import { InitHomeRequestSchema, InitHomeResponseSchema } from "@/features/init-home/validator";
 import { InitHomeResponse } from "@/features/init-home/types";
 
 /**
@@ -41,25 +41,23 @@ class InitHomeApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
             const queryParams = Object.fromEntries(searchParams.entries());
-            const validatedParams = initHomeRequestSchema.parse(queryParams);
+            const validatedParams = InitHomeRequestSchema.parse(queryParams);
 
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data: InitHomeResponse = await InitHomeServiceImpl.getDataForHome(
-                validatedParams
-            );
+            const data: InitHomeResponse = await InitHomeServiceImpl.getDataForHome(validatedParams);
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initHomeResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: InitHomeResponse = InitHomeResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved init-home data", {
-                teamDataCount: data.teamData.length,
-                hasNextGoal: !!data.nextGoalStation,
-                hasBombiiTeam: !!data.bombiiTeam,
+                teamDataCount: validatedResponse.teamData.length,
+                hasNextGoal: !!validatedResponse.nextGoalStation,
+                hasBombiiTeam: !!validatedResponse.bombiiTeam,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);

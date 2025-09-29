@@ -10,6 +10,9 @@ import CustomSelect from "@/components/base/CustomSelect";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
 import { DialogConstants } from "@/constants/dialogConstants";
+import { getMessage } from "@/constants/messages";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
@@ -43,7 +46,6 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
 
     /**
      * データの更新
@@ -64,7 +66,6 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
 
         try {
             setIsLoading(true);
-            setError(null);
 
             // ポイントステータスをscoredに更新
             const response = await fetch("/api/points", {
@@ -78,24 +79,26 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw ApplicationErrorFactory.createFromResponse(response);
             }
 
             teamCodeInput.reset();
 
             await showAlertDialog({
                 title: DialogConstants.TITLE.UPDATED,
-                message: "ポイントの換金が完了しました。",
+                message: getMessage("POINTS_EXCHANGE_SUCCESS"),
             });
 
             onSubmit?.();
 
             return;
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(err);
+            ApplicationErrorHandler.logError(appError);
+
             await showAlertDialog({
                 title: DialogConstants.TITLE.ERROR,
-                message: `ポイントの換金に失敗しました。\n${error}`,
+                message: `${getMessage("POINTS_EXCHANGE_FAILED")}\n${appError.message}`,
             });
             return;
         } finally {
@@ -110,7 +113,6 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
     const resetForm = (): void => {
         teamCodeInput.reset();
         setIsLoading(false);
-        setError(null);
     };
 
     return (

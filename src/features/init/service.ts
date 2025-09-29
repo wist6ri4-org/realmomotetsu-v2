@@ -1,3 +1,4 @@
+import { ApiError, InternalServerError } from "@/error";
 import { InitService } from "./interface";
 import { InitRequest, InitResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
@@ -40,8 +41,13 @@ export const InitServiceImpl: InitService = {
 
             return res;
         } catch (error) {
-            console.error("Error in getDataForInit:", error);
-            throw new Error("Failed to retrieve init data");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${this.getDataForInit.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };

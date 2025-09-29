@@ -11,6 +11,9 @@ import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
 import { DialogConstants } from "@/constants/dialogConstants";
 import { DiscordNotificationTemplates } from "@/constants/discordNotificationTemplates";
+import { getMessage } from "@/constants/messages";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { Stations } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
@@ -48,7 +51,6 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
 
     const { sendNotification, clearError } = useDiscordNotification();
 
@@ -89,7 +91,6 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
 
         try {
             setIsLoading(true);
-            setError(null);
 
             // 目的駅の登録
             const response = await fetch("/api/goal-stations", {
@@ -104,7 +105,7 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw ApplicationErrorFactory.createFromResponse(response);
             }
 
             stationCodeInput.reset();
@@ -113,17 +114,19 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
 
             await showAlertDialog({
                 title: DialogConstants.TITLE.REGISTERED,
-                message: "目的駅の登録が完了しました。",
+                message: getMessage("REGISTER_SUCCESS", { data: "目的駅" }),
             });
 
             onSubmit?.();
 
             return;
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(err);
+            ApplicationErrorHandler.logError(appError);
+
             await showAlertDialog({
                 title: DialogConstants.TITLE.ERROR,
-                message: `目的駅の登録に失敗しました。\n${error}`,
+                message: `${getMessage("REGISTER_FAILED", { data: "目的駅" })}\n${appError.message}`,
             });
             return;
         } finally {
@@ -138,7 +141,6 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
     const resetForm = (): void => {
         stationCodeInput.reset();
         setIsLoading(false);
-        setError(null);
     };
 
     return (

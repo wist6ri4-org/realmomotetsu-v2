@@ -15,6 +15,8 @@ import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/Nearb
 import { UsersWithRelations } from "@/repositories/users/UsersRepository";
 import { EventWithRelations } from "@/repositories/events/EventsRepository";
 import { CommonConstants } from "@/constants/commonConstants";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 
 /**
  * Contextの型定義
@@ -93,7 +95,7 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
 
                 const response = await fetch(`/api/init?eventCode=${eventCode}&uuid=${sbUser.id}`);
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw ApplicationErrorFactory.createFromResponse(response);
                 }
 
                 const data = await response.json();
@@ -109,8 +111,10 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
 
                 setRawInitData(initData);
             } catch (err) {
-                console.error("Error fetching init data:", err);
-                setContextError(err instanceof Error ? err.message : "Unknown error");
+                const appError = ApplicationErrorFactory.normalize(err);
+                ApplicationErrorHandler.logError(appError);
+
+                setContextError(appError.message);
             } finally {
                 setIsInitDataLoading(false);
             }

@@ -1,7 +1,7 @@
+import { ApiError, InternalServerError } from "@/error";
 import { InitRouletteService } from "./interface";
 import { InitRouletteRequest, InitRouletteResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
-
 
 export const InitRouletteServiceImpl: InitRouletteService = {
     /**
@@ -23,8 +23,13 @@ export const InitRouletteServiceImpl: InitRouletteService = {
 
             return res;
         } catch (error) {
-            console.error("Error in getDataForRoulette:", error);
-            throw new Error("Failed to retrieve init form data");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${this.getDataForRoulette.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };

@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { EventByEventCodeServiceImpl } from "@/features/events/[eventCode]/service";
-import { getEventByEventCodeRequestScheme } from "@/features/events/[eventCode]/validator";
+import {
+    GetEventByEventCodeRequestScheme,
+    GetEventByEventCodeResponseSchema,
+} from "@/features/events/[eventCode]/validator";
 import { GetEventByEventCodeResponse } from "@/features/events/[eventCode]/types";
 
 /**
@@ -39,22 +42,23 @@ class EventsByEventCodeApiHandler extends BaseApiHandler {
         this.logInfo("Handling GET request for events/[eventCode]");
 
         try {
-            const validatedParams = getEventByEventCodeRequestScheme.parse({
+            const validatedParams = GetEventByEventCodeRequestScheme.parse({
                 eventCode: this.eventCode,
             });
 
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data: GetEventByEventCodeResponse =
-                await EventByEventCodeServiceImpl.getEventByEventCode(validatedParams);
+            const data: GetEventByEventCodeResponse = await EventByEventCodeServiceImpl.getEventByEventCode(
+                validatedParams
+            );
 
             // レスポンスのスキーマでバリデーション
-            // const validatedResponse = initOperationResponseSchema.parse(data);
+            const validatedResponse: GetEventByEventCodeResponse = GetEventByEventCodeResponseSchema.parse(data);
 
-            this.logInfo("Successfully retrieved event data", { eventCode: this.eventCode });
+            this.logInfo("Successfully retrieved event data", { eventCode: validatedResponse.event.eventCode });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);

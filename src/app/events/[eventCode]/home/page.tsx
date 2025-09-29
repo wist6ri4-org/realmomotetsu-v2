@@ -13,6 +13,8 @@ import { useParams } from "next/navigation";
 import TransitStationsHistoryDialog from "@/components/composite/TransitStationsHistoryDialog";
 import { InitHomeResponse } from "@/features/init-home/types";
 import { useEventContext } from "../../layout";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 
 /**
  * ホームページ
@@ -49,26 +51,22 @@ const HomePage: React.FC = (): React.JSX.Element => {
 
             const response = await fetch("/api/init-home?" + params.toString());
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw ApplicationErrorFactory.createFromResponse(response);
             }
 
             const data: InitHomeResponse = (await response.json()).data;
             const teamData = data.teamData || [];
             const nextGoalStationData = data.nextGoalStation || {};
             const bombiiTeamData = data.bombiiTeam || {};
-            if (
-                !Array.isArray(teamData) ||
-                typeof nextGoalStationData !== "object" ||
-                typeof bombiiTeamData !== "object"
-            ) {
-                throw new Error("Unexpected response structure");
-            }
+
             setTeamData(teamData as TeamData[]);
             setNextGoalStationData(nextGoalStationData as GoalStationsWithRelations);
             setBombiiTeamData(bombiiTeamData as Teams);
         } catch (error) {
-            console.error("Error fetching data:", error);
-            setError(error instanceof Error ? error.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(error);
+            ApplicationErrorHandler.logError(appError);
+
+            setError(appError.message);
             setTeamData([]);
         } finally {
             setIsLoading(false);

@@ -4,6 +4,7 @@ import { InitHomeRequest, InitHomeResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { TeamData } from "@/types/TeamData";
 import DijkstraUtils from "@/utils/dijkstraUtils";
+import { ApiError, InternalServerError } from "@/error";
 
 export const InitHomeServiceImpl: InitHomeService = {
     /**
@@ -21,23 +22,16 @@ export const InitHomeServiceImpl: InitHomeService = {
 
         try {
             // 並列でデータを取得
-            const [
-                teams,
-                nextGoalStation,
-                currentBombiiHistory,
-                totalPoints,
-                totalScoredPoints,
-                events,
-                bombiiCounts,
-            ] = await Promise.all([
-                teamsRepository.findByEventCode(req.eventCode),
-                goalStationsRepository.findNextGoalStation(req.eventCode),
-                bombiiHistoriesRepository.findCurrentBombiiTeam(req.eventCode),
-                pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
-                pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
-                eventsRepository.findByEventCode(req.eventCode),
-                bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
-            ]);
+            const [teams, nextGoalStation, currentBombiiHistory, totalPoints, totalScoredPoints, events, bombiiCounts] =
+                await Promise.all([
+                    teamsRepository.findByEventCode(req.eventCode),
+                    goalStationsRepository.findNextGoalStation(req.eventCode),
+                    bombiiHistoriesRepository.findCurrentBombiiTeam(req.eventCode),
+                    pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
+                    pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
+                    eventsRepository.findByEventCode(req.eventCode),
+                    bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
+                ]);
 
             const eventTypeCode = events?.eventTypeCode || "";
             const stationGraph = await nearbyStationsRepository.findByEventTypeCode(eventTypeCode);
@@ -56,8 +50,7 @@ export const InitHomeServiceImpl: InitHomeService = {
                     nextGoalStation?.stationCode || ""
                 ),
                 points: totalPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
-                scoredPoints:
-                    totalScoredPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
+                scoredPoints: totalScoredPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 bombiiCounts: bombiiCounts.find((b) => b.teamCode === team.teamCode)?.count || 0,
             }));
 
@@ -85,8 +78,13 @@ export const InitHomeServiceImpl: InitHomeService = {
 
             return res;
         } catch (error) {
-            console.error("Error in getDataForHome:", error);
-            throw new Error("Failed to retrieve init home data");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${this.getDataForHome.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };

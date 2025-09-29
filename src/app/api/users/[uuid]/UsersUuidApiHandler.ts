@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
-import { getUsersByUuidRequestScheme, putUsersByUuidRequestScheme } from "@/features/users/[uuid]/validator";
+import {
+    GetUsersByUuidRequestScheme,
+    GetUsersByUuidResponseScheme,
+    PutUsersByUuidRequestScheme,
+    PutUsersByUuidResponseScheme,
+} from "@/features/users/[uuid]/validator";
 import { UsersByUuidServiceImpl } from "@/features/users/[uuid]/service";
 import { GetUsersByUuidResponse, PutUsersByUuidResponse } from "@/features/users/[uuid]/types";
 import supabase from "@/lib/supabase";
@@ -41,19 +46,19 @@ class UsersByUuidApiHandler extends BaseApiHandler {
         this.logInfo("Handling GET request for users/[uuid]");
 
         try {
-            const validatedParams = getUsersByUuidRequestScheme.parse({ uuid: this.uuid });
+            const validatedParams = GetUsersByUuidRequestScheme.parse({ uuid: this.uuid });
 
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
             const data: GetUsersByUuidResponse = await UsersByUuidServiceImpl.getUsersByUuid(validatedParams);
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initOperationResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: GetUsersByUuidResponse = GetUsersByUuidResponseScheme.parse(data);
 
-            this.logInfo("Successfully retrieved user data", { uuid: this.uuid });
+            this.logInfo("Successfully retrieved user data", { uuid: validatedResponse.user.uuid });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);
@@ -93,7 +98,7 @@ class UsersByUuidApiHandler extends BaseApiHandler {
             }
 
             const requestBody = await this.req.json();
-            const validatedParams = putUsersByUuidRequestScheme.parse({
+            const validatedParams = PutUsersByUuidRequestScheme.parse({
                 uuid: this.uuid,
                 ...requestBody,
             });
@@ -103,12 +108,12 @@ class UsersByUuidApiHandler extends BaseApiHandler {
             // サービスでユーザーを更新
             const data: PutUsersByUuidResponse = await UsersByUuidServiceImpl.putUsersByUuid(validatedParams);
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initOperationResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: PutUsersByUuidResponse = PutUsersByUuidResponseScheme.parse(data);
 
-            this.logInfo("Successfully updated user data", { uuid: this.uuid });
+            this.logInfo("Successfully updated user data", { uuid: validatedResponse.user.uuid });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);

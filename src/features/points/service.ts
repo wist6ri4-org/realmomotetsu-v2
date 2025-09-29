@@ -9,6 +9,7 @@ import {
 import { PointsService } from "./interface";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { Points } from "@/generated/prisma";
+import { ApiError, InternalServerError } from "@/error";
 
 export const PointsServiceImpl: PointsService = {
     /**
@@ -37,8 +38,15 @@ export const PointsServiceImpl: PointsService = {
             });
             return res;
         } catch (error) {
-            console.error("Error in getPointsByEventCodeGroupedByTeamCode:", error);
-            throw new Error("Failed to retrieve points grouped by team code");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${this.getPointsByEventCodeGroupedByTeamCode.name}. ${
+                    error instanceof Error ? error.message : ""
+                }`,
+            });
         }
     },
 
@@ -50,19 +58,19 @@ export const PointsServiceImpl: PointsService = {
     async postPoints(req: PostPointsRequest): Promise<PostPointsResponse> {
         const pointsRepository = RepositoryFactory.getPointsRepository();
         try {
-            const point = await pointsRepository.create(
-                req.eventCode,
-                req.teamCode,
-                req.points,
-                req.status
-            );
+            const point = await pointsRepository.create(req.eventCode, req.teamCode, req.points, req.status);
             const res: PostPointsResponse = {
                 point: point as Points,
             };
             return res;
         } catch (error) {
-            console.error("Error in postPoints:", error);
-            throw new Error("Failed to post points");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${this.postPoints.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 
@@ -76,8 +84,13 @@ export const PointsServiceImpl: PointsService = {
         try {
             return await pointRepository.updateStatusByTeamCode(req.teamCode, "scored");
         } catch (error) {
-            console.error("Error in putPoints:", error);
-            throw new Error("Failed to update points status");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${this.putPoints.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };

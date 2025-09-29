@@ -13,6 +13,8 @@ import { useEffect, useState } from "react";
 import { useEventContext } from "../../layout";
 import { InitRouletteResponse } from "@/features/init-roulette/types";
 import LocationUtils from "@/utils/locationUtils";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 
 /**
  * 駅ルーレットページ
@@ -51,20 +53,19 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
 
             const response = await fetch("/api/init-roulette?" + params.toString());
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw ApplicationErrorFactory.createFromResponse(response);
             }
 
             const data: InitRouletteResponse = (await response.json()).data;
             const latestTransitStations = data.latestTransitStations || [];
 
-            if (!Array.isArray(latestTransitStations)) {
-                throw new Error("Unexpected response structure");
-            }
             setLatestTransitStations(latestTransitStations as LatestTransitStations[]);
             setClosestStations(closestStations as ClosestStation[]);
         } catch (error) {
-            console.error("Error fetching data:", error);
-            setError(error instanceof Error ? error.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(error);
+            ApplicationErrorHandler.logError(appError);
+
+            setError(appError.message);
             setClosestStations([]);
         } finally {
             setIsLoading(false);

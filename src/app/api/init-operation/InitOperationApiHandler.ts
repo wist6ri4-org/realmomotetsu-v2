@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { InitOperationServiceImpl } from "@/features/init-operation/service";
-import { initOperationRequestSchema } from "@/features/init-operation/validator";
+import { InitOperationRequestSchema, InitOperationResponseSchema } from "@/features/init-operation/validator";
 import { InitOperationResponse } from "@/features/init-operation/types";
 
 /**
@@ -41,24 +41,21 @@ class InitOperationApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
             const queryParams = Object.fromEntries(searchParams.entries());
-            const validatedParams = initOperationRequestSchema.parse(queryParams);
+            const validatedParams = InitOperationRequestSchema.parse(queryParams);
 
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data: InitOperationResponse = await InitOperationServiceImpl.getDataForOperation(
-                validatedParams
-            );
+            const data: InitOperationResponse = await InitOperationServiceImpl.getDataForOperation(validatedParams);
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initOperationResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: InitOperationResponse = InitOperationResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved init-operation data", {
-                closestStationsCount: data.closestStations ? data.closestStations.length : 0,
-                teamDataCount: data.teamData ? data.teamData.length : 0,
+                teamDataCount: validatedResponse.teamData.length,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);

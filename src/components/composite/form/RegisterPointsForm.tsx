@@ -14,6 +14,9 @@ import FormTitle from "@/components/base/FormTitle";
 import PointExchangerDisplay from "@/components/base/PointExchangerDisplay";
 import { DialogConstants } from "@/constants/dialogConstants";
 import { GameConstants } from "@/constants/gameConstants";
+import { getMessage } from "@/constants/messages";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { PointStatus, Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
@@ -59,7 +62,6 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
 
     /**
      * ポイント状態の変更ハンドラー
@@ -96,11 +98,6 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
 
         try {
             setIsLoading(true);
-            setError(null);
-
-            if (pointsInput.value <= 0) {
-                throw new Error("ポイントは0より大きい値で入力してください。");
-            }
 
             // ポイントの登録
             const response = await fetch("/api/points", {
@@ -117,7 +114,7 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw ApplicationErrorFactory.createFromResponse(response);
             }
 
             teamCodeInput.reset();
@@ -126,17 +123,19 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
 
             await showAlertDialog({
                 title: DialogConstants.TITLE.REGISTERED,
-                message: "ポイントの登録が完了しました。",
+                message: getMessage("REGISTER_SUCCESS", { data: "ポイント" }),
             });
 
             onSubmit?.();
 
             return;
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(err);
+            ApplicationErrorHandler.logError(appError);
+
             await showAlertDialog({
                 title: DialogConstants.TITLE.ERROR,
-                message: `ポイントの登録に失敗しました。\n${error}`,
+                message: `${getMessage("REGISTER_FAILED", { data: "ポイント" })}\n${appError.message}`,
             });
             return;
         } finally {
@@ -152,7 +151,6 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
         teamCodeInput.reset();
         pointsInput.reset();
         setIsLoading(false);
-        setError(null);
     };
 
     return (
