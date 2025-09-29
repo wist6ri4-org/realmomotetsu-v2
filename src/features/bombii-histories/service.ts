@@ -27,7 +27,7 @@ export const BombiiHistoriesServiceImpl: BombiiHistoriesService = {
             }
 
             throw new InternalServerError({
-                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+                message: `Failed in ${this.postBombiiHistories.name}. ${error instanceof Error ? error.message : ""}`,
             });
         }
     },

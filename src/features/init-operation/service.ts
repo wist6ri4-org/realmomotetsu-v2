@@ -63,7 +63,7 @@ export const InitOperationServiceImpl: InitOperationService = {
             }
 
             throw new InternalServerError({
-                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+                message: `Failed in ${this.getDataForOperation.name}. ${error instanceof Error ? error.message : ""}`,
             });
         }
     },

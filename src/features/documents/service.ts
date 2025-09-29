@@ -26,7 +26,9 @@ export const DocumentsServiceImpl: DocumentsService = {
             }
 
             throw new InternalServerError({
-                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+                message: `Failed in ${this.getDocumentsByEventCode.name}. ${
+                    error instanceof Error ? error.message : ""
+                }`,
             });
         }
     },

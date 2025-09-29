@@ -43,7 +43,9 @@ export const PointsServiceImpl: PointsService = {
             }
 
             throw new InternalServerError({
-                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+                message: `Failed in ${this.getPointsByEventCodeGroupedByTeamCode.name}. ${
+                    error instanceof Error ? error.message : ""
+                }`,
             });
         }
     },
@@ -67,7 +69,7 @@ export const PointsServiceImpl: PointsService = {
             }
 
             throw new InternalServerError({
-                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+                message: `Failed in ${this.postPoints.name}. ${error instanceof Error ? error.message : ""}`,
             });
         }
     },
@@ -87,7 +89,7 @@ export const PointsServiceImpl: PointsService = {
             }
 
             throw new InternalServerError({
-                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+                message: `Failed in ${this.putPoints.name}. ${error instanceof Error ? error.message : ""}`,
             });
         }
     },

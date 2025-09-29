@@ -24,7 +24,7 @@ export const UsersByUuidServiceImpl: UsersByUuidService = {
             }
 
             throw new InternalServerError({
-                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+                message: `Failed in ${this.getUsersByUuid.name}. ${error instanceof Error ? error.message : ""}`,
             });
         }
     },
@@ -57,7 +57,7 @@ export const UsersByUuidServiceImpl: UsersByUuidService = {
             }
 
             throw new InternalServerError({
-                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+                message: `Failed in ${this.putUsersByUuid.name}. ${error instanceof Error ? error.message : ""}`,
             });
         }
     },

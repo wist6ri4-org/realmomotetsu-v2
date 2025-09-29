@@ -24,7 +24,7 @@ export const EventByEventCodeServiceImpl: EventByEventCodeService = {
             }
 
             throw new InternalServerError({
-                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+                message: `Failed in ${this.getEventByEventCode.name}. ${error instanceof Error ? error.message : ""}`,
             });
         }
     },

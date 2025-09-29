@@ -41,7 +41,7 @@ export const InitFormServiceImpl: InitFormService = {
             }
 
             throw new InternalServerError({
-                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+                message: `Failed in ${this.getDataForForm.name}. ${error instanceof Error ? error.message : ""}`,
             });
         }
     },

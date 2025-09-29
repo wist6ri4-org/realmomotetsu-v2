@@ -30,7 +30,9 @@ export const LatestTransitStationsServiceImpl: LatestTransitStationsService = {
             }
 
             throw new InternalServerError({
-                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+                message: `Failed in ${this.getLatestTransitStationsByEventCode.name}. ${
+                    error instanceof Error ? error.message : ""
+                }`,
             });
         }
     },

@@ -41,7 +41,7 @@ export const CurrentLocationServiceImpl: CurrentLocationService = {
             }
 
             throw new InternalServerError({
-                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+                message: `Failed in ${this.postCurrentLocation.name}. ${error instanceof Error ? error.message : ""}`,
             });
         }
     },

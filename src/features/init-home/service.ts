@@ -83,7 +83,7 @@ export const InitHomeServiceImpl: InitHomeService = {
             }
 
             throw new InternalServerError({
-                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+                message: `Failed in ${this.getDataForHome.name}. ${error instanceof Error ? error.message : ""}`,
             });
         }
     },

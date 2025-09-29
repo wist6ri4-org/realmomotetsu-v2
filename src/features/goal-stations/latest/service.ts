@@ -30,7 +30,9 @@ export const LatestGoalStationsServiceImpl: LatestGoalStationsService = {
             }
 
             throw new InternalServerError({
-                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+                message: `Failed in ${this.getLatestGoalStationByEventCode.name}. ${
+                    error instanceof Error ? error.message : ""
+                }`,
             });
         }
     },

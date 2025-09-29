@@ -44,7 +44,9 @@ export const TransitStationsServiceImpl: TransitStationsService = {
             }
 
             throw new InternalServerError({
-                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+                message: `Failed in ${this.getTransitStationsByEventCodeGroupedByTeamCode.name}. ${
+                    error instanceof Error ? error.message : ""
+                }`,
             });
         }
     },
@@ -74,7 +76,7 @@ export const TransitStationsServiceImpl: TransitStationsService = {
             }
 
             throw new InternalServerError({
-                message: `Failed in ${arguments.callee.name}. ${error instanceof Error ? error.message : ""}`,
+                message: `Failed in ${this.postTransitStations.name}. ${error instanceof Error ? error.message : ""}`,
             });
         }
     },

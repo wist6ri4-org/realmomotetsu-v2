@@ -10,6 +10,7 @@ import CustomSelect from "@/components/base/CustomSelect";
 import { DialogConstants } from "@/constants/dialogConstants";
 import { DiscordNotificationTemplates } from "@/constants/discordNotificationTemplates";
 import { GameConstants } from "@/constants/gameConstants";
+import { GetLatestGoalStationsResponse } from "@/features/goal-stations/latest/types";
 import { GetLatestTransitStationsResponse } from "@/features/transit-stations/latest/types";
 import { LatestTransitStations, Stations, Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
@@ -89,9 +90,9 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            const data = await response.json();
-            const nextGoalStation = data.data.station;
-            return nextGoalStation.stationCode;
+            const data: GetLatestGoalStationsResponse = (await response.json()).data;
+            const nextGoalStation = data.goalStation;
+            return nextGoalStation.station.stationCode;
         } catch (error) {
             console.error("Error fetching next goal station:", error);
             throw error;
