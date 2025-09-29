@@ -75,9 +75,16 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
     /**
      * データ更新用ハンドラー
      */
-    const handleUpdate = (): void => {
-        fetchData();
-    };
+    const handleUpdate = useCallback((): void => {
+        const currentScrollY = window.scrollY;
+
+        fetchData().finally(() => {
+            // スクロール位置を復元
+            setTimeout(() => {
+                window.scrollTo({ top: currentScrollY, behavior: "instant" });
+            }, 0);
+        });
+    }, [fetchData]);
 
     return (
         <>
