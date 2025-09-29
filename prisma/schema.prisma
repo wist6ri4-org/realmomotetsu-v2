@@ -35,9 +35,9 @@ model Events {
   eventCode       String            @unique @map("event_code")
   eventTypeCode   String            @map("event_type_code")
   eventName       String            @map("event_name")
-  startDate       DateTime?         @map("start_date")
-  createdAt       DateTime          @default(now()) @map("created_at")
-  updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at")
+  startDate       DateTime?         @map("start_date") @db.Timestamptz(3)
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   eventType       EventTypes        @relation(fields: [eventTypeCode], references: [eventTypeCode])
   teams           Teams[]
   goalStations    GoalStations[]
@@ -59,8 +59,8 @@ model EventTypes {
   eventTypeCode      String           @unique @map("event_type_code")
   description        String?          @map("description")
   routemapConfigFile String?          @map("routemap_config")
-  createdAt          DateTime         @default(now()) @map("created_at")
-  updatedAt          DateTime         @default(now()) @updatedAt @map("updated_at")
+  createdAt          DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   events             Events[]
   stations           Stations[]
   nearbyStations     NearbyStations[]
@@ -82,8 +82,8 @@ model Stations {
   longitude       Float?            @map("longitude")
   isMissionSet    Boolean           @default(false) @map("is_mission_set")
   eventTypeCode   String            @map("event_type_code")
-  createdAt       DateTime          @default(now()) @map("created_at")
-  updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at")
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   eventType       EventTypes        @relation(fields: [eventTypeCode], references: [eventTypeCode])
   fromStations    NearbyStations[]  @relation("from_station")
   toStations      NearbyStations[]  @relation("to_station")
@@ -103,8 +103,8 @@ model NearbyStations {
   fromStationCode String     @map("from_station_code")
   toStationCode   String     @map("to_station_code")
   timeMinutes     Int        @map("time_minutes")
-  createdAt       DateTime   @default(now()) @map("created_at")
-  updatedAt       DateTime   @default(now()) @updatedAt @map("updated_at")
+  createdAt       DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   eventType       EventTypes @relation(fields: [eventTypeCode], references: [eventTypeCode])
   fromStation     Stations   @relation("from_station", fields: [fromStationCode], references: [stationCode])
   toStation       Stations   @relation("to_station", fields: [toStationCode], references: [stationCode])
@@ -122,8 +122,8 @@ model Teams {
   teamName        String            @map("team_name")
   teamColor       String?           @map("team_color")
   eventCode       String            @map("event_code")
-  createdAt       DateTime          @default(now()) @map("created_at")
-  updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at")
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   event           Events            @relation(fields: [eventCode], references: [eventCode])
   bombiiHistory   BombiiHistories[]
   points          Points[]
@@ -141,8 +141,8 @@ model GoalStations {
   id          Int      @id @default(autoincrement()) @map("id")
   eventCode   String   @map("event_code")
   stationCode String   @map("station_code")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   event       Events   @relation(fields: [eventCode], references: [eventCode])
   station     Stations @relation(fields: [stationCode], references: [stationCode])
 
@@ -158,8 +158,8 @@ model TransitStations {
   stationCode String   @map("station_code")
   teamCode    String   @map("team_code")
   eventCode   String   @map("event_code")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   event       Events   @relation(fields: [eventCode], references: [eventCode])
   station     Stations @relation(fields: [stationCode], references: [stationCode])
   team        Teams    @relation(fields: [teamCode], references: [teamCode])
@@ -175,8 +175,8 @@ model BombiiHistories {
   id        Int      @id @default(autoincrement()) @map("id")
   teamCode  String   @map("team_code")
   eventCode String   @map("event_code")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   event     Events   @relation(fields: [eventCode], references: [eventCode])
   team      Teams    @relation(fields: [teamCode], references: [teamCode])
 
@@ -202,8 +202,8 @@ model Points {
   eventCode String      @map("event_code")
   points    Int         @default(0) @map("points")
   status    PointStatus @default(points) @map("status")
-  createdAt DateTime    @default(now()) @map("created_at")
-  updatedAt DateTime    @default(now()) @updatedAt @map("updated_at")
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   event     Events      @relation(fields: [eventCode], references: [eventCode])
   team      Teams       @relation(fields: [teamCode], references: [teamCode])
 
@@ -219,8 +219,8 @@ model Documents {
   name      String   @map("name")
   url       String   @map("url")
   eventCode String   @map("event_code")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   event     Events   @relation(fields: [eventCode], references: [eventCode])
 
   @@map("documents")
@@ -246,8 +246,8 @@ model Users {
   nickname    String?       @map("nickname")
   iconUrl     String?       @map("icon_url")
   masterRole  Role          @default(user) @map("master_role") // 恒久的なロール
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @default(now()) @updatedAt @map("updated_at")
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   attendances Attendances[]
 
   @@map("users")
@@ -263,8 +263,8 @@ model Attendances {
   eventCode String   @map("event_code")
   eventRole Role     @default(user) @map("event_role") // 一時的なロール
   teamCode  String   @map("team_code")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   user      Users    @relation(fields: [userId], references: [id])
   event     Events   @relation(fields: [eventCode], references: [eventCode])
   team      Teams    @relation(fields: [teamCode], references: [teamCode])

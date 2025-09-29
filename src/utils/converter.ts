@@ -26,6 +26,6 @@ export class Converter {
      */
     static convertUTCtoJST(utc: string | number | Date): string {
         const date = new Date(utc);
-        return date.toLocaleTimeString();
+        return date.toLocaleTimeString("ja-JP");
     }
 }

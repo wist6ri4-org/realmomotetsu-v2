@@ -24,6 +24,7 @@ const csvDocumentsPath = join(process.cwd(), "./prisma/csv/documents.csv");
 const csvAttendancesPath = join(process.cwd(), "./prisma/csv/attendances.csv");
 const csvAuthenticationPath = join(process.cwd(), "./prisma/csv/authentication.csv");
 const usersPath = join(process.cwd(), "./prisma/csv/users.csv");
+const viewsSqlPath = join(process.cwd(), "./supabase/sql/views.sql");
 
 // CSVを読み込む関数
 function readCSV(filePath) {
@@ -35,6 +36,58 @@ function readCSV(filePath) {
             .on("end", () => resolve(results))
             .on("error", reject);
     });
+}
+
+// SQLファイルを読み込んで実行する関数
+async function executeSQLFile(filePath) {
+    try {
+        console.log(`📄 SQLファイルを実行中: ${filePath}`);
+        const sqlContent = fs.readFileSync(filePath, "utf8");
+
+        // SQLファイルの内容を適切に分割して、各SQL文を実行
+        // コメントを除去してから処理
+        const cleanedContent = sqlContent
+            .split("\n")
+            .filter((line) => !line.trim().startsWith("--") && line.trim().length > 0)
+            .join("\n");
+
+        const sqlStatements = cleanedContent
+            .split(";")
+            .map((statement) => statement.trim())
+            .filter((statement) => statement.length > 0);
+
+        for (const statement of sqlStatements) {
+            if (statement.trim()) {
+                console.log(`  実行中: ${statement.substring(0, 50)}...`);
+                try {
+                    // 既存のビューを削除してから作成（CREATE OR REPLACE VIEWの代替）
+                    if (statement.toUpperCase().includes("CREATE VIEW")) {
+                        const viewNameMatch = statement.match(/CREATE\s+VIEW\s+(\w+)/i);
+                        if (viewNameMatch) {
+                            const viewName = viewNameMatch[1];
+                            try {
+                                await prisma.$executeRawUnsafe(`DROP VIEW IF EXISTS ${viewName}`);
+                                console.log(`  🗑️ 既存のビュー ${viewName} を削除しました`);
+                            } catch {
+                                // ビューが存在しない場合のエラーは無視
+                                console.log(`  ℹ️ ビュー ${viewName} は存在しませんでした`);
+                            }
+                        }
+                    }
+
+                    await prisma.$executeRawUnsafe(statement);
+                    console.log(`  ✅ SQL文を実行しました`);
+                } catch (sqlError) {
+                    console.error(`  ❌ SQL実行エラー: ${statement}`, sqlError.message);
+                    // エラーがあってもシードを続行
+                }
+            }
+        }
+        console.log(`✅ SQLファイルの実行が完了しました: ${filePath}`);
+    } catch (error) {
+        console.error(`❌ SQLファイルの実行中にエラーが発生しました: ${filePath}`, error);
+        // エラーがあってもシードを続行
+    }
 }
 
 async function main() {
@@ -427,6 +480,10 @@ async function main() {
             });
         }
         console.log(`✅ ${attendancesData.length}件のAttendancesを挿入しました`);
+
+        // 12. ビューを作成
+        console.log("🔧 データベースビューを作成中...");
+        await executeSQLFile(viewsSqlPath);
 
         console.log("🎉 すべてのシードデータの挿入が完了しました！");
     } catch (error) {
