@@ -269,7 +269,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
                             fullWidth
                             startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
                         >
-                            {isLoading ? "送信中..." : !isOperating ? "開催をお待ち下さい" : "送信"}
+                            {isLoading ? "送信中..." : !isOperating ? "準備中" : "送信"}
                         </CustomButton>
                     </Box>
                 </Box>
