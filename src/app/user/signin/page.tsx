@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { signIn } from "@/lib/auth";
+import { checkIsVisibleUser, signIn } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { Box, Typography, Alert, Card, CardContent, Link, Stack, CircularProgress } from "@mui/material";
@@ -82,8 +82,8 @@ const SignInPage: React.FC = (): React.JSX.Element => {
             const user = data.user || {};
             const attendances = user.attendances || [];
 
-            // 参加しているイベントを開催日降順またはid降順でソート
-            attendances.sort((a, b) => {
+            // 参加しているイベントのうち閲覧権限のあるものを開催日降順またはid降順でソート
+            attendances.filter((attendance) => checkIsVisibleUser(user, attendance)).sort((a, b) => {
                 if (a.event.startDate && b.event.startDate) {
                     return new Date(b.event.startDate).getTime() - new Date(a.event.startDate).getTime();
                 } else {

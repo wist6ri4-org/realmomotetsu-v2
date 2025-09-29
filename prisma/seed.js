@@ -211,6 +211,7 @@ async function main() {
             const originalUuid = row.uuid?.trim();
             const nickname = row.nickname?.trim();
             const email = row.email?.trim();
+            const masterRole = row.master_role?.trim() || "user";
             const createdAtStr = row.created_at?.trim();
             const createdAt = createdAtStr && createdAtStr !== "" ? new Date(createdAtStr) : new Date();
             const updatedAtStr = row.updated_at?.trim();
@@ -221,7 +222,7 @@ async function main() {
             const finalUuid = dynamicUuid || originalUuid;
 
             await prisma.users.create({
-                data: { uuid: finalUuid, nickname, email, createdAt, updatedAt },
+                data: { uuid: finalUuid, nickname, email, masterRole, createdAt, updatedAt },
             });
 
             if (dynamicUuid) {
