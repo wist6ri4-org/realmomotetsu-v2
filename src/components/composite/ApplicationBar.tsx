@@ -13,15 +13,10 @@ import Avatar from "@mui/material/Avatar";
 import { useState, MouseEvent, useEffect, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
 import { useParams, useRouter } from "next/navigation";
-import { Events } from "@/generated/prisma";
-import { signOut } from "@/lib/auth";
-import { UsersWithRelations } from "@/repositories/users/UsersRepository";
+import { checkIsVisibleUser, signOut } from "@/lib/auth";
 import { useUserIcon } from "@/contexts/UserIconContext";
-import { GetEventByEventCodeResponse } from "@/features/events/[eventCode]/types";
-import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
 import { CommonConstants } from "@/constants/commonConstants";
-import { ApplicationErrorFactory } from "@/error/applicationError";
-import { ApplicationErrorHandler } from "@/error/errorHandler";
+import { useEventContext } from "@/app/events/layout";
 
 /**
  * アプリケーションバーのプロパティ型定義
@@ -40,49 +35,10 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
     const router = useRouter();
     const { eventCode } = useParams();
 
-    const [event, setEvent] = useState<Events | null>(null);
-    const [user, setUser] = useState<UsersWithRelations | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const { user, event, isInitDataLoading } = useEventContext();
 
     // ユーザーアイコンのコンテキストを使用
     const { userIconUrl, updateUserIcon, refreshKey } = useUserIcon();
-
-    /**
-     * データの取得
-     */
-    const fetchData = useCallback(async () => {
-        try {
-            setIsLoading(true);
-
-            const [responseEvents, responseUsers] = await Promise.all([
-                fetch(`/api/events/${eventCode}`),
-                fetch(`/api/users/${sbUser.id}`),
-            ]);
-
-            if (!responseEvents.ok) {
-                throw ApplicationErrorFactory.createFromResponse(responseEvents);
-            }
-            if (!responseUsers.ok) {
-                throw ApplicationErrorFactory.createFromResponse(responseUsers);
-            }
-            const dataEvents: GetEventByEventCodeResponse = (await responseEvents.json()).data;
-            const dataUsers: GetUsersByUuidResponse = (await responseUsers.json()).data;
-
-            const eventData = dataEvents.event || {};
-            const userData = dataUsers.user || {};
-
-            setUser(userData as UsersWithRelations);
-            setEvent(eventData as Events);
-        } catch (error) {
-            const appError = ApplicationErrorFactory.normalize(error);
-            ApplicationErrorHandler.logError(appError);
-
-            setEvent(null);
-            setUser(null);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [eventCode, sbUser.id]);
 
     /**
      * ユーザーアイコンの取得
@@ -97,9 +53,8 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
      * コンポーネントのマウント時にデータを取得
      */
     useEffect(() => {
-        fetchData();
         loadUserIcon();
-    }, [fetchData, loadUserIcon]);
+    }, [loadUserIcon]);
 
     /**
      * ApplicationBarの高さをCSS変数として設定
@@ -185,8 +140,6 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
     const handleSignOut = async () => {
         try {
             await signOut();
-            setUser(null);
-            setEvent(null);
         } catch (error) {
             console.error("Error signing out:", error);
         } finally {
@@ -228,7 +181,7 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
                             }}
                         >
                             {user &&
-                                user.attendances.map((attendance) => (
+                                user.attendances.filter((attendance) => checkIsVisibleUser(user, attendance)).map((attendance) => (
                                     <MenuItem
                                         key={attendance.eventCode}
                                         onClick={() => {
@@ -245,7 +198,7 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
                             component="div"
                             sx={{ flexGrow: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
                         >
-                            {!isLoading && event ? event.eventName : "..."}
+                            {!isInitDataLoading && event ? event.eventName : "..."}
                         </Typography>
                         {user && (
                             <Box>

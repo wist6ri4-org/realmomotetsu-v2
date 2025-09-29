@@ -28,10 +28,12 @@ import React, { useState } from "react";
  * ArrivalGoalStationsFormコンポーネントのプロパティ型定義
  * @property {Teams[]} teams - チームのリスト
  * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
+ * @property {boolean} isOperating - 操作権限があるかどうか
  */
 interface ArrivalGoalStationsFormProps {
     teams: Teams[];
     onSubmit?: () => void;
+    isOperating: boolean;
 }
 
 /**
@@ -42,6 +44,7 @@ interface ArrivalGoalStationsFormProps {
 const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
     teams,
     onSubmit,
+    isOperating,
 }: ArrivalGoalStationsFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
@@ -206,10 +209,10 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
                         </CustomButton>
                         <CustomButton
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || !isOperating}
                             startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
                         >
-                            {isLoading ? "送信中..." : "送信"}
+                            {isLoading ? "送信中..." : !isOperating ? "準備中" : "送信"}
                         </CustomButton>
                     </Box>
                 </Box>

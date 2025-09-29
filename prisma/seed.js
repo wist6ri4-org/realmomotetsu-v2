@@ -211,6 +211,7 @@ async function main() {
             const originalUuid = row.uuid?.trim();
             const nickname = row.nickname?.trim();
             const email = row.email?.trim();
+            const masterRole = row.master_role?.trim() || "user";
             const createdAtStr = row.created_at?.trim();
             const createdAt = createdAtStr && createdAtStr !== "" ? new Date(createdAtStr) : new Date();
             const updatedAtStr = row.updated_at?.trim();
@@ -221,7 +222,7 @@ async function main() {
             const finalUuid = dynamicUuid || originalUuid;
 
             await prisma.users.create({
-                data: { uuid: finalUuid, nickname, email, createdAt, updatedAt },
+                data: { uuid: finalUuid, nickname, email, masterRole, createdAt, updatedAt },
             });
 
             if (dynamicUuid) {
@@ -285,6 +286,8 @@ async function main() {
             const eventTypeCode = row.event_type_code?.trim();
             const startDateStr = row.start_date?.trim();
             const startDate = startDateStr && startDateStr !== "" ? new Date(startDateStr) : null;
+            const visibilityLevel = row.visibility_level?.trim() || "admin";
+            const operationLevel = row.operation_level?.trim() || "admin";
             const createdAt = new Date(row.created_at?.trim());
             const updatedAt = new Date(row.updated_at?.trim());
 
@@ -294,6 +297,8 @@ async function main() {
                     eventName,
                     eventTypeCode,
                     startDate,
+                    visibilityLevel,
+                    operationLevel,
                     createdAt,
                     updatedAt,
                 },

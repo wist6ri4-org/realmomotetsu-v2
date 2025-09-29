@@ -29,6 +29,7 @@ import React, { useState } from "react";
 interface PointsExchangeFormProps {
     teams: Teams[];
     onSubmit?: () => void;
+    isOperating: boolean;
 }
 
 /**
@@ -39,6 +40,7 @@ interface PointsExchangeFormProps {
 const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
     teams,
     onSubmit,
+    isOperating,
 }: PointsExchangeFormProps): React.JSX.Element => {
     const teamCodeInput = useSelectInput("");
 
@@ -158,10 +160,10 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
                         </CustomButton>
                         <CustomButton
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || !isOperating}
                             startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
                         >
-                            {isLoading ? "送信中..." : "送信"}
+                            {isLoading ? "送信中..." : !isOperating ? "準備中" : "送信"}
                         </CustomButton>
                     </Box>
                 </Box>

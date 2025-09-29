@@ -32,12 +32,14 @@ import { useState } from "react";
  * @property {Stations[]} stations - 駅のリスト
  * @property {ClosestStation[]} [closestStations] - 最寄り駅のリスト（オプション）
  * @property {string} [initialTeamCode] - 初期選択されるチームコード（オプション）
+ * @property {boolean} isOperating - 操作権限があるかどうか
  */
 interface CurrentLocationFormProps {
     teams: Teams[];
     stations: Stations[];
     closestStations?: ClosestStation[];
     initialTeamCode?: string;
+    isOperating: boolean;
 }
 
 /**
@@ -50,6 +52,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     stations,
     closestStations,
     initialTeamCode,
+    isOperating,
 }: CurrentLocationFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
@@ -262,11 +265,11 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
                     <Box sx={{ marginTop: 5 }}>
                         <CustomButton
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || !isOperating}
                             fullWidth
                             startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
                         >
-                            {isLoading ? "送信中..." : "送信"}
+                            {isLoading ? "送信中..." : !isOperating ? "準備中" : "送信"}
                         </CustomButton>
                     </Box>
                 </Box>

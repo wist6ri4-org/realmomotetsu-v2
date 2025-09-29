@@ -15,6 +15,9 @@ import InformationDialog from "@/components/composite/InformationDialog";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { InitOperationResponse } from "@/features/init-operation/types";
+import { Events } from "@/generated/prisma";
+import { checkIsOperatingUser } from "@/lib/auth";
+import { UsersWithRelations } from "@/repositories/users/UsersRepository";
 import { TeamData } from "@/types/TeamData";
 import { Construction } from "@mui/icons-material";
 import { Alert, Box, CircularProgress, Divider } from "@mui/material";
@@ -27,11 +30,13 @@ import { useCallback, useEffect, useState } from "react";
 const ToolsPage: React.FC = (): React.JSX.Element => {
     const { eventCode } = useParams();
 
-    const { teams, stations, isInitDataLoading, contextError } = useEventContext();
+    const { teams, stations, user, event, isInitDataLoading, contextError } = useEventContext();
 
     const [teamData, setTeamData] = useState<TeamData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    const isOperating: boolean = checkIsOperatingUser(user as UsersWithRelations, event as Events);
 
     /**
      * データの取得
@@ -111,19 +116,19 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                 {/* メインコンテンツ */}
                 {!isLoading && !isInitDataLoading && !error && !contextError && (
                     <>
-                        <RegisterGoalStationsForm stations={stations} onSubmit={handleUpdate} />
+                        <RegisterGoalStationsForm stations={stations} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <ArrivalGoalStationsForm teams={teams} onSubmit={handleUpdate} />
+                        <ArrivalGoalStationsForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <RegisterBombiiAutoForm teamData={teamData} onSubmit={handleUpdate} />
+                        <RegisterBombiiAutoForm teamData={teamData} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <RegisterPointsForm teams={teams} onSubmit={handleUpdate} />
+                        <RegisterPointsForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <PointsTransferForm teams={teams} onSubmit={handleUpdate} />
+                        <PointsTransferForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <PointsExchangeForm teams={teams} onSubmit={handleUpdate} />
+                        <PointsExchangeForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <RegisterBombiiManualForm teams={teams} onSubmit={handleUpdate} />
+                        <RegisterBombiiManualForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
                         <MissionFormSenzokuike />
                         <InformationDialog
