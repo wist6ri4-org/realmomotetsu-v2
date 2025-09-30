@@ -338,7 +338,7 @@ export class UserUtils {
             const attendances = user.attendances || [];
 
             // 参加しているイベントのうち閲覧権限のあるものを開催日降順またはid降順でソート
-            attendances
+            const sortedAttendances = attendances
                 .filter((attendance) => checkIsVisibleUser(user, attendance))
                 .sort((a, b) => {
                     if (a.event.startDate && b.event.startDate) {
@@ -355,7 +355,7 @@ export class UserUtils {
                     }
                 });
 
-            return attendances.shift()?.eventCode || "";
+            return sortedAttendances.shift()?.eventCode || "";
         } catch (error) {
             throw error;
         }
