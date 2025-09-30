@@ -23,6 +23,7 @@ import { ApplicationErrorHandler, ValidationErrorHandler } from "@/error/errorHa
 import { Box, CircularProgress } from "@mui/material";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
+import { GameConstants } from "@/constants/gameConstants";
 
 /**
  * ArrivalGoalStationsFormコンポーネントのプロパティ型定義
@@ -92,7 +93,7 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
                     eventCode: eventCode,
                     teamCode: teamCodeInput.value,
                     points: pointsInput.value,
-                    status: "points",
+                    status: GameConstants.POINT_STATUS.POINTS,
                 }),
             });
 

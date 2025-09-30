@@ -8,9 +8,9 @@ import {
     PostPointsRequestSchema,
     PostPointsResponseSchema,
     PutPointsRequestSchema,
+    PutPointsResponseSchema,
 } from "@/features/points/validator";
 import { GetPointsResponse, PostPointsResponse, PutPointsResponse } from "@/features/points/types";
-import { PutPointsResponseSchema } from "../../../features/points/validator";
 
 /**
  * ポイントに関するAPIハンドラー
