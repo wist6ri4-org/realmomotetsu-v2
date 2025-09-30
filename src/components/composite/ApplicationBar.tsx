@@ -149,7 +149,7 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
 
     return (
         <>
-            <Box component="header" data-app-bar sx={{ width: "100%", position: "fixed", top: 0, zIndex: 300 }}>
+            <Box data-app-bar sx={{ width: "100%", position: "fixed", top: 0, zIndex: 300 }} maxWidth={900}>
                 <AppBar position="static">
                     <Toolbar>
                         <IconButton

@@ -90,18 +90,17 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ currentTab }: Navi
 
     return (
         <Box
-            component="footer"
             data-navigation-bar
             sx={{
                 width: "100%",
                 position: "fixed",
                 bottom: 0,
-                left: 0,
                 zIndex: 400,
                 backgroundColor: "background.paper",
                 borderTop: 1,
                 borderColor: "divider",
             }}
+            maxWidth={900}
         >
             <BottomNavigation showLabels value={activeTab} onChange={handleNavChange}>
                 {navigation.map((nav) => (
