@@ -13,7 +13,11 @@ import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
 import PointExchangerDisplay from "@/components/base/PointExchangerDisplay";
 import { DialogConstants } from "@/constants/dialogConstants";
+import { ErrorCodes } from "@/constants/errorCodes";
 import { GameConstants } from "@/constants/gameConstants";
+import { getMessage } from "@/constants/messages";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler, ValidationErrorHandler } from "@/error/errorHandler";
 import { PointStatus, Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
@@ -28,10 +32,12 @@ import React, { useState } from "react";
  * PointsTransferFormコンポーネントのプロパティ型定義
  * @property {Teams[]} teams - チームのリスト
  * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
+ * @property {boolean} isOperating - 操作権限があるかどうか
  */
 interface PointsTransferFormProps {
     teams: Teams[];
     onSubmit?: () => void;
+    isOperating: boolean;
 }
 
 // ポイント状態のオプション
@@ -48,6 +54,7 @@ const pointStatusOptions: RadioOption[] = [
 const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
     teams,
     onSubmit,
+    isOperating,
 }: PointsTransferFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
@@ -60,7 +67,6 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
 
     /**
      * ポイント状態の変更ハンドラー
@@ -97,14 +103,15 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
 
         try {
             setIsLoading(true);
-            setError(null);
 
-            if (pointsInput.value <= 0) {
-                throw new Error("移動ポイントは0より大きい値で入力してください。");
-            }
+            // バリデーション
+            ValidationErrorHandler.validatePositive(pointsInput.value, "ポイント");
 
             if (fromTeamCodeInput.value === toTeamCodeInput.value) {
-                throw new Error("移動元と移動先のチームは異なるチームでなければなりません。");
+                throw ApplicationErrorFactory.create(
+                    ErrorCodes.VALIDATION_ERROR,
+                    getMessage("SAME_TEAM_ERROR")
+                );
             }
 
             const [responseOfFrom, responseOfTo] = await Promise.all([
@@ -135,11 +142,11 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
             ]);
 
             if (!responseOfFrom.ok) {
-                throw new Error(`HTTP error! status: ${responseOfFrom.status}`);
+                throw ApplicationErrorFactory.createFromResponse(responseOfFrom);
             }
 
             if (!responseOfTo.ok) {
-                throw new Error(`HTTP error! status: ${responseOfTo.status}`);
+                throw ApplicationErrorFactory.createFromResponse(responseOfTo);
             }
 
             fromTeamCodeInput.reset();
@@ -148,18 +155,20 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
             setPointStatus(GameConstants.POINT_STATUS.POINTS);
 
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_UPDATED,
-                message: "ポイントの移動が完了しました。",
+                title: DialogConstants.TITLE.UPDATED,
+                message: getMessage("POINTS_TRANSFER_SUCCESS"),
             });
 
             onSubmit?.();
 
             return;
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(err);
+            ApplicationErrorHandler.logError(appError);
+
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_ERROR,
-                message: `ポイントの移動に失敗しました。\n${error}`,
+                title: DialogConstants.TITLE.ERROR,
+                message: `${getMessage("POINTS_TRANSFER_FAILED")}\n${appError.message}`,
             });
             return;
         } finally {
@@ -176,7 +185,6 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
         toTeamCodeInput.reset();
         pointsInput.reset();
         setIsLoading(false);
-        setError(null);
     };
 
     return (
@@ -254,8 +262,7 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                         <CustomButton
                             type="button"
-                            variant="outlined"
-                            color="secondary"
+                            color="light"
                             onClick={resetForm}
                             disabled={isLoading}
                             sx={{ marginRight: 1 }}
@@ -264,10 +271,10 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
                         </CustomButton>
                         <CustomButton
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || !isOperating}
                             startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
                         >
-                            {isLoading ? "送信中..." : "送信"}
+                            {isLoading ? "送信中..." : !isOperating ? "準備中" : "送信"}
                         </CustomButton>
                     </Box>
                 </Box>

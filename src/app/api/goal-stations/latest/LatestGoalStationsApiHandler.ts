@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { LatestGoalStationsServiceImpl } from "@/features/goal-stations/latest/service";
-import { getLatestGoalStationsRequestSchema } from "@/features/goal-stations/latest/validator";
+import {
+    GetLatestGoalStationsRequestSchema,
+    GetLatestGoalStationsResponseSchema,
+} from "@/features/goal-stations/latest/validator";
 import { GetLatestGoalStationsResponse } from "@/features/goal-stations/latest/types";
 
 /**
@@ -41,24 +44,22 @@ class LatestGoalStationsApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
             const queryParams = Object.fromEntries(searchParams.entries());
-            const validatedParams = getLatestGoalStationsRequestSchema.parse(queryParams);
+            const validatedParams = GetLatestGoalStationsRequestSchema.parse(queryParams);
 
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
             const data: GetLatestGoalStationsResponse =
-                await LatestGoalStationsServiceImpl.getLatestGoalStationByEventCode(
-                    validatedParams
-                );
+                await LatestGoalStationsServiceImpl.getLatestGoalStationByEventCode(validatedParams);
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initOperationResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: GetLatestGoalStationsResponse = GetLatestGoalStationsResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved goal-stations/latest data", {
-                latestGoalStationCode: data.station.station.stationCode,
+                latestGoalStationCode: validatedResponse.goalStation.station.stationCode,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
-import { initRoutemapRequestSchema } from "@/features/init-routemap/validator";
+import { InitRoutemapRequestSchema, InitRoutemapResponseSchema } from "@/features/init-routemap/validator";
 import { InitRoutemapResponse } from "@/features/init-routemap/types";
 import { InitRoutemapServiceImpl } from "@/features/init-routemap/service";
 
@@ -41,23 +41,23 @@ class InitRoutemapApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
             const queryParams = Object.fromEntries(searchParams.entries());
-            const validatedParams = initRoutemapRequestSchema.parse(queryParams);
+            const validatedParams = InitRoutemapRequestSchema.parse(queryParams);
 
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
             const data: InitRoutemapResponse = await InitRoutemapServiceImpl.getDataForRoutemap(validatedParams);
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initFormResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: InitRoutemapResponse = InitRoutemapResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved init-routemap data", {
-                teamDataCount: data.teamData.length,
-                hasNextGoal: !!data.nextGoalStation,
-                hasBombiiTeam: !!data.bombiiTeam,
+                teamDataCount: validatedResponse.teamData.length,
+                hasNextGoal: !!validatedResponse.nextGoalStation,
+                hasBombiiTeam: !!validatedResponse.bombiiTeam,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);

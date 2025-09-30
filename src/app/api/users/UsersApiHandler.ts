@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { UsersServiceImpl } from "@/features/users/service";
-import { postUsersRequestSchema } from "@/features/users/validator";
+import { PostUsersRequestSchema, PostUsersResponseSchema } from "@/features/users/validator";
 import { PostUsersResponse } from "@/features/users/types";
 
 /**
@@ -40,21 +40,21 @@ class UsersApiHandler extends BaseApiHandler {
             const body = await req.json();
 
             // Zodでバリデーション
-            const validatedBody = postUsersRequestSchema.parse(body);
+            const validatedBody = PostUsersRequestSchema.parse(body);
 
             this.logDebug("Request body", validatedBody);
 
             // サービスからデータを取得
             const data: PostUsersResponse = await UsersServiceImpl.postUsers(validatedBody);
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initOperationResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: PostUsersResponse = PostUsersResponseSchema.parse(data);
 
             this.logInfo("Successfully processed users data", {
-                id: data.user.id,
+                id: validatedResponse.user.id,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);

@@ -14,6 +14,9 @@ import { Documents, Stations, Teams } from "@/generated/prisma";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 import { UsersWithRelations } from "@/repositories/users/UsersRepository";
 import { EventWithRelations } from "@/repositories/events/EventsRepository";
+import { CommonConstants } from "@/constants/commonConstants";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 
 /**
  * Contextの型定義
@@ -92,7 +95,7 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
 
                 const response = await fetch(`/api/init?eventCode=${eventCode}&uuid=${sbUser.id}`);
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw ApplicationErrorFactory.createFromResponse(response);
                 }
 
                 const data = await response.json();
@@ -108,8 +111,10 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
 
                 setRawInitData(initData);
             } catch (err) {
-                console.error("Error fetching init data:", err);
-                setContextError(err instanceof Error ? err.message : "Unknown error");
+                const appError = ApplicationErrorFactory.normalize(err);
+                ApplicationErrorHandler.logError(appError);
+
+                setContextError(appError.message);
             } finally {
                 setIsInitDataLoading(false);
             }
@@ -151,24 +156,34 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
     return (
         <EventContext.Provider value={contextValue}>
             <ApplicationBar sbUser={sbUser} />
-            <Header />
-            <Box sx={{ flex: 1, padding: 1 }}>
-                {isInitDataLoading ? (
-                    <Box sx={{ textAlign: "center", margin: 4 }}>
-                        <CircularProgress size={40} color="primary" />
-                    </Box>
-                ) : contextError ? (
-                    <Box sx={{ textAlign: "center", margin: 4 }}>
-                        <Typography variant="body1" color="error">
-                            エラーが発生しました: {contextError}
-                        </Typography>
-                    </Box>
-                ) : (
-                    children
-                )}
+            <Box
+                sx={{
+                    flex: 1,
+                    paddingTop: `calc(var(${CommonConstants.CSS.VARIABLES.APPLICATION_BAR_HEIGHT}, 64px))`,
+                    paddingBottom: `calc(var(${CommonConstants.CSS.VARIABLES.NAVIGATION_BAR_HEIGHT}, 56px))`,
+                    minHeight: "100vh",
+                    boxSizing: "border-box",
+                }}
+            >
+                <Header />
+                <Box sx={{ flex: 1, padding: 1 }}>
+                    {isInitDataLoading ? (
+                        <Box sx={{ textAlign: "center", margin: 4 }}>
+                            <CircularProgress size={40} color="primary" />
+                        </Box>
+                    ) : contextError ? (
+                        <Box sx={{ textAlign: "center", margin: 4 }}>
+                            <Typography variant="body1" color="error">
+                                エラーが発生しました: {contextError}
+                            </Typography>
+                        </Box>
+                    ) : (
+                        children
+                    )}
+                </Box>
+                <Footer />
             </Box>
             <RoutemapDialog />
-            <Footer />
             <NavigationBar />
         </EventContext.Provider>
     );

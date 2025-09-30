@@ -13,12 +13,10 @@ import Avatar from "@mui/material/Avatar";
 import { useState, MouseEvent, useEffect, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
 import { useParams, useRouter } from "next/navigation";
-import { Events } from "@/generated/prisma";
-import { signOut } from "@/lib/auth";
-import { UsersWithRelations } from "@/repositories/users/UsersRepository";
+import { checkIsVisibleUser, signOut } from "@/lib/auth";
 import { useUserIcon } from "@/contexts/UserIconContext";
-import { GetEventByEventCodeResponse } from "@/features/events/[eventCode]/types";
-import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
+import { CommonConstants } from "@/constants/commonConstants";
+import { useEventContext } from "@/app/events/layout";
 
 /**
  * アプリケーションバーのプロパティ型定義
@@ -33,55 +31,14 @@ interface ApplicationBarProps {
  * @param {ApplicationBarProps} props - アプリケーションバーのプロパティ
  * @return {React.JSX.Element} - アプリケーションバーコンポーネント
  */
-const ApplicationBar: React.FC<ApplicationBarProps> = ({
-    sbUser,
-}: ApplicationBarProps): React.JSX.Element => {
+const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBarProps): React.JSX.Element => {
     const router = useRouter();
     const { eventCode } = useParams();
 
-    const [event, setEvent] = useState<Events | null>(null);
-    const [user, setUser] = useState<UsersWithRelations | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const { user, event, isInitDataLoading } = useEventContext();
 
     // ユーザーアイコンのコンテキストを使用
     const { userIconUrl, updateUserIcon, refreshKey } = useUserIcon();
-
-    /**
-     * データの取得
-     */
-    const fetchData = useCallback(async () => {
-        try {
-            setIsLoading(true);
-
-            const [responseEvents, responseUsers] = await Promise.all([
-                fetch(`/api/events/${eventCode}`),
-                fetch(`/api/users/${sbUser.id}`),
-            ]);
-
-            if (!responseEvents.ok) {
-                throw new Error(`HTTP error! status: ${responseEvents.status}`);
-            }
-            if (!responseUsers.ok) {
-                throw new Error(`HTTP error! status: ${responseUsers.status}`);
-            }
-            const dataEvents: GetEventByEventCodeResponse = (await responseEvents.json()).data;
-            const dataUsers: GetUsersByUuidResponse = (await responseUsers.json()).data;
-
-            const eventData = dataEvents.event || {};
-            const userData = dataUsers.user || {};
-            if (!eventData || !userData) {
-                throw new Error("Event or user data not found");
-            }
-            setUser(userData as UsersWithRelations);
-            setEvent(eventData as Events);
-        } catch (error) {
-            console.error("Error fetching event data:", error);
-            setEvent(null);
-            setUser(null);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [eventCode, sbUser.id]);
 
     /**
      * ユーザーアイコンの取得
@@ -96,39 +53,82 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
      * コンポーネントのマウント時にデータを取得
      */
     useEffect(() => {
-        fetchData();
         loadUserIcon();
-    }, [eventCode, sbUser.id, fetchData, loadUserIcon]);
+    }, [loadUserIcon]);
 
-    // ページがフォーカスされたときにアイコンを再読み込み（アイコン変更後の反映のため）
+    /**
+     * ApplicationBarの高さをCSS変数として設定
+     */
     useEffect(() => {
-        const handleFocus = () => {
+        const updateAppBarHeight = () => {
+            const appBarElement = document.querySelector("[data-app-bar]") as HTMLElement;
+            if (appBarElement) {
+                const height = appBarElement.offsetHeight;
+                document.documentElement.style.setProperty(
+                    CommonConstants.CSS.VARIABLES.APPLICATION_BAR_HEIGHT,
+                    `${height}px`
+                );
+            }
+        };
+
+        // 初期設定
+        updateAppBarHeight();
+
+        // リサイズ時に更新
+        window.addEventListener("resize", updateAppBarHeight);
+
+        return () => {
+            window.removeEventListener("resize", updateAppBarHeight);
+        };
+    }, []);
+
+    /**
+     * ページがフォーカスされたときにアイコンを再読み込み（アイコン変更後の反映のため）
+     */
+    useEffect(() => {
+        const handleFocus = async () => {
             if (sbUser?.id) {
-                loadUserIcon();
+                await updateUserIcon(sbUser.id);
             }
         };
 
         window.addEventListener("focus", handleFocus);
         return () => window.removeEventListener("focus", handleFocus);
-    }, [sbUser?.id, loadUserIcon]);
+    }, [sbUser?.id, updateUserIcon]);
 
     // イベントメニューの状態管理
     const [anchorEventMenu, setAnchorEventMenu] = useState<null | HTMLElement>(null);
     const handleEventMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorEventMenu(event.currentTarget);
     };
+
+    /**
+     * イベントメニューを閉じる処理
+     */
     const handleEventMenuClose = () => {
         setAnchorEventMenu(null);
     };
 
     // ユーザーメニューの状態管理
     const [anchorUserMenu, setAnchorUserMenu] = useState<null | HTMLElement>(null);
+
+    /**
+     * ユーザーメニューを開く処理
+     */
     const handleUserMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorUserMenu(event.currentTarget);
     };
+
+    /**
+     * ユーザーメニューを閉じる処理
+     */
     const handleUserMenuClose = () => {
         setAnchorUserMenu(null);
     };
+
+    /**
+     * ユーザー設定ページへ遷移する処理
+     */
     const handlePushUserSettings = () => {
         handleUserMenuClose();
         router.push(`/events/${eventCode}/operation/user-settings`);
@@ -140,8 +140,6 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
     const handleSignOut = async () => {
         try {
             await signOut();
-            setUser(null);
-            setEvent(null);
         } catch (error) {
             console.error("Error signing out:", error);
         } finally {
@@ -151,11 +149,8 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
 
     return (
         <>
-            <Box
-                component="header"
-                sx={{ width: "100%", position: "sticky", top: 0, zIndex: 300 }}
-            >
-                <AppBar position="sticky">
+            <Box data-app-bar sx={{ width: "100%", position: "fixed", top: 0, zIndex: 300 }} maxWidth={900}>
+                <AppBar position="static">
                     <Toolbar>
                         <IconButton
                             size="large"
@@ -186,7 +181,7 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
                             }}
                         >
                             {user &&
-                                user.attendances.map((attendance) => (
+                                user.attendances.filter((attendance) => checkIsVisibleUser(user, attendance)).map((attendance) => (
                                     <MenuItem
                                         key={attendance.eventCode}
                                         onClick={() => {
@@ -198,8 +193,12 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
                                     </MenuItem>
                                 ))}
                         </Menu>
-                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                            {!isLoading && event ? event.eventName : "..."}
+                        <Typography
+                            variant="h6"
+                            component="div"
+                            sx={{ flexGrow: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+                        >
+                            {!isInitDataLoading && event ? event.eventName : "..."}
                         </Typography>
                         {user && (
                             <Box>
@@ -244,10 +243,10 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({
                                         zIndex: 400,
                                     }}
                                 >
-                                    <MenuItem onClick={handlePushUserSettings}>
-                                        ユーザー設定
+                                    <MenuItem onClick={handlePushUserSettings}>ユーザー設定</MenuItem>
+                                    <MenuItem onClick={handleSignOut} sx={{ color: "red" }}>
+                                        サインアウト
                                     </MenuItem>
-                                    <MenuItem onClick={handleSignOut}>サインアウト</MenuItem>
                                 </Menu>
                             </Box>
                         )}

@@ -4,6 +4,7 @@ import { InitRoutemapRequest, InitRoutemapResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { TeamData } from "@/types/TeamData";
 import DijkstraUtils from "@/utils/dijkstraUtils";
+import { ApiError, InternalServerError } from "@/error";
 
 export const InitRoutemapServiceImpl: InitRoutemapService = {
     /**
@@ -78,8 +79,13 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
 
             return res;
         } catch (error) {
-            console.error("Error in getDataForRoutemap:", error);
-            throw new Error("Failed to retrieve init routemap data");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${this.getDataForRoutemap.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };

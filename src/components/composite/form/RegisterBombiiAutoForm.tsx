@@ -10,6 +10,9 @@ import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
 import { DialogConstants } from "@/constants/dialogConstants";
 import { DiscordNotificationTemplates } from "@/constants/discordNotificationTemplates";
+import { getMessage } from "@/constants/messages";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useDiscordNotification } from "@/hooks/useDiscordNotification";
@@ -23,10 +26,12 @@ import React, { useState } from "react";
  * RegisterBombiiAutoFormコンポーネントのプロパティ型定義
  * @property {TeamData[]} teamData - チームデータのリスト
  * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
+ * @property {boolean} isOperating - 操作権限があるかどうか
  */
 interface RegisterBombiiAutoFormProps {
     teamData: TeamData[];
     onSubmit?: () => void;
+    isOperating: boolean;
 }
 
 /**
@@ -37,6 +42,7 @@ interface RegisterBombiiAutoFormProps {
 const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
     teamData,
     onSubmit,
+    isOperating,
 }: RegisterBombiiAutoFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
@@ -44,7 +50,6 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
 
     const { sendNotification, clearError } = useDiscordNotification();
 
@@ -89,7 +94,6 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
 
         try {
             setIsLoading(true);
-            setError(null);
 
             // ボンビーを登録
             const response = await fetch("/api/bombii-histories", {
@@ -104,24 +108,26 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw ApplicationErrorFactory.createFromResponse(response);
             }
 
             notifyToDiscord(bombiiTeam.teamName);
 
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_REGISTERED,
-                message: "ボンビーの登録が完了しました。",
+                title: DialogConstants.TITLE.REGISTERED,
+                message: getMessage("REGISTER_SUCCESS", { data: "ボンビー" }),
             });
 
             onSubmit?.();
 
             return;
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(err);
+            ApplicationErrorHandler.logError(appError);
+
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_ERROR,
-                message: `ボンビーの登録に失敗しました。\n${error}`,
+                title: DialogConstants.TITLE.ERROR,
+                message: `${getMessage("REGISTER_FAILED", { data: "ボンビー" })}\n${appError.message}`,
             });
             return;
         } finally {
@@ -150,10 +156,10 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                         <CustomButton
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || !isOperating}
                             startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
                         >
-                            {isLoading ? "送信中..." : "送信"}
+                            {isLoading ? "送信中..." : !isOperating ? "準備中" : "送信"}
                         </CustomButton>
                     </Box>
                 </Box>

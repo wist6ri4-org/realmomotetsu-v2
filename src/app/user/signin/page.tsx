@@ -1,15 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { signIn } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { Box, Typography, Alert, Card, CardContent, Link, Stack, CircularProgress } from "@mui/material";
 import { Email, Lock } from "@mui/icons-material";
 import { CustomTextField } from "@/components/base/CustomTextField";
 import CustomButton from "@/components/base/CustomButton";
-import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
 import { Messages } from "@/constants/messages";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
+import { UserUtils } from "@/utils/userUtils";
+import { signIn } from "@/lib/auth";
 
 /**
  * サインインページコンポーネント
@@ -43,18 +45,18 @@ const SignInPage: React.FC = (): React.JSX.Element => {
         try {
             const { user, error } = await signIn(email, password);
             if (error) {
-                setError(Messages.MSG_LOGIN_FAILED);
+                setError(Messages.LOGIN_FAILED);
             } else {
                 const eventCode = await fetchEventCode(user as User);
                 if (eventCode) {
                     router.push(`/events/${eventCode}/home`);
                     return;
                 } else {
-                    setError(Messages.MSG_ATTENDANCES_NOT_REGISTERED);
+                    setError(Messages.ATTENDANCES_NOT_REGISTERED);
                 }
             }
         } catch {
-            setError(Messages.MSG_UNEXPECTED_ERROR);
+            setError(Messages.UNEXPECTED_ERROR);
         } finally {
             setIsLoading(false);
         }
@@ -70,36 +72,10 @@ const SignInPage: React.FC = (): React.JSX.Element => {
             setError(null);
 
             const uuid = sbUser.id;
-            const response = await fetch(`/api/users/${uuid}`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data: GetUsersByUuidResponse = (await response.json()).data as GetUsersByUuidResponse;
-
-            const user = data.user || {};
-            const attendances = user.attendances || [];
-
-            // 参加しているイベントを開催日降順またはid降順でソート
-            attendances.sort((a, b) => {
-                if (a.event.startDate && b.event.startDate) {
-                    return new Date(b.event.startDate).getTime() - new Date(a.event.startDate).getTime();
-                } else {
-                    if (!a.event.startDate && !b.event.startDate) {
-                        return b.event.id - a.event.id;
-                    } else if (!a.event.startDate) {
-                        return 1;
-                    } else if (!b.event.startDate) {
-                        return -1;
-                    }
-                    return 0;
-                }
-            });
-
-            return attendances.shift()?.eventCode || "";
+            return await UserUtils.fetchEventCode(uuid);
         } catch (error) {
-            console.error("Error fetching event code:", error);
-            setError(error instanceof Error ? error.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(error);
+            ApplicationErrorHandler.logError(appError, "WARN");
             return "";
         }
     };

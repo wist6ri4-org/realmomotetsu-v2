@@ -12,7 +12,12 @@ import RegisterBombiiManualForm from "@/components/composite/form/RegisterBombii
 import RegisterGoalStationsForm from "@/components/composite/form/RegisterGoalStationsForm";
 import RegisterPointsForm from "@/components/composite/form/RegisterPointsForm";
 import InformationDialog from "@/components/composite/InformationDialog";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { InitOperationResponse } from "@/features/init-operation/types";
+import { Events } from "@/generated/prisma";
+import { checkIsOperatingUser } from "@/lib/auth";
+import { UsersWithRelations } from "@/repositories/users/UsersRepository";
 import { TeamData } from "@/types/TeamData";
 import { Construction } from "@mui/icons-material";
 import { Alert, Box, CircularProgress, Divider } from "@mui/material";
@@ -25,11 +30,13 @@ import { useCallback, useEffect, useState } from "react";
 const ToolsPage: React.FC = (): React.JSX.Element => {
     const { eventCode } = useParams();
 
-    const { teams, stations, isInitDataLoading, contextError } = useEventContext();
+    const { teams, stations, user, event, isInitDataLoading, contextError } = useEventContext();
 
     const [teamData, setTeamData] = useState<TeamData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    const isOperating: boolean = checkIsOperatingUser(user as UsersWithRelations, event as Events);
 
     /**
      * データの取得
@@ -45,19 +52,18 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
 
             const response = await fetch("/api/init-operation?" + params.toString());
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw ApplicationErrorFactory.createFromResponse(response);
             }
 
             const data: InitOperationResponse = (await response.json()).data;
             const teamData = data.teamData || [];
 
-            if (!Array.isArray(teamData)) {
-                throw new Error("Unexpected response structure");
-            }
             setTeamData(teamData as TeamData[]);
         } catch (error) {
-            console.error("Error fetching data:", error);
-            setError(error instanceof Error ? error.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(error);
+            ApplicationErrorHandler.logError(appError);
+
+            setError(appError.message);
             setTeamData([]);
         } finally {
             setIsLoading(false);
@@ -74,9 +80,16 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
     /**
      * データ更新用ハンドラー
      */
-    const handleUpdate = (): void => {
-        fetchData();
-    };
+    const handleUpdate = useCallback((): void => {
+        const currentScrollY = window.scrollY;
+
+        fetchData().finally(() => {
+            // スクロール位置を復元
+            setTimeout(() => {
+                window.scrollTo({ top: currentScrollY, behavior: "instant" });
+            }, 0);
+        });
+    }, [fetchData]);
 
     return (
         <>
@@ -103,19 +116,19 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                 {/* メインコンテンツ */}
                 {!isLoading && !isInitDataLoading && !error && !contextError && (
                     <>
-                        <RegisterGoalStationsForm stations={stations} onSubmit={handleUpdate} />
+                        <RegisterGoalStationsForm stations={stations} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <ArrivalGoalStationsForm teams={teams} onSubmit={handleUpdate} />
+                        <ArrivalGoalStationsForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <RegisterBombiiAutoForm teamData={teamData} onSubmit={handleUpdate} />
+                        <RegisterBombiiAutoForm teamData={teamData} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <RegisterPointsForm teams={teams} onSubmit={handleUpdate} />
+                        <RegisterPointsForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <PointsTransferForm teams={teams} onSubmit={handleUpdate} />
+                        <PointsTransferForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <PointsExchangeForm teams={teams} onSubmit={handleUpdate} />
+                        <PointsExchangeForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <RegisterBombiiManualForm teams={teams} onSubmit={handleUpdate} />
+                        <RegisterBombiiManualForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
                         <MissionFormSenzokuike />
                         <InformationDialog

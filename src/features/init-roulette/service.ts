@@ -1,8 +1,7 @@
-import LocationUtils from "@/utils/locationUtils";
+import { ApiError, InternalServerError } from "@/error";
 import { InitRouletteService } from "./interface";
 import { InitRouletteRequest, InitRouletteResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
-import { ClosestStation } from "@/types/ClosestStation";
 
 export const InitRouletteServiceImpl: InitRouletteService = {
     /**
@@ -11,38 +10,26 @@ export const InitRouletteServiceImpl: InitRouletteService = {
      * @return {Promise<InitRouletteResponse>} レスポンス
      */
     async getDataForRoulette(req: InitRouletteRequest): Promise<InitRouletteResponse> {
-        const eventsRepository = RepositoryFactory.getEventsRepository();
-        const stationsRepository = RepositoryFactory.getStationsRepository();
         const transitStationsRepository = RepositoryFactory.getTransitStationsRepository();
 
         try {
-            // イベント種別の取得
-            const events = await eventsRepository.findByEventCodeWithRelations(req.eventCode);
-            const eventTypeCode = events?.eventTypeCode || "";
-
             // レスポンスの作成
-            const [stations, latestTransitStations] = await Promise.all([
-                stationsRepository.findByEventTypeCode(eventTypeCode),
+            const [latestTransitStations] = await Promise.all([
                 transitStationsRepository.findLatestByEventCode(req.eventCode),
             ]);
             const res: InitRouletteResponse = {
                 latestTransitStations: latestTransitStations,
             };
 
-            // 位置情報が提供されている場合、近隣の駅を計算
-            if (req.latitude && req.longitude) {
-                const closestStations: ClosestStation[] = LocationUtils.calculate(
-                    stations,
-                    req.latitude,
-                    req.longitude
-                );
-                res.closestStations = closestStations;
-            }
-
             return res;
         } catch (error) {
-            console.error("Error in getDataForRoulette:", error);
-            throw new Error("Failed to retrieve init form data");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${this.getDataForRoulette.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };

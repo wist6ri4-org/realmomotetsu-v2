@@ -26,6 +26,8 @@ import { useParams } from "next/navigation";
 import { InitRoutemapResponse } from "@/features/init-routemap/types";
 import { Teams } from "@/generated/prisma";
 import { useEventContext } from "@/app/events/layout";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 
 // ズーム設定定数
 const ZOOM_CONFIG = {
@@ -93,20 +95,14 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
 
             const response = await fetch("/api/init-routemap?" + params.toString());
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw ApplicationErrorFactory.createFromResponse(response);
             }
 
             const data: InitRoutemapResponse = (await response.json()).data;
             const teamData = data?.teamData || [];
             const nextGoalStationData = data?.nextGoalStation || {};
             const bombiiTeamData = data?.bombiiTeam || {};
-            if (
-                !Array.isArray(teamData) ||
-                typeof nextGoalStationData !== "object" ||
-                typeof bombiiTeamData !== "object"
-            ) {
-                throw new Error("Unexpected response structure");
-            }
+
             setTeamData(teamData as TeamData[]);
             setNextGoalStation(nextGoalStationData as GoalStationsWithRelations);
             setBombiiTeam(bombiiTeamData as Teams);
@@ -114,8 +110,10 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
             // 初期表示では全チームを表示
             setVisibleTeams((teamData as TeamData[]).map((team) => team.teamCode));
         } catch (error) {
-            console.error("Error fetching data:", error);
-            setError(error instanceof Error ? error.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(error);
+            ApplicationErrorHandler.logError(appError);
+
+            setError(appError.message);
             setTeamData([]);
         } finally {
             setIsLoading(false);
@@ -168,7 +166,10 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
                     fullScreen
                     sx={{ zIndex: 500 }}
                 >
-                    <DialogTitle id="routemap-dialog-title">路線図</DialogTitle>
+                    <DialogTitle id="routemap-dialog-title">
+                        <MapIcon sx={{ fontSize: "2rem", marginRight: 1 }} />
+                        路線図
+                    </DialogTitle>
                     <DialogContent
                         sx={{
                             padding: 0,
@@ -218,7 +219,7 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
                                             position: "absolute",
                                             bottom: 16,
                                             right: 16,
-                                            zIndex: 1000,
+                                            zIndex: 600,
                                         }}
                                     >
                                         <Paper elevation={3} sx={{ p: 1 }}>
@@ -293,7 +294,7 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
                                     ))}
                                 </Grid>
                             </Paper>
-                            <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
+                            <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%", paddingBottom: 4 }}>
                                 <CustomButton onClick={handleClose} color="warning">
                                     閉じる
                                 </CustomButton>

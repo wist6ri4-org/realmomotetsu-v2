@@ -5,13 +5,16 @@ import PageTitle from "@/components/base/PageTitle";
 import CurrentLocationForm from "@/components/composite/form/CurrentLocationForm";
 import { ClosestStation } from "@/types/ClosestStation";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
-import { ArrowDropDown, Assignment } from "@mui/icons-material";
+import { ArrowDropDown, Assignment, Help } from "@mui/icons-material";
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, CircularProgress, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useEventContext } from "../../layout";
-import { InitFormResponse } from "@/features/init-form/types";
 import { AttendancesWithRelations } from "@/repositories/attendances/AttendancesRepository";
+import LocationUtils from "@/utils/locationUtils";
+import { checkIsOperatingUser } from "@/lib/auth";
+import { UsersWithRelations } from "@/repositories/users/UsersRepository";
+import { Events } from "@/generated/prisma";
 
 /**
  * フォームページ
@@ -20,7 +23,7 @@ import { AttendancesWithRelations } from "@/repositories/attendances/Attendances
 const FormPage: React.FC = (): React.JSX.Element => {
     const { eventCode } = useParams();
 
-    const { teams, stations, user, isInitDataLoading, contextError } = useEventContext();
+    const { teams, stations, user, event, isInitDataLoading, contextError } = useEventContext();
 
     const [closestStations, setClosestStations] = useState<ClosestStation[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -28,47 +31,33 @@ const FormPage: React.FC = (): React.JSX.Element => {
 
     const attendance: AttendancesWithRelations | undefined = user?.attendances?.find((a) => a.eventCode === eventCode);
 
+    const isOperating: boolean = checkIsOperatingUser(user as UsersWithRelations, event as Events)
+
+    // NOTE TSK-37 通信頻度最適化対応でAPIの呼び出しは削除
+
     /**
-     * データの取得
-     * @returns {Promise<void>} データ取得の非同期処理
+     * 初期化処理
+     * @returns {Promise<void>} 初期化の非同期処理
      */
-    const fetchData = async (): Promise<void> => {
+    const initialize = async (): Promise<void> => {
+        let closestStations: ClosestStation[] = [{ stationCode: stations[0].stationCode || "", distance: 0 }];
         try {
-            setIsLoading(true);
-            setError(null);
-
-            const params = new URLSearchParams();
-            params.append("eventCode", eventCode as string);
-
             try {
+                setIsLoading(true);
+                setError(null);
+
                 const { latitude, longitude } = await CurrentLocationUtils.getCurrentLocation();
                 if (latitude && longitude) {
-                    params.append("latitude", latitude.toString());
-                    params.append("longitude", longitude.toString());
+                    closestStations = LocationUtils.calculate(stations, latitude, longitude);
                 }
             } catch (locationError) {
                 console.warn("Could not get current location:", locationError);
-                // 位置情報が取得できない場合、APIを実行せずに処理終了
-                return;
             }
-
-            const response = await fetch("/api/init-form?" + params.toString());
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data: InitFormResponse = (await response.json()).data;
-            const closestStations = data.closestStations || [];
-
-            if (!Array.isArray(closestStations)) {
-                throw new Error("Unexpected response structure");
-            }
-            setClosestStations(closestStations as ClosestStation[]);
         } catch (error) {
-            console.error("Error fetching data:", error);
-            setError(error instanceof Error ? error.message : "Unknown error");
-            setClosestStations([]);
+            console.error("Error in initialize:", error);
+            setError("初期化に失敗しました。");
         } finally {
+            setClosestStations(closestStations);
             setIsLoading(false);
         }
     };
@@ -77,7 +66,7 @@ const FormPage: React.FC = (): React.JSX.Element => {
      * 初期表示
      */
     useEffect(() => {
-        fetchData();
+        initialize();
     }, []);
 
     return (
@@ -89,6 +78,7 @@ const FormPage: React.FC = (): React.JSX.Element => {
                     <Accordion>
                         <AccordionSummary expandIcon={<ArrowDropDown sx={{ fontSize: "2.5rem" }} />}>
                             <Typography variant="body2" fontWeight={700}>
+                                <Help sx={{ fontSize: "1.8rem", marginRight: 1 }} />
                                 いつ送る？
                             </Typography>
                         </AccordionSummary>
@@ -100,9 +90,7 @@ const FormPage: React.FC = (): React.JSX.Element => {
                                 <br />
                                 ３．もう一度サイコロを振って行き先を決定
                                 <br />
-                                ４．移動したら移動先の駅（今いる駅）をこのフォームから送信
-                                <br />
-                                ５．１～４を繰り返す
+                                ４．移動したら移動先の駅（今いる駅）で送信
                             </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -120,7 +108,7 @@ const FormPage: React.FC = (): React.JSX.Element => {
                 {/* エラー */}
                 {(error || contextError) && (
                     <Box sx={{ margin: 4 }}>
-                        <Alert severity="error" action={<CustomButton onClick={fetchData}>再試行</CustomButton>}>
+                        <Alert severity="error" action={<CustomButton onClick={initialize}>再試行</CustomButton>}>
                             {error}
                         </Alert>
                     </Box>
@@ -134,6 +122,7 @@ const FormPage: React.FC = (): React.JSX.Element => {
                                 stations={stations}
                                 closestStations={closestStations}
                                 initialTeamCode={attendance?.teamCode}
+                                isOperating={isOperating}
                             />
                         </Box>
                     </>

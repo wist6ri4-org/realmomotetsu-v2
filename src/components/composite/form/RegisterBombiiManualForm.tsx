@@ -11,6 +11,9 @@ import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
 import { DialogConstants } from "@/constants/dialogConstants";
 import { DiscordNotificationTemplates } from "@/constants/discordNotificationTemplates";
+import { getMessage } from "@/constants/messages";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
@@ -29,6 +32,7 @@ import React, { useState } from "react";
 interface RegisterBombiiManualFormProps {
     teams: Teams[];
     onSubmit?: () => void;
+    isOperating: boolean;
 }
 
 /**
@@ -39,6 +43,7 @@ interface RegisterBombiiManualFormProps {
 const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
     teams,
     onSubmit,
+    isOperating,
 }: RegisterBombiiManualFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
@@ -48,7 +53,6 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
 
     const { sendNotification, clearError } = useDiscordNotification();
 
@@ -88,7 +92,6 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
 
         try {
             setIsLoading(true);
-            setError(null);
 
             // ボンビーを登録
             const response = await fetch("/api/bombii-histories", {
@@ -103,25 +106,27 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw ApplicationErrorFactory.createFromResponse(response);
             }
 
             teamCodeInput.reset();
 
             notifyToDiscord();
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_REGISTERED,
-                message: "ボンビーの登録が完了しました。",
+                title: DialogConstants.TITLE.REGISTERED,
+                message: getMessage("REGISTER_SUCCESS", { data: "ボンビー" }),
             });
 
             onSubmit?.();
 
             return;
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(err);
+            ApplicationErrorHandler.logError(appError);
+
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_ERROR,
-                message: `ボンビーの登録に失敗しました。\n${error}`,
+                title: DialogConstants.TITLE.ERROR,
+                message: `${getMessage("REGISTER_FAILED", { data: "ボンビー" })}\n${appError.message}`,
             });
             return;
         } finally {
@@ -137,7 +142,6 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
         teamCodeInput.reset();
         clearError();
         setIsLoading(false);
-        setError(null);
     };
 
     return (
@@ -174,8 +178,7 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                         <CustomButton
                             type="button"
-                            variant="outlined"
-                            color="secondary"
+                            color="light"
                             onClick={resetForm}
                             disabled={isLoading}
                             sx={{ marginRight: 1 }}
@@ -184,10 +187,10 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
                         </CustomButton>
                         <CustomButton
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || !isOperating}
                             startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
                         >
-                            {isLoading ? "送信中..." : "送信"}
+                            {isLoading ? "送信中..." : !isOperating ? "準備中" : "送信"}
                         </CustomButton>
                     </Box>
                 </Box>

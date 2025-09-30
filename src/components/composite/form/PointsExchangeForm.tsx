@@ -10,6 +10,9 @@ import CustomSelect from "@/components/base/CustomSelect";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
 import { DialogConstants } from "@/constants/dialogConstants";
+import { getMessage } from "@/constants/messages";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
@@ -26,6 +29,7 @@ import React, { useState } from "react";
 interface PointsExchangeFormProps {
     teams: Teams[];
     onSubmit?: () => void;
+    isOperating: boolean;
 }
 
 /**
@@ -36,6 +40,7 @@ interface PointsExchangeFormProps {
 const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
     teams,
     onSubmit,
+    isOperating,
 }: PointsExchangeFormProps): React.JSX.Element => {
     const teamCodeInput = useSelectInput("");
 
@@ -43,7 +48,6 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
 
     /**
      * データの更新
@@ -64,7 +68,6 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
 
         try {
             setIsLoading(true);
-            setError(null);
 
             // ポイントステータスをscoredに更新
             const response = await fetch("/api/points", {
@@ -78,24 +81,26 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw ApplicationErrorFactory.createFromResponse(response);
             }
 
             teamCodeInput.reset();
 
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_UPDATED,
-                message: "ポイントの換金が完了しました。",
+                title: DialogConstants.TITLE.UPDATED,
+                message: getMessage("POINTS_EXCHANGE_SUCCESS"),
             });
 
             onSubmit?.();
 
             return;
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(err);
+            ApplicationErrorHandler.logError(appError);
+
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_ERROR,
-                message: `ポイントの換金に失敗しました。\n${error}`,
+                title: DialogConstants.TITLE.ERROR,
+                message: `${getMessage("POINTS_EXCHANGE_FAILED")}\n${appError.message}`,
             });
             return;
         } finally {
@@ -110,7 +115,6 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
     const resetForm = (): void => {
         teamCodeInput.reset();
         setIsLoading(false);
-        setError(null);
     };
 
     return (
@@ -147,8 +151,7 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                         <CustomButton
                             type="button"
-                            variant="outlined"
-                            color="secondary"
+                            color="light"
                             onClick={resetForm}
                             disabled={isLoading}
                             sx={{ marginRight: 1 }}
@@ -157,10 +160,10 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
                         </CustomButton>
                         <CustomButton
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || !isOperating}
                             startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
                         >
-                            {isLoading ? "送信中..." : "送信"}
+                            {isLoading ? "送信中..." : !isOperating ? "準備中" : "送信"}
                         </CustomButton>
                     </Box>
                 </Box>

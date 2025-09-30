@@ -1,11 +1,13 @@
 /**
  * Discord通知テンプレート名
  */
-export class DiscordNotificationTemplates {
+export const DiscordNotificationTemplates = {
     // 目的駅到着時通知
-    static readonly ARRIVAL_GOAL_STATION = "arrivalGoalStation.txt";
+    ARRIVAL_GOAL_STATION: "arrivalGoalStation.txt",
     // ボンビー設定時通知
-    static readonly REGISTER_BOMBII = "registerBombii.txt";
+    REGISTER_BOMBII: "registerBombii.txt",
     // 目的駅設定時通知
-    static readonly REGISTER_GOAL_STATION = "registerGoalStation.txt";
-}
+    REGISTER_GOAL_STATION: "registerGoalStation.txt",
+} as const;
+
+export type DiscordNotificationTemplates = typeof DiscordNotificationTemplates;

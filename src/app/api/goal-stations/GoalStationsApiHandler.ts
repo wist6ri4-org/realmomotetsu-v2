@@ -3,8 +3,10 @@ import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { GoalStationsServiceImpl } from "@/features/goal-stations/service";
 import {
-    getGoalStationsRequestSchema,
-    postGoalStationsRequestSchema,
+    GetGoalStationsRequestSchema,
+    GetGoalStationsResponseSchema,
+    PostGoalStationsRequestSchema,
+    PostGoalStationsResponseSchema,
 } from "@/features/goal-stations/validator";
 import { GetGoalStationsResponse, PostGoalStationsResponse } from "@/features/goal-stations/types";
 
@@ -45,22 +47,23 @@ class GoalStationsApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
             const queryParams = Object.fromEntries(searchParams.entries());
-            const validatedParams = getGoalStationsRequestSchema.parse(queryParams);
+            const validatedParams = GetGoalStationsRequestSchema.parse(queryParams);
 
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data: GetGoalStationsResponse =
-                await GoalStationsServiceImpl.getGoalStationsByEventCode(validatedParams);
+            const data: GetGoalStationsResponse = await GoalStationsServiceImpl.getGoalStationsByEventCode(
+                validatedParams
+            );
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initOperationResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: GetGoalStationsResponse = GetGoalStationsResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved goal-stations data", {
-                goalStationsCount: data.stations.length,
+                goalStationsCount: validatedResponse.goalStations.length,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);
@@ -80,24 +83,22 @@ class GoalStationsApiHandler extends BaseApiHandler {
             const body = await req.json();
 
             // Zodでバリデーション
-            const validatedBody = postGoalStationsRequestSchema.parse(body);
+            const validatedBody = PostGoalStationsRequestSchema.parse(body);
 
             this.logDebug("Request body", validatedBody);
 
             // サービスからデータを取得
-            const data: PostGoalStationsResponse = await GoalStationsServiceImpl.postGoalStations(
-                validatedBody
-            );
+            const data: PostGoalStationsResponse = await GoalStationsServiceImpl.postGoalStations(validatedBody);
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initOperationResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: PostGoalStationsResponse = PostGoalStationsResponseSchema.parse(data);
 
             this.logInfo("Successfully processed goal-stations data", {
-                eventCode: validatedBody.eventCode,
-                stationCode: validatedBody.stationCode,
+                eventCode: validatedResponse.goalStation.eventCode,
+                stationCode: validatedResponse.goalStation.stationCode,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);

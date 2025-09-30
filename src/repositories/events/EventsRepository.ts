@@ -15,7 +15,7 @@ export type EventWithRelations = Events & {
     teams?: Teams[];
     goalStations?: (GoalStations & { station: Stations })[];
     transitStations?: (TransitStations & { station: Stations })[];
-    bombiiHistory?: (BombiiHistories & { team: Teams })[];
+    bombiiHistories?: (BombiiHistories & { team: Teams })[];
 };
 
 /**

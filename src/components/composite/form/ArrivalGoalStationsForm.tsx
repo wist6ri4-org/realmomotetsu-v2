@@ -11,24 +11,30 @@ import CustomSelect from "@/components/base/CustomSelect";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
 import { DialogConstants } from "@/constants/dialogConstants";
+import { getMessage } from "@/constants/messages";
+import { ApplicationErrorFactory } from "@/error/applicationError";
 import { Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useNumberInput } from "@/hooks/useNumberInput";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
+import { ApplicationErrorHandler, ValidationErrorHandler } from "@/error/errorHandler";
 import { Box, CircularProgress } from "@mui/material";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
+import { GameConstants } from "@/constants/gameConstants";
 
 /**
  * ArrivalGoalStationsFormコンポーネントのプロパティ型定義
  * @property {Teams[]} teams - チームのリスト
  * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
+ * @property {boolean} isOperating - 操作権限があるかどうか
  */
 interface ArrivalGoalStationsFormProps {
     teams: Teams[];
     onSubmit?: () => void;
+    isOperating: boolean;
 }
 
 /**
@@ -39,6 +45,7 @@ interface ArrivalGoalStationsFormProps {
 const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
     teams,
     onSubmit,
+    isOperating,
 }: ArrivalGoalStationsFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
@@ -49,7 +56,6 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
 
     /**
      * データの登録
@@ -62,7 +68,7 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
         const confirmMessage =
             "以下の内容で到着処理を行いますか？\n" +
             `チーム: ${teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"}\n` +
-            `ポイント: ${pointsInput.value}`;
+            `到着ポイント: ${pointsInput.value}`;
         const isConfirmed = await showConfirmDialog({
             message: confirmMessage,
         });
@@ -73,11 +79,9 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
 
         try {
             setIsLoading(true);
-            setError(null);
 
-            if (pointsInput.value <= 0) {
-                throw new Error("到着ポイントは0以上の値で入力してください。");
-            }
+            // バリデーション
+            ValidationErrorHandler.validatePositive(pointsInput.value, "到着ポイント");
 
             // 到着ポイントの登録
             const responseCreatePoints = await fetch("/api/points", {
@@ -89,12 +93,12 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
                     eventCode: eventCode,
                     teamCode: teamCodeInput.value,
                     points: pointsInput.value,
-                    status: "points",
+                    status: GameConstants.POINT_STATUS.POINTS,
                 }),
             });
 
             if (!responseCreatePoints.ok) {
-                throw new Error(`HTTP error! status: ${responseCreatePoints.status}`);
+                throw ApplicationErrorFactory.createFromResponse(responseCreatePoints);
             }
 
             // 既存のポイントステータスをscoredに更新
@@ -109,25 +113,27 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
             });
 
             if (!responseUpdatePoints.ok) {
-                throw new Error(`HTTP error! status: ${responseUpdatePoints.status}`);
+                throw ApplicationErrorFactory.createFromResponse(responseUpdatePoints);
             }
 
             teamCodeInput.reset();
             pointsInput.reset();
 
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_REGISTERED,
-                message: "目的駅到着処理が完了しました。",
+                title: DialogConstants.TITLE.REGISTERED,
+                message: getMessage("ARRIVAL_GOAL_STATIONS_SUCCESS"),
             });
 
             onSubmit?.();
 
             return;
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(err);
+            ApplicationErrorHandler.logError(appError);
+
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_ERROR,
-                message: `"目的駅到着処理に失敗しました。\n${error}`,
+                title: DialogConstants.TITLE.ERROR,
+                message: `${getMessage("ARRIVAL_GOAL_STATIONS_FAILED")}\n${appError.message}`,
             });
             return;
         } finally {
@@ -143,7 +149,6 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
         teamCodeInput.reset();
         pointsInput.reset();
         setIsLoading(false);
-        setError(null);
     };
 
     return (
@@ -196,8 +201,7 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                         <CustomButton
                             type="button"
-                            variant="outlined"
-                            color="secondary"
+                            color="light"
                             onClick={resetForm}
                             disabled={isLoading}
                             sx={{ marginRight: 1 }}
@@ -206,10 +210,10 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
                         </CustomButton>
                         <CustomButton
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || !isOperating}
                             startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
                         >
-                            {isLoading ? "送信中..." : "送信"}
+                            {isLoading ? "送信中..." : !isOperating ? "準備中" : "送信"}
                         </CustomButton>
                     </Box>
                 </Box>

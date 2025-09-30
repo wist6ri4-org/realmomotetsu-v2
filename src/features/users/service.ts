@@ -2,6 +2,7 @@ import { PostUsersRequest, PostUsersResponse } from "./types";
 import { UsersService } from "./interface";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { Users } from "@/generated/prisma";
+import { ApiError, InternalServerError } from "@/error";
 
 export const UsersServiceImpl: UsersService = {
     /**
@@ -23,8 +24,13 @@ export const UsersServiceImpl: UsersService = {
             };
             return res;
         } catch (error) {
-            console.error("Error in postUsers:", error);
-            throw new Error("Failed to post users");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${this.postUsers.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };

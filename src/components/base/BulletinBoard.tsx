@@ -48,6 +48,7 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
                 overflow: "hidden",
                 display: "flex",
                 alignItems: "center",
+                borderRadius: 0.5,
             }}
         >
             <Box

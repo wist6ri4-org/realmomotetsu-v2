@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { CurrentLocationServiceImpl } from "@/features/current-location/service";
-import { postCurrentLocationRequestSchema } from "@/features/current-location/validator";
+import {
+    PostCurrentLocationRequestSchema,
+    PostCurrentLocationResponseSchema,
+} from "@/features/current-location/validator";
 import { PostCurrentLocationResponse } from "@/features/current-location/types";
 
 /**
@@ -40,7 +43,7 @@ class CurrentLocationApiHandler extends BaseApiHandler {
             const body = await req.json();
 
             // Zodでバリデーション
-            const validatedBody = postCurrentLocationRequestSchema.parse(body);
+            const validatedBody = PostCurrentLocationRequestSchema.parse(body);
 
             this.logDebug("Request body", validatedBody);
 
@@ -49,17 +52,16 @@ class CurrentLocationApiHandler extends BaseApiHandler {
                 validatedBody
             );
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initOperationResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: PostCurrentLocationResponse = PostCurrentLocationResponseSchema.parse(data);
 
             this.logInfo("Successfully processed current-location data", {
-                teamCode: data.transitStation.teamCode,
-                stationCode: data.transitStation.stationCode,
-                points: data.point.points,
-
+                teamCode: validatedResponse.transitStation.teamCode,
+                stationCode: validatedResponse.transitStation.stationCode,
+                point: validatedResponse.point.points,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);

@@ -131,16 +131,13 @@ export default class DijkstraUtils {
     ): Map<string, number> {
         // 確率を格納するマップを初期化
         const probabilities = new Map<string, number>();
-        // 所要時間の合計を計算
-        const totalTime = Array.from(times.values()).reduce(
-            (sum, value) => sum + value.timeMinutes,
-            0
-        );
+        // 所要時間の重みの合計を計算
+        const totalWeights = Array.from(times.values()).reduce((sum, value) => sum + 1 / value.timeMinutes, 0);
 
         // 各駅への所要時間の逆数で重みを計算
         times.forEach((value, stationCode) => {
             if (value.timeMinutes < Infinity) {
-                probabilities.set(stationCode, value.timeMinutes / totalTime);
+                probabilities.set(stationCode, 1 / value.timeMinutes / totalWeights);
             } else {
                 probabilities.set(stationCode, 0);
             }

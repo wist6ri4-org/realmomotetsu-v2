@@ -1,6 +1,7 @@
 import { Points, PointStatus } from "@/generated/prisma";
 import { BaseRepository } from "../base/BaseRepository";
 import { SummedPoints } from "@/types/SummedPoints";
+import { GameConstants } from "@/constants/gameConstants";
 
 export class PointsRepository extends BaseRepository {
     /**
@@ -64,7 +65,7 @@ export class PointsRepository extends BaseRepository {
                     points: true,
                 },
                 where: {
-                    status: "points", // ポイント状態のポイントのみを対象
+                    status: GameConstants.POINT_STATUS.POINTS, // ポイント状態のポイントのみを対象
                     eventCode: eventCode,
                 },
             });
@@ -90,7 +91,7 @@ export class PointsRepository extends BaseRepository {
                     points: true,
                 },
                 where: {
-                    status: "scored", // スコア済みのポイントのみを対象
+                    status: GameConstants.POINT_STATUS.SCORED, // スコア済みのポイントのみを対象
                     eventCode: eventCode,
                 },
             });
@@ -114,7 +115,7 @@ export class PointsRepository extends BaseRepository {
         eventCode: string,
         teamCode: string,
         points: number,
-        status: PointStatus = "points"
+        status: PointStatus = GameConstants.POINT_STATUS.POINTS
     ): Promise<Points> {
         try {
             return await this.prisma.points.create({
@@ -161,13 +162,16 @@ export class PointsRepository extends BaseRepository {
      */
     async updateStatusByTeamCode(
         teamCode: string,
-        status: PointStatus = "scored"
+        status: PointStatus = GameConstants.POINT_STATUS.SCORED
     ): Promise<{ count: number }> {
         try {
             return await this.prisma.points.updateMany({
                 where: {
                     teamCode: teamCode,
-                    status: status === "scored" ? "points" : "scored", // スコア済みの場合はポイントからスコア済みに変更
+                    status:
+                        status === GameConstants.POINT_STATUS.SCORED
+                            ? GameConstants.POINT_STATUS.POINTS
+                            : GameConstants.POINT_STATUS.SCORED, // スコア済みの場合はポイントからスコア済みに変更
                 },
                 data: {
                     status: status,

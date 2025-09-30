@@ -3,6 +3,7 @@ import { LogService } from "./logService";
 import { Handlers, LogContext } from "./types";
 import { StatusCode } from "@/constants/statuscode";
 import { ZodError } from "zod";
+import { ApiError } from "@/error/apiError";
 
 export abstract class BaseApiHandler {
     protected logContext: LogContext;
@@ -52,20 +53,21 @@ export abstract class BaseApiHandler {
             this.logResponse(response.status, startTime);
             return response;
         } catch (error) {
+            if (error instanceof ApiError) {
+                // APIErrorの場合は適切なステータスコードとメッセージを返す
+                this.logError(error);
+                const response = this.createApiErrorResponse(error);
+                this.logResponse(error.statusCode, startTime);
+                return response;
+            }
             if (error instanceof ZodError) {
                 // ZodErrorの場合は400 Bad Requestを返す
-                const response = this.createErrorResponse(
-                    "Invalid request parameters",
-                    StatusCode.BAD_REQUEST
-                );
+                const response = this.createErrorResponse("Invalid request parameters", StatusCode.BAD_REQUEST);
                 this.logResponse(StatusCode.BAD_REQUEST, startTime);
                 return response;
             }
             LogService.logError(this.logContext, error);
-            const response = this.createErrorResponse(
-                "Internal Server Error",
-                StatusCode.INTERNAL_SERVER_ERROR
-            );
+            const response = this.createErrorResponse("Internal Server Error", StatusCode.INTERNAL_SERVER_ERROR);
             this.logResponse(StatusCode.INTERNAL_SERVER_ERROR, startTime);
             return response;
         }
@@ -85,6 +87,24 @@ export abstract class BaseApiHandler {
                 timestamp: this.logContext.timestamp,
             },
             { status }
+        );
+    }
+
+    /**
+     * APIErrorレスポンスを作成するヘルパーメソッド
+     * @param error - APIErrorオブジェクト
+     * @return {NextResponse} - エラーレスポンス
+     */
+    protected createApiErrorResponse(error: ApiError): NextResponse {
+        return NextResponse.json(
+            {
+                error: error.message,
+                errorCode: error.errorCode,
+                details: error.details,
+                requestId: this.logContext.requestId,
+                timestamp: this.logContext.timestamp,
+            },
+            { status: error.statusCode }
         );
     }
 
@@ -136,6 +156,12 @@ export abstract class BaseApiHandler {
      * @return {NextResponse} - エラーレスポンス
      */
     protected handleError(error: unknown): NextResponse {
+        if (error instanceof ApiError) {
+            // APIErrorの場合は適切なステータスコードとメッセージを返す
+            this.logError(error);
+            return this.createApiErrorResponse(error);
+        }
+
         if (error instanceof ZodError) {
             return this.createValidationErrorResponse(error);
         }

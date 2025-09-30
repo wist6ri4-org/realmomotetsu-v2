@@ -1,4 +1,5 @@
-import { GoalStations, Teams } from "@/generated/prisma";
+import { Teams } from "@/generated/prisma";
+import { GoalStationsWithRelations } from "@/repositories/goalStations/GoalStationsRepository";
 import { TeamData } from "@/types/TeamData";
 
 /**
@@ -12,11 +13,11 @@ export type InitHomeRequest = {
 /**
  * ホーム画面の初期化レスポンス
  * @property { TeamData[] } teamData - チームごとのデータ配列
- * @property { GoalStations | null } nextGoalStation - 次のゴール駅情報
+ * @property { GoalStationsWithRelations | null } nextGoalStation - 次のゴール駅情報
  * @property { Teams | null } bombiiTeam - Bombiiチームの情報
  */
 export type InitHomeResponse = {
     teamData: TeamData[];
-    nextGoalStation: GoalStations | null;
+    nextGoalStation: GoalStationsWithRelations | null;
     bombiiTeam: Teams | null;
 };

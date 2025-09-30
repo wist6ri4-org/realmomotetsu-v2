@@ -92,7 +92,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({
                     )}
                     <Typography
                         variant="h5"
-                        sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+                        sx={{ fontWeight: "600", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
                     >
                         {teamData.teamName}
                     </Typography>
@@ -102,6 +102,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({
                 <Card
                     variant="outlined"
                     onClick={onClick}
+                    elevation={onClick ? 5 : 3}
                     sx={{
                         borderRadius: 0.5,
                         backgroundColor: teamData.teamColor,

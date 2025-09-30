@@ -6,12 +6,15 @@ import RouletteForm from "@/components/composite/form/RouletteForm";
 import { LatestTransitStations } from "@/generated/prisma";
 import { ClosestStation } from "@/types/ClosestStation";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
-import { ArrowDropDown, Casino } from "@mui/icons-material";
+import { ArrowDropDown, Casino, Help } from "@mui/icons-material";
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, CircularProgress, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useEventContext } from "../../layout";
 import { InitRouletteResponse } from "@/features/init-roulette/types";
+import LocationUtils from "@/utils/locationUtils";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
 
 /**
  * 駅ルーレットページ
@@ -31,6 +34,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
      * @return {Promise<void>} データ取得のPromise
      */
     const fetchData = async (): Promise<void> => {
+        let closestStations: ClosestStation[] = [{ stationCode: stations[0].stationCode || "", distance: 0 }];
         try {
             setIsLoading(true);
             setError(null);
@@ -41,8 +45,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
             try {
                 const { latitude, longitude } = await CurrentLocationUtils.getCurrentLocation();
                 if (latitude && longitude) {
-                    params.append("latitude", latitude.toString());
-                    params.append("longitude", longitude.toString());
+                    closestStations = LocationUtils.calculate(stations, latitude, longitude);
                 }
             } catch (locationError) {
                 console.warn("Could not get current location:", locationError);
@@ -50,26 +53,19 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
 
             const response = await fetch("/api/init-roulette?" + params.toString());
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw ApplicationErrorFactory.createFromResponse(response);
             }
 
             const data: InitRouletteResponse = (await response.json()).data;
             const latestTransitStations = data.latestTransitStations || [];
 
-            const firstStation: ClosestStation = { stationCode: stations[0].stationCode || "", distance: 0 };
-            const closestStations = data.closestStations || [firstStation];
-
-            if (
-                !Array.isArray(latestTransitStations) ||
-                !Array.isArray(closestStations)
-            ) {
-                throw new Error("Unexpected response structure");
-            }
             setLatestTransitStations(latestTransitStations as LatestTransitStations[]);
             setClosestStations(closestStations as ClosestStation[]);
         } catch (error) {
-            console.error("Error fetching data:", error);
-            setError(error instanceof Error ? error.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(error);
+            ApplicationErrorHandler.logError(appError);
+
+            setError(appError.message);
             setClosestStations([]);
         } finally {
             setIsLoading(false);
@@ -92,6 +88,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
                     <Accordion>
                         <AccordionSummary expandIcon={<ArrowDropDown sx={{ fontSize: "2.5rem" }} />}>
                             <Typography variant="body2" fontWeight={700}>
+                                <Help sx={{ fontSize: "1.8rem", marginRight: 1 }} />
                                 使い方
                             </Typography>
                         </AccordionSummary>

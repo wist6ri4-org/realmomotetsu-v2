@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { BombiiHistoriesServiceImpl } from "@/features/bombii-histories/service";
-import { postBombiiHistoriesRequestSchema } from "@/features/bombii-histories/validator";
+import {
+    PostBombiiHistoriesRequestSchema,
+    PostBombiiHistoriesResponseSchema,
+} from "@/features/bombii-histories/validator";
 import { PostBombiiHistoriesResponse } from "@/features/bombii-histories/types";
 
 /**
@@ -40,22 +43,23 @@ class BombiiHistoriesApiHandler extends BaseApiHandler {
             const body = await req.json();
 
             // Zodでバリデーション
-            const validatedBody = postBombiiHistoriesRequestSchema.parse(body);
+            const validatedBody = PostBombiiHistoriesRequestSchema.parse(body);
 
             this.logDebug("Request body", validatedBody);
 
             // サービスからデータを取得
-            const data: PostBombiiHistoriesResponse =
-                await BombiiHistoriesServiceImpl.postBombiiHistories(validatedBody);
+            const data: PostBombiiHistoriesResponse = await BombiiHistoriesServiceImpl.postBombiiHistories(
+                validatedBody
+            );
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initOperationResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: PostBombiiHistoriesResponse = PostBombiiHistoriesResponseSchema.parse(data);
 
             this.logInfo("Successfully processed bombii-histories data", {
-                id: data.bombiiHistory.id,
+                id: validatedResponse.bombiiHistory.id,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);

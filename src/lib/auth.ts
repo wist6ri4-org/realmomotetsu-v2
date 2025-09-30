@@ -1,5 +1,7 @@
 import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
+import { Events, OperationLevel, Role, VisibilityLevel } from "@/generated/prisma";
 import supabase from "@/lib/supabase";
+import { AttendancesWithRelations } from "@/repositories/attendances/AttendancesRepository";
 import { UsersWithRelations } from "@/repositories/users/UsersRepository";
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@supabase/supabase-js";
@@ -227,7 +229,7 @@ export const checkIsAdminUser = async (userId: string, eventCode: string): Promi
         const data: GetUsersByUuidResponse = (await response.json()).data;
         const attendance = data.user.attendances?.find((att) => att.eventCode === eventCode);
 
-        if (data.user.masterRole !== "admin" && attendance?.eventRole !== "admin") {
+        if (data.user.masterRole !== Role.admin && attendance?.eventRole !== Role.admin) {
             return false;
         }
 
@@ -243,12 +245,57 @@ export const checkIsAdminUser = async (userId: string, eventCode: string): Promi
  * @param {UsersWithRelations} user - ユーザーオブジェクト
  * @param {string} eventCode - イベントコード
  */
-export const checkIsAdminUserWithUsers = (user: UsersWithRelations, eventCode: string): boolean =>{
+export const checkIsAdminUserWithUsers = (user: UsersWithRelations, eventCode: string): boolean => {
     const attendance = user.attendances?.find((att) => att.eventCode === eventCode);
 
-    if (user.masterRole !== "admin" && attendance?.eventRole !== "admin") {
+    if (user.masterRole !== Role.admin && attendance?.eventRole !== Role.admin) {
         return false;
     }
 
     return true;
-}
+};
+
+/**
+ * 操作権限があるか確認
+ * @param {UsersWithRelations} user - ユーザー
+ * @param {Events} event - イベント
+ * @return {boolean} - 操作権限があればtrue、なければfalse
+ */
+export const checkIsOperatingUser = (user: UsersWithRelations, event: Events): boolean => {
+    const attendance = user.attendances?.find((att) => att.eventCode === event.eventCode);
+    if (user.masterRole === Role.admin) {
+        return new Set<OperationLevel>([
+            OperationLevel.admin,
+            OperationLevel.organizer,
+            OperationLevel.participant,
+        ]).has(event.operationLevel);
+    } else if (attendance?.eventRole === Role.admin) {
+        return new Set<OperationLevel>([OperationLevel.organizer, OperationLevel.participant]).has(
+            event.operationLevel
+        );
+    } else {
+        return new Set<OperationLevel>([OperationLevel.participant]).has(event.operationLevel);
+    }
+};
+
+/**
+ * 閲覧権限があるか確認
+ * @param {UsersWithRelations} user - ユーザー
+ * @param {AttendancesWithRelations} attendance - 参加情報（関連するイベント情報を含む）
+ * @return {boolean} - 閲覧権限があればtrue、なければfalse
+ */
+export const checkIsVisibleUser = (user: UsersWithRelations, attendance: AttendancesWithRelations): boolean => {
+    if (user.masterRole === Role.admin) {
+        return new Set<VisibilityLevel>([
+            VisibilityLevel.admin,
+            VisibilityLevel.organizer,
+            VisibilityLevel.participant,
+        ]).has(attendance.event.visibilityLevel);
+    } else if (attendance.eventRole === Role.admin) {
+        return new Set<VisibilityLevel>([VisibilityLevel.organizer, VisibilityLevel.participant]).has(
+            attendance.event.visibilityLevel
+        );
+    } else {
+        return new Set<VisibilityLevel>([VisibilityLevel.participant]).has(attendance.event.visibilityLevel);
+    }
+};

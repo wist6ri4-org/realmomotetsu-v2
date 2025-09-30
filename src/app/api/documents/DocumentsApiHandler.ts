@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { DocumentsServiceImpl } from "@/features/documents/service";
-import { getDocumentsRequestSchema } from "@/features/documents/validator";
+import { GetDocumentsRequestSchema, GetDocumentsResponseSchema } from "@/features/documents/validator";
 import { GetDocumentsResponse } from "@/features/documents/types";
 
 /**
@@ -41,23 +41,21 @@ class DocumentsApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
             const queryParams = Object.fromEntries(searchParams.entries());
-            const validatedParams = getDocumentsRequestSchema.parse(queryParams);
+            const validatedParams = GetDocumentsRequestSchema.parse(queryParams);
 
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data: GetDocumentsResponse = await DocumentsServiceImpl.getDocumentsByEventCode(
-                validatedParams
-            );
+            const data: GetDocumentsResponse = await DocumentsServiceImpl.getDocumentsByEventCode(validatedParams);
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initOperationResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: GetDocumentsResponse = GetDocumentsResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved documents data", {
-                documentsCount: data.documents.length,
+                documentsCount: validatedResponse.documents.length,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);

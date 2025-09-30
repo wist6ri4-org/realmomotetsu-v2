@@ -1,9 +1,13 @@
 import supabase from "@/lib/supabase";
 import { PutUsersResponse } from "@/features/users/types";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { checkIsVisibleUser } from "@/lib/auth";
+import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
 
 export class UserUtils {
     readonly BUCKET_NAME = "user-assets";
     readonly USER_ICON_FOLDER = "user-icons";
+    private static iconTimestampCache = new Map<string, number>();
 
     /**
      * ユーザーのアイコンをアップロードする
@@ -46,8 +50,9 @@ export class UserUtils {
         // 公開URLを生成
         const { data: urlData } = supabase.storage.from(this.BUCKET_NAME).getPublicUrl(fileName);
 
-        // キャッシュ無効化のためにタイムスタンプを追加
+        // アップロード時のタイムスタンプをキャッシュに保存
         const timestamp = Date.now();
+        UserUtils.iconTimestampCache.set(userId, timestamp);
         const publicUrlWithCacheBuster = `${urlData.publicUrl}?t=${timestamp}`;
 
         return publicUrlWithCacheBuster;
@@ -117,9 +122,7 @@ export class UserUtils {
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(
-                `ニックネームの更新に失敗しました: ${error.message || "Unknown error"}`
-            );
+            throw new Error(`ニックネームの更新に失敗しました: ${error.message || "Unknown error"}`);
         }
         return await response.json();
     }
@@ -162,11 +165,7 @@ export class UserUtils {
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(
-                `データベースでのメールアドレス更新に失敗しました: ${
-                    error.message || "Unknown error"
-                }`
-            );
+            throw new Error(`データベースでのメールアドレス更新に失敗しました: ${error.message || "Unknown error"}`);
         }
         return await response.json();
     }
@@ -206,9 +205,7 @@ export class UserUtils {
 
             // 見つかったファイルを削除
             if (filesToDelete.length > 0) {
-                const { error: removeError } = await supabase.storage
-                    .from(this.BUCKET_NAME)
-                    .remove(filesToDelete);
+                const { error: removeError } = await supabase.storage.from(this.BUCKET_NAME).remove(filesToDelete);
 
                 if (removeError) {
                     console.error("Failed to remove files:", removeError);
@@ -229,29 +226,23 @@ export class UserUtils {
      * @return アイコンのURL
      */
     getUserIconUrl(userId: string): string {
-        return supabase.storage
-            .from(this.BUCKET_NAME)
-            .getPublicUrl(`${this.USER_ICON_FOLDER}/${userId}`).data.publicUrl;
+        return supabase.storage.from(this.BUCKET_NAME).getPublicUrl(`${this.USER_ICON_FOLDER}/${userId}`).data
+            .publicUrl;
     }
 
     /**
      * ユーザーのアイコンのURLを動的に取得する（拡張子を推定）
      * @param userId ユーザーID
-     * @param forceRefresh キャッシュを無視して強制的に再読み込みするか（現在未使用）
+     * @param forceRefresh キャッシュを無視して強制的に再読み込みするか
      * @return アイコンのURL（存在しない場合はnull）
      */
-    async getUserIconUrlWithExtension(
-        userId: string,
-        forceRefresh: boolean = false // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): Promise<string | null> {
+    async getUserIconUrlWithExtension(userId: string, forceRefresh: boolean = false): Promise<string | null> {
         // より効率的な方法：listメソッドを使ってユーザーのファイルを直接検索
         try {
-            const { data: files, error: listError } = await supabase.storage
-                .from(this.BUCKET_NAME)
-                .list("user-icons", {
-                    limit: 10,
-                    search: userId,
-                });
+            const { data: files, error: listError } = await supabase.storage.from(this.BUCKET_NAME).list("user-icons", {
+                limit: 10,
+                search: userId,
+            });
 
             if (listError) {
                 console.warn("Failed to list files:", listError);
@@ -273,21 +264,47 @@ export class UserUtils {
 
             // 見つかったファイルの公開URLを生成
             const fileName = `${this.USER_ICON_FOLDER}/${userFile.name}`;
-            const baseUrl = supabase.storage.from(this.BUCKET_NAME).getPublicUrl(fileName)
-                .data.publicUrl;
+            const baseUrl = supabase.storage.from(this.BUCKET_NAME).getPublicUrl(fileName).data.publicUrl;
 
-            // キャッシュ無効化のためにタイムスタンプを追加
-            const timestamp = Date.now();
-            const publicUrl = `${baseUrl}?t=${timestamp}`;
+            let publicUrl = baseUrl;
+
+            // キャッシュバスターの追加判定
+            if (forceRefresh) {
+                // 強制リフレッシュ時は新しいタイムスタンプを生成
+                const timestamp = Date.now();
+                UserUtils.iconTimestampCache.set(userId, timestamp);
+                publicUrl = `${baseUrl}?t=${timestamp}`;
+            } else {
+                // キャッシュされたタイムスタンプがある場合のみ追加
+                const cachedTimestamp = UserUtils.iconTimestampCache.get(userId);
+                if (cachedTimestamp) {
+                    publicUrl = `${baseUrl}?t=${cachedTimestamp}`;
+                }
+            }
 
             console.log("Found file:", userFile.name);
-            console.log("Generated public URL with cache buster:", publicUrl);
+            console.log("Generated public URL:", publicUrl);
 
             return publicUrl;
         } catch (error) {
             console.error("Error in getUserIconUrlWithExtension:", error);
             return null;
         }
+    }
+
+    /**
+     * ユーザーのアイコンキャッシュをクリアする
+     * @param userId ユーザーID
+     */
+    static clearIconCache(userId: string): void {
+        UserUtils.iconTimestampCache.delete(userId);
+    }
+
+    /**
+     * 全てのアイコンキャッシュをクリアする
+     */
+    static clearAllIconCache(): void {
+        UserUtils.iconTimestampCache.clear();
     }
 
     /**
@@ -302,4 +319,45 @@ export class UserUtils {
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "http://127.0.0.1:54321";
         return `${supabaseUrl}/storage/v1/object/public/user-assets/user-icons/${userId}.${extension}`;
     }
+
+    /**
+     * 参加している最新のイベントコードを取得する（静的）
+     * @param {string} uuid - ユーザーのUUID
+     * @return {Promise<string>} - 参加しているイベントコード
+     */
+    static fetchEventCode = async (uuid: string): Promise<string> => {
+        try {
+            const response = await fetch(`/api/users/${uuid}`);
+            if (!response.ok) {
+                throw ApplicationErrorFactory.createFromResponse(response);
+            }
+
+            const data: GetUsersByUuidResponse = (await response.json()).data as GetUsersByUuidResponse;
+
+            const user = data.user || {};
+            const attendances = user.attendances || [];
+
+            // 参加しているイベントのうち閲覧権限のあるものを開催日降順またはid降順でソート
+            const sortedAttendances = attendances
+                .filter((attendance) => checkIsVisibleUser(user, attendance))
+                .sort((a, b) => {
+                    if (a.event.startDate && b.event.startDate) {
+                        return new Date(b.event.startDate).getTime() - new Date(a.event.startDate).getTime();
+                    } else {
+                        if (!a.event.startDate && !b.event.startDate) {
+                            return b.event.id - a.event.id;
+                        } else if (!a.event.startDate) {
+                            return 1;
+                        } else if (!b.event.startDate) {
+                            return -1;
+                        }
+                        return 0;
+                    }
+                });
+
+            return sortedAttendances.shift()?.eventCode || "";
+        } catch (error) {
+            throw error;
+        }
+    };
 }

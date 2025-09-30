@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
 import { InitFormServiceImpl } from "@/features/init-form/service";
-import { initFormRequestSchema } from "@/features/init-form/validator";
+import { InitFormRequestSchema, InitFormResponseSchema } from "@/features/init-form/validator";
 import { InitFormResponse } from "@/features/init-form/types";
 
 /**
@@ -32,6 +32,7 @@ class InitFormApiHandler extends BaseApiHandler {
      * @param req - Next.jsのリクエストオブジェクト
      * @return {Promise<NextResponse>} - レスポンスオブジェクト
      */
+    // NOTE TSK-37 通信頻度最適化対応により本APIは使用しないが、将来の拡張に備えて残す
     private async handleGet(req: NextRequest): Promise<NextResponse> {
         this.logInfo("Handling GET request for init-form");
 
@@ -41,23 +42,21 @@ class InitFormApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
             const queryParams = Object.fromEntries(searchParams.entries());
-            const validatedParams = initFormRequestSchema.parse(queryParams);
+            const validatedParams = InitFormRequestSchema.parse(queryParams);
 
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
-            const data: InitFormResponse = await InitFormServiceImpl.getDataForForm(
-                validatedParams
-            );
+            const data: InitFormResponse = await InitFormServiceImpl.getDataForForm(validatedParams);
 
-            // TODO レスポンスのスキーマでバリデーション
-            // const validatedResponse = initFormResponseSchema.parse(data);
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: InitFormResponse = InitFormResponseSchema.parse(data);
 
             this.logInfo("Successfully retrieved init-form data", {
-                closestStationsCount: data.closestStations ? data.closestStations.length : 0,
+                closestStationsCount: validatedResponse.closestStations ? validatedResponse.closestStations.length : 0,
             });
 
-            return this.createSuccessResponse(data);
+            return this.createSuccessResponse(validatedResponse);
         } catch (error) {
             // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
             return this.handleError(error);

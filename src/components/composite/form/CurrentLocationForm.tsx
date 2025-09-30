@@ -10,6 +10,10 @@ import CustomSelect from "@/components/base/CustomSelect";
 import { DialogConstants } from "@/constants/dialogConstants";
 import { DiscordNotificationTemplates } from "@/constants/discordNotificationTemplates";
 import { GameConstants } from "@/constants/gameConstants";
+import { getMessage } from "@/constants/messages";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { ApplicationErrorHandler } from "@/error/errorHandler";
+import { GetLatestGoalStationsResponse } from "@/features/goal-stations/latest/types";
 import { GetLatestTransitStationsResponse } from "@/features/transit-stations/latest/types";
 import { LatestTransitStations, Stations, Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
@@ -28,12 +32,14 @@ import { useState } from "react";
  * @property {Stations[]} stations - 駅のリスト
  * @property {ClosestStation[]} [closestStations] - 最寄り駅のリスト（オプション）
  * @property {string} [initialTeamCode] - 初期選択されるチームコード（オプション）
+ * @property {boolean} isOperating - 操作権限があるかどうか
  */
 interface CurrentLocationFormProps {
     teams: Teams[];
     stations: Stations[];
     closestStations?: ClosestStation[];
     initialTeamCode?: string;
+    isOperating: boolean;
 }
 
 /**
@@ -46,6 +52,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     stations,
     closestStations,
     initialTeamCode,
+    isOperating,
 }: CurrentLocationFormProps): React.JSX.Element => {
     const { eventCode } = useParams();
 
@@ -58,7 +65,6 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
 
     const { sendNotification, clearError } = useDiscordNotification();
 
@@ -87,14 +93,14 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
         try {
             const response = await fetch(`/api/goal-stations/latest?eventCode=${eventCode}`);
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw ApplicationErrorFactory.createFromResponse(response);
             }
-            const data = await response.json();
-            const nextGoalStation = data.data.station;
-            return nextGoalStation.stationCode;
+            const data: GetLatestGoalStationsResponse = (await response.json()).data;
+            const nextGoalStation = data.goalStation;
+            return nextGoalStation.station.stationCode;
         } catch (error) {
-            console.error("Error fetching next goal station:", error);
-            throw error;
+            const appError = ApplicationErrorFactory.normalize(error);
+            ApplicationErrorHandler.logError(appError, "WARN");
             return "";
         }
     };
@@ -125,14 +131,13 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
 
         try {
             setIsLoading(true);
-            setError(null);
 
             // 二重登録チェック
             const params = new URLSearchParams();
             params.append("eventCode", eventCode as string);
             const responseForCheck = await fetch("/api/transit-stations/latest?" + params.toString());
             if (!responseForCheck.ok) {
-                throw new Error(`HTTP error! status: ${responseForCheck.status}`);
+                throw ApplicationErrorFactory.createFromResponse(responseForCheck);
             }
             const data: GetLatestTransitStationsResponse = (await responseForCheck.json()).data;
             const latestTransitStations: LatestTransitStations[] = data.latestTransitStations || [];
@@ -166,7 +171,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw ApplicationErrorFactory.createFromResponse(response);
             }
 
             // 最新の目的駅の駅コードを取得
@@ -180,15 +185,17 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
             selectedStationCodeInput.reset();
 
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_REGISTERED,
-                message: DialogConstants.DIALOG_MESSAGE_REGISTER_SUCCESS,
+                title: DialogConstants.TITLE.REGISTERED,
+                message: getMessage("REGISTER_SUCCESS", { data: "現在地" }),
             });
             return;
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Unknown error");
+            const appError = ApplicationErrorFactory.normalize(err);
+            ApplicationErrorHandler.logError(appError);
+
             await showAlertDialog({
-                title: DialogConstants.DIALOG_TITLE_ERROR,
-                message: `${DialogConstants.DIALOG_MESSAGE_REGISTER_FAILURE}\n${error}`,
+                title: DialogConstants.TITLE.ERROR,
+                message: getMessage("REGISTER_FAILED", { data: "現在地" }),
             });
             return;
         } finally {
@@ -258,11 +265,11 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
                     <Box sx={{ marginTop: 5 }}>
                         <CustomButton
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || !isOperating}
                             fullWidth
                             startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
                         >
-                            {isLoading ? "送信中..." : "送信"}
+                            {isLoading ? "送信中..." : !isOperating ? "準備中" : "送信"}
                         </CustomButton>
                     </Box>
                 </Box>

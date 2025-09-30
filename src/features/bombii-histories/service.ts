@@ -1,3 +1,4 @@
+import { ApiError, InternalServerError } from "@/error";
 import { BombiiHistoriesService } from "./interface";
 import { PostBombiiHistoriesRequest, PostBombiiHistoriesResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
@@ -8,9 +9,7 @@ export const BombiiHistoriesServiceImpl: BombiiHistoriesService = {
      * @param {PostBombiiHistoriesRequest} req - リクエスト
      * @return {Promise<PostBombiiHistoriesResponse>} レスポンス
      */
-    async postBombiiHistories(
-        req: PostBombiiHistoriesRequest
-    ): Promise<PostBombiiHistoriesResponse> {
+    async postBombiiHistories(req: PostBombiiHistoriesRequest): Promise<PostBombiiHistoriesResponse> {
         const bombiiHistoriesRepository = RepositoryFactory.getBombiiHistoriesRepository();
 
         try {
@@ -23,8 +22,13 @@ export const BombiiHistoriesServiceImpl: BombiiHistoriesService = {
             };
             return res;
         } catch (error) {
-            console.error("Error in postBombiiHistories:", error);
-            throw new Error("Failed to register bombii history");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${this.postBombiiHistories.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };

@@ -2,6 +2,7 @@ import { GameConstants } from "@/constants/gameConstants";
 import { CurrentLocationService } from "./interface";
 import { PostCurrentLocationRequest, PostCurrentLocationResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
+import { ApiError, InternalServerError } from "@/error";
 
 export const CurrentLocationServiceImpl: CurrentLocationService = {
     /**
@@ -35,8 +36,13 @@ export const CurrentLocationServiceImpl: CurrentLocationService = {
             };
             return res;
         } catch (error) {
-            console.error("Error in postCurrentLocation:", error);
-            throw new Error("Failed to register current location");
+            if (error instanceof ApiError) {
+                throw error;
+            }
+
+            throw new InternalServerError({
+                message: `Failed in ${this.postCurrentLocation.name}. ${error instanceof Error ? error.message : ""}`,
+            });
         }
     },
 };

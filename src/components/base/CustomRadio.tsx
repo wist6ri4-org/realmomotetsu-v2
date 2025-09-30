@@ -39,7 +39,18 @@ export interface RadioOption {
  */
 interface CustomRadioProps extends Omit<MuiRadioGroupProps, "color" | "size"> {
     options: RadioOption[];
-    color?: "primary" | "secondary" | "success" | "error" | "warning" | "info" | "team1" | "team2" | "team3" | "team4";
+    color?:
+        | "primary"
+        | "secondary"
+        | "success"
+        | "error"
+        | "warning"
+        | "info"
+        | "light"
+        | "team1"
+        | "team2"
+        | "team3"
+        | "team4";
     size?: "small" | "medium";
     row?: boolean;
     label?: string;
@@ -75,7 +86,7 @@ export const CustomRadio: React.FC<CustomRadioProps> = ({
     const labelId = `custom-radio-label-${id}`;
 
     // MUIの標準カラーのみを許可
-    const standardColor = ["team1", "team2", "team3", "team4"].includes(color)
+    const standardColor = ["light", "team1", "team2", "team3", "team4"].includes(color)
         ? "primary"
         : (color as "primary" | "secondary" | "success" | "error" | "warning" | "info");
 

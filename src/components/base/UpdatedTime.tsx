@@ -37,7 +37,7 @@ export const UpdatedTime: React.FC<UpdatedTimeProps> = ({
     });
 
     return (
-        <Typography variant={variant} sx={{ textAlign: textAlign, marginTop: 2 }}>
+        <Typography variant={variant} sx={{ textAlign: textAlign, marginY: 1 }}>
             最終更新日時: {updatedAt}
         </Typography>
     );
