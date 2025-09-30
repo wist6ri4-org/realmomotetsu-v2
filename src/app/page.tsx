@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase";
 import { Box, CircularProgress } from "@mui/material";
-import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
+import { UserUtils } from "@/utils/userUtils";
 
 /**
  * ルートページコンポーネント
@@ -58,33 +58,7 @@ const RootPage: React.FC = (): React.JSX.Element => {
      */
     const fetchEventCode = async (userId: string): Promise<string> => {
         try {
-            const response = await fetch(`/api/users/${userId}`);
-            if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
-            }
-
-            const data: GetUsersByUuidResponse = (await response.json()).data as GetUsersByUuidResponse;
-
-            const user = data.user || {};
-            const attendances = user.attendances || [];
-
-            // 参加しているイベントを開催日降順またはid降順でソート
-            attendances.sort((a, b) => {
-                if (a.event.startDate && b.event.startDate) {
-                    return new Date(b.event.startDate).getTime() - new Date(a.event.startDate).getTime();
-                } else {
-                    if (!a.event.startDate && !b.event.startDate) {
-                        return b.event.id - a.event.id;
-                    } else if (!a.event.startDate) {
-                        return 1;
-                    } else if (!b.event.startDate) {
-                        return -1;
-                    }
-                    return 0;
-                }
-            });
-
-            return attendances.shift()?.eventCode || "";
+            return await UserUtils.fetchEventCode(userId);
         } catch (error) {
             const appError = ApplicationErrorFactory.normalize(error);
             ApplicationErrorHandler.logError(appError, "WARN");

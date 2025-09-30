@@ -1,5 +1,8 @@
 import supabase from "@/lib/supabase";
 import { PutUsersResponse } from "@/features/users/types";
+import { ApplicationErrorFactory } from "@/error/applicationError";
+import { checkIsVisibleUser } from "@/lib/auth";
+import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
 
 export class UserUtils {
     readonly BUCKET_NAME = "user-assets";
@@ -316,4 +319,45 @@ export class UserUtils {
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "http://127.0.0.1:54321";
         return `${supabaseUrl}/storage/v1/object/public/user-assets/user-icons/${userId}.${extension}`;
     }
+
+    /**
+     * 参加している最新のイベントコードを取得する（静的）
+     * @param {string} uuid - ユーザーのUUID
+     * @return {Promise<string>} - 参加しているイベントコード
+     */
+    static fetchEventCode = async (uuid: string): Promise<string> => {
+        try {
+            const response = await fetch(`/api/users/${uuid}`);
+            if (!response.ok) {
+                throw ApplicationErrorFactory.createFromResponse(response);
+            }
+
+            const data: GetUsersByUuidResponse = (await response.json()).data as GetUsersByUuidResponse;
+
+            const user = data.user || {};
+            const attendances = user.attendances || [];
+
+            // 参加しているイベントのうち閲覧権限のあるものを開催日降順またはid降順でソート
+            attendances
+                .filter((attendance) => checkIsVisibleUser(user, attendance))
+                .sort((a, b) => {
+                    if (a.event.startDate && b.event.startDate) {
+                        return new Date(b.event.startDate).getTime() - new Date(a.event.startDate).getTime();
+                    } else {
+                        if (!a.event.startDate && !b.event.startDate) {
+                            return b.event.id - a.event.id;
+                        } else if (!a.event.startDate) {
+                            return 1;
+                        } else if (!b.event.startDate) {
+                            return -1;
+                        }
+                        return 0;
+                    }
+                });
+
+            return attendances.shift()?.eventCode || "";
+        } catch (error) {
+            throw error;
+        }
+    };
 }
