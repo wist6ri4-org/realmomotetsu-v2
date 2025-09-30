@@ -10,6 +10,7 @@ import { PointsService } from "./interface";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { Points } from "@/generated/prisma";
 import { ApiError, InternalServerError } from "@/error";
+import { GameConstants } from "@/constants/gameConstants";
 
 export const PointsServiceImpl: PointsService = {
     /**
@@ -82,7 +83,7 @@ export const PointsServiceImpl: PointsService = {
     async putPoints(req: PutPointsRequest): Promise<PutPointsResponse> {
         const pointRepository = RepositoryFactory.getPointsRepository();
         try {
-            return await pointRepository.updateStatusByTeamCode(req.teamCode, "scored");
+            return await pointRepository.updateStatusByTeamCode(req.teamCode, GameConstants.POINT_STATUS.SCORED);
         } catch (error) {
             if (error instanceof ApiError) {
                 throw error;

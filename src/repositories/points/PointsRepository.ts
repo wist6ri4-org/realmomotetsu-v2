@@ -91,7 +91,7 @@ export class PointsRepository extends BaseRepository {
                     points: true,
                 },
                 where: {
-                    status: "scored", // スコア済みのポイントのみを対象
+                    status: GameConstants.POINT_STATUS.SCORED, // スコア済みのポイントのみを対象
                     eventCode: eventCode,
                 },
             });
@@ -160,7 +160,10 @@ export class PointsRepository extends BaseRepository {
      * @param status - 更新するステータス（デフォルトは"scored"）
      * @return {Promise<{ count: number }>} 更新されたレコード数
      */
-    async updateStatusByTeamCode(teamCode: string, status: PointStatus = "scored"): Promise<{ count: number }> {
+    async updateStatusByTeamCode(
+        teamCode: string,
+        status: PointStatus = GameConstants.POINT_STATUS.SCORED
+    ): Promise<{ count: number }> {
         try {
             return await this.prisma.points.updateMany({
                 where: {
