@@ -7,6 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
         description: "リアル桃鉄のアプリケーション", // アプリケーションの説明文
         start_url: "/", // アプリ起動時に開くパス
         display: "standalone", // アプリケーションの表示モードを指定する
+        orientation: "portrait", // 画面の向きを指定する
         background_color: "#ffffff", // コンテンツ表示されるまでの背景色
         theme_color: "#000000", // ブラウザのアドレスバーやステータスバーの色
         icons: [

@@ -149,7 +149,27 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
 
     return (
         <>
-            <Box data-app-bar sx={{ width: "100%", position: "fixed", top: 0, zIndex: 300 }} maxWidth={900}>
+            <Box data-app-bar sx={{
+                width: "100%",
+                position: "fixed",
+                top: 0,
+                zIndex: 300,
+                // iOS PWA対応
+                WebkitTransform: "translate3d(0, 0, 0)",
+                transform: "translate3d(0, 0, 0)",
+                // iOS セーフエリア対応
+                paddingBottom: "env(safe-area-inset-bottom)",
+                // Android セーフエリア対応
+                paddingTop: "env(safe-area-inset-top)",
+                paddingLeft: "env(safe-area-inset-left)",
+                paddingRight: "env(safe-area-inset-right)",
+                // ブラウザの互換性対応
+                WebkitBackfaceVisibility: "hidden",
+                backfaceVisibility: "hidden",
+                // パフォーマンス改善
+                contain: "layout style paint",
+                willChange: "transform",
+            }} maxWidth={900}>
                 <AppBar position="static">
                     <Toolbar>
                         <IconButton

@@ -163,6 +163,9 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
                     paddingBottom: `calc(var(${CommonConstants.CSS.VARIABLES.NAVIGATION_BAR_HEIGHT}, 56px))`,
                     minHeight: "100vh",
                     boxSizing: "border-box",
+                    // iOS PWA対応
+                    position: "relative",
+                    isolation: "isolate",
                 }}
             >
                 <Header />

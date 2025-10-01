@@ -99,6 +99,21 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ currentTab }: Navi
                 backgroundColor: "background.paper",
                 borderTop: 1,
                 borderColor: "divider",
+                // iOS PWA対応
+                WebkitTransform: "translate3d(0, 0, 0)",
+                transform: "translate3d(0, 0, 0)",
+                // iOS セーフエリア対応
+                paddingBottom: "env(safe-area-inset-bottom)",
+                // Android セーフエリア対応
+                paddingTop: "env(safe-area-inset-top)",
+                paddingLeft: "env(safe-area-inset-left)",
+                paddingRight: "env(safe-area-inset-right)",
+                // ブラウザの互換性対応
+                WebkitBackfaceVisibility: "hidden",
+                backfaceVisibility: "hidden",
+                // パフォーマンス改善
+                contain: "layout style paint",
+                willChange: "transform",
             }}
             maxWidth={900}
         >

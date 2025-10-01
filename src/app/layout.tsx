@@ -35,6 +35,7 @@ export const metadata: Metadata = {
             { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
         ],
     },
+    viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover", // iOSのSafeArea対応
 };
 
 /**
