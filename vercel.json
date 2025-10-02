@@ -4,7 +4,7 @@
         "deploymentEnabled": {
             "develop": true,
             "feature/*": false,
-            "fix/*": false,
+            "fix": false,
             "release/*": true,
             "main": true
         }
