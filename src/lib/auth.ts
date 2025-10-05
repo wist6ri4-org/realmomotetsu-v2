@@ -20,7 +20,7 @@ export const signUp = async (email: string, password: string, nickname: string):
             email,
             password,
             options: {
-                emailRedirectTo: `https://realmomotetsu-v2.vercel.app/user/signin`
+                emailRedirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/user/signin`
             },
         });
 
