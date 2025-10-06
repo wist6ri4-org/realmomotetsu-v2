@@ -21,6 +21,7 @@ const SignUpPage: React.FC = (): React.JSX.Element => {
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
     const router = useRouter();
 
     /**
@@ -42,6 +43,7 @@ const SignUpPage: React.FC = (): React.JSX.Element => {
 
         if (password !== confirmPassword) {
             setError(Messages.PASSWORD_NOT_MATCH);
+            setIsLoading(false);
             return;
         }
 
@@ -50,7 +52,7 @@ const SignUpPage: React.FC = (): React.JSX.Element => {
             if (error) {
                 setError(error.message);
             } else {
-                router.push("/user/signin");
+                setIsSuccess(true);
             }
         } catch {
             setError(Messages.UNEXPECTED_ERROR);
@@ -71,6 +73,53 @@ const SignUpPage: React.FC = (): React.JSX.Element => {
                 }}
             >
                 <CircularProgress size={40} color="warning" />
+            </Box>
+        );
+    }
+
+    // サインアップ成功時の表示
+    if (isSuccess) {
+        return (
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    py: 4,
+                    opacity: isMounted ? 1 : 0,
+                    transition: "opacity 0.3s ease-in-out",
+                }}
+            >
+                <Card sx={{ width: "100%", maxWidth: 400 }}>
+                    <CardContent sx={{ p: 4, textAlign: "center" }}>
+                        <Typography variant="h4" component="h1" gutterBottom color="success.main">
+                            登録完了
+                        </Typography>
+
+                        <Alert severity="success" sx={{ mt: 3, mb: 3 }}>
+                            確認メールを送信しました。
+                            <br />
+                            メールボックスをご確認ください。
+                        </Alert>
+
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                            メール内のリンクをクリックして登録を完了してください。
+                            <br />
+                            メールが届かない場合は、迷惑メールフォルダもご確認ください。
+                        </Typography>
+
+                        <CustomButton
+                            color="primary"
+                            variant="contained"
+                            size="large"
+                            fullWidth
+                            onClick={() => router.push("/user/signin")}
+                            sx={{ py: 1.5 }}
+                        >
+                            ログイン画面へ
+                        </CustomButton>
+                    </CardContent>
+                </Card>
             </Box>
         );
     }
