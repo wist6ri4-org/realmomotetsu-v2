@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Box, Typography, Alert, Card, CardContent, Link, CircularProgress } from "@mui/material";
 import { CheckCircle, Error as ErrorIcon } from "@mui/icons-material";
 import CustomButton from "@/components/base/CustomButton";
 
 /**
- * メールアドレス確認ページコンポーネント
- * @returns {React.JSX.Element} - メールアドレス確認ページのコンポーネント
+ * メールアドレス確認処理を行うコンポーネント
+ * @returns {React.JSX.Element} - メールアドレス確認処理のコンポーネント
  */
-const ConfirmEmailPage = (): React.JSX.Element => {
+const ConfirmEmailContent = (): React.JSX.Element => {
     const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isMounted, setIsMounted] = useState(false);
@@ -160,6 +160,31 @@ const ConfirmEmailPage = (): React.JSX.Element => {
                 </CardContent>
             </Card>
         </Box>
+    );
+};
+
+/**
+ * メールアドレス確認ページコンポーネント
+ * @returns {React.JSX.Element} - メールアドレス確認ページのコンポーネント
+ */
+const ConfirmEmailPage = (): React.JSX.Element => {
+    return (
+        <Suspense
+            fallback={
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        minHeight: "50vh",
+                    }}
+                >
+                    <CircularProgress size={40} color="primary" />
+                </Box>
+            }
+        >
+            <ConfirmEmailContent />
+        </Suspense>
     );
 };
 
