@@ -143,9 +143,14 @@ export class UserUtils {
         }
 
         // Supabase Authでメールアドレスを更新
-        const { error: authError } = await supabase.auth.updateUser({
-            email: email,
-        });
+        const { error: authError } = await supabase.auth.updateUser(
+            {
+                email: email,
+            },
+            {
+                emailRedirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/user/signin`,
+            }
+        );
 
         if (authError) {
             throw new Error(`Authでのメールアドレス更新に失敗しました: ${authError.message}`);
