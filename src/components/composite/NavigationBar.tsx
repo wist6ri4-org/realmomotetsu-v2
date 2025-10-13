@@ -4,7 +4,7 @@ import { CommonConstants } from "@/constants/commonConstants";
 import { Assignment, Casino, Home, Settings } from "@mui/icons-material";
 import { BottomNavigation, BottomNavigationAction, Box } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useIOSKeyboardFix } from "@/hooks/useIOSKeyboardFix";
 
 /**
  * ナビゲーションバーのプロパティ型定義
@@ -23,31 +23,10 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ currentTab }: Navi
     const router = useRouter();
     const pathname = usePathname();
 
-    /**
-     * NavigationBarの高さをCSS変数として設定
-     */
-    useEffect(() => {
-        const updateNavigationHeight = () => {
-            const navigationElement = document.querySelector("[data-navigation-bar]") as HTMLElement;
-            if (navigationElement) {
-                const height = navigationElement.offsetHeight;
-                document.documentElement.style.setProperty(
-                    CommonConstants.CSS.VARIABLES.NAVIGATION_BAR_HEIGHT,
-                    `${height}px`
-                );
-            }
-        };
+    // iOS キーボード対応（画面下部固定のため isBottomFixed = true）
+    useIOSKeyboardFix("[data-navigation-bar]", CommonConstants.CSS.VARIABLES.NAVIGATION_BAR_HEIGHT, true);
 
-        // 初期設定
-        updateNavigationHeight();
 
-        // リサイズ時に更新
-        window.addEventListener("resize", updateNavigationHeight);
-
-        return () => {
-            window.removeEventListener("resize", updateNavigationHeight);
-        };
-    }, []);
 
     /**
      * 現在のeventCodeを取得する
@@ -99,7 +78,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ currentTab }: Navi
                 backgroundColor: "background.paper",
                 borderTop: 1,
                 borderColor: "divider",
-                // iOS PWA対応
+                // iOS PWA対応 - キーボード展開時の対応を改善
                 WebkitTransform: "translate3d(0, 0, 0)",
                 transform: "translate3d(0, 0, 0)",
                 // iOS セーフエリア対応
@@ -114,6 +93,11 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ currentTab }: Navi
                 // パフォーマンス改善
                 contain: "layout style paint",
                 willChange: "transform",
+                // iOS キーボード対応のための追加スタイル
+                "@supports (-webkit-touch-callout: none)": {
+                    // iOS専用の調整
+                    position: "fixed !important",
+                },
             }}
             maxWidth={900}
         >

@@ -17,6 +17,7 @@ import { checkIsVisibleUser, signOut } from "@/lib/auth";
 import { useUserIcon } from "@/contexts/UserIconContext";
 import { CommonConstants } from "@/constants/commonConstants";
 import { useEventContext } from "@/app/events/layout";
+import { useIOSKeyboardFix } from "@/hooks/useIOSKeyboardFix";
 
 /**
  * アプリケーションバーのプロパティ型定義
@@ -40,6 +41,9 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
     // ユーザーアイコンのコンテキストを使用
     const { userIconUrl, updateUserIcon, refreshKey } = useUserIcon();
 
+    // iOS キーボード対応
+    useIOSKeyboardFix("[data-app-bar]", CommonConstants.CSS.VARIABLES.APPLICATION_BAR_HEIGHT);
+
     /**
      * ユーザーアイコンの取得
      */
@@ -56,31 +60,7 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
         loadUserIcon();
     }, [loadUserIcon]);
 
-    /**
-     * ApplicationBarの高さをCSS変数として設定
-     */
-    useEffect(() => {
-        const updateAppBarHeight = () => {
-            const appBarElement = document.querySelector("[data-app-bar]") as HTMLElement;
-            if (appBarElement) {
-                const height = appBarElement.offsetHeight;
-                document.documentElement.style.setProperty(
-                    CommonConstants.CSS.VARIABLES.APPLICATION_BAR_HEIGHT,
-                    `${height}px`
-                );
-            }
-        };
 
-        // 初期設定
-        updateAppBarHeight();
-
-        // リサイズ時に更新
-        window.addEventListener("resize", updateAppBarHeight);
-
-        return () => {
-            window.removeEventListener("resize", updateAppBarHeight);
-        };
-    }, []);
 
     /**
      * ページがフォーカスされたときにアイコンを再読み込み（アイコン変更後の反映のため）
@@ -154,7 +134,7 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
                 position: "fixed",
                 top: 0,
                 zIndex: 300,
-                // iOS PWA対応
+                // iOS PWA対応 - キーボード展開時の対応を改善
                 WebkitTransform: "translate3d(0, 0, 0)",
                 transform: "translate3d(0, 0, 0)",
                 // iOS セーフエリア対応
@@ -169,6 +149,11 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
                 // パフォーマンス改善
                 contain: "layout style paint",
                 willChange: "transform",
+                // iOS キーボード対応のための追加スタイル
+                "@supports (-webkit-touch-callout: none)": {
+                    // iOS専用の調整
+                    position: "fixed !important",
+                },
             }} maxWidth={900}>
                 <AppBar position="static">
                     <Toolbar>
