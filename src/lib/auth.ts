@@ -174,6 +174,11 @@ export const getUserClient = async (): Promise<User | null> => {
     }
 };
 
+/**
+ * パスワードリセットメール送信
+ * @param {string} email - ユーザーのメールアドレス
+ * @return {Promise<Error | null>} - エラーが発生した場合はエラーオブジェクト、成功した場合はnull
+ */
 export const sendEmailForPasswordReset = async (email: string): Promise<Error | null> => {
     try {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -193,6 +198,11 @@ export const sendEmailForPasswordReset = async (email: string): Promise<Error | 
     }
 };
 
+/**
+ * パスワード変更
+ * @param {string} newPassword - 新しいパスワード
+ * @return {Promise<Error | null>} - エラーが発生した場合はエラーオブジェクト、成功した場合はnull
+ */
 export const changePassword = async (newPassword: string): Promise<Error | null> => {
     try {
         const { error } = await supabase.auth.updateUser({
