@@ -54,23 +54,25 @@ enum OperationLevel {
  * イベント
  */
 model Events {
-  id              Int               @id @default(autoincrement()) @map("id")
-  eventCode       String            @unique @map("event_code")
-  eventTypeCode   String            @map("event_type_code")
-  eventName       String            @map("event_name")
-  startDate       DateTime?         @map("start_date") @db.Timestamptz(3)
-  visibilityLevel VisibilityLevel   @default(hidden) @map("visibility_level")
-  operationLevel  OperationLevel    @default(readonly) @map("operation_level")
-  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-  eventType       EventTypes        @relation(fields: [eventTypeCode], references: [eventTypeCode])
-  teams           Teams[]
-  goalStations    GoalStations[]
-  transitStations TransitStations[]
-  bombiiHistories BombiiHistories[]
-  points          Points[]
-  documents       Documents[]
-  attndances      Attendances[]
+  id                    Int               @id @default(autoincrement()) @map("id")
+  eventCode             String            @unique @map("event_code")
+  eventTypeCode         String            @map("event_type_code")
+  eventName             String            @map("event_name")
+  startDate             DateTime?         @map("start_date") @db.Timestamptz(3)
+  visibilityLevel       VisibilityLevel   @default(hidden) @map("visibility_level")
+  operationLevel        OperationLevel    @default(readonly) @map("operation_level")
+  discordWebhookUrl     String            @map("discord_webhook_url") @default("https://discord.com/api/webhooks/sample")
+  isNotificationEnabled Boolean           @default(false) @map("is_notification_enabled")
+  createdAt             DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt             DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  eventType             EventTypes        @relation(fields: [eventTypeCode], references: [eventTypeCode])
+  teams                 Teams[]
+  goalStations          GoalStations[]
+  transitStations       TransitStations[]
+  bombiiHistories       BombiiHistories[]
+  points                Points[]
+  documents             Documents[]
+  attndances            Attendances[]
 
   @@map("events")
 }

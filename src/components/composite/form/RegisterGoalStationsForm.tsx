@@ -14,7 +14,7 @@ import { DiscordNotificationTemplates } from "@/constants/discordNotificationTem
 import { getMessage } from "@/constants/messages";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
-import { Stations } from "@/generated/prisma";
+import { Events, Stations } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useDiscordNotification } from "@/hooks/useDiscordNotification";
@@ -27,11 +27,13 @@ import React, { useState } from "react";
 /**
  * RegisterGoalStationsFormコンポーネントのプロパティ型定義
  * @property {Stations[]} stations - 駅のリスト
+ * @property {Events} event - イベント情報
  * @property {() => void} [onFormSubmit] - フォーム送信後のコールバック関数
  * @property {boolean} isOperating - 操作権限があるかどうか
  */
 interface RegisterGoalStationsFormProps {
     stations: Stations[];
+    event: Events;
     onSubmit?: () => void;
     isOperating: boolean;
 }
@@ -43,6 +45,7 @@ interface RegisterGoalStationsFormProps {
  */
 const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
     stations,
+    event,
     onSubmit,
     isOperating,
 }: RegisterGoalStationsFormProps): React.JSX.Element => {
@@ -64,6 +67,7 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
      */
     const notifyToDiscord = async (): Promise<void> => {
         await sendNotification({
+            discordWebhookUrl: event.discordWebhookUrl,
             templateName: DiscordNotificationTemplates.REGISTER_GOAL_STATION,
             variables: {
                 stationName: stations.find((station) => station.stationCode === stationCodeInput.value)?.name || "不明",
@@ -113,7 +117,9 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
 
             stationCodeInput.reset();
 
-            notifyToDiscord();
+            if (event.isNotificationEnabled && event.discordWebhookUrl) {
+                notifyToDiscord();
+            }
 
             await showAlertDialog({
                 title: DialogConstants.TITLE.REGISTERED,

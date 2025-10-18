@@ -14,7 +14,7 @@ import { DiscordNotificationTemplates } from "@/constants/discordNotificationTem
 import { getMessage } from "@/constants/messages";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
-import { Teams } from "@/generated/prisma";
+import { Events, Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useDiscordNotification } from "@/hooks/useDiscordNotification";
@@ -27,10 +27,13 @@ import React, { useState } from "react";
 /**
  * RegisterBombiiManualFormコンポーネントのプロパティ型定義
  * @property {Teams[]} teams - チームのリスト
+ * @property {Events} event - イベント情報
  * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
+ * @property {boolean} isOperating - 操作権限があるかどうか
  */
 interface RegisterBombiiManualFormProps {
     teams: Teams[];
+    event: Events;
     onSubmit?: () => void;
     isOperating: boolean;
 }
@@ -42,6 +45,7 @@ interface RegisterBombiiManualFormProps {
  */
 const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
     teams,
+    event,
     onSubmit,
     isOperating,
 }: RegisterBombiiManualFormProps): React.JSX.Element => {
@@ -63,6 +67,7 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
      */
     const notifyToDiscord = async (): Promise<void> => {
         await sendNotification({
+            discordWebhookUrl: event.discordWebhookUrl,
             templateName: DiscordNotificationTemplates.REGISTER_BOMBII,
             variables: {
                 teamName: teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明",
@@ -111,7 +116,10 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
 
             teamCodeInput.reset();
 
-            notifyToDiscord();
+            if (event.isNotificationEnabled && event.discordWebhookUrl) {
+                notifyToDiscord();
+            }
+
             await showAlertDialog({
                 title: DialogConstants.TITLE.REGISTERED,
                 message: getMessage("REGISTER_SUCCESS", { data: "ボンビー" }),
