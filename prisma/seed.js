@@ -288,6 +288,8 @@ async function main() {
             const startDate = startDateStr && startDateStr !== "" ? new Date(startDateStr) : null;
             const visibilityLevel = row.visibility_level?.trim() || "admin";
             const operationLevel = row.operation_level?.trim() || "admin";
+            const discordWebhookUrl = row.discord_webhook_url?.trim() || null;
+            const isNotificationEnabled = ["true", "TRUE"].includes(row.isNotificationEnabled?.trim());
             const createdAt = new Date(row.created_at?.trim());
             const updatedAt = new Date(row.updated_at?.trim());
 
@@ -299,6 +301,8 @@ async function main() {
                     startDate,
                     visibilityLevel,
                     operationLevel,
+                    discordWebhookUrl,
+                    isNotificationEnabled,
                     createdAt,
                     updatedAt,
                 },
