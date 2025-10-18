@@ -15,7 +15,7 @@ import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { GetLatestGoalStationsResponse } from "@/features/goal-stations/latest/types";
 import { GetLatestTransitStationsResponse } from "@/features/transit-stations/latest/types";
-import { LatestTransitStations, Stations, Teams } from "@/generated/prisma";
+import { Events, LatestTransitStations, Stations, Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useDiscordNotification } from "@/hooks/useDiscordNotification";
@@ -30,6 +30,7 @@ import { useState } from "react";
  * CurrentLocationFormコンポーネントのプロパティ型定義
  * @property {Teams[]} teams - チームのリスト
  * @property {Stations[]} stations - 駅のリスト
+ * @property {Events} event - イベント情報
  * @property {ClosestStation[]} [closestStations] - 最寄り駅のリスト（オプション）
  * @property {string} [initialTeamCode] - 初期選択されるチームコード（オプション）
  * @property {boolean} isOperating - 操作権限があるかどうか
@@ -37,6 +38,7 @@ import { useState } from "react";
 interface CurrentLocationFormProps {
     teams: Teams[];
     stations: Stations[];
+    event: Events;
     closestStations?: ClosestStation[];
     initialTeamCode?: string;
     isOperating: boolean;
@@ -50,6 +52,7 @@ interface CurrentLocationFormProps {
 const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     teams,
     stations,
+    event,
     closestStations,
     initialTeamCode,
     isOperating,
@@ -76,6 +79,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
      */
     const notifyToDiscord = async (): Promise<void> => {
         await sendNotification({
+            discordWebhookUrl: event.discordWebhookUrl,
             templateName: DiscordNotificationTemplates.ARRIVAL_GOAL_STATION,
             variables: {
                 teamName: teams.find((team) => team.teamCode === selectedTeamCodeInput.value)?.teamName || "不明",
@@ -176,7 +180,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
 
             // 最新の目的駅の駅コードを取得
             const nextGoalStationCode = await fetchNextGoalStationCode();
-            if (selectedStationCodeInput.value === nextGoalStationCode) {
+            if (event.isNotificationEnabled && event.discordWebhookUrl && selectedStationCodeInput.value === nextGoalStationCode) {
                 // 目的駅に到着した場合、Discord通知を送信
                 notifyToDiscord();
             }

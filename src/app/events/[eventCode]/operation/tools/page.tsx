@@ -116,11 +116,11 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                 {/* メインコンテンツ */}
                 {!isLoading && !isInitDataLoading && !error && !contextError && (
                     <>
-                        <RegisterGoalStationsForm stations={stations} onSubmit={handleUpdate} isOperating={isOperating} />
+                        <RegisterGoalStationsForm stations={stations} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
                         <ArrivalGoalStationsForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <RegisterBombiiAutoForm teamData={teamData} onSubmit={handleUpdate} isOperating={isOperating} />
+                        <RegisterBombiiAutoForm teamData={teamData} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
                         <RegisterPointsForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
@@ -128,7 +128,7 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                         <Divider />
                         <PointsExchangeForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <RegisterBombiiManualForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
+                        <RegisterBombiiManualForm teams={teams} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
                         <MissionFormSenzokuike />
                         <InformationDialog

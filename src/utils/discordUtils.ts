@@ -87,13 +87,7 @@ export class DiscordNotifier {
         }
 
         try {
-            const templatePath = path.join(
-                process.cwd(),
-                "src",
-                "templates",
-                "discord",
-                `${templateName}.json`
-            );
+            const templatePath = path.join(process.cwd(), "src", "templates", "discord", `${templateName}.json`);
             const templateContent = await fs.readFile(templatePath, "utf-8");
             const template = JSON.parse(templateContent) as MessageTemplate;
 
@@ -109,13 +103,7 @@ export class DiscordNotifier {
      */
     private async loadTextTemplate(templateName: string): Promise<string> {
         try {
-            const templatePath = path.join(
-                process.cwd(),
-                "src",
-                "templates",
-                "discord",
-                `${templateName}`
-            );
+            const templatePath = path.join(process.cwd(), "src", "templates", "discord", `${templateName}`);
             const templateContent = await fs.readFile(templatePath, "utf-8");
             return templateContent;
         } catch (error) {
@@ -242,47 +230,34 @@ export class DiscordNotifier {
     }
 }
 
-// シングルトンインスタンスを作成
-let discordNotifier: DiscordNotifier | null = null;
+// Webhook URLごとにDiscordNotifierインスタンスを管理するマップ
+const discordNotifiers: Map<string, DiscordNotifier> = new Map();
 
 /**
  * DiscordNotifierの初期化
  * @param webhookUrl - DiscordのWebhook URL
  */
 export function initializeDiscordNotifier(webhookUrl: string): void {
-    discordNotifier = new DiscordNotifier(webhookUrl);
-}
-
-/**
- * Discord通知が有効かどうかを確認する
- */
-export function isDiscordNotificationEnabled(): boolean {
-    const enabled = process.env.ENABLE_DISCORD_NOTIFICATIONS;
-    return enabled === "true";
-}
-
-/**
- * DiscordNotifierの初期化を確認
- */
-export function ensureDiscordNotifierInitialized(): void {
-    if (!discordNotifier && process.env.DISCORD_WEBHOOK_URL) {
-        initializeDiscordNotifier(process.env.DISCORD_WEBHOOK_URL);
+    if (!webhookUrl) return;
+    if (!discordNotifiers.has(webhookUrl)) {
+        discordNotifiers.set(webhookUrl, new DiscordNotifier(webhookUrl));
     }
 }
 
 /**
- * DiscordNotifierを取得する
+ * DiscordNotifierを取得する（必要なら初期化）
+ * @param discordWebhookUrl - DiscordのWebhook URL
  * @returns {DiscordNotifier} - 初期化されたDiscordNotifierインスタンス
  */
-export function getDiscordNotifier(): DiscordNotifier {
-    if (!isDiscordNotificationEnabled()) {
-        throw new Error("Discord notifications are not enabled. Set ENABLE_DISCORD_NOTIFICATIONS to true.");
+export function getDiscordNotifier(discordWebhookUrl: string): DiscordNotifier {
+    if (!discordWebhookUrl) {
+        throw new Error("Discord webhook URL is required");
     }
 
-    ensureDiscordNotifierInitialized();
-
-    if (!discordNotifier) {
-        throw new Error("Discord notifier not initialized. Call initializeDiscordNotifier first.");
+    if (!discordNotifiers.has(discordWebhookUrl)) {
+        initializeDiscordNotifier(discordWebhookUrl);
     }
-    return discordNotifier;
+
+    // has()したので存在するはず
+    return discordNotifiers.get(discordWebhookUrl)!;
 }

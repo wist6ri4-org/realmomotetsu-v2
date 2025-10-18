@@ -35,7 +35,10 @@ export const metadata: Metadata = {
             { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
         ],
     },
-    viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover", // iOSのSafeArea対応
+    viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    other: {
+        'emotion-insertion-point': '',
+    },
 };
 
 /**
@@ -54,10 +57,6 @@ const RootLayout = ({
             className={`${geistSans.variable} ${geistMono.variable} ${dotGothic16.variable}`}
             suppressHydrationWarning={true}
         >
-            <head>
-                <meta name="emotion-insertion-point" content="" />
-                <meta name="viewport" content="initial-scale=1, width=device-width" />
-            </head>
             <body className={dotGothic16.className} suppressHydrationWarning={true}>
                 <ThemeRegistry>
                     <UserIconProvider>

@@ -11,7 +11,8 @@ export const DiscordNotifyServiceImpl: DiscordNotifyService = {
     postDiscordNotify: async (
         req: PostDiscordNotifyRequest
     ): Promise<PostDiscordNotifyResponse> => {
-        const notifier = getDiscordNotifier();
+        const discordWebhookUrl: string = req.discordWebhookUrl;
+        const notifier = getDiscordNotifier(discordWebhookUrl);
         try {
             const { templateName, variables } = req;
             const isTextTemplate = templateName.endsWith(".txt");

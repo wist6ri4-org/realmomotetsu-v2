@@ -120,6 +120,7 @@ const FormPage: React.FC = (): React.JSX.Element => {
                             <CurrentLocationForm
                                 teams={teams}
                                 stations={stations}
+                                event={event!}
                                 closestStations={closestStations}
                                 initialTeamCode={attendance?.teamCode}
                                 isOperating={isOperating}

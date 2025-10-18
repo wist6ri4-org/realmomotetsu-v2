@@ -2,10 +2,12 @@ import { useState } from "react";
 
 /**
  * Discord通知の送信オプション
+ * @property {string} webhookUrl - DiscordのWebhook URL
  * @property {string} templateName - 使用するテンプレートの名前
  * @property {Record<string, string>} [variables] - テンプレートに埋め込む変数
  */
 interface NotificationOptions {
+    discordWebhookUrl?: string;
     templateName: string;
     variables?: Record<string, string>;
 }
@@ -46,7 +48,13 @@ export function useDiscordNotification(): {
      * @param {NotificationOptions} options - 通知の送信オプション
      * @return {Promise<NotificationResult>} - 通知送信の結果
      */
-    const sendNotification = async ({ templateName, variables }: NotificationOptions): Promise<NotificationResult> => {
+    const sendNotification = async (options: NotificationOptions): Promise<NotificationResult> => {
+        const { discordWebhookUrl, templateName, variables } = options;
+        if (!discordWebhookUrl) {
+            const msg = "discord webhook URL is required";
+            setError(msg);
+            return { success: false, error: msg };
+        }
         setIsLoading(true);
         setError(null);
 
@@ -56,7 +64,7 @@ export function useDiscordNotification(): {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ templateName, variables }),
+                body: JSON.stringify({ discordWebhookUrl, templateName, variables }),
             });
 
             const result = await response.json();

@@ -25,6 +25,7 @@ import React, { useState } from "react";
  * PointsExchangeFormコンポーネントのプロパティ型定義
  * @property {Teams[]} teams - チームのリスト
  * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
+ * @property {boolean} isOperating - 操作権限があるかどうか
  */
 interface PointsExchangeFormProps {
     teams: Teams[];

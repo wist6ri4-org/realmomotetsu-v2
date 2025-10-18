@@ -13,6 +13,7 @@ import { DiscordNotificationTemplates } from "@/constants/discordNotificationTem
 import { getMessage } from "@/constants/messages";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
+import { Events } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useDiscordNotification } from "@/hooks/useDiscordNotification";
@@ -25,11 +26,13 @@ import React, { useState } from "react";
 /**
  * RegisterBombiiAutoFormコンポーネントのプロパティ型定義
  * @property {TeamData[]} teamData - チームデータのリスト
+ * @property {Events} event - イベント情報
  * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
  * @property {boolean} isOperating - 操作権限があるかどうか
  */
 interface RegisterBombiiAutoFormProps {
     teamData: TeamData[];
+    event: Events;
     onSubmit?: () => void;
     isOperating: boolean;
 }
@@ -41,6 +44,7 @@ interface RegisterBombiiAutoFormProps {
  */
 const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
     teamData,
+    event,
     onSubmit,
     isOperating,
 }: RegisterBombiiAutoFormProps): React.JSX.Element => {
@@ -60,6 +64,7 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
      */
     const notifyToDiscord = async (teamName: string): Promise<void> => {
         await sendNotification({
+            discordWebhookUrl: event.discordWebhookUrl,
             templateName: DiscordNotificationTemplates.REGISTER_BOMBII,
             variables: {
                 teamName: teamName,
@@ -111,7 +116,9 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
                 throw ApplicationErrorFactory.createFromResponse(response);
             }
 
-            notifyToDiscord(bombiiTeam.teamName);
+            if (event.isNotificationEnabled && event.discordWebhookUrl) {
+                notifyToDiscord(bombiiTeam.teamName);
+            }
 
             await showAlertDialog({
                 title: DialogConstants.TITLE.REGISTERED,
