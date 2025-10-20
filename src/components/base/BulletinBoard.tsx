@@ -6,12 +6,6 @@ import { keyframes } from "@mui/system";
 
 /**
  * BulletinBoardコンポーネントのプロパティ型定義
- * @property {string}[nextStation] - 次の駅名
- * @property {string}[nextStationEng] - 次の駅名（英語表記、駅コード）
- */
-
-/**
- * BulletinBoardコンポーネントのプロパティ
  * @param {string} nextStation - 次の駅名
  * @param {string} nextStationEng - 次の駅名（英語表記、駅コード）
  */
@@ -61,6 +55,8 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
                     whiteSpace: "nowrap",
                     listStyle: "none",
                     padding: 0,
+                    willChange: "transform",
+                    transform: "translate3d(0, 0, 0)",
                 }}
             >
                 <Box
