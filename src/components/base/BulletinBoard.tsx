@@ -17,7 +17,7 @@ interface BulletinBoardProps {
 // スライドアニメーションの定義
 const slideDestination = keyframes`
     0% {
-        transform: translateX(100dvw);
+        transform: translateX(100%);
     }
     100% {
         transform: translateX(-100%);
@@ -41,14 +41,13 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
                 backgroundColor: "#212529",
                 overflow: "hidden",
                 display: "flex",
-                alignItems: "center",
                 borderRadius: 0.5,
             }}
         >
             <Box
                 component="ul"
                 sx={{
-                    animation: `${slideDestination} 20s linear infinite`,
+                    animation: `${slideDestination} 15s linear infinite`,
                     display: "inline-block",
                     margin: 0,
                     paddingLeft: "0",
@@ -56,7 +55,8 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
                     listStyle: "none",
                     padding: 0,
                     willChange: "transform",
-                    transform: "translate3d(0, 0, 0)",
+                    // transform: "translate3d(0, 0, 0)",
+                    transform: "translateX(-50%)"
                 }}
             >
                 <Box
