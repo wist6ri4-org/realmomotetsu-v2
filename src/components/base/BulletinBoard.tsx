@@ -37,44 +37,54 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
     const [animationKey, setAnimationKey] = useState(0);
 
     useEffect(() => {
-        const handleVisibilityChange = () => {
-            const visible = !document.hidden;
-            if (visible) {
-                // ページが表示されたらアニメーションを一時停止してからリセット
-                setIsVisible(false);
-                // 次のフレームでアニメーションを再開
+        const resetAnimation = () => {
+            // アニメーションを完全に停止
+            setIsVisible(false);
+            // 短い遅延を入れてDOMを確実に更新
+            setTimeout(() => {
+                // キーを変更してDOMを再作成
+                setAnimationKey(prev => prev + 1);
+                // さらに短い遅延の後にアニメーション再開
                 requestAnimationFrame(() => {
-                    setAnimationKey(prev => prev + 1);
-                    setIsVisible(true);
+                    requestAnimationFrame(() => {
+                        setIsVisible(true);
+                    });
                 });
+            }, 50);
+        };
+
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                resetAnimation();
             } else {
                 setIsVisible(false);
             }
         };
 
-        document.addEventListener("visibilitychange", handleVisibilityChange);
-
-        // iOS PWA用：pageshow/pagehideイベントも監視
         const handlePageShow = () => {
-            // ページ表示時はアニメーションをリセット
-            setIsVisible(false);
-            requestAnimationFrame(() => {
-                setAnimationKey(prev => prev + 1);
-                setIsVisible(true);
-            });
+            // bfcacheから復帰した場合も含めてリセット
+            resetAnimation();
         };
 
         const handlePageHide = () => {
             setIsVisible(false);
         };
 
+        const handleFocus = () => {
+            // ダイアログなどから戻った時用
+            resetAnimation();
+        };
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
         window.addEventListener("pageshow", handlePageShow);
         window.addEventListener("pagehide", handlePageHide);
+        window.addEventListener("focus", handleFocus);
 
         return () => {
             document.removeEventListener("visibilitychange", handleVisibilityChange);
             window.removeEventListener("pageshow", handlePageShow);
             window.removeEventListener("pagehide", handlePageHide);
+            window.removeEventListener("focus", handleFocus);
         };
     }, []);
 
