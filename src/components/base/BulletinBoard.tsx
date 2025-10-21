@@ -17,10 +17,10 @@ interface BulletinBoardProps {
 // スライドアニメーションの定義
 const slideDestination = keyframes`
     0% {
-        transform: translateX(100%);
+        transform: translate3d(100%, 0, 0);
     }
     100% {
-        transform: translateX(-100%);
+        transform: translate3d(-100%, 0, 0);
     }
 `;
 
@@ -34,15 +34,37 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
     nextStationEng,
 }: BulletinBoardProps): React.JSX.Element => {
     const [isVisible, setIsVisible] = useState(true);
+    const [animationKey, setAnimationKey] = useState(0);
 
     useEffect(() => {
         const handleVisibilityChange = () => {
-            setIsVisible(!document.hidden);
+            const visible = !document.hidden;
+            setIsVisible(visible);
+            if (visible) {
+                // アニメーションを再起動
+                setAnimationKey(prev => prev + 1);
+            }
         };
 
         document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        // iOS PWA用：pageshow/pagehideイベントも監視
+        const handlePageShow = () => {
+            setIsVisible(true);
+            setAnimationKey(prev => prev + 1);
+        };
+
+        const handlePageHide = () => {
+            setIsVisible(false);
+        };
+
+        window.addEventListener("pageshow", handlePageShow);
+        window.addEventListener("pagehide", handlePageHide);
+
         return () => {
             document.removeEventListener("visibilitychange", handleVisibilityChange);
+            window.removeEventListener("pageshow", handlePageShow);
+            window.removeEventListener("pagehide", handlePageHide);
         };
     }, []);
 
@@ -55,9 +77,11 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
                 overflow: "hidden",
                 display: "flex",
                 borderRadius: 0.5,
+                WebkitOverflowScrolling: "touch", // iOS用
             }}
         >
             <Box
+                key={animationKey} // アニメーション再起動用
                 component="ul"
                 sx={{
                     animation: isVisible
@@ -70,8 +94,10 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
                     listStyle: "none",
                     padding: 0,
                     willChange: "transform",
-                    // transform: "translate3d(0, 0, 0)",
-                    transform: "translateX(-50%)"
+                    transform: "translate3d(0, 0, 0)", // iOS用にtranslate3dを使用
+                    WebkitTransform: "translate3d(0, 0, 0)", // Webkit用プレフィックス
+                    backfaceVisibility: "hidden", // iOS用
+                    WebkitBackfaceVisibility: "hidden",
                 }}
             >
                 <Box
