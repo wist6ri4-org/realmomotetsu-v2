@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { keyframes } from "@mui/system";
 
@@ -33,6 +33,19 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
     nextStation,
     nextStationEng,
 }: BulletinBoardProps): React.JSX.Element => {
+    const [isVisible, setIsVisible] = useState(true);
+
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            setIsVisible(!document.hidden);
+        };
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        return () => {
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+        };
+    }, []);
+
     return (
         <Box
             sx={{
@@ -47,7 +60,9 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
             <Box
                 component="ul"
                 sx={{
-                    animation: `${slideDestination} 15s linear infinite`,
+                    animation: isVisible
+                        ? `${slideDestination} 20s linear infinite`
+                        : "none",
                     display: "inline-block",
                     margin: 0,
                     paddingLeft: "0",
