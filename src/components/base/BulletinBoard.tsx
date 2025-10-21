@@ -14,13 +14,13 @@ interface BulletinBoardProps {
     nextStationEng: string;
 }
 
-// スライドアニメーションの定義
+// 無限スクロールアニメーションの定義（電光掲示板風）
 const slideDestination = keyframes`
     0% {
-        transform: translate3d(100%, 0, 0);
+        transform: translate3d(0, 0, 0);
     }
     100% {
-        transform: translate3d(-100%, 0, 0);
+        transform: translate3d(-50%, 0, 0);
     }
 `;
 
@@ -39,10 +39,16 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
     useEffect(() => {
         const handleVisibilityChange = () => {
             const visible = !document.hidden;
-            setIsVisible(visible);
             if (visible) {
-                // アニメーションを再起動
-                setAnimationKey(prev => prev + 1);
+                // ページが表示されたらアニメーションを一時停止してからリセット
+                setIsVisible(false);
+                // 次のフレームでアニメーションを再開
+                requestAnimationFrame(() => {
+                    setAnimationKey(prev => prev + 1);
+                    setIsVisible(true);
+                });
+            } else {
+                setIsVisible(false);
             }
         };
 
@@ -50,8 +56,12 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
 
         // iOS PWA用：pageshow/pagehideイベントも監視
         const handlePageShow = () => {
-            setIsVisible(true);
-            setAnimationKey(prev => prev + 1);
+            // ページ表示時はアニメーションをリセット
+            setIsVisible(false);
+            requestAnimationFrame(() => {
+                setAnimationKey(prev => prev + 1);
+                setIsVisible(true);
+            });
         };
 
         const handlePageHide = () => {
@@ -68,6 +78,11 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
         };
     }, []);
 
+    const space = "　";
+
+    // 表示するテキストコンテンツ
+    const displayText = `次は ${nextStation + space.repeat(7)} Next ${nextStationEng + space.repeat(7)}`;
+
     return (
         <Box
             sx={{
@@ -76,23 +91,20 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
                 backgroundColor: "#212529",
                 overflow: "hidden",
                 display: "flex",
+                alignItems: "center",
                 borderRadius: 0.5,
                 WebkitOverflowScrolling: "touch", // iOS用
+                position: "relative",
             }}
         >
             <Box
                 key={animationKey} // アニメーション再起動用
-                component="ul"
                 sx={{
                     animation: isVisible
                         ? `${slideDestination} 20s linear infinite`
                         : "none",
-                    display: "inline-block",
-                    margin: 0,
-                    paddingLeft: "0",
+                    display: "flex",
                     whiteSpace: "nowrap",
-                    listStyle: "none",
-                    padding: 0,
                     willChange: "transform",
                     transform: "translate3d(0, 0, 0)", // iOS用にtranslate3dを使用
                     WebkitTransform: "translate3d(0, 0, 0)", // Webkit用プレフィックス
@@ -100,48 +112,31 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
                     WebkitBackfaceVisibility: "hidden",
                 }}
             >
-                <Box
-                    component="li"
+                {/* テキストを2回繰り返して無限ループを実現 */}
+                <Typography
+                    component="span"
                     sx={{
-                        display: "inline",
+                        fontSize: "2.5rem",
+                        color: "orange",
+                        letterSpacing: "0.12em",
+                        fontWeight: "normal",
+                        paddingRight: 4,
                     }}
                 >
-                    <Typography
-                        component="span"
-                        sx={{
-                            fontSize: "2.5rem",
-                            color: "orange",
-                            letterSpacing: "0.12em",
-                            fontWeight: "normal",
-                        }}
-                    >
-                        次は{" "}
-                        <Typography
-                            component="span"
-                            sx={{
-                                fontSize: "inherit",
-                                color: "inherit",
-                                letterSpacing: "inherit",
-                                fontWeight: "inherit",
-                            }}
-                            marginRight={40}
-                        >
-                            {nextStation}
-                        </Typography>{" "}
-                        Next{" "}
-                        <Typography
-                            component="span"
-                            sx={{
-                                fontSize: "inherit",
-                                color: "inherit",
-                                letterSpacing: "inherit",
-                                fontWeight: "inherit",
-                            }}
-                        >
-                            {nextStationEng}
-                        </Typography>
-                    </Typography>
-                </Box>
+                    {displayText}
+                </Typography>
+                <Typography
+                    component="span"
+                    sx={{
+                        fontSize: "2.5rem",
+                        color: "orange",
+                        letterSpacing: "0.12em",
+                        fontWeight: "normal",
+                        paddingRight: 4,
+                    }}
+                >
+                    {displayText}
+                </Typography>
             </Box>
         </Box>
     );
