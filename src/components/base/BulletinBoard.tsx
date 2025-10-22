@@ -17,10 +17,10 @@ interface BulletinBoardProps {
 // 無限スクロールアニメーションの定義（電光掲示板風）
 const slideDestination = keyframes`
     0% {
-        transform: translate3d(0, 0, 0);
+        transform: translate3d(100vw, 0, 0);
     }
     100% {
-        transform: translate3d(-50%, 0, 0);
+        transform: translate3d(-100%, 0, 0);
     }
 `;
 
@@ -91,13 +91,11 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
     const space = "　";
 
     // 表示するテキストコンテンツ
-    const displayText = `次は ${nextStation + space.repeat(7)} Next ${nextStationEng + space.repeat(7)}`;
+    const displayText = `次は ${nextStation + space.repeat(7)} Next ${nextStationEng}`;
 
     return (
         <Box
             sx={{
-                width: "100%",
-                height: "100%",
                 backgroundColor: "#212529",
                 overflow: "hidden",
                 display: "flex",
@@ -123,30 +121,32 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
                 }}
             >
                 {/* テキストを2回繰り返して無限ループを実現 */}
-                <Typography
-                    component="span"
-                    sx={{
-                        fontSize: "2.5rem",
-                        color: "orange",
-                        letterSpacing: "0.12em",
-                        fontWeight: "normal",
-                        paddingRight: 4,
-                    }}
-                >
-                    {displayText}
-                </Typography>
-                <Typography
-                    component="span"
-                    sx={{
-                        fontSize: "2.5rem",
-                        color: "orange",
-                        letterSpacing: "0.12em",
-                        fontWeight: "normal",
-                        paddingRight: 4,
-                    }}
-                >
-                    {displayText}
-                </Typography>
+                <Box sx={{ display: "flex" }}>
+                    <Typography
+                        component="span"
+                        sx={{
+                            fontSize: "2.5rem",
+                            color: "orange",
+                            letterSpacing: "0.12em",
+                            fontWeight: "normal",
+                            paddingRight: 4,
+                        }}
+                    >
+                        {displayText + space.repeat(7)}
+                    </Typography>
+                    <Typography
+                        component="span"
+                        sx={{
+                            fontSize: "2.5rem",
+                            color: "orange",
+                            letterSpacing: "0.12em",
+                            fontWeight: "normal",
+                            paddingRight: 4,
+                        }}
+                    >
+                        {displayText}
+                    </Typography>
+                </Box>
             </Box>
         </Box>
     );
