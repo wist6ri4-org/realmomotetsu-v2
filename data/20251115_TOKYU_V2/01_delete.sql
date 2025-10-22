@@ -1,0 +1,9 @@
+DELETE FROM attendances WHERE event_code = 'TOKYU_V2_20251115';
+DELETE FROM documents WHERE event_code = 'TOKYU_V2_20251115';
+DELETE FROM goal_stations WHERE event_code = 'TOKYU_V2_20251115';
+DELETE FROM transit_stations WHERE event_code = 'TOKYU_V2_20251115';
+DELETE FROM nearby_stations WHERE event_type_code = 'TOKYU_V2';
+DELETE FROM stations WHERE event_type_code = 'TOKYU_V2';
+DELETE FROM teams WHERE event_code = 'TOKYU_V2_20251115';
+DELETE FROM events WHERE event_code = 'TOKYU_V2_20251115';
+DELETE FROM event_types WHERE event_type_code = 'TOKYU_V2';

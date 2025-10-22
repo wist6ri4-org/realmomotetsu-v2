@@ -1,0 +1,4 @@
+email,nickname,icon_url,created_at,updated_at,master_role,uuid,id
+user@mail.com,user,,,,user,a48997e9-3276-4fa4-a679-ff00836b179b,1
+admin@mail.com,admin,,,,admin,df0e5947-18df-4f75-99f3-a7648b07be7a,2
+organizer@mail.com,user,,,,user,99c3c2ed-7a47-4aae-b8e7-1c1f153243f4,3

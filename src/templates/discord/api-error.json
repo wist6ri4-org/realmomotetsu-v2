@@ -1,0 +1,29 @@
+{
+    "embed": {
+        "title": "❌ API エラー発生",
+        "description": "API `{{endpoint}}` でエラーが発生しました。",
+        "color": 15158332,
+        "fields": [
+            {
+                "name": "エンドポイント",
+                "value": "{{endpoint}}",
+                "inline": true
+            },
+            {
+                "name": "HTTPステータス",
+                "value": "{{statusCode}}",
+                "inline": true
+            },
+            {
+                "name": "エラーメッセージ",
+                "value": "{{error}}",
+                "inline": false
+            },
+            {
+                "name": "発生時刻",
+                "value": "{{timestamp}}",
+                "inline": true
+            }
+        ]
+    }
+}

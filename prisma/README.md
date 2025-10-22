@@ -1,0 +1,30 @@
+# Prismaの使用方法
+このドキュメントでは、Prismaを使用してデータベースにデータを挿入する方法について説明します。
+
+## Prismaのシードスクリプト
+Prismaのシードスクリプトは、データベースに初期データを挿入するために使用されます。以下の手順でシードスクリプトを実行できます。
+<span style="color: red">※実行すると既存のデータは削除されます。</span>
+
+```bash
+npm run seed
+```
+### シードスクリプトの内容
+シードスクリプトは、`prisma/seed.js`に定義されています。このスクリプトでは、CSVファイルからデータを読み込み、各テーブルにデータを挿入します。以下の手順で各テーブルにデータを挿入します。
+
+## マイグレーション
+マイグレーションを実行することで、データベースのスキーマを最新の状態に保つことができます。以下のコマンドでマイグレーションを実行します。
+```bash
+# ローカルのSupabaseへの反映も含む
+npx prisma migrate dev --name init
+# .env.localの環境変数を使用してマイグレーションを実行する場合
+npx dotenv -e .env.local -- npx prisma migrate dev --name init
+
+# マイグレーションファイルを作成するだけの場合
+npx prisma migrate dev --create-only
+```
+
+## ジェネレーターの実行
+Prismaのジェネレーターを実行することで、Prisma Clientを生成します。以下のコマンドでジェネレーターを実行します。
+```bash
+npx prisma generate
+```
