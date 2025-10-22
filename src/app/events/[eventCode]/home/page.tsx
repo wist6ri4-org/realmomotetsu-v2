@@ -102,13 +102,17 @@ const HomePage: React.FC = (): React.JSX.Element => {
     return (
         <>
             {/* サブヘッダーセクション */}
-            <Box>
-                <BulletinBoard
-                    nextStation={nextGoalStationData.station?.name || "ー"}
-                    nextStationEng={nextGoalStationData.station?.englishName || "ー"}
-                />
-            </Box>
-            <Divider sx={{ marginY: 2 }} />
+            {!isLoading && !isInitDataLoading && !error && !contextError && (<>
+                <Box>
+
+                    <BulletinBoard
+                        nextStation={nextGoalStationData.station?.name || "ー"}
+                        nextStationEng={nextGoalStationData.station?.englishName || "ー"}
+                    />
+                </Box>
+                <Divider sx={{ marginY: 2 }} />
+            </>
+            )}
 
             {/* コンテンツセクション */}
             <Box>
