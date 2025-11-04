@@ -173,6 +173,11 @@ const SignInPage: React.FC = (): React.JSX.Element => {
                             パスワードを忘れた方は <Link href="/user/reset-password/email">パスワードリセット</Link>
                         </Typography>
                     </Box>
+                    <Box sx={{ mt: 1, textAlign: "center" }}>
+                        <Typography variant="body2" color="text.secondary">
+                            確認メールが届かない場合は <Link href="/user/resend-confirmation">確認メール再送信</Link>
+                        </Typography>
+                    </Box>
                 </CardContent>
             </Card>
         </Box>

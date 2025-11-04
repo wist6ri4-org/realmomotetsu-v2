@@ -226,6 +226,11 @@ const SignUpPage: React.FC = (): React.JSX.Element => {
                             既にアカウントをお持ちの方は <Link href="/user/signin">ログイン</Link>
                         </Typography>
                     </Box>
+                    <Box sx={{ mt: 1, textAlign: "center" }}>
+                        <Typography variant="body2" color="text.secondary">
+                            確認メールが届かない場合は <Link href="/user/resend-confirmation">確認メール再送信</Link>
+                        </Typography>
+                    </Box>
                 </CardContent>
             </Card>
         </Box>
