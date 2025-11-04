@@ -16,10 +16,15 @@ export class DocumentsRepository extends BaseRepository {
                 where: {
                     eventCode: eventCode,
                 },
-                orderBy: {
-                    createdAt: "asc",
-                },
-            })
+                orderBy: [
+                    {
+                        order: "asc",
+                    },
+                    {
+                        id: "asc",
+                    },
+                ],
+            });
         } catch (error) {
             this.handleDatabaseError(error, "findByEventCode");
         }

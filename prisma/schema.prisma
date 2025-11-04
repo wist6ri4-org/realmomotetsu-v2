@@ -61,7 +61,7 @@ model Events {
   startDate             DateTime?         @map("start_date") @db.Timestamptz(3)
   visibilityLevel       VisibilityLevel   @default(hidden) @map("visibility_level")
   operationLevel        OperationLevel    @default(readonly) @map("operation_level")
-  discordWebhookUrl     String            @map("discord_webhook_url") @default("https://discord.com/api/webhooks/sample")
+  discordWebhookUrl     String            @default("https://discord.com/api/webhooks/sample") @map("discord_webhook_url")
   isNotificationEnabled Boolean           @default(false) @map("is_notification_enabled")
   createdAt             DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt             DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
@@ -246,6 +246,7 @@ model Documents {
   name      String   @map("name")
   url       String   @map("url")
   eventCode String   @map("event_code")
+  order     Int      @map("order") @default(0)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   event     Events   @relation(fields: [eventCode], references: [eventCode])
@@ -296,6 +297,7 @@ model Attendances {
   event     Events   @relation(fields: [eventCode], references: [eventCode])
   team      Teams    @relation(fields: [teamCode], references: [teamCode])
 
+  @@unique([userId, eventCode])
   @@map("attendances")
 }
 
