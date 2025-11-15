@@ -3,7 +3,7 @@ export class MissionToolUtils {
      * 洗足池の面積を基に得点を計算するユーティリティ
      */
     static MissionSenzokuike = {
-        SENZOKUIKE_AREA: 41000, // 洗足池の面積
+        SENZOKUIKE_AREA: 40000, // 洗足池の面積
         MAX_SCORE: 150, // 最大得点
         SCALE: 5000, // スケールパラメータ
         BASE_POINT: 50, // 基礎点
