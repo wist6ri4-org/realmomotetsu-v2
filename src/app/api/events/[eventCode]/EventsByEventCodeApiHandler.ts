@@ -1,0 +1,69 @@
+import { NextRequest, NextResponse } from "next/server";
+import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
+import { Handlers } from "@/app/api/utils/types";
+import { EventByEventCodeServiceImpl } from "@/features/events/[eventCode]/service";
+import {
+    GetEventByEventCodeRequestScheme,
+    GetEventByEventCodeResponseSchema,
+} from "@/features/events/[eventCode]/validator";
+import { GetEventByEventCodeResponse } from "@/features/events/[eventCode]/types";
+
+/**
+ * イベントコードに紐づくイベントに関するAPIハンドラー
+ */
+class EventsByEventCodeApiHandler extends BaseApiHandler {
+    private eventCode: string;
+
+    /**
+     * コンストラクタ
+     * @param {NextRequest} req - Next.jsのリクエストオブジェクト
+     * @param {{eventCode: string}} params - パスパラメータ（eventCode）
+     */
+    constructor(req: NextRequest, params: { eventCode: string }) {
+        super(req);
+        this.eventCode = params.eventCode;
+    }
+
+    /**
+     * HTTPメソッドごとのハンドラーを定義
+     * @return {Handlers} - HTTPメソッドごとのハンドラーを定義したオブジェクト
+     */
+    protected getHandlers(): Handlers {
+        return {
+            GET: this.handleGet.bind(this),
+        };
+    }
+
+    /**
+     * GETリクエストを処理するメソッド
+     * @return {Promise<NextResponse>} - レスポンスオブジェクト
+     */
+    private async handleGet(): Promise<NextResponse> {
+        this.logInfo("Handling GET request for events/[eventCode]");
+
+        try {
+            const validatedParams = GetEventByEventCodeRequestScheme.parse({
+                eventCode: this.eventCode,
+            });
+
+            this.logDebug("Request parameters", validatedParams);
+
+            // サービスからデータを取得
+            const data: GetEventByEventCodeResponse = await EventByEventCodeServiceImpl.getEventByEventCode(
+                validatedParams
+            );
+
+            // レスポンスのスキーマでバリデーション
+            const validatedResponse: GetEventByEventCodeResponse = GetEventByEventCodeResponseSchema.parse(data);
+
+            this.logInfo("Successfully retrieved event data", { eventCode: validatedResponse.event.eventCode });
+
+            return this.createSuccessResponse(validatedResponse);
+        } catch (error) {
+            // 基底クラスのhandleErrorメソッドを使用してZodErrorも適切に処理
+            return this.handleError(error);
+        }
+    }
+}
+
+export default EventsByEventCodeApiHandler;
