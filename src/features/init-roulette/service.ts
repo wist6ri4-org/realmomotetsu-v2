@@ -11,14 +11,17 @@ export const InitRouletteServiceImpl: InitRouletteService = {
      */
     async getDataForRoulette(req: InitRouletteRequest): Promise<InitRouletteResponse> {
         const transitStationsRepository = RepositoryFactory.getTransitStationsRepository();
+        const goalStationsRepository = RepositoryFactory.getGoalStationsRepository();
 
         try {
             // レスポンスの作成
-            const [latestTransitStations] = await Promise.all([
+            const [latestTransitStations, goalStations] = await Promise.all([
                 transitStationsRepository.findLatestByEventCode(req.eventCode),
+                goalStationsRepository.findByEventCode(req.eventCode),
             ]);
             const res: InitRouletteResponse = {
                 latestTransitStations: latestTransitStations,
+                goalStations: goalStations,
             };
 
             return res;
