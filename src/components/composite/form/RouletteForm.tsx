@@ -4,7 +4,7 @@
 "use client";
 
 import CustomSelect from "@/components/base/CustomSelect";
-import { Stations, TransitStations } from "@/generated/prisma";
+import { GoalStations, Stations, TransitStations } from "@/generated/prisma";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
 import React, { useEffect, useReducer, useState } from "react";
@@ -23,12 +23,14 @@ import AlertDialog from "@/components/base/AlertDialog";
  * @property {Stations[]} stations - 駅のリスト
  * @property {NearbyStationsWithRelations[]} nearbyStations - 最寄り駅のリスト
  * @property {TransitStations[]} latestTransitStations - 最新の乗り換え駅のリスト
+ * @property {GoalStations[]} goalStations - 既出目的地駅のリスト
  * @property {Stations[]} closestStations - 最寄り駅のリスト
  */
 interface RouletteFormProps {
     stations: Stations[];
     nearbyStations: NearbyStationsWithRelations[];
     latestTransitStations: TransitStations[];
+    goalStations: GoalStations[];
     closestStations: ClosestStation[];
 }
 
@@ -47,6 +49,7 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
     stations,
     nearbyStations,
     latestTransitStations,
+    goalStations,
     closestStations,
 }: RouletteFormProps): React.JSX.Element => {
     const startStationCodeInput = useSelectInput(closestStations?.[0]?.stationCode || "");
@@ -64,6 +67,7 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
         const nextStationCode = RouletteUtils.getWeightedStationCode(
             nearbyStations,
             latestTransitStations,
+            goalStations,
             startStationCodeInput.value
         );
         return stations.find((station) => station.stationCode === nextStationCode) || null;

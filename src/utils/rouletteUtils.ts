@@ -1,4 +1,4 @@
-import { LatestTransitStations, Stations } from "@/generated/prisma";
+import { GoalStations, LatestTransitStations, Stations } from "@/generated/prisma";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 import DijkstraUtils from "./dijkstraUtils";
 import { GameConstants } from "@/constants/gameConstants";
@@ -23,13 +23,15 @@ export class RouletteUtils {
      * 指定された駅からの最短経路を計算し、次の駅を選択する
      * @param nearbyStations - 近隣駅の接続情報
      * @param latestTransitStations - 最新の経由駅情報
+     * @param goalStations - 既出目的駅のリスト
      * @param startStationCode - 開始駅のコード
      * @return {string} 次に選択する駅のコード
      */
     static getWeightedStationCode(
         nearbyStations: NearbyStationsWithRelations[],
         latestTransitStations: LatestTransitStations[] = [],
-        startStationCode: string
+        goalStations: GoalStations[] = [],
+        startStationCode: string,
     ): string {
         const graph = DijkstraUtils.convertToStationGraph(nearbyStations);
         const times = DijkstraUtils.calculateRequiredTimeAndStations(graph, startStationCode);
@@ -44,9 +46,11 @@ export class RouletteUtils {
                     timeMinutes > GameConstants.ELIMINATION_TIME_RANGE_MINUTES &&
                     // 各チームの最新経由駅に含まれないこと（空配列の場合はすべて選択可能）
                     (latestTransitStations.length === 0 ||
-                        !latestTransitStations.some((station) => station.stationCode === key))
+                        !latestTransitStations.some((station) => station.stationCode === key)) &&
+                    // 既出目的地駅に含まれないこと（空配列の場合はすべて選択可能）
+                    (goalStations.length === 0 || !goalStations.some((station) => station.stationCode === key))
                 );
-            })
+            }),
         );
 
         const probabilities = DijkstraUtils.calculateProbabilities(filteredTimes);

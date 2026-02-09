@@ -53,6 +53,7 @@ class InitRouletteApiHandler extends BaseApiHandler {
 
             this.logInfo("Successfully retrieved init-roulette data", {
                 latestTransitStationsCount: validatedResponse.latestTransitStations.length,
+                goalStationsCount: validatedResponse.goalStations.length,
             });
 
             return this.createSuccessResponse(validatedResponse);

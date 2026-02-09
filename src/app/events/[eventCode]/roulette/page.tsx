@@ -3,7 +3,7 @@
 import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
 import RouletteForm from "@/components/composite/form/RouletteForm";
-import { LatestTransitStations } from "@/generated/prisma";
+import { GoalStations, LatestTransitStations } from "@/generated/prisma";
 import { ClosestStation } from "@/types/ClosestStation";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
 import { ArrowDropDown, Casino, Help } from "@mui/icons-material";
@@ -25,6 +25,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
     const { stations, nearbyStations, isInitDataLoading, contextError } = useEventContext();
 
     const [latestTransitStations, setLatestTransitStations] = useState<LatestTransitStations[]>([]);
+    const [goalStations, setGoalStations] = useState<GoalStations[]>([]);
     const [closestStations, setClosestStations] = useState<ClosestStation[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -58,8 +59,10 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
 
             const data: InitRouletteResponse = (await response.json()).data;
             const latestTransitStations = data.latestTransitStations || [];
+            const goalStations = data.goalStations || [];
 
             setLatestTransitStations(latestTransitStations as LatestTransitStations[]);
+            setGoalStations(goalStations as GoalStations[]);
             setClosestStations(closestStations as ClosestStation[]);
         } catch (error) {
             const appError = ApplicationErrorFactory.normalize(error);
@@ -131,6 +134,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
                                 stations={stations}
                                 nearbyStations={nearbyStations}
                                 latestTransitStations={latestTransitStations}
+                                goalStations={goalStations}
                                 closestStations={closestStations}
                             />
                         </Box>
