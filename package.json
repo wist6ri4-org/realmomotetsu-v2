@@ -23,6 +23,7 @@
         "@mui/x-data-grid": "^8.9.1",
         "@prisma/client": "^6.12.0",
         "@supabase/supabase-js": "^2.50.3",
+        "bcrypt": "^6.0.0",
         "dotenv-cli": "^10.0.0",
         "multer": "^2.0.1",
         "next": "^16.0.7",
