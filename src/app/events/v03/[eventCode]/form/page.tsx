@@ -2,48 +2,50 @@
 
 import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
-import RouletteForm from "@/components/composite/form/RouletteForm";
-import { GoalStations, LatestTransitStations } from "@/generated/prisma";
+import CurrentLocationForm from "@/components/composite/form/CurrentLocationForm";
 import { ClosestStation } from "@/types/ClosestStation";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
-import { ArrowDropDown, Casino, Help } from "@mui/icons-material";
+import { ArrowDropDown, Assignment, Help } from "@mui/icons-material";
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, CircularProgress, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useEventContext } from "../../layout";
-import { InitRouletteResponse } from "@/features/init-roulette/types";
+import { useEventContext } from "../../../layout";
+import { AttendancesWithRelations } from "@/repositories/attendances/AttendancesRepository";
 import LocationUtils from "@/utils/locationUtils";
-import { ApplicationErrorFactory } from "@/error/applicationError";
-import { ApplicationErrorHandler } from "@/error/errorHandler";
+import { checkIsOperatingUser } from "@/lib/auth";
+import { UsersWithRelations } from "@/repositories/users/UsersRepository";
+import { Events } from "@/generated/prisma";
 
 /**
- * 駅ルーレットページ
+ * フォームページ
+ * @returns {React.JSX.Element} フォームページのコンポーネント
  */
-const RoulettePage: React.FC = (): React.JSX.Element => {
+const FormPage: React.FC = (): React.JSX.Element => {
     const { eventCode } = useParams();
 
-    const { stations, nearbyStations, isInitDataLoading, contextError } = useEventContext();
+    const { teams, stations, user, event, isInitDataLoading, contextError } = useEventContext();
 
-    const [latestTransitStations, setLatestTransitStations] = useState<LatestTransitStations[]>([]);
-    const [goalStations, setGoalStations] = useState<GoalStations[]>([]);
     const [closestStations, setClosestStations] = useState<ClosestStation[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
+    const attendance: AttendancesWithRelations | undefined = user?.attendances?.find((a) => a.eventCode === eventCode);
+
+    const isOperating: boolean = checkIsOperatingUser(user as UsersWithRelations, event as Events)
+
+    // NOTE TSK-37 通信頻度最適化対応でAPIの呼び出しは削除
+
     /**
-     * データの取得
-     * @return {Promise<void>} データ取得のPromise
+     * 初期化処理
+     * @returns {Promise<void>} 初期化の非同期処理
      */
-    const fetchData = async (): Promise<void> => {
+    const initialize = async (): Promise<void> => {
         let closestStations: ClosestStation[] = [{ stationCode: stations[0].stationCode || "", distance: 0 }];
         try {
-            setIsLoading(true);
-            setError(null);
-
-            const params = new URLSearchParams();
-            params.append("eventCode", eventCode as string);
-
             try {
+                setIsLoading(true);
+                setError(null);
+
                 const { latitude, longitude } = await CurrentLocationUtils.getCurrentLocation();
                 if (latitude && longitude) {
                     closestStations = LocationUtils.calculate(stations, latitude, longitude);
@@ -51,26 +53,11 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
             } catch (locationError) {
                 console.warn("Could not get current location:", locationError);
             }
-
-            const response = await fetch("/api/init-roulette?" + params.toString());
-            if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
-            }
-
-            const data: InitRouletteResponse = (await response.json()).data;
-            const latestTransitStations = data.latestTransitStations || [];
-            const goalStations = data.goalStations || [];
-
-            setLatestTransitStations(latestTransitStations as LatestTransitStations[]);
-            setGoalStations(goalStations as GoalStations[]);
-            setClosestStations(closestStations as ClosestStation[]);
         } catch (error) {
-            const appError = ApplicationErrorFactory.normalize(error);
-            ApplicationErrorHandler.logError(appError);
-
-            setError(appError.message);
-            setClosestStations([]);
+            console.error("Error in initialize:", error);
+            setError("初期化に失敗しました。");
         } finally {
+            setClosestStations(closestStations);
             setIsLoading(false);
         }
     };
@@ -79,31 +66,31 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
      * 初期表示
      */
     useEffect(() => {
-        fetchData();
+        initialize();
     }, []);
 
     return (
         <>
             {/* サブヘッダーセクション */}
             <Box>
-                <PageTitle title="駅ルーレット" icon={<Casino sx={{ fontSize: "3.5rem", marginRight: 1 }} />} />
+                <PageTitle title="到着報告フォーム" icon={<Assignment sx={{ fontSize: "3.5rem", marginRight: 1 }} />} />
                 <Box sx={{ margin: 4 }}>
                     <Accordion>
                         <AccordionSummary expandIcon={<ArrowDropDown sx={{ fontSize: "2.5rem" }} />}>
                             <Typography variant="body2" fontWeight={700}>
                                 <Help sx={{ fontSize: "1.8rem", marginRight: 1 }} />
-                                使い方
+                                いつ送る？
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                             <Typography variant="body2">
-                                １．今いる駅を選択
+                                １．サイコロを２回振ってカードを決定
                                 <br />
-                                ２．モードを選ぶ
+                                ２．カードの効果を処理する
                                 <br />
-                                ３．スタートボタンを押してルーレットを回す
+                                ３．もう一度サイコロを振って行き先を決定
                                 <br />
-                                ４．ストップボタンを押して目的地を決定
+                                ４．移動したら移動先の駅（今いる駅）で送信
                             </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -121,7 +108,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
                 {/* エラー */}
                 {(error || contextError) && (
                     <Box sx={{ margin: 4 }}>
-                        <Alert severity="error" action={<CustomButton onClick={fetchData}>再試行</CustomButton>}>
+                        <Alert severity="error" action={<CustomButton onClick={initialize}>再試行</CustomButton>}>
                             {error}
                         </Alert>
                     </Box>
@@ -130,19 +117,22 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
                 {!isLoading && !isInitDataLoading && !error && !contextError && (
                     <>
                         <Box sx={{ marginX: 2 }}>
-                            <RouletteForm
+                            <CurrentLocationForm
+                                teams={teams}
                                 stations={stations}
-                                nearbyStations={nearbyStations}
-                                latestTransitStations={latestTransitStations}
-                                goalStations={goalStations}
+                                event={event!}
                                 closestStations={closestStations}
+                                initialTeamCode={attendance?.teamCode}
+                                isOperating={isOperating}
                             />
                         </Box>
                     </>
                 )}
             </Box>
+
+            {/* サブフッターセクション */}
         </>
     );
 };
 
-export default RoulettePage;
+export default FormPage;

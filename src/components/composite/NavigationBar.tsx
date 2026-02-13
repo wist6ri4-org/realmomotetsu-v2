@@ -54,8 +54,16 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ currentTab }: Navi
      */
     const getEventCode = () => {
         const pathSegments = pathname.split("/");
-        return pathSegments[2]; // /events/[eventCode]/... の eventCode部分
+        return pathSegments[3]; // /events/{version}/[eventCode]/... の eventCode部分
     };
+
+    /**
+     * 現在のイベントバージョンを取得する
+     */
+    const getEventVersion = () => {
+        const pathSegments = pathname.split("/");
+        return pathSegments[2]; // /events/{version}/[eventCode]/... の version部分
+    }
 
     /**
      * 現在のタブを取得する
@@ -71,12 +79,13 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ currentTab }: Navi
 
     const activeTab = getCurrentTab();
     const eventCode = getEventCode();
+    const eventVersion = getEventVersion();
 
     /**
      * ナビゲーションの変更ハンドラー
      */
     const handleNavChange = (event: React.SyntheticEvent, newValue: string) => {
-        const targetPath = `/events/${eventCode}/${newValue}`;
+        const targetPath = `/events/${eventVersion}/${eventCode}/${newValue}`;
         router.push(targetPath);
     };
 

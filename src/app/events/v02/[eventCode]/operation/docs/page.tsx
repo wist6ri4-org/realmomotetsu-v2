@@ -9,7 +9,7 @@ import { Alert, Box, CircularProgress, Link, Paper, Stack, Typography } from "@m
  * 配布資料ページ
  */
 const DocsPage: React.FC = (): React.JSX.Element => {
-    const {documents, isInitDataLoading, contextError} = useEventContext();
+    const { documents, isInitDataLoading, contextError } = useEventContext();
 
     return (
         <>

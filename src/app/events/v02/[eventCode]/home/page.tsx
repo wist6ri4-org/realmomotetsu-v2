@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import TransitStationsHistoryDialog from "@/components/composite/TransitStationsHistoryDialog";
 import { InitHomeResponse } from "@/features/init-home/types";
-import { useEventContext } from "../../layout";
+import { useEventContext } from "../../../layout";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
 

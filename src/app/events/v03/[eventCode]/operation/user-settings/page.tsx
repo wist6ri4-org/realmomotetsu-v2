@@ -55,7 +55,7 @@ const UserSettingsPage = (): React.JSX.Element => {
             icon: <AccountBoxIcon sx={{ width: "50%", height: "50%" }} />,
             color: "#4CAF50",
             onClick: () => {
-                router.push(`/events/${eventCode}/operation/user-settings/profile`);
+                router.push(`/events/v03/${eventCode}/operation/user-settings/profile`);
             },
         },
         {
@@ -64,7 +64,7 @@ const UserSettingsPage = (): React.JSX.Element => {
             icon: <LockIcon sx={{ width: "50%", height: "50%" }} />,
             color: "#F44336",
             onClick: () => {
-                router.push(`/events/${eventCode}/operation/user-settings/change-password`);
+                router.push(`/events/v03/${eventCode}/operation/user-settings/change-password`);
             },
         },
         {
@@ -73,7 +73,7 @@ const UserSettingsPage = (): React.JSX.Element => {
             icon: <InsertEmoticonIcon sx={{ width: "50%", height: "50%" }} />,
             color: "#2196F3",
             onClick: () => {
-                router.push(`/events/${eventCode}/operation/user-settings/icon`);
+                router.push(`/events/v03/${eventCode}/operation/user-settings/icon`);
             },
         },
     ];

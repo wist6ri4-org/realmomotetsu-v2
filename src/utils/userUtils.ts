@@ -3,6 +3,8 @@ import { PutUsersResponse } from "@/features/users/types";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { checkIsVisibleUser } from "@/lib/auth";
 import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
+import { AttendancesWithRelations } from "@/repositories/attendances/AttendancesRepository";
+import { GameConstants } from "@/constants/gameConstants";
 
 export class UserUtils {
     readonly BUCKET_NAME = "user-assets";
@@ -149,7 +151,7 @@ export class UserUtils {
             },
             {
                 emailRedirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/user/signin`,
-            }
+            },
         );
 
         if (authError) {
@@ -326,11 +328,11 @@ export class UserUtils {
     }
 
     /**
-     * 参加している最新のイベントコードを取得する（静的）
+     * 参加している最新のイベント参加情報を取得する（静的）
      * @param {string} uuid - ユーザーのUUID
-     * @return {Promise<string>} - 参加しているイベントコード
+     * @return {Promise<EventWithRelations>} - 参加しているイベントコード、イベントバージョン
      */
-    static fetchEventCode = async (uuid: string): Promise<string> => {
+    static fetchUserAttendances = async (uuid: string): Promise<AttendancesWithRelations> => {
         try {
             const response = await fetch(`/api/users/${uuid}`);
             if (!response.ok) {
@@ -360,9 +362,28 @@ export class UserUtils {
                     }
                 });
 
-            return sortedAttendances.shift()?.eventCode || "";
+            return sortedAttendances.shift() || ({} as AttendancesWithRelations);
         } catch (error) {
             throw error;
         }
+    };
+
+    /**
+     * 参加している最新のイベントコードとバージョンパスを取得する
+     * @param {string} uuid - ユーザーのUUID
+     * @return {Promise<[string, string]>} - イベントコードとバージョンパスのタプル
+     */
+    static fetchEventCodeAndVersionPath = async (uuid: string): Promise<[string, string]> => {
+        const attendances = await this.fetchUserAttendances(uuid);
+        const eventCode = attendances.event?.eventCode || "";
+        const eventVersion = attendances.event?.eventType?.version || GameConstants.VERSION.V01.number;
+
+        let versionPath;
+        if (eventVersion < GameConstants.VERSION.V03.number) {
+            versionPath = GameConstants.VERSION.V02.path;
+        } else {
+            versionPath = GameConstants.VERSION.V03.path;
+        }
+        return [eventCode, versionPath];
     };
 }

@@ -12,7 +12,7 @@ import Menu from "@mui/material/Menu";
 import Avatar from "@mui/material/Avatar";
 import { useState, MouseEvent, useEffect, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { checkIsVisibleUser, signOut } from "@/lib/auth";
 import { useUserIcon } from "@/contexts/UserIconContext";
 import { CommonConstants } from "@/constants/commonConstants";
@@ -34,6 +34,7 @@ interface ApplicationBarProps {
 const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBarProps): React.JSX.Element => {
     const router = useRouter();
     const { eventCode } = useParams();
+    const pathName = usePathname();
 
     const { user, event, isInitDataLoading } = useEventContext();
 
@@ -127,11 +128,20 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
     };
 
     /**
+     * 現在のイベントバージョンを取得する
+     */
+    const getEventVersion = () => {
+        const pathSegments = pathName.split("/");
+        return pathSegments[2]; // /events/{version}/[eventCode]/... の version部分
+    }
+
+    /**
      * ユーザー設定ページへ遷移する処理
      */
     const handlePushUserSettings = () => {
         handleUserMenuClose();
-        router.push(`/events/${eventCode}/operation/user-settings`);
+        const versionPath = getEventVersion();
+        router.push(`/events/${versionPath}/${eventCode}/operation/user-settings`);
     };
 
     /**
