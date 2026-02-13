@@ -172,6 +172,7 @@ describe("RouletteUtils getWeightedStationCode テスト", () => {
     const nearbyStations: NearbyStationsWithRelations[] =
         nearbyStationsData as unknown as NearbyStationsWithRelations[];
     const latestTransitStations: LatestTransitStations[] = []; // 空配列でテスト
+    const goalStations: [] = []; // 空配列でテスト
 
     // 自由が丘の駅コード
     const startStationCodeInput = "TOKYU_V2_JIYUGAOKA";
@@ -192,6 +193,7 @@ describe("RouletteUtils getWeightedStationCode テスト", () => {
                 const selectedStationCode = RouletteUtils.getWeightedStationCode(
                     nearbyStations,
                     latestTransitStations,
+                    goalStations,
                     currentStationCode // 現在の位置から次の駅を選択
                 );
 
