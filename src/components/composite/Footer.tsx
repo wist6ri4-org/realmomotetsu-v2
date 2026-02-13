@@ -6,7 +6,7 @@ const Footer: React.FC = (): React.JSX.Element => {
         <>
             <Box sx={{ marginY: 2 }}>
                 <Typography variant="body2" color="textSecondary" align="center">
-                    &copy; 2025 KANGAERU HITOBITO.
+                    &copy; 2026 KANGAERU HITOBITO.
                 </Typography>
             </Box>
         </>
