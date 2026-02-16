@@ -5,6 +5,7 @@ import { checkIsVisibleUser } from "@/lib/auth";
 import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
 import { AttendancesWithRelations } from "@/repositories/attendances/AttendancesRepository";
 import { GameConstants } from "@/constants/gameConstants";
+import { Converter } from "./converter";
 
 export class UserUtils {
     readonly BUCKET_NAME = "user-assets";
@@ -378,12 +379,7 @@ export class UserUtils {
         const eventCode = attendances.event?.eventCode || "";
         const eventVersion = attendances.event?.eventType?.version || GameConstants.VERSION.V01.number;
 
-        let versionPath;
-        if (eventVersion < GameConstants.VERSION.V03.number) {
-            versionPath = GameConstants.VERSION.V02.path;
-        } else {
-            versionPath = GameConstants.VERSION.V03.path;
-        }
+        const versionPath = Converter.convertEventVersionToVersionPath(eventVersion);
         return [eventCode, versionPath];
     };
 }

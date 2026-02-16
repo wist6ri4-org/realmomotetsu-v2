@@ -81,7 +81,7 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
             bombiiTeam,
             stationsFromDB: stations,
             visibleTeams,
-            configFileName: event?.eventType.routemapConfigFile || "routemap-config",
+            configFileName: event?.eventType?.routemapConfigFile || "routemap-config",
         }),
         [teamData, nextGoalStation, bombiiTeam, stations, visibleTeams]
     );
