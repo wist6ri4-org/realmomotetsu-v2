@@ -1,3 +1,5 @@
+import { GameConstants } from "@/constants/gameConstants";
+
 export class Converter {
     /**
      * ポイントを兆、億、万単位でフォーマットする
@@ -27,5 +29,24 @@ export class Converter {
     static convertUTCtoJST(utc: string | number | Date): string {
         const date = new Date(utc);
         return date.toLocaleTimeString("ja-JP");
+    }
+
+    /**
+     * イベントバージョンをバージョンパスに変換する
+     * @param {number} eventVersion - イベントバージョン
+     * @return {string} バージョンパス
+     * @description 100番代：V1、200番代：V2、300番代：V3。ただし、V1系はV2で吸収されているため、100番代もV2のパスを返す。
+     */
+    static convertEventVersionToVersionPath(eventVersion: number): string {
+        let versionPath;
+        if (eventVersion < 300) {
+            // V1系はV2で吸収
+            versionPath = GameConstants.VERSION.V02.path;
+        } else if (eventVersion < 400) {
+            versionPath = GameConstants.VERSION.V03.path;
+        } else {
+            versionPath = GameConstants.VERSION.V02.path;
+        }
+        return versionPath;
     }
 }

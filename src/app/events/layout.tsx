@@ -17,12 +17,18 @@ import { EventWithRelations } from "@/repositories/events/EventsRepository";
 import { CommonConstants } from "@/constants/commonConstants";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
+import { GameConstants } from "@/constants/gameConstants";
+import { Converter } from "@/utils/converter";
 
 /**
  * Contextの型定義
  * @property {Teams[]} teams - チームの配列
  * @property {Stations[]} stations - 駅の配列
  * @property {NearbyStationsWithRelations[]} nearbyStations - 近隣駅の配列
+ * @property {Documents[]} documents - ドキュメントの配列
+ * @property {UsersWithRelations | null} user - ユーザー情報
+ * @property {EventWithRelations} event - イベント情報
+ * @property {string} versionPath - イベントのバージョンに対応するパス
  * @property {boolean} isInitDataLoading - 初期データのロード状態
  * @property {string | null} contextError - コンテキストのエラー情報
  * @property {InitResponse | null} rawInitData - 元の初期化データ（必要に応じて）
@@ -34,7 +40,9 @@ interface EventContextType {
     nearbyStations: NearbyStationsWithRelations[];
     documents: Documents[];
     user: UsersWithRelations | null;
-    event: EventWithRelations | null;
+    event: EventWithRelations;
+
+    versionPath: string;
 
     // 状態管理
     isInitDataLoading: boolean;
@@ -79,7 +87,8 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
     const [nearbyStations, setNearbyStations] = useState<NearbyStationsWithRelations[]>([]);
     const [documents, setDocuments] = useState<Documents[]>([]);
     const [user, setUser] = useState<UsersWithRelations | null>(null);
-    const [event, setEvent] = useState<EventWithRelations | null>(null);
+    const [event, setEvent] = useState<EventWithRelations>({} as EventWithRelations);
+    const [versionPath, setVersionPath] = useState<string>(GameConstants.VERSION.V02.path);
     const [rawInitData, setRawInitData] = useState<InitResponse | null>(null);
     const [isInitDataLoading, setIsInitDataLoading] = useState(true);
     const [contextError, setContextError] = useState<string | null>(null);
@@ -107,7 +116,8 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
                 setNearbyStations(initData.nearbyStations || []);
                 setDocuments(initData.documents || []);
                 setUser(initData.user || null);
-                setEvent(initData.event || null);
+                setEvent(initData.event);
+                setVersionPath(Converter.convertEventVersionToVersionPath(initData.event?.eventType?.version || GameConstants.VERSION.V02.number));
 
                 setRawInitData(initData);
             } catch (err) {
@@ -148,6 +158,7 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
         documents,
         user,
         event,
+        versionPath,
         rawInitData,
         isInitDataLoading,
         contextError,

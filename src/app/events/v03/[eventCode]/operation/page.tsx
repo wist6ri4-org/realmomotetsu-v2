@@ -6,7 +6,7 @@ import PageTitle from "@/components/base/PageTitle";
 import { useParams, useRouter } from "next/navigation";
 import { checkIsAdminUserWithUsers } from "@/lib/auth";
 import { useEffect, useState } from "react";
-import { useEventContext } from "../../layout";
+import { useEventContext } from "../../../layout";
 
 /**
  * オペレーションメニューページ
@@ -52,7 +52,7 @@ const OperationPage: React.FC = (): React.JSX.Element => {
             icon: <AccountCircleIcon sx={{ width: "50%", height: "50%" }} />,
             color: "#4CAF50",
             onClick: () => {
-                router.push(`/events/${eventCode}/operation/user-settings`);
+                router.push(`/events/v03/${eventCode}/operation/user-settings`);
             },
         },
         {
@@ -61,7 +61,7 @@ const OperationPage: React.FC = (): React.JSX.Element => {
             icon: <Description sx={{ width: "50%", height: "50%" }} />,
             color: "#FF9800",
             onClick: () => {
-                router.push(`/events/${eventCode}/operation/docs`);
+                router.push(`/events/v03/${eventCode}/operation/docs`);
             },
         },
         ...(isAdminUser
@@ -72,7 +72,7 @@ const OperationPage: React.FC = (): React.JSX.Element => {
                       icon: <Construction sx={{ width: "50%", height: "50%" }} />,
                       color: "#2196F3",
                       onClick: () => {
-                          router.push(`/events/${eventCode}/operation/tools`);
+                          router.push(`/events/v03/${eventCode}/operation/tools`);
                       },
                   },
               ]

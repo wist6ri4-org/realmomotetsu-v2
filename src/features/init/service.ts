@@ -10,6 +10,7 @@ export const InitServiceImpl: InitService = {
      * @returns {Promise<InitFormResponse>} レスポンス
      */
     async getDataForInit(req: InitRequest): Promise<InitResponse> {
+        const eventTypesRepository = RepositoryFactory.getEventTypesRepository();
         const eventsRepository = RepositoryFactory.getEventsRepository();
         const teamsRepository = RepositoryFactory.getTeamsRepository();
         const stationsRepository = RepositoryFactory.getStationsRepository();
@@ -23,7 +24,8 @@ export const InitServiceImpl: InitService = {
             const eventTypeCode = events?.eventTypeCode || "";
 
             // レスポンスの作成
-            const [teams, stations, nearbyStations, documents, user] = await Promise.all([
+            const [eventType, teams, stations, nearbyStations, documents, user] = await Promise.all([
+                eventTypesRepository.findByEventTypeCode(eventTypeCode),
                 teamsRepository.findByEventCode(req.eventCode),
                 stationsRepository.findByEventTypeCode(eventTypeCode),
                 nearbyStationsRepository.findByEventTypeCode(eventTypeCode),
@@ -31,6 +33,7 @@ export const InitServiceImpl: InitService = {
                 usersRepository.findByUuid(req.uuid),
             ]);
             const res: InitResponse = {
+                eventType: eventType,
                 teams: teams,
                 stations: stations,
                 nearbyStations: nearbyStations,

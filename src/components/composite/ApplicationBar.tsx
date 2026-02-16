@@ -12,11 +12,13 @@ import Menu from "@mui/material/Menu";
 import Avatar from "@mui/material/Avatar";
 import { useState, MouseEvent, useEffect, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { checkIsVisibleUser, signOut } from "@/lib/auth";
 import { useUserIcon } from "@/contexts/UserIconContext";
 import { CommonConstants } from "@/constants/commonConstants";
 import { useEventContext } from "@/app/events/layout";
+import { GameConstants } from "@/constants/gameConstants";
+import { Converter } from "@/utils/converter";
 
 /**
  * アプリケーションバーのプロパティ型定義
@@ -33,9 +35,8 @@ interface ApplicationBarProps {
  */
 const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBarProps): React.JSX.Element => {
     const router = useRouter();
-    const { eventCode } = useParams();
 
-    const { user, event, isInitDataLoading } = useEventContext();
+    const { user, event, versionPath, isInitDataLoading } = useEventContext();
 
     // ユーザーアイコンのコンテキストを使用
     const { userIconUrl, updateUserIcon, refreshKey } = useUserIcon();
@@ -131,7 +132,7 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
      */
     const handlePushUserSettings = () => {
         handleUserMenuClose();
-        router.push(`/events/${eventCode}/operation/user-settings`);
+        router.push(`/events/${versionPath}/${event.eventCode}/operation/user-settings`);
     };
 
     /**
@@ -206,7 +207,8 @@ const ApplicationBar: React.FC<ApplicationBarProps> = ({ sbUser }: ApplicationBa
                                         key={attendance.eventCode}
                                         onClick={() => {
                                             handleUserMenuClose();
-                                            window.location.href = `/events/${attendance.eventCode}/home`;
+                                            const versionPath = Converter.convertEventVersionToVersionPath(attendance.event.eventType.version || GameConstants.VERSION.V02.number);
+                                            window.location.href = `/events/${versionPath}/${attendance.eventCode}/home`;
                                         }}
                                     >
                                         {attendance.event.eventName}

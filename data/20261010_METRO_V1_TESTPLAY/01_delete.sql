@@ -1,0 +1,9 @@
+DELETE FROM attendances WHERE event_code = 'METRO_V1_TESTPLAY_20261010';
+DELETE FROM documents WHERE event_code = 'METRO_V1_TESTPLAY_20261010';
+DELETE FROM goal_stations WHERE event_code = 'METRO_V1_TESTPLAY_20261010';
+DELETE FROM transit_stations WHERE event_code = 'METRO_V1_TESTPLAY_20261010';
+DELETE FROM nearby_stations WHERE event_type_code = 'METRO_V1';
+DELETE FROM stations WHERE event_type_code = 'METRO_V1';
+DELETE FROM teams WHERE event_code = 'METRO_V1_TESTPLAY_20261010';
+DELETE FROM events WHERE event_code = 'METRO_V1_TESTPLAY_20261010';
+DELETE FROM event_types WHERE event_type_code = 'METRO_V1';

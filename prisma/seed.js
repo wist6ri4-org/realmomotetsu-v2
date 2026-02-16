@@ -2,14 +2,10 @@ import { PrismaClient } from "../src/generated/prisma/index.js";
 import fs from "fs";
 import { join } from "path";
 import csv from "csv-parser";
-import { createClient } from "@supabase/supabase-js";
+import crypto from "crypto";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
-
-// Supabaseクライアント（サービスロールキー使用）
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY;
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 const csvEventTypesPath = join(process.cwd(), "./prisma/csv/event_types.csv");
 const csvStationsPath = join(process.cwd(), "./prisma/csv/stations.csv");
@@ -97,36 +93,17 @@ async function main() {
         // 認証ユーザーUUIDを格納するマップ
         const authUserMap = new Map();
 
-        // 0-1. 既存のAuthenticationユーザーを全削除
+        // 0-1. 既存のAuthenticationユーザーを全削除（SQL直接実行）
         console.log("🗑️ 既存のAuthenticationユーザーを削除中...");
         try {
-            const { data: existingUsers, error: listError } = await supabase.auth.admin.listUsers();
-
-            if (listError) {
-                console.error("❌ ユーザー一覧取得に失敗:", listError.message);
-            } else if (existingUsers && existingUsers.users.length > 0) {
-                console.log(`🔍 ${existingUsers.users.length}件のユーザーが見つかりました`);
-
-                for (const user of existingUsers.users) {
-                    try {
-                        const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id);
-                        if (deleteError) {
-                            console.error(`❌ ユーザー ${user.email} の削除に失敗:`, deleteError.message);
-                        } else {
-                            console.log(`✅ ユーザー ${user.email} を削除しました`);
-                        }
-                    } catch (error) {
-                        console.error(`❌ ユーザー ${user.email} の削除中にエラー:`, error.message);
-                    }
-                }
-            } else {
-                console.log("ℹ️ 削除対象のユーザーはありませんでした");
-            }
+            await prisma.$executeRaw`DELETE FROM auth.identities;`;
+            await prisma.$executeRaw`DELETE FROM auth.users;`;
+            console.log("✅ auth.users と auth.identities テーブルをクリアしました");
         } catch (error) {
             console.error("❌ 認証ユーザー削除処理中にエラー:", error.message);
         }
 
-        // 0-2. Authenticationユーザーを作成
+        // 0-2. Authenticationユーザーを作成（SQL直接実行）
         console.log("🔐 Authenticationユーザーを作成中...");
         const authenticationData = await readCSV(csvAuthenticationPath);
         for (const row of authenticationData) {
@@ -136,23 +113,85 @@ async function main() {
 
             if (email && password) {
                 try {
-                    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-                        email,
-                        password,
-                        user_metadata: {
-                            custom_id: userId,
-                        },
-                        email_confirm: true, // 自動でメール確認済みにする
-                    });
+                    // UUIDを生成
+                    const uuid = crypto.randomUUID();
 
-                    if (authError) {
-                        console.error(`❌ ユーザー ${email} の作成に失敗:`, authError.message);
-                    } else {
-                        // custom_id → Supabase UUIDのマッピングを保存
-                        authUserMap.set(userId, authData.user.id);
-                        console.log(`✅ ユーザー ${email} を作成しました（ID: ${authData.user.id}）`);
-                        console.log(`   🏷️  Custom ID: ${userId} → Supabase UUID: ${authData.user.id}`);
-                    }
+                    // パスワードをbcryptでハッシュ化
+                    const hashedPassword = await bcrypt.hash(password, 10);
+
+                    // auth.usersテーブルに直接挿入
+                    await prisma.$executeRaw`
+                        INSERT INTO auth.users (
+                            instance_id,
+                            id,
+                            aud,
+                            role,
+                            email,
+                            encrypted_password,
+                            email_confirmed_at,
+                            confirmation_sent_at,
+                            recovery_sent_at,
+                            email_change_sent_at,
+                            created_at,
+                            updated_at,
+                            confirmation_token,
+                            email_change,
+                            email_change_token_new,
+                            recovery_token,
+                            raw_app_meta_data,
+                            raw_user_meta_data,
+                            is_sso_user,
+                            is_super_admin
+                        ) VALUES (
+                            '00000000-0000-0000-0000-000000000000'::uuid,
+                            ${uuid}::uuid,
+                            'authenticated',
+                            'authenticated',
+                            ${email},
+                            ${hashedPassword},
+                            NOW(),
+                            NOW(),
+                            NOW(),
+                            NOW(),
+                            NOW(),
+                            NOW(),
+                            '',
+                            '',
+                            '',
+                            '',
+                            '{"provider":"email","providers":["email"]}'::jsonb,
+                            jsonb_build_object('custom_id', ${userId}),
+                            false,
+                            false
+                        );
+                    `;
+
+                    // auth.identitiesテーブルにもレコードを挿入
+                    await prisma.$executeRaw`
+                        INSERT INTO auth.identities (
+                            provider_id,
+                            id,
+                            user_id,
+                            identity_data,
+                            provider,
+                            last_sign_in_at,
+                            created_at,
+                            updated_at
+                        ) VALUES (
+                            ${uuid},
+                            gen_random_uuid(),
+                            ${uuid}::uuid,
+                            jsonb_build_object('sub', ${uuid}, 'email', ${email}, 'email_verified', true, 'phone_verified', false),
+                            'email',
+                            NOW(),
+                            NOW(),
+                            NOW()
+                        );
+                    `;
+
+                    console.log(`✅ ユーザー ${email} を作成しました (UUID: ${uuid})`);
+                    console.log(`   🏷️  Custom ID: ${userId} → Supabase UUID: ${uuid}`);
+                    authUserMap.set(userId, uuid);
                 } catch (error) {
                     console.error(`❌ ユーザー ${email} の作成中にエラー:`, error.message);
                 }

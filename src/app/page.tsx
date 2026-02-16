@@ -32,10 +32,10 @@ const RootPage: React.FC = (): React.JSX.Element => {
                 }
 
                 // ログイン済みの場合、eventCodeを取得
-                const eventCode = await fetchEventCode(user.id);
+                const [eventCode, versionPath] = await fetchEventCodeAndVersionPath(user.id);
 
-                if (eventCode) {
-                    router.replace(`/events/${eventCode}/home`);
+                if (eventCode && versionPath) {
+                    router.replace(`/events/${versionPath}/${eventCode}/home`);
                 } else {
                     // eventCodeが取得できない場合はサインインページへ
                     // （参加しているイベントがない状態）
@@ -54,15 +54,15 @@ const RootPage: React.FC = (): React.JSX.Element => {
     /**
      * 参加している最新のイベントコードを取得する（サインインページと同じロジック）
      * @param {string} userId - ユーザーのUUID
-     * @return {Promise<string>} - 参加しているイベントコード
+     * @return {Promise<[string, string]>} - 参加しているイベントコード、イベントバージョンパスのタプル
      */
-    const fetchEventCode = async (userId: string): Promise<string> => {
+    const fetchEventCodeAndVersionPath = async (userId: string): Promise<[string, string]> => {
         try {
-            return await UserUtils.fetchEventCode(userId);
+            return await UserUtils.fetchEventCodeAndVersionPath(userId);
         } catch (error) {
             const appError = ApplicationErrorFactory.normalize(error);
             ApplicationErrorHandler.logError(appError, "WARN");
-            return "";
+            return ["", ""];
         }
     };
 

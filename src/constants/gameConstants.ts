@@ -13,6 +13,21 @@ export const GameConstants = {
         POINTS: "points" as PointStatus,
         SCORED: "scored" as PointStatus,
     } as const,
+    // イベントバージョン
+    VERSION: {
+        V01: {
+            path: "v01",
+            number: 100,
+        },
+        V02: {
+            path: "v02",
+            number: 200,
+        },
+        V03: {
+            path: "v03",
+            number: 300,
+        },
+    } as const,
 } as const;
 
 export type GameConstants = typeof GameConstants;
