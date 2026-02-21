@@ -4,7 +4,6 @@ import { useEventContext } from "@/app/events/layout";
 import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
 import ArrivalGoalStationsForm from "@/components/composite/form/ArrivalGoalStationsForm";
-import MissionFormSenzokuike from "@/components/composite/form/MissionFormSenzokuike";
 import PointsExchangeForm from "@/components/composite/form/PointsExchangeForm";
 import PointsTransferForm from "@/components/composite/form/PointsTransferForm";
 import RegisterBombiiAutoForm from "@/components/composite/form/RegisterBombiiAutoForm";
@@ -130,7 +129,6 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                         <Divider />
                         <RegisterBombiiManualForm teams={teams} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <MissionFormSenzokuike />
                         <InformationDialog
                             teamData={teamData}
                             eventCode={eventCode as string}
