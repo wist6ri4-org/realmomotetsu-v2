@@ -2,7 +2,6 @@
 
 import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
-import CurrentLocationForm from "@/components/composite/form/CurrentLocationForm";
 import { ClosestStation } from "@/types/ClosestStation";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
 import { ArrowDropDown, Assignment, Help } from "@mui/icons-material";
@@ -15,10 +14,11 @@ import LocationUtils from "@/utils/locationUtils";
 import { checkIsOperatingUser } from "@/lib/auth";
 import { UsersWithRelations } from "@/repositories/users/UsersRepository";
 import { Events } from "@/generated/prisma";
+import CurrentLocationFormV03 from "@/components/composite/form/CurrentLocationFormV03";
 
 /**
- * フォームページ
- * @returns {React.JSX.Element} フォームページのコンポーネント
+ * フォームページ(V3)
+ * @returns {React.JSX.Element} フォームページ(V3)のコンポーネント
  */
 const FormPage: React.FC = (): React.JSX.Element => {
     const { eventCode } = useParams();
@@ -32,8 +32,6 @@ const FormPage: React.FC = (): React.JSX.Element => {
     const attendance: AttendancesWithRelations | undefined = user?.attendances?.find((a) => a.eventCode === eventCode);
 
     const isOperating: boolean = checkIsOperatingUser(user as UsersWithRelations, event as Events)
-
-    // NOTE TSK-37 通信頻度最適化対応でAPIの呼び出しは削除
 
     /**
      * 初期化処理
@@ -117,7 +115,7 @@ const FormPage: React.FC = (): React.JSX.Element => {
                 {!isLoading && !isInitDataLoading && !error && !contextError && (
                     <>
                         <Box sx={{ marginX: 2 }}>
-                            <CurrentLocationForm
+                            <CurrentLocationFormV03
                                 teams={teams}
                                 stations={stations}
                                 event={event!}
