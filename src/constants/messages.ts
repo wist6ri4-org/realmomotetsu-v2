@@ -45,7 +45,7 @@ export type Messages = typeof Messages;
  * @param params 置換パラメータ
  * @returns 置換後のメッセージ
  */
-export const formatMessage = (template: string, params: Record<string, string | number>): string => {
+const formatMessage = (template: string, params: Record<string, string | number>): string => {
     return template.replace(/{(\w+)}/g, (match, key) => {
         const value = params[key];
         return value !== undefined ? String(value) : match;

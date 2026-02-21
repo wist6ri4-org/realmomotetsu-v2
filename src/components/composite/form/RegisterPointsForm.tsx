@@ -87,7 +87,7 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
         e.preventDefault();
 
         const confirmMessage =
-            "以下の内容でポイントを登録しますか？\n" +
+            "以下の内容でポイントを登録しますか？\n\n" +
             `チーム: ${teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"}\n` +
             `ポイント: ${pointsInput.value}\n` +
             `ステータス: ${pointStatus === GameConstants.POINT_STATUS.POINTS ? "ポイント" : "総資産"}`;

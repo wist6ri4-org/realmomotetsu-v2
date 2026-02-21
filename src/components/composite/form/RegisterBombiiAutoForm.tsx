@@ -85,7 +85,7 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
         const bombiiTeam = GameLogicUtils.confirmBombii(teamData);
 
         const confirmMessage =
-            `以下の内容でボンビーを登録しますか？\n` +
+            `以下の内容でボンビーを登録しますか？\n\n` +
             `チーム: ${bombiiTeam.teamName}\n` +
             `総資産: ${bombiiTeam.scoredPoints}\n` +
             `目的駅までの距離: ${bombiiTeam.remainingStationsNumber}駅`;

@@ -88,7 +88,7 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
         e.preventDefault();
 
         const confirmMessage =
-            "以下の内容でポイントを移動しますか？\n" +
+            "以下の内容でポイントを移動しますか？\n\n" +
             `移動元チーム: ${teams.find((team) => team.teamCode === fromTeamCodeInput.value)?.teamName || "不明"}\n` +
             `移動先チーム: ${teams.find((team) => team.teamCode === toTeamCodeInput.value)?.teamName || "不明"}\n` +
             `ポイント: ${pointsInput.value}\n` +
