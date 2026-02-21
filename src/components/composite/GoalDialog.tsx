@@ -1,8 +1,8 @@
-import { Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, Typography } from '@mui/material';
-import Confetti from 'react-canvas-confetti';
+import { Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, Typography } from "@mui/material";
+import Confetti from "react-canvas-confetti";
 import React, { useRef, useCallback, useEffect } from "react";
-import CustomButton from '../base/CustomButton';
-import Image from 'next/image';
+import CustomButton from "../base/CustomButton";
+import Image from "next/image";
 
 
 /**
