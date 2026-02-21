@@ -16,9 +16,10 @@ import { useEventContext } from "@/app/events/layout";
  */
 const ChangePasswordPage = (): React.JSX.Element => {
     const router = useRouter();
+    const params = useParams();
 
     const { event, versionPath, isInitDataLoading } = useEventContext();
-    const eventCode = event.eventCode;
+    const eventCode = event?.eventCode || params.eventCode;
 
     const { sbUser, isLoading: authIsLoading } = useAuthGuard();
 

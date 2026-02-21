@@ -24,9 +24,10 @@ import { useEventContext } from "@/app/events/layout";
  */
 const UserProfileEditPage = (): React.JSX.Element => {
     const router = useRouter();
+    const params = useParams();
 
     const { event, versionPath, isInitDataLoading } = useEventContext();
-    const eventCode = event.eventCode;
+    const eventCode = event?.eventCode || params.eventCode;
 
     const { user, isLoading: authLoading } = useAuthGuard();
 
