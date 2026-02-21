@@ -8,6 +8,7 @@ import { Lock, Save } from "@mui/icons-material";
 import { CustomTextField } from "@/components/base/CustomTextField";
 import CustomButton from "@/components/base/CustomButton";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { useEventContext } from "@/app/events/layout";
 
 /**
  * ログイン中ユーザー用パスワード変更ページコンポーネント
@@ -15,8 +16,9 @@ import { useAuthGuard } from "@/hooks/useAuthGuard";
  */
 const ChangePasswordPage = (): React.JSX.Element => {
     const router = useRouter();
-    const params = useParams();
-    const eventCode = params.eventCode as string;
+
+    const { event, versionPath, isInitDataLoading } = useEventContext();
+    const eventCode = event.eventCode;
 
     const { sbUser, isLoading: authIsLoading } = useAuthGuard();
 
@@ -75,7 +77,7 @@ const ChangePasswordPage = (): React.JSX.Element => {
      * @returns {void}
      */
     const handleGoBack = (): void => {
-        router.push(`/events/${eventCode}/operation/user-settings`);
+        router.push(`/events/${versionPath}/${eventCode}/operation/user-settings`);
     };
 
     if (authIsLoading) {

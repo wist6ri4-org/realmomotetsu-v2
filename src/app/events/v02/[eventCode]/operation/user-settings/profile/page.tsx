@@ -16,6 +16,7 @@ import {
 import { Save, Cancel, Email, Person } from "@mui/icons-material";
 import { UserUtils } from "@/utils/userUtils";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { useEventContext } from "@/app/events/layout";
 
 /**
  * ログイン中ユーザーのプロフィール編集ページコンポーネント
@@ -23,8 +24,9 @@ import { useAuthGuard } from "@/hooks/useAuthGuard";
  */
 const UserProfileEditPage = (): React.JSX.Element => {
     const router = useRouter();
-    const params = useParams();
-    const eventCode = params.eventCode as string;
+
+    const { event, versionPath, isInitDataLoading } = useEventContext();
+    const eventCode = event.eventCode;
 
     const { user, isLoading: authLoading } = useAuthGuard();
 
@@ -125,7 +127,7 @@ const UserProfileEditPage = (): React.JSX.Element => {
      * @returns {void}
      */
     const handleGoBack = (): void => {
-        router.push(`/events/${eventCode}/operation/user-settings`);
+        router.push(`/events/${versionPath}/${eventCode}/operation/user-settings`);
     };
 
     const hasNicknameChanged = nickname !== originalNickname;

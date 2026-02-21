@@ -8,6 +8,7 @@ import { UserUtils } from "@/utils/userUtils";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { useUserIcon } from "@/contexts/UserIconContext";
 import supabase from "@/lib/supabase";
+import { useEventContext } from "@/app/events/layout";
 
 /**
  * ユーザーアイコン編集ページコンポーネント
@@ -15,8 +16,9 @@ import supabase from "@/lib/supabase";
  */
 const UserIconEditPage = (): React.JSX.Element => {
     const router = useRouter();
-    const params = useParams();
-    const eventCode = params.eventCode as string;
+
+    const { event, versionPath, isInitDataLoading } = useEventContext();
+    const eventCode = event.eventCode;
 
     const { user, isLoading: authLoading } = useAuthGuard();
 
@@ -207,7 +209,7 @@ const UserIconEditPage = (): React.JSX.Element => {
      * @return {void} - 設定画面に戻る処理
      */
     const handleGoBack = (): void => {
-        router.push(`/events/${eventCode}/operation/user-settings`);
+        router.push(`/events/${versionPath}/${eventCode}/operation/user-settings`);
     };
 
     if (authLoading) {
