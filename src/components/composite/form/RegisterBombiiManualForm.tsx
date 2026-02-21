@@ -85,7 +85,7 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
         clearError();
 
         const confirmMessage =
-            "以下の内容でボンビーを登録しますか？\n" +
+            "以下の内容でボンビーを登録しますか？\n\n" +
             `チーム: ${teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"}`;
         const isConfirmed = await showConfirmDialog({
             message: confirmMessage,

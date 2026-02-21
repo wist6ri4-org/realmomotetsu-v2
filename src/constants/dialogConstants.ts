@@ -3,7 +3,7 @@
  */
 export const DialogConstants = {
     TEXT: {
-        OK: "OK",
+        OK: "ＯＫ",
         CANCEL: "キャンセル",
         CLOSE: "閉じる",
     },

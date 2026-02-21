@@ -85,8 +85,8 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
         clearError();
 
         const confirmMessage =
-            "以下の内容で登録しますか？\n" +
-            `駅: ${stations.find((station) => station.stationCode === stationCodeInput.value)?.name || "不明"}`;
+            "以下の内容で登録しますか？\n\n" +
+            `目的駅: ${stations.find((station) => station.stationCode === stationCodeInput.value)?.name || "不明"}`;
 
         const isConfirmed = await showConfirmDialog({
             message: confirmMessage,

@@ -1,6 +1,7 @@
 import React from "react";
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Stack } from "@mui/material";
 import { DialogConstants } from "@/constants/dialogConstants";
+import CustomButton from "./CustomButton";
 
 /**
  * ConfirmDialogコンポーネントのプロパティ型定義
@@ -57,6 +58,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             aria-labelledby="confirm-dialog-title"
             aria-describedby="confirm-dialog-description"
             sx={{ zIndex: 1000 }}
+            maxWidth="lg"
+            fullWidth
         >
             {title && <DialogTitle id="confirm-dialog-title">{title}</DialogTitle>}
             <DialogContent>
@@ -65,12 +68,28 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleCancel} color="primary">
-                    {cancelText}
-                </Button>
-                <Button onClick={handleConfirm} color="primary" variant="contained">
-                    {confirmText}
-                </Button>
+                <Stack
+                    direction="column"
+                    spacing={1.5}
+                    sx={{ width: "100%" }}
+                >
+                    <CustomButton
+                        onClick={handleCancel}
+                        color="primary"
+                        variant="outlined"
+                        fullWidth
+                    >
+                        {cancelText}
+                    </CustomButton>
+                    <CustomButton
+                        onClick={handleConfirm}
+                        color="success"
+                        variant="contained"
+                        fullWidth
+                    >
+                        {confirmText}
+                    </CustomButton>
+                </Stack>
             </DialogActions>
         </Dialog>
     );

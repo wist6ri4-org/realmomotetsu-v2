@@ -1,6 +1,7 @@
 import React from "react";
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from "@mui/material";
 import { DialogConstants } from "@/constants/dialogConstants";
+import CustomButton from "./CustomButton";
 
 /**
  * AlertDialogコンポーネントのプロパティ型定義
@@ -41,6 +42,8 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
             sx={{ zIndex: 1000 }}
+            maxWidth="lg"
+            fullWidth
         >
             {title && <DialogTitle id="alert-dialog-title">{title}</DialogTitle>}
             <DialogContent>
@@ -49,9 +52,14 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleOk} color="primary" variant="contained">
+                <CustomButton
+                    onClick={handleOk}
+                    color="success"
+                    variant="contained"
+                    fullWidth
+                >
                     {okText}
-                </Button>
+                </CustomButton>
             </DialogActions>
         </Dialog>
     );
