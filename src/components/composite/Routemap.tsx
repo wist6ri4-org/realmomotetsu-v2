@@ -254,7 +254,7 @@ const Routemap: React.FC<RoutemapProps> = ({
                             <TrainSymbolSVG />
                             <StationSymbolSVG />
                             <BombiiSymbolSVG />
-                            <RouteListSymbolSVG />
+                            {configFileName?.includes("tokyu") && <RouteListSymbolSVG />}
                         </defs>
                         <g transform={config.svgOverall.transform}>
                             {/* 路線を描画 */}
@@ -299,6 +299,12 @@ const Routemap: React.FC<RoutemapProps> = ({
                                         // 特定の駅名の改行パターン
                                         if (name === "南町田グランベリーパーク") {
                                             return ["南町田", "グランベリーパーク"];
+                                        } else if (name === "押上〈スカイツリー前〉") {
+                                            return ["押上", "〈スカイツリー前〉"];
+                                        } else if (name === "明治神宮前〈原宿〉") {
+                                            return ["明治神宮前", "〈原宿〉"];
+                                        } else if (name === "二重橋前〈丸の内〉") {
+                                            return ["二重橋前", "〈丸の内〉"];
                                         }
 
                                         // デフォルトの改行ロジック（7文字以上で中間で分割）
