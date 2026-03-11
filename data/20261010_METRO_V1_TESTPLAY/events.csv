@@ -1,2 +1,2 @@
 event_code,event_name,event_type_code,visibility_level,operation_level,discord_webhook_url,isNotificationEnabled,start_date,created_at,updated_at
-METRO_V1_TESTPLAY_20261010,リアル桃鉄～東京地下鉄編～,METRO_V1,participant,participant,https://discord.com/api/webhooks/1399778937579769856/RGfpm4VZ9GUqPh0c7dZRJ_8giWctEHt3EdGXoP4NcLUFqOJCKzJnwLfrm4u3uxuFpsLt,TRUE,2026-10-10 01:00:00.000+09,,
+METRO_V1_TESTPLAY_20261010,第３回リアル桃鉄～東京メトロ・都営地下鉄編～,METRO_V1,participant,participant,https://discord.com/api/webhooks/1399778937579769856/RGfpm4VZ9GUqPh0c7dZRJ_8giWctEHt3EdGXoP4NcLUFqOJCKzJnwLfrm4u3uxuFpsLt,TRUE,2026-10-10 01:00:00.000+09,,
