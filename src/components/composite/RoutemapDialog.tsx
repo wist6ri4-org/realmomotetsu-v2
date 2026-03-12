@@ -181,7 +181,7 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
                         <TransformWrapper
                             initialScale={ZOOM_CONFIG.initialScale}
                             minScale={ZOOM_CONFIG.minScale}
-                            maxScale={ZOOM_CONFIG.maxScale}
+                            maxScale={routemapProps.configFileName?.includes("tokyu") ? ZOOM_CONFIG.maxScale : 5}
                             wheel={{
                                 step: ZOOM_CONFIG.wheelStep,
                                 wheelDisabled: false,
