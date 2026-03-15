@@ -27,6 +27,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import GoalDialog from "../GoalDialog";
 import { PostCurrentLocationV3Request } from "@/features/current-location-v3/types";
+import CustomAutoComplete from "@/components/base/CustomAutoComplete";
 
 /**
  * CurrentLocationFormV3コンポーネントのプロパティ型定義
@@ -262,8 +263,8 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
                         />
                     </Box>
                     <Box sx={{ marginBottom: 2 }}>
-                        <CustomSelect
-                            options={TypeConverter.convertStationsToSelectOptions(stations)}
+                        <CustomAutoComplete
+                            options={TypeConverter.convertStationsToAutoCompleteOptions(stations)}
                             value={selectedStationCodeInput.value}
                             onChange={selectedStationCodeInput.handleChange}
                             size="small"

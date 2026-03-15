@@ -8,7 +8,7 @@ import PointsExchangeForm from "@/components/composite/form/PointsExchangeForm";
 import PointsTransferForm from "@/components/composite/form/PointsTransferForm";
 import RegisterBombiiAutoForm from "@/components/composite/form/RegisterBombiiAutoForm";
 import RegisterBombiiManualForm from "@/components/composite/form/RegisterBombiiManualForm";
-import RegisterGoalStationsForm from "@/components/composite/form/RegisterGoalStationsForm";
+import RegisterGoalStationsFormV3 from "@/components/composite/form/RegisterGoalStationsFormV3";
 import RegisterPointsForm from "@/components/composite/form/RegisterPointsForm";
 import InformationDialog from "@/components/composite/InformationDialog";
 import { ApplicationErrorFactory } from "@/error/applicationError";
@@ -115,7 +115,7 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                 {/* メインコンテンツ */}
                 {!isLoading && !isInitDataLoading && !error && !contextError && (
                     <>
-                        <RegisterGoalStationsForm stations={stations} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
+                        <RegisterGoalStationsFormV3 stations={stations} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
                         <ArrivalGoalStationsForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
