@@ -6,7 +6,7 @@ import { ApiError, InternalServerError } from "@/error";
 
 export const CurrentLocationServiceImpl: CurrentLocationService = {
     /**
-     * 現在地tとポイントを登録する
+     * 現在地とポイントを登録する
      * @param {PostCurrentLocationRequest} req - リクエスト
      * @return {Promise<PostCurrentLocationResponse>} レスポンス
      */
@@ -28,7 +28,7 @@ export const CurrentLocationServiceImpl: CurrentLocationService = {
 
             const { transitStation, point } = await transitStationsRepository.createWithPoints(
                 transitStationsData,
-                pointsData
+                pointsData,
             );
             const res: PostCurrentLocationResponse = {
                 transitStation: transitStation,

@@ -1,6 +1,6 @@
 import { createApiHandler } from "@/app/api/utils/apiHandler";
-import BombiiHistoriesApiHandler from "./CurrentLocationApiHandler";
+import CurrentLocationApiHandler from "./CurrentLocationApiHandler";
 
-export const POST = createApiHandler(BombiiHistoriesApiHandler);
+export const POST = createApiHandler(CurrentLocationApiHandler);
 
 export {}; // 明示的にモジュールとして認識させる

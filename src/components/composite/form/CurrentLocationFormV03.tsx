@@ -1,5 +1,5 @@
 /**
- * 現在地登録フォーム
+ * 現在地登録フォーム（V3）
  */
 "use client";
 
@@ -9,7 +9,6 @@ import CustomButton from "@/components/base/CustomButton";
 import CustomSelect from "@/components/base/CustomSelect";
 import { DialogConstants } from "@/constants/dialogConstants";
 import { DiscordNotificationTemplates } from "@/constants/discordNotificationTemplates";
-import { GameConstants } from "@/constants/gameConstants";
 import { getMessage } from "@/constants/messages";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
@@ -27,9 +26,10 @@ import { Box, CircularProgress } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import GoalDialog from "../GoalDialog";
+import { PostCurrentLocationV3Request } from "@/features/current-location-v3/types";
 
 /**
- * CurrentLocationFormコンポーネントのプロパティ型定義
+ * CurrentLocationFormV3コンポーネントのプロパティ型定義
  * @property {Teams[]} teams - チームのリスト
  * @property {Stations[]} stations - 駅のリスト
  * @property {Events} event - イベント情報
@@ -37,7 +37,7 @@ import GoalDialog from "../GoalDialog";
  * @property {string} [initialTeamCode] - 初期選択されるチームコード（オプション）
  * @property {boolean} isOperating - 操作権限があるかどうか
  */
-interface CurrentLocationFormProps {
+interface CurrentLocationFormV3Props {
     teams: Teams[];
     stations: Stations[];
     event: Events;
@@ -48,17 +48,17 @@ interface CurrentLocationFormProps {
 
 /**
  * 現在地登録フォームコンポーネント
- * @param { CurrentLocationFormProps } props - コンポーネントのプロパティ
- * @returns {JSX.Element} - CurrentLocationFormコンポーネント
+ * @param { CurrentLocationFormV3Props } props - コンポーネントのプロパティ
+ * @returns {JSX.Element} - CurrentLocationFormV3コンポーネント
  */
-const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
+const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
     teams,
     stations,
     event,
     closestStations,
     initialTeamCode,
     isOperating,
-}: CurrentLocationFormProps): React.JSX.Element => {
+}: CurrentLocationFormV3Props): React.JSX.Element => {
     const { eventCode } = useParams();
 
     const selectedTeamCodeInput = useSelectInput(initialTeamCode || "");
@@ -164,18 +164,16 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
             }
 
             // 経由駅と移動ポイントの登録
-            const response = await fetch("/api/current-location", {
+            const response = await fetch("/api/current-location-v3", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    eventCode: eventCode,
+                    eventCode: eventCode?.toString() || "",
                     teamCode: selectedTeamCodeInput.value,
                     stationCode: selectedStationCodeInput.value,
-                    points: GameConstants.POINT_FOR_MOVING,
-                    status: GameConstants.POINT_STATUS.POINTS,
-                }),
+                } satisfies PostCurrentLocationV3Request),
             });
 
             if (!response.ok) {
@@ -313,4 +311,4 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     );
 };
 
-export default CurrentLocationForm;
+export default CurrentLocationFormV3;
