@@ -279,11 +279,12 @@ async function main() {
             const eventTypeCode = row.event_type_code?.trim();
             const description = row.description?.trim();
             const routemapConfigFile = row.routemap_config?.trim() || null;
+            const version = row.version?.trim() || null;
             const createdAt = new Date(row.created_at?.trim());
             const updatedAt = new Date(row.updated_at?.trim());
 
             await prisma.eventTypes.create({
-                data: { eventTypeCode, description, routemapConfigFile, createdAt, updatedAt },
+                data: { eventTypeCode, description, routemapConfigFile, version, createdAt, updatedAt },
             });
         }
         console.log(`✅ ${eventTypesData.length}件のEventTypesを挿入しました`);
