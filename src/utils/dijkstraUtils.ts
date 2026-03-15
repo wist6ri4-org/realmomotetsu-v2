@@ -7,7 +7,7 @@ export default class DijkstraUtils {
      * @returns {Record<string, Array<{ stationCode: string; timeMinutes: number; stationNumber: number }>>} グラフ形式の駅接続情報
      */
     static convertToStationGraph(
-        nearbyStations: NearbyStationsWithRelations[]
+        nearbyStations: NearbyStationsWithRelations[],
     ): Record<string, Array<{ stationCode: string; timeMinutes: number }>> {
         const graph: Record<string, Array<{ stationCode: string; timeMinutes: number }>> = {};
 
@@ -32,7 +32,7 @@ export default class DijkstraUtils {
      */
     static calculate(
         graph: Record<string, Array<{ stationCode: string; timeMinutes: number }>>,
-        startStationCode: string
+        startStationCode: string,
     ): string {
         const times = this.calculateRequiredTimeAndStations(graph, startStationCode);
         const probabilities = this.calculateProbabilities(times);
@@ -48,7 +48,7 @@ export default class DijkstraUtils {
     static calculateRemainingStationsNumber(
         graph: Record<string, Array<{ stationCode: string; timeMinutes: number }>>,
         startStationCode: string,
-        nextGoalStationCode: string
+        nextGoalStationCode: string,
     ): number {
         const times = this.calculateRequiredTimeAndStations(graph, startStationCode);
         const stationsNumber = times.get(nextGoalStationCode)?.stationsNumber;
@@ -66,7 +66,7 @@ export default class DijkstraUtils {
      */
     static calculateRequiredTimeAndStations(
         graph: Record<string, Array<{ stationCode: string; timeMinutes: number }>>,
-        startStationCode: string
+        startStationCode: string,
     ): Map<string, { timeMinutes: number; stationsNumber: number }> {
         // 各駅の最短時間と駅数を格納するマップを初期化（無限大に設定）
         const times = new Map<string, { timeMinutes: number; stationsNumber: number }>();
@@ -96,9 +96,9 @@ export default class DijkstraUtils {
         });
 
         while (queue.length > 0) {
-            // 所要時間順にソート
-            queue.sort((a, b) => a.timeMinutes - b.timeMinutes);
-            // 所要時間が最短の駅をshift
+            // マス数の少ない順にソート
+            queue.sort((a, b) => a.stationsNumber - b.stationsNumber);
+            // マス数が最短の駅をshift
             const { stationCode, timeMinutes, stationsNumber } = queue.shift()!;
 
             // 隣接駅それぞれへの時間と駅数を取得
@@ -106,13 +106,20 @@ export default class DijkstraUtils {
                 const newTimeMinutes = timeMinutes + neighbor.timeMinutes;
                 const newStationsNumber = stationsNumber + 1;
 
-                // 新しい所要時間が既存の所要時間より短ければ更新
-                if (newTimeMinutes < times.get(neighbor.stationCode)!.timeMinutes) {
-                    times.get(neighbor.stationCode)!.timeMinutes = newTimeMinutes;
+                // 新しいマス数が既存のマス数より短ければ更新
+                if (newStationsNumber <= times.get(neighbor.stationCode)!.stationsNumber) {
                     times.get(neighbor.stationCode)!.stationsNumber = newStationsNumber;
+
+                    // 時間も比較して更新
+                    const timeMinutesToSet =
+                        newTimeMinutes < times.get(neighbor.stationCode)!.timeMinutes
+                            ? newTimeMinutes
+                            : times.get(neighbor.stationCode)!.timeMinutes;
+                    times.get(neighbor.stationCode)!.timeMinutes = timeMinutesToSet;
+
                     queue.push({
                         stationCode: neighbor.stationCode,
-                        timeMinutes: newTimeMinutes,
+                        timeMinutes: timeMinutesToSet,
                         stationsNumber: newStationsNumber,
                     });
                 }
@@ -127,7 +134,7 @@ export default class DijkstraUtils {
      * @returns {Map<string, number>} 駅ごとの確率を含むマップ
      */
     static calculateProbabilities(
-        times: Map<string, { timeMinutes: number; stationsNumber: number }>
+        times: Map<string, { timeMinutes: number; stationsNumber: number }>,
     ): Map<string, number> {
         // 確率を格納するマップを初期化
         const probabilities = new Map<string, number>();

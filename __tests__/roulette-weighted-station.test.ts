@@ -1,16 +1,31 @@
 /**
- * RouletteUtilsのgetWeightedStationCodeメソッドをテストするファイル
- * 自由が丘から10回×20セットのルーレットを実行し、結果を分析する
+ * @jest-environment node
  */
 
-import { Stations, LatestTransitStations } from "@/generated/prisma";
+/**
+ * RouletteUtilsのgetWeightedStationCodeメソッドをテストするファイル
+ * 指定した駅から10回×20セットのルーレットを実行し、結果を分析する
+ *
+ * 使い方:
+ *   npx dotenv -e .env.local -- npx jest __tests__/roulette-weighted-station.test.ts
+ *
+ * 設定:
+ *   EVENT_TYPE_CODE: イベント種別コード
+ *   START_STATION_CODE: 開始駅コード
+ */
+
+import { PrismaClient, Stations, LatestTransitStations } from "@/generated/prisma";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 import DijkstraUtils from "@/utils/dijkstraUtils";
 import { RouletteUtils } from "@/utils/rouletteUtils";
-import stationsData from "./json/stations.json";
-import nearbyStationsData from "./json/nearbyStations.json";
 import * as fs from "fs";
 import * as path from "path";
+
+// ========== 設定 ==========
+const EVENT_TYPE_CODE = "METRO_V1"; // イベント種別コード
+const START_STATION_CODE = "METRO_V1_OTEMACHI"; // 開始駅コード
+const ELIMINATION_TIME_RANGE_MINUTES = 10; // 除外する時間範囲（分）。この値以下の駅は候補から除外
+// ==========================
 
 // テスト用の型定義
 interface RouletteTestResult {
@@ -57,7 +72,7 @@ interface OverallStatistics {
 function calculateRouteInfo(
     nearbyStations: NearbyStationsWithRelations[],
     startStationCode: string,
-    destinationStationCode: string
+    destinationStationCode: string,
 ): { stationsNumber: number; timeMinutes: number } {
     const graph = DijkstraUtils.convertToStationGraph(nearbyStations);
     const times = DijkstraUtils.calculateRequiredTimeAndStations(graph, startStationCode);
@@ -152,7 +167,7 @@ function outputToCsv(csvData: CsvRowData[]): string {
     const csvContent = csvData
         .map(
             (row) =>
-                `${row.setNumber},${row.runNumber},"${row.stationName}",${row.stationsFromPrevious},${row.timeFromPrevious}`
+                `${row.setNumber},${row.runNumber},"${row.stationName}",${row.stationsFromPrevious},${row.timeFromPrevious}`,
         )
         .join("\n");
 
@@ -167,17 +182,33 @@ function outputToCsv(csvData: CsvRowData[]): string {
  * ルーレットテストのメインテスト関数
  */
 describe("RouletteUtils getWeightedStationCode テスト", () => {
-    // テストデータを実際のJSONファイルから読み込み（型アサーションを使用）
-    const stations: Stations[] = stationsData as unknown as Stations[];
-    const nearbyStations: NearbyStationsWithRelations[] =
-        nearbyStationsData as unknown as NearbyStationsWithRelations[];
+    const prisma = new PrismaClient();
+    let stations: Stations[];
+    let nearbyStations: NearbyStationsWithRelations[];
     const latestTransitStations: LatestTransitStations[] = []; // 空配列でテスト
     const goalStations: [] = []; // 空配列でテスト
 
-    // 自由が丘の駅コード
-    const startStationCodeInput = "TOKYU_V2_JIYUGAOKA";
+    beforeAll(async () => {
+        // DBから駅データを取得
+        stations = await prisma.stations.findMany({
+            where: { eventTypeCode: EVENT_TYPE_CODE },
+        });
 
-    test("自由が丘から10回✕20セットのルーレットテスト", () => {
+        // DBから近隣駅データを取得
+        nearbyStations = (await prisma.nearbyStations.findMany({
+            where: { eventTypeCode: EVENT_TYPE_CODE },
+            include: {
+                fromStation: true,
+                toStation: true,
+            },
+        })) as NearbyStationsWithRelations[];
+    });
+
+    afterAll(async () => {
+        await prisma.$disconnect();
+    });
+
+    test("指定駅から10回✕20セットのルーレットテスト", () => {
         const testSets: TestSetResult[] = [];
         const allResults: RouletteTestResult[] = [];
         const setResultsArray: RouletteTestResult[][] = []; // CSV出力用にセット別データを保持
@@ -186,7 +217,7 @@ describe("RouletteUtils getWeightedStationCode テスト", () => {
         // 20セットの実行
         for (let setIndex = 0; setIndex < 20; setIndex++) {
             const setResults: RouletteTestResult[] = [];
-            let currentStationCode = startStationCodeInput; // 最初は自由が丘から開始
+            let currentStationCode = START_STATION_CODE; // 開始駅から開始
 
             // 各セットで10回実行
             for (let i = 0; i < 10; i++) {
@@ -194,7 +225,8 @@ describe("RouletteUtils getWeightedStationCode テスト", () => {
                     nearbyStations,
                     latestTransitStations,
                     goalStations,
-                    currentStationCode // 現在の位置から次の駅を選択
+                    currentStationCode, // 現在の位置から次の駅を選択
+                    ELIMINATION_TIME_RANGE_MINUTES, // 除外する時間範囲（分）
                 );
 
                 // 駅コードから駅情報を取得
@@ -204,7 +236,7 @@ describe("RouletteUtils getWeightedStationCode テスト", () => {
                     const routeInfo = calculateRouteInfo(
                         nearbyStations,
                         currentStationCode, // 現在の位置から目的地への情報を計算
-                        selectedStation.stationCode
+                        selectedStation.stationCode,
                     );
 
                     const result: RouletteTestResult = {
