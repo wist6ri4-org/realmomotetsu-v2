@@ -1,3 +1,4 @@
+import { AutoCompleteOption } from "@/components/base/CustomAutoComplete";
 import { SelectOption } from "@/components/base/CustomSelect";
 import { Stations, Teams } from "@/generated/prisma";
 
@@ -25,6 +26,20 @@ export class TypeConverter {
             value: station.stationCode,
             label: station.name,
             disabled: false,
+        }));
+    }
+
+    /**
+     * Stationsの配列をAutoCompleteOptionの配列に変換する
+     * @param {Stations[]} stations - Stationsの配列
+     * @return {AutoCompleteOption[]} AutoCompleteOptionの配列
+     */
+    static convertStationsToAutoCompleteOptions(stations: Stations[]): AutoCompleteOption[] {
+        return stations.map((station) => ({
+            value: station.stationCode,
+            label: station.name,
+            disabled: false,
+            searchKeys: [station.name, station.kana, station.englishName],
         }));
     }
 }
