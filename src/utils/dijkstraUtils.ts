@@ -111,16 +111,15 @@ export default class DijkstraUtils {
                     times.get(neighbor.stationCode)!.stationsNumber = newStationsNumber;
 
                     // 時間も比較して更新
-                    if (newTimeMinutes < times.get(neighbor.stationCode)!.timeMinutes) {
-                        times.get(neighbor.stationCode)!.timeMinutes = newTimeMinutes;
-                    }
+                    const timeMinutesToSet =
+                        newTimeMinutes < times.get(neighbor.stationCode)!.timeMinutes
+                            ? newTimeMinutes
+                            : times.get(neighbor.stationCode)!.timeMinutes;
+                    times.get(neighbor.stationCode)!.timeMinutes = timeMinutesToSet;
 
                     queue.push({
                         stationCode: neighbor.stationCode,
-                        timeMinutes:
-                            newTimeMinutes < times.get(neighbor.stationCode)!.timeMinutes
-                                ? newTimeMinutes
-                                : times.get(neighbor.stationCode)!.timeMinutes,
+                        timeMinutes: timeMinutesToSet,
                         stationsNumber: newStationsNumber,
                     });
                 }
