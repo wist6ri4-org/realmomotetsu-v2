@@ -16,7 +16,7 @@
 
 import { PrismaClient, Stations, LatestTransitStations } from "@/generated/prisma";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
-import DijkstraUtils from "@/utils/dijkstraUtils";
+import DijkstraUtils, { DistancesMap, StationsGraph } from "@/utils/dijkstraUtils";
 import { RouletteUtils } from "@/utils/rouletteUtils";
 import * as fs from "fs";
 import * as path from "path";
@@ -74,10 +74,10 @@ function calculateRouteInfo(
     startStationCode: string,
     destinationStationCode: string,
 ): { stationsNumber: number; timeMinutes: number } {
-    const graph = DijkstraUtils.convertToStationGraph(nearbyStations);
-    const times = DijkstraUtils.calculateRequiredTimeAndStations(graph, startStationCode);
+    const graph: StationsGraph = DijkstraUtils.convertNearbyStationsToStationGraph(nearbyStations);
+    const distances: DistancesMap = DijkstraUtils.calculateRequiredTimeAndStations(graph, startStationCode);
 
-    const result = times.get(destinationStationCode);
+    const result = distances.get(destinationStationCode);
     if (result) {
         return {
             stationsNumber: result.stationsNumber,

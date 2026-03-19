@@ -1,15 +1,17 @@
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 
+export type DistancesMap = Map<string, { timeMinutes: number; stationsNumber: number }>;
+export type StationsGraph = Record<string, Array<{ stationCode: string; timeMinutes: number }>>;
+export type StationsProbabilitiesMap = Map<string, number>;
+
 export default class DijkstraUtils {
     /**
      * 近隣駅の接続情報をグラフ形式に変換
      * @param nearbyStations - 近隣駅の接続情報
-     * @returns {Record<string, Array<{ stationCode: string; timeMinutes: number; stationNumber: number }>>} グラフ形式の駅接続情報
+     * @returns {StationsGraph} グラフ形式の駅接続情報
      */
-    static convertToStationGraph(
-        nearbyStations: NearbyStationsWithRelations[],
-    ): Record<string, Array<{ stationCode: string; timeMinutes: number }>> {
-        const graph: Record<string, Array<{ stationCode: string; timeMinutes: number }>> = {};
+    static convertNearbyStationsToStationGraph(nearbyStations: NearbyStationsWithRelations[]): StationsGraph {
+        const graph: StationsGraph = {};
 
         nearbyStations.forEach((connection) => {
             if (!graph[connection.fromStationCode]) {
@@ -25,28 +27,13 @@ export default class DijkstraUtils {
     }
 
     /**
-     * ダイクストラアルゴリズムを使用して、指定された駅からの最短経路を計算し、次の駅を選択する
-     * @param graph - 駅の接続情報を表すグラフ
-     * @param startStationCode - 開始駅のコード
-     * @returns {string} 次に選択する駅のコード
-     */
-    static calculate(
-        graph: Record<string, Array<{ stationCode: string; timeMinutes: number }>>,
-        startStationCode: string,
-    ): string {
-        const times = this.calculateRequiredTimeAndStations(graph, startStationCode);
-        const probabilities = this.calculateProbabilities(times);
-        return this.selectNextStationCode(probabilities);
-    }
-
-    /**
      * 指定された駅からの残りの駅数を計算する
      * @param graph - 駅の接続情報を表すグラフ
      * @param startStationCode - 開始駅のコード
      * @returns {number} 残りの駅数
      */
     static calculateRemainingStationsNumber(
-        graph: Record<string, Array<{ stationCode: string; timeMinutes: number }>>,
+        graph: StationsGraph,
         startStationCode: string,
         nextGoalStationCode: string,
     ): number {
@@ -62,23 +49,20 @@ export default class DijkstraUtils {
      * ダイクストラ関数
      * @param graph - 駅の接続情報を表すグラフ
      * @param startStationCode - 開始駅のコード
-     * @returns {Map<string, { timeMinutes: number; stationsNumber: number }>} 駅ごとの最短時間と駅数を含むマップ
+     * @returns {DistancesMap} 駅ごとの最短時間と駅数を含むマップ
      */
-    static calculateRequiredTimeAndStations(
-        graph: Record<string, Array<{ stationCode: string; timeMinutes: number }>>,
-        startStationCode: string,
-    ): Map<string, { timeMinutes: number; stationsNumber: number }> {
+    static calculateRequiredTimeAndStations(graph: StationsGraph, startStationCode: string): DistancesMap {
         // 各駅の最短時間と駅数を格納するマップを初期化（無限大に設定）
-        const times = new Map<string, { timeMinutes: number; stationsNumber: number }>();
+        const distances: DistancesMap = new Map<string, { timeMinutes: number; stationsNumber: number }>();
         Object.keys(graph).forEach((stationCode) => {
-            times.set(stationCode, {
+            distances.set(stationCode, {
                 timeMinutes: Infinity,
                 stationsNumber: Infinity,
             });
         });
 
         // 開始駅の時間と駅数を0に設定
-        times.set(startStationCode, {
+        distances.set(startStationCode, {
             timeMinutes: 0,
             stationsNumber: 0,
         });
@@ -107,15 +91,15 @@ export default class DijkstraUtils {
                 const newStationsNumber = stationsNumber + 1;
 
                 // 新しいマス数が既存のマス数より短ければ更新
-                if (newStationsNumber <= times.get(neighbor.stationCode)!.stationsNumber) {
-                    times.get(neighbor.stationCode)!.stationsNumber = newStationsNumber;
+                if (newStationsNumber <= distances.get(neighbor.stationCode)!.stationsNumber) {
+                    distances.get(neighbor.stationCode)!.stationsNumber = newStationsNumber;
 
                     // 時間も比較して更新
                     const timeMinutesToSet =
-                        newTimeMinutes < times.get(neighbor.stationCode)!.timeMinutes
+                        newTimeMinutes < distances.get(neighbor.stationCode)!.timeMinutes
                             ? newTimeMinutes
-                            : times.get(neighbor.stationCode)!.timeMinutes;
-                    times.get(neighbor.stationCode)!.timeMinutes = timeMinutesToSet;
+                            : distances.get(neighbor.stationCode)!.timeMinutes;
+                    distances.get(neighbor.stationCode)!.timeMinutes = timeMinutesToSet;
 
                     queue.push({
                         stationCode: neighbor.stationCode,
@@ -125,58 +109,28 @@ export default class DijkstraUtils {
                 }
             });
         }
-        return times;
+        return distances;
     }
 
     /**
      * 重み付きルーレットの確率計算
-     * @param times - 駅ごとの最短時間と駅数を含
-     * @returns {Map<string, number>} 駅ごとの確率を含むマップ
+     * @param distances - 駅ごとの最短時間と駅数を含むマップ
+     * @returns {StationsProbabilitiesMap} 駅ごとの確率を含むマップ
      */
-    static calculateProbabilities(
-        times: Map<string, { timeMinutes: number; stationsNumber: number }>,
-    ): Map<string, number> {
+    static calculateProbabilities(distances: DistancesMap): StationsProbabilitiesMap {
         // 確率を格納するマップを初期化
-        const probabilities = new Map<string, number>();
+        const stationsProbabilities: StationsProbabilitiesMap = new Map<string, number>();
         // 所要時間の重みの合計を計算
-        const totalWeights = Array.from(times.values()).reduce((sum, value) => sum + 1 / value.timeMinutes, 0);
+        const totalWeights = Array.from(distances.values()).reduce((sum, value) => sum + 1 / value.timeMinutes, 0);
 
         // 各駅への所要時間の逆数で重みを計算
-        times.forEach((value, stationCode) => {
+        distances.forEach((value, stationCode) => {
             if (value.timeMinutes < Infinity) {
-                probabilities.set(stationCode, 1 / value.timeMinutes / totalWeights);
+                stationsProbabilities.set(stationCode, 1 / value.timeMinutes / totalWeights);
             } else {
-                probabilities.set(stationCode, 0);
+                stationsProbabilities.set(stationCode, 0);
             }
         });
-        return probabilities;
-    }
-
-    /**
-     * 重み付きルーレットを使用して次の駅を選択
-     * @param probabilities - 駅ごとの確率を含むマップ
-     * @returns {string} 選択された駅のコード
-     */
-    static selectNextStationCode(probabilities: Map<string, number>): string {
-        // ランダムな値を生成
-        const randomValue = Math.random();
-        // 確率の累積値を計算
-        let cumulative = 0;
-
-        // 累積確率から駅をランダムに選択
-        for (const [stationCode, probability] of probabilities) {
-            cumulative += probability;
-            if (randomValue < cumulative) {
-                return stationCode;
-            }
-        }
-
-        // 確率の合計が1を超える場合、最後の駅を返す
-        const lastStationCode = Array.from(probabilities.keys()).pop();
-        if (lastStationCode) {
-            return lastStationCode;
-        } else {
-            throw new Error("No stations available for selection");
-        }
+        return stationsProbabilities;
     }
 }

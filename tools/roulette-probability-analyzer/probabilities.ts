@@ -37,7 +37,7 @@ function calculateProbabilitiesFromStation(
     graph: Record<string, Array<{ stationCode: string; timeMinutes: number }>>,
     startStationCode: string,
 ): Map<string, number> {
-    return RouletteUtils.getCandidateProbabilities(graph, startStationCode, [], [], ELIMINATION_TIME_RANGE_MINUTES);
+    return RouletteUtils.getCandidateStationDistances(graph, startStationCode, [], [], ELIMINATION_TIME_RANGE_MINUTES);
 }
 
 /**
@@ -251,7 +251,7 @@ async function main() {
     console.log(`\n📊 データ: ${stations.length}駅, ${nearbyStations.length}接続`);
 
     // 3. グラフ構築
-    const graph = DijkstraUtils.convertToStationGraph(nearbyStations);
+    const graph = DijkstraUtils.convertNearbyStationsToStationGraph(nearbyStations);
 
     // 4. モードに応じて実行
     if (MODE === "single") {
