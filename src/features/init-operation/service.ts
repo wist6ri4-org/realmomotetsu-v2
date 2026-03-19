@@ -35,7 +35,7 @@ export const InitOperationServiceImpl: InitOperationService = {
                     bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
                 ]);
 
-            const convertedStationGraph = DijkstraUtils.convertToStationGraph(nearbyStations);
+            const convertedStationGraph = DijkstraUtils.convertNearbyStationsToStationGraph(nearbyStations);
             const teamData: TeamData[] = teams.map((team) => ({
                 id: team.id,
                 teamCode: team.teamCode,
@@ -45,7 +45,7 @@ export const InitOperationServiceImpl: InitOperationService = {
                 remainingStationsNumber: DijkstraUtils.calculateRemainingStationsNumber(
                     convertedStationGraph,
                     team.transitStations.at(0)?.stationCode || "",
-                    nextGoalStation?.stationCode || ""
+                    nextGoalStation?.stationCode || "",
                 ),
                 points: totalPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 scoredPoints: totalScoredPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,

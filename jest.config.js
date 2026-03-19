@@ -19,6 +19,7 @@ const config = {
         "^@/(.*)$": "<rootDir>/src/$1",
     },
     testPathIgnorePatterns: ["<rootDir>/node_modules/"],
+    setupFiles: ['<rootDir>/jest.setup.js'],
 };
 
 module.exports = config;

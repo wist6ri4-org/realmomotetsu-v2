@@ -70,7 +70,7 @@ async function main() {
     console.log(`\n📊 データ: ${stations.length}駅, ${nearbyStations.length}接続\n`);
 
     // 3. グラフ構築（DijkstraUtils使用）
-    const graph = DijkstraUtils.convertToStationGraph(nearbyStations);
+    const graph = DijkstraUtils.convertNearbyStationsToStationGraph(nearbyStations);
 
     // 4. ダイクストラ実行（DijkstraUtils使用）
     const results = DijkstraUtils.calculateRequiredTimeAndStations(graph, START_STATION_CODE);
