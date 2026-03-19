@@ -2,7 +2,6 @@
 
 import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
-import RouletteForm from "@/components/composite/form/RouletteForm";
 import { GoalStations, LatestTransitStations } from "@/generated/prisma";
 import { ClosestStation } from "@/types/ClosestStation";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
@@ -15,6 +14,7 @@ import { InitRouletteResponse } from "@/features/init-roulette/types";
 import LocationUtils from "@/utils/locationUtils";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
+import RouletteFormV3 from "@/components/composite/form/RouletteFormV3";
 
 /**
  * 駅ルーレットページ
@@ -130,7 +130,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
                 {!isLoading && !isInitDataLoading && !error && !contextError && (
                     <>
                         <Box sx={{ marginX: 2 }}>
-                            <RouletteForm
+                            <RouletteFormV3
                                 stations={stations}
                                 nearbyStations={nearbyStations}
                                 latestTransitStations={latestTransitStations}

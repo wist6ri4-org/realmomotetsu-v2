@@ -161,7 +161,6 @@ export const CustomAutoComplete: React.FC<CustomAutoCompleteProps> = ({
                             color={standardColor}
                             placeholder={placeholder}
                             error={error}
-                            required={required}
                             slotProps={{
                                 htmlInput: {
                                     ...params.inputProps,
