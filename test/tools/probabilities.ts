@@ -5,21 +5,26 @@
  * rouletteUtilsと同じロジック（時間範囲外排除 + 所要時間逆数の重み付け）で計算。
  *
  * 使い方:
- *   npx dotenv -e .env.local -- npx tsx test/tools/probabilities.ts
+ *  npx dotenv -e .env.local -- npx tsx test/tools/probabilities.ts
  *
  * モード:
- *   "single" - ①指定した駅を起点にした際の各候補駅の出現確率
- *   "all"    - ②全駅を起点にしたときの各駅の出現確率（平均）
+ *  "single" - ①指定した駅を起点にした際の各候補駅の出現確率
+ *  "all"    - ②全駅を起点にしたときの各駅の出現確率（平均）
+ *
+ * バージョン:
+ *  "v2" - 旧ルーレットロジック（経由駅と既出目的駅を考慮して候補駅を絞り込む）
+ *  "v3" - 新ルーレットロジック（経由駅と既出目的駅を考慮せず、開始駅からの距離のみで候補駅を絞り込む）
  */
 
 import { PrismaClient } from "../../src/generated/prisma/index.js";
-import DijkstraUtils from "../../src/utils/dijkstraUtils.js";
+import DijkstraUtils, { StationsGraph, StationsProbabilitiesMap } from "../../src/utils/dijkstraUtils.js";
 import { RouletteUtils } from "../../src/utils/rouletteUtils.js";
 
 // ========== 設定 ==========
 const EVENT_TYPE_CODE = "METRO_V1"; // イベント種別コード
 const START_STATION_CODE = "METRO_V1_OTEMACHI"; // 開始駅コード（singleモード時に使用）
 const MODE: "single" | "all" = "all"; // "single": ①単一駅起点, "all": ②全駅起点
+const VERSION: "v2" | "v3" = "v3"; // ルーレットロジックのバージョン選択（v2: 旧ロジック, v3: 新ロジック）
 const ELIMINATION_TIME_RANGE_MINUTES = 10; // 除外する時間範囲（分）。この値以下の駅は候補から除外
 // ==========================
 
@@ -33,24 +38,30 @@ type StationInfo = {
 /**
  * RouletteUtilsの共通メソッドを使って、指定駅からの候補駅確率を計算する
  */
-function calculateProbabilitiesFromStation(
-    graph: Record<string, Array<{ stationCode: string; timeMinutes: number }>>,
-    startStationCode: string,
-): Map<string, number> {
-    return RouletteUtils.getCandidateStationDistances(graph, startStationCode, [], [], ELIMINATION_TIME_RANGE_MINUTES);
+function calculateProbabilitiesFromStation(graph: StationsGraph, startStationCode: string): StationsProbabilitiesMap {
+    RouletteUtils.getCandidateStationDistances(graph, startStationCode, [], [], ELIMINATION_TIME_RANGE_MINUTES);
+    return RouletteUtils.calculateProbabilities(
+        RouletteUtils.getCandidateStationDistances(graph, startStationCode, [], [], ELIMINATION_TIME_RANGE_MINUTES),
+    );
+}
+
+function calculateProbabilitiesFromStationV3(graph: StationsGraph, startStationCode: string): StationsProbabilitiesMap {
+    RouletteUtils.getCandidateStationDistancesV3(graph, startStationCode, [], []);
+    return RouletteUtils.calculateProbabilitiesV3(
+        RouletteUtils.getCandidateStationDistancesV3(graph, startStationCode, [], []),
+    );
 }
 
 /**
  * ① 単一駅起点モード: 指定駅からの各候補駅の出現確率を表示
  */
-function runSingleMode(
-    graph: Record<string, Array<{ stationCode: string; timeMinutes: number }>>,
-    startStationCode: string,
-    stationMap: Map<string, StationInfo>,
-) {
+function runSingleMode(graph: StationsGraph, startStationCode: string, stationMap: Map<string, StationInfo>) {
     const startName = stationMap.get(startStationCode)?.name ?? startStationCode;
-    const probabilities = calculateProbabilitiesFromStation(graph, startStationCode);
-    const times = DijkstraUtils.calculateRequiredTimeAndStations(graph, startStationCode);
+    const probabilities =
+        VERSION === "v3"
+            ? calculateProbabilitiesFromStationV3(graph, startStationCode)
+            : calculateProbabilitiesFromStation(graph, startStationCode);
+    const distances = DijkstraUtils.calculateRequiredTimeAndStations(graph, startStationCode);
 
     console.log(`\n🎯 ${startName}（${startStationCode}）からの出現確率:\n`);
 
@@ -71,13 +82,13 @@ function runSingleMode(
 
     sorted.forEach(([code, prob]) => {
         const name = stationMap.get(code)?.name ?? "???";
-        const time = times.get(code);
+        const distance = distances.get(code);
         console.log(
             `${code.padEnd(30)}` +
                 `${name.padEnd(14)}` +
                 `${(prob * 100).toFixed(2).padStart(10)}` +
-                `${String(time?.stationsNumber ?? "-").padStart(8)}` +
-                `${String(time?.timeMinutes ?? "-").padStart(10)}`,
+                `${String(distance?.stationsNumber ?? "-").padStart(8)}` +
+                `${String(distance?.timeMinutes ?? "-").padStart(10)}`,
         );
     });
 
@@ -106,10 +117,7 @@ function runSingleMode(
 /**
  * ② 全駅起点モード: 全駅から計算したときの各駅の平均出現確率を表示
  */
-function runAllMode(
-    graph: Record<string, Array<{ stationCode: string; timeMinutes: number }>>,
-    stationMap: Map<string, StationInfo>,
-) {
+function runAllMode(graph: StationsGraph, stationMap: Map<string, StationInfo>) {
     const allStationCodes = Array.from(stationMap.keys());
     // 各駅の出現確率の合計と出現回数
     const totalProb = new Map<string, number>();
@@ -127,7 +135,10 @@ function runAllMode(
         // グラフに存在しない駅はスキップ
         if (!graph[startCode]) return;
 
-        const probabilities = calculateProbabilitiesFromStation(graph, startCode);
+        const probabilities =
+            VERSION === "v3"
+                ? calculateProbabilitiesFromStationV3(graph, startCode)
+                : calculateProbabilitiesFromStation(graph, startCode);
 
         probabilities.forEach((prob, destCode) => {
             if (prob > 0) {

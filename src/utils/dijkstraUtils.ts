@@ -111,26 +111,4 @@ export default class DijkstraUtils {
         }
         return distances;
     }
-
-    /**
-     * 重み付きルーレットの確率計算
-     * @param distances - 駅ごとの最短時間と駅数を含むマップ
-     * @returns {StationsProbabilitiesMap} 駅ごとの確率を含むマップ
-     */
-    static calculateProbabilities(distances: DistancesMap): StationsProbabilitiesMap {
-        // 確率を格納するマップを初期化
-        const stationsProbabilities: StationsProbabilitiesMap = new Map<string, number>();
-        // 所要時間の重みの合計を計算
-        const totalWeights = Array.from(distances.values()).reduce((sum, value) => sum + 1 / value.timeMinutes, 0);
-
-        // 各駅への所要時間の逆数で重みを計算
-        distances.forEach((value, stationCode) => {
-            if (value.timeMinutes < Infinity) {
-                stationsProbabilities.set(stationCode, 1 / value.timeMinutes / totalWeights);
-            } else {
-                stationsProbabilities.set(stationCode, 0);
-            }
-        });
-        return stationsProbabilities;
-    }
 }
