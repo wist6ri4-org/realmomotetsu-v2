@@ -4,9 +4,21 @@ import DijkstraUtils, { DistancesMap } from "./dijkstraUtils";
 import { StationsGraph, StationsProbabilitiesMap } from "./dijkstraUtils";
 import { GameConstants } from "@/constants/gameConstants";
 
+const ELIMINATION_BOXES_NUMBER = 6;
+const STATION_SELECTION_BUCKETS = [
+    { maxMinutes: 5, count: 0 },
+    { maxMinutes: 10, count: 0 },
+    { maxMinutes: 15, count: 2 },
+    { maxMinutes: 20, count: 8 },
+    { maxMinutes: 25, count: 10 },
+    { maxMinutes: 30, count: 8 },
+    { maxMinutes: Infinity, count: 5 },
+] as const;
+
 export class RouletteUtils {
     /**
-     * 開始駅を除くランダムな駅コードを取得
+     * ぶっとびルーレット
+     * @description 指定された駅コードを除いて、ランダムに駅コードを選択する
      * @param stations - 近隣駅の接続情報
      * @param startStationCode - 開始駅のコード
      * @return {string} 次に選択する駅のコード
@@ -21,7 +33,8 @@ export class RouletteUtils {
     }
 
     /**
-     * 指定された駅からの最短経路の計算を本に、重み付けをした状態で次の駅を選択する
+     * 目的駅ルーレット
+     * @description 開始駅からの距離に基づいて、次の目的駅を重み付きルーレットで選択する
      * @param nearbyStations - 近隣駅の接続情報
      * @param latestTransitStations - 最新の経由駅情報
      * @param goalStations - 既出目的駅のリスト
@@ -44,13 +57,13 @@ export class RouletteUtils {
             goalStations,
             eliminationTimeRangeMinutes,
         );
-        const probabilities: StationsProbabilitiesMap = DijkstraUtils.calculateProbabilities(distances);
-
-        return this.selectNextStationCode(probabilities);
+        const probabilities: StationsProbabilitiesMap = this.calculateProbabilities(distances);
+        const selectedStationCode: string = this.selectNextStationCode(probabilities);
+        return selectedStationCode;
     }
 
     /**
-     * 候補駅を絞り込む
+     * 候補駅を絞り込む（V2）
      * @param graph - グラフ形式の駅接続情報
      * @param startStationCode - 開始駅のコード
      * @param latestTransitStations - 最新の経由駅情報
@@ -84,6 +97,121 @@ export class RouletteUtils {
             }),
         );
         return filteredDistances;
+    }
+
+    /**
+     * 重み付きルーレットの確率計算（V2）
+     * @param distances - 駅ごとの最短時間と駅数を含むマップ
+     * @returns {StationsProbabilitiesMap} 駅ごとの確率を含むマップ
+     */
+    static calculateProbabilities(distances: DistancesMap): StationsProbabilitiesMap {
+        // 確率を格納するマップを初期化
+        const stationsProbabilities: StationsProbabilitiesMap = new Map<string, number>();
+        // 所要時間の重みの合計を計算
+        const totalWeights = Array.from(distances.values()).reduce((sum, value) => sum + 1 / value.timeMinutes, 0);
+
+        // 各駅への所要時間の逆数で重みを計算
+        distances.forEach((value, stationCode) => {
+            if (value.timeMinutes < Infinity) {
+                stationsProbabilities.set(stationCode, 1 / value.timeMinutes / totalWeights);
+            } else {
+                stationsProbabilities.set(stationCode, 0);
+            }
+        });
+        return stationsProbabilities;
+    }
+
+
+    /**
+     * 目的駅ルーレット（V3）
+     * @description 開始駅からの距離に基づいて、次の目的駅を重み付きルーレットで選択する
+     * @param nearbyStations - 近隣駅の接続情報
+     * @param latestTransitStations - 最新の経由駅情報
+     * @param goalStations - 既出目的駅のリスト
+     * @param startStationCode - 開始駅のコード
+     * @param eliminationTimeRangeMinutes - 選択肢から除外する時間範囲（分）
+     * @returns {StationsProbabilitiesMap} 駅ごとの確率を含むマップ
+     */
+    static getWeightedStationCodeV3(
+        nearbyStations: NearbyStationsWithRelations[],
+        latestTransitStations: LatestTransitStations[] = [],
+        goalStations: GoalStations[] = [],
+        startStationCode: string,
+        eliminationTimeRangeMinutes: number = GameConstants.ELIMINATION_TIME_RANGE_MINUTES,
+    ): string {
+        const graph: StationsGraph = DijkstraUtils.convertNearbyStationsToStationGraph(nearbyStations);
+        const distances: DistancesMap = this.getCandidateStationDistancesV3(
+            graph,
+            startStationCode,
+            latestTransitStations,
+            goalStations,
+        );
+        const probabilities: StationsProbabilitiesMap = this.calculateProbabilitiesV3(distances);
+        const selectedStationCode: string = this.selectNextStationCode(probabilities);
+        return selectedStationCode;
+    }
+
+    /**
+     * 候補駅を絞り込む（V3）
+     * @param graph - グラフ形式の駅接続情報
+     * @param startStationCode - 開始駅のコード
+     * @param latestTransitStations - 最新の経由駅情報
+     * @param goalStations - 既出目的駅のリスト
+     * @return {DistancesMap} 絞り込み済みの候補駅のコードとその駅までの時間と駅数を含むマップ
+     */
+    static getCandidateStationDistancesV3(
+        graph: StationsGraph,
+        startStationCode: string,
+        latestTransitStations: LatestTransitStations[] = [],
+        goalStations: GoalStations[] = [],
+    ): DistancesMap {
+        const distances: DistancesMap = DijkstraUtils.calculateRequiredTimeAndStations(graph, startStationCode);
+
+        // 候補駅のフィルタリング
+        const filteredDistances: DistancesMap = new Map(
+            [...distances].filter(([key, { timeMinutes }]) => {
+                return (
+                    // 開始駅と同じ駅は除外
+                    key !== startStationCode &&
+                    // 各チームの最新経由駅に含まれないこと（空配列の場合はすべて選択可能）
+                    (latestTransitStations.length === 0 ||
+                        !latestTransitStations.some((station) => station.stationCode === key)) &&
+                    // 既出目的地駅に含まれないこと（空配列の場合はすべて選択可能）
+                    (goalStations.length === 0 || !goalStations.some((station) => station.stationCode === key))
+                );
+            }),
+        );
+        return filteredDistances;
+    }
+
+    /**
+     * 重み付きルーレットの確率計算（V3）
+     * @param distances - 駅ごとの最短時間と駅数を含むマップ
+     * @returns {StationsProbabilitiesMap} 駅ごとの確率を含むマップ
+     */
+    static calculateProbabilitiesV3(distances: DistancesMap): StationsProbabilitiesMap {
+        // 確率を格納するマップを初期化
+        const stationsProbabilities: StationsProbabilitiesMap = new Map<string, number>();
+
+        let prevMax = 0;
+        const selectedStations: string[] = [];
+        for (const bucket of STATION_SELECTION_BUCKETS) {
+            const candidateStations = [...distances].filter(
+                ([_, { timeMinutes }]) => timeMinutes > prevMax && timeMinutes <= bucket.maxMinutes,
+            );
+            const selectedInBucket = candidateStations
+                .sort(() => 0.5 - Math.random())
+                .slice(0, bucket.count)
+                .map(([stationCode]) => stationCode);
+            selectedStations.push(...selectedInBucket);
+            prevMax = bucket.maxMinutes;
+        }
+
+        // 各駅への所要時間の逆数で重みを計算
+        selectedStations.forEach((stationCode) => {
+            stationsProbabilities.set(stationCode, 1 / selectedStations.length);
+        });
+        return stationsProbabilities;
     }
 
     /**

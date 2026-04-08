@@ -221,7 +221,7 @@ describe("RouletteUtils getWeightedStationCode テスト", () => {
 
             // 各セットで10回実行
             for (let i = 0; i < 10; i++) {
-                const selectedStationCode = RouletteUtils.getWeightedStationCode(
+                const selectedStationCode = RouletteUtils.getWeightedStationCodeV3(
                     nearbyStations,
                     latestTransitStations,
                     goalStations,
