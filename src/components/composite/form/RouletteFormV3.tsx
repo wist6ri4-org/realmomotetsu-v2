@@ -64,7 +64,7 @@ const RouletteFormV3: React.FC<RouletteFormV3Props> = ({
      * @return {Stations | null} - 次の駅
      */
     const getWeightedStation = (): Stations | null => {
-        const nextStationCode = RouletteUtils.getWeightedStationCode(
+        const nextStationCode = RouletteUtils.getWeightedStationCodeV3(
             nearbyStations,
             latestTransitStations,
             goalStations,
@@ -118,7 +118,7 @@ const RouletteFormV3: React.FC<RouletteFormV3Props> = ({
         if (!isRolling) {
             if (spinInterval) {
                 clearInterval(spinInterval);
-                console.log("Stopping roulette, displaying next station:", displayedStation);
+                console.log("Stopping roulette（v3）, displaying next station:", displayedStation);
             }
         } else {
             if (startStationCodeInput.value === "") {

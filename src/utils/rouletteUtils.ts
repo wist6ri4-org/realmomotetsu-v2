@@ -4,17 +4,6 @@ import DijkstraUtils, { DistancesMap } from "./dijkstraUtils";
 import { StationsGraph, StationsProbabilitiesMap } from "./dijkstraUtils";
 import { GameConstants } from "@/constants/gameConstants";
 
-const ELIMINATION_BOXES_NUMBER = 6;
-const STATION_SELECTION_BUCKETS = [
-    { maxMinutes: 5, count: 0 },
-    { maxMinutes: 10, count: 0 },
-    { maxMinutes: 15, count: 2 },
-    { maxMinutes: 20, count: 8 },
-    { maxMinutes: 25, count: 10 },
-    { maxMinutes: 30, count: 8 },
-    { maxMinutes: Infinity, count: 5 },
-] as const;
-
 export class RouletteUtils {
     /**
      * ぶっとびルーレット
@@ -33,7 +22,7 @@ export class RouletteUtils {
     }
 
     /**
-     * 目的駅ルーレット
+     * 目的駅ルーレット（V2）
      * @description 開始駅からの距離に基づいて、次の目的駅を重み付きルーレットで選択する
      * @param nearbyStations - 近隣駅の接続情報
      * @param latestTransitStations - 最新の経由駅情報
@@ -121,7 +110,6 @@ export class RouletteUtils {
         return stationsProbabilities;
     }
 
-
     /**
      * 目的駅ルーレット（V3）
      * @description 開始駅からの距離に基づいて、次の目的駅を重み付きルーレットで選択する
@@ -137,7 +125,6 @@ export class RouletteUtils {
         latestTransitStations: LatestTransitStations[] = [],
         goalStations: GoalStations[] = [],
         startStationCode: string,
-        eliminationTimeRangeMinutes: number = GameConstants.ELIMINATION_TIME_RANGE_MINUTES,
     ): string {
         const graph: StationsGraph = DijkstraUtils.convertNearbyStationsToStationGraph(nearbyStations);
         const distances: DistancesMap = this.getCandidateStationDistancesV3(
@@ -169,7 +156,7 @@ export class RouletteUtils {
 
         // 候補駅のフィルタリング
         const filteredDistances: DistancesMap = new Map(
-            [...distances].filter(([key, { timeMinutes }]) => {
+            [...distances].filter(([key]) => {
                 return (
                     // 開始駅と同じ駅は除外
                     key !== startStationCode &&
@@ -195,7 +182,7 @@ export class RouletteUtils {
 
         let prevMax = 0;
         const selectedStations: string[] = [];
-        for (const bucket of STATION_SELECTION_BUCKETS) {
+        for (const bucket of GameConstants.STATION_SELECTION_BUCKETS) {
             const candidateStations = [...distances].filter(
                 ([_, { timeMinutes }]) => timeMinutes > prevMax && timeMinutes <= bucket.maxMinutes,
             );
@@ -206,8 +193,7 @@ export class RouletteUtils {
             selectedStations.push(...selectedInBucket);
             prevMax = bucket.maxMinutes;
         }
-
-        // 各駅への所要時間の逆数で重みを計算
+        // 各駅への確率を計算（選ばれた駅は均等に、選ばれなかった駅は0）
         selectedStations.forEach((stationCode) => {
             stationsProbabilities.set(stationCode, 1 / selectedStations.length);
         });
