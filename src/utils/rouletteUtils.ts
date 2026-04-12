@@ -193,7 +193,16 @@ export class RouletteUtils {
             selectedStations.push(...selectedInBucket);
             prevMax = bucket.maxMinutes;
         }
-        // 各駅への確率を計算（選ばれた駅は均等に、選ばれなかった駅は0）
+
+        // 候補駅の数が少ない場合、すべての駅を均等な確率で選択する
+        if (selectedStations.length < 5) {
+            distances.forEach((_, stationCode) => {
+                stationsProbabilities.set(stationCode, 1 / distances.size);
+            });
+            return stationsProbabilities;
+        }
+
+        // 各駅への確率を均一にしてマップに設定
         selectedStations.forEach((stationCode) => {
             stationsProbabilities.set(stationCode, 1 / selectedStations.length);
         });
