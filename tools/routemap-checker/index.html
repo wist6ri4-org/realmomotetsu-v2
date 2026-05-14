@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>路線図チェッカー</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; background: #f5f5f5; }
+    header {
+      background: #333;
+      color: #fff;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    header h1 { font-size: 18px; flex: 1; }
+    header button {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    #btn-export { background: #4caf50; color: #fff; }
+    #btn-import { background: #2196f3; color: #fff; }
+    #btn-reset  { background: #f44336; color: #fff; }
+    #legend {
+      display: flex;
+      gap: 16px;
+      padding: 8px 20px;
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      font-size: 13px;
+      align-items: center;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-box {
+      width: 18px; height: 18px;
+      border: 2px solid #000;
+      border-radius: 2px;
+    }
+    #svg-container {
+      width: 100%;
+      overflow: auto;
+      padding: 16px;
+    }
+    #routemap {
+      display: block;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      background: #fff;
+      border: 1px solid #ccc;
+    }
+    .station-box {
+      cursor: pointer;
+      transition: opacity 0.1s;
+    }
+    .station-box:hover { opacity: 0.75; }
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.75);
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; }
+    #import-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+    #import-modal.show { display: flex; }
+    #import-modal .modal-box {
+      background: #fff;
+      border-radius: 8px;
+      padding: 24px;
+      width: 90%;
+      max-width: 500px;
+    }
+    #import-modal h2 { margin-bottom: 12px; font-size: 16px; }
+    #import-modal textarea {
+      width: 100%;
+      height: 160px;
+      font-size: 13px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 8px;
+      resize: vertical;
+    }
+    #import-modal .modal-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    #import-modal .modal-actions button {
+      padding: 6px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    #btn-import-ok { background: #2196f3; color: #fff; }
+    #btn-import-cancel { background: #aaa; color: #fff; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🚇 路線図チェッカー（東京メトロ v1）</h1>
+  <button id="btn-export">📤 エクスポート</button>
+  <button id="btn-import">📥 インポート</button>
+  <button id="btn-reset">🗑 リセット</button>
+</header>
+
+<div id="legend">
+  <span>クリックで色変化：</span>
+  <div class="legend-item"><div class="legend-box" style="background:rgb(255,255,255)"></div>未設定</div>
+  <div class="legend-item"><div class="legend-box" style="background:red"></div>赤</div>
+  <div class="legend-item"><div class="legend-box" style="background:blue"></div>青</div>
+  <div class="legend-item"><div class="legend-box" style="background:orange"></div>オレンジ</div>
+</div>
+
+<div id="svg-container">
+  <svg id="routemap"
+    viewBox="0 0 7000 4950"
+    preserveAspectRatio="xMidYMid meet"
+    xmlns="http://www.w3.org/2000/svg">
+    <g id="routes-layer"></g>
+    <g id="stations-layer"></g>
+    <g id="names-layer"></g>
+  </svg>
+</div>
+
+<div id="toast"></div>
+
+<div id="import-modal">
+  <div class="modal-box">
+    <h2>📥 データをインポート</h2>
+    <textarea id="import-textarea" placeholder="エクスポートしたJSONを貼り付けてください"></textarea>
+    <div class="modal-actions">
+      <button id="btn-import-cancel">キャンセル</button>
+      <button id="btn-import-ok">インポート</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const CONFIG_PATH = '../../src/data/routemap/metro-v1-routemap-config.json';
+  const STORAGE_KEY = 'routemap-checker-state';
+  const COLOR_CYCLE = ['rgb(255,255,255)', 'red', 'blue', 'orange'];
+
+  let config = null;
+  let state = {};
+
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
+  }
+
+  function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch { return {}; }
+  }
+
+  function renderRoutes() {
+    const g = document.getElementById('routes-layer');
+    g.innerHTML = '';
+    config.routes.forEach(route => {
+      const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      group.style.visibility = route.visibility;
+      route.paths.forEach(p => {
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', p.d);
+        path.setAttribute('stroke', p.stroke);
+        path.setAttribute('fill', 'none');
+        path.style.strokeWidth = p.strokeWidth;
+        path.style.strokeLinejoin = 'miter';
+        group.appendChild(path);
+      });
+      g.appendChild(group);
+    });
+  }
+
+  function getStationColor(code) {
+    const idx = state[code] || 0;
+    return COLOR_CYCLE[idx % COLOR_CYCLE.length];
+  }
+
+  function renderStations() {
+    const boxG = document.getElementById('stations-layer');
+    const nameG = document.getElementById('names-layer');
+    boxG.innerHTML = '';
+    nameG.innerHTML = '';
+
+    config.stations.forEach(station => {
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('id', `box-${station.code}`);
+      rect.setAttribute('x', station.box.x);
+      rect.setAttribute('y', station.box.y);
+      rect.setAttribute('width', station.box.width);
+      rect.setAttribute('height', station.box.height);
+      rect.setAttribute('class', 'station-box');
+      rect.style.stroke = config.stationBoxStyle.stroke;
+      rect.style.fill = getStationColor(station.code);
+      rect.style.strokeWidth = config.stationBoxStyle.strokeWidth;
+      rect.style.strokeLinejoin = config.stationBoxStyle.strokeLineJoin;
+
+      rect.addEventListener('click', () => {
+        const cur = state[station.code] || 0;
+        state[station.code] = (cur + 1) % COLOR_CYCLE.length;
+        rect.style.fill = getStationColor(station.code);
+        saveState();
+      });
+
+      boxG.appendChild(rect);
+
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', station.text.x);
+      text.setAttribute('y', station.text.y);
+      text.setAttribute('fill', station.text.fill);
+      text.setAttribute('stroke', station.text.stroke);
+      text.setAttribute('stroke-width', station.text.stroke === 'rgba(0, 0, 0, 0)' ? '0' : '2');
+      text.style.fontFamily = 'sans-serif';
+      text.style.fontSize = station.text.fontSize;
+      text.style.fontWeight = station.text.fontWeight;
+      text.style.textAnchor = 'start';
+      text.style.dominantBaseline = 'auto';
+      if (station.text.transform) {
+        text.setAttribute('transform', station.text.transform);
+      }
+
+      const name = station.name;
+      const shouldMultiline = station.text.multiline || name.length > 6;
+      let lines = [name];
+      if (shouldMultiline) {
+        const map = {
+          '南町田グランベリーパーク': ['南町田', 'グランベリーパーク'],
+          '押上〈スカイツリー前〉': ['押上', '〈スカイツリー前〉'],
+          '明治神宮前〈原宿〉': ['明治神宮前', '〈原宿〉'],
+          '二重橋前〈丸の内〉': ['二重橋前', '〈丸の内〉'],
+        };
+        if (map[name]) {
+          lines = map[name];
+        } else if (name.length >= 7) {
+          const mid = Math.ceil(name.length / 2);
+          lines = [name.substring(0, mid), name.substring(mid)];
+        }
+      }
+      const lineHeight = parseFloat(station.text.fontSize) * 0.8;
+      lines.forEach((line, i) => {
+        const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+        tspan.setAttribute('x', station.text.x);
+        tspan.setAttribute('dy', i === 0 ? '0em' : `${lineHeight}px`);
+        tspan.textContent = line;
+        text.appendChild(tspan);
+      });
+
+      text.style.pointerEvents = 'none';
+      nameG.appendChild(text);
+    });
+  }
+
+  function applyState() {
+    config.stations.forEach(station => {
+      const rect = document.getElementById(`box-${station.code}`);
+      if (rect) rect.style.fill = getStationColor(station.code);
+    });
+  }
+
+  document.getElementById('btn-export').addEventListener('click', () => {
+    const json = JSON.stringify(state, null, 2);
+    navigator.clipboard.writeText(json).then(() => {
+      showToast('✅ クリップボードにコピーしました');
+    }).catch(() => {
+      prompt('以下をコピーしてください', json);
+    });
+  });
+
+  document.getElementById('btn-import').addEventListener('click', () => {
+    document.getElementById('import-textarea').value = '';
+    document.getElementById('import-modal').classList.add('show');
+  });
+
+  document.getElementById('btn-import-cancel').addEventListener('click', () => {
+    document.getElementById('import-modal').classList.remove('show');
+  });
+
+  document.getElementById('btn-import-ok').addEventListener('click', () => {
+    try {
+      const raw = document.getElementById('import-textarea').value;
+      const imported = JSON.parse(raw);
+      state = imported;
+      saveState();
+      applyState();
+      document.getElementById('import-modal').classList.remove('show');
+      showToast('✅ インポートしました');
+    } catch {
+      showToast('❌ JSONの形式が正しくありません');
+    }
+  });
+
+  document.getElementById('btn-reset').addEventListener('click', () => {
+    if (!confirm('全駅の色をリセットしますか？')) return;
+    state = {};
+    saveState();
+    applyState();
+    showToast('🗑 リセットしました');
+  });
+
+  async function init() {
+    try {
+      const res = await fetch(CONFIG_PATH);
+      config = await res.json();
+    } catch (e) {
+      alert('設定ファイルの読み込みに失敗しました。ローカルサーバーで起動してください。\n\n例: npx serve .');
+      return;
+    }
+    state = loadState();
+    renderRoutes();
+    renderStations();
+  }
+
+  init();
+</script>
+</body>
+</html>
