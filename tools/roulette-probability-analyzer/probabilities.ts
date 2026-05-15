@@ -5,7 +5,7 @@
  * rouletteUtilsと同じロジック（時間範囲外排除 + 所要時間逆数の重み付け）で計算。
  *
  * 使い方:
- *   npx dotenv -e .env.local -- npx tsx test/tools/probabilities.ts
+ *   npx dotenv -e .env.local -- npx tsx tools/roulette-probability-analyzer/probabilities.ts
  *
  * モード:
  *   "single" - ①指定した駅を起点にした際の各候補駅の出現確率
