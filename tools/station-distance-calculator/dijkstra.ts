@@ -4,7 +4,7 @@
  * DB上の近隣駅データを使って、指定した開始駅から全駅への最短マス数・所要時間を算出する。
  *
  * 使い方:
- *   npx dotenv -e .env.local -- npx tsx test/tools/dijkstra.ts
+ *   npx dotenv -e .env.local -- npx tsx tools/station-distance-calculator/dijkstra.ts
  *
  * 設定:
  *   START_STATION_CODE: 開始駅コード
