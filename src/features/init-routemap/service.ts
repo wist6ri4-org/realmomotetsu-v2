@@ -36,7 +36,7 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
             // イベント種別コードでデータを取得
             const eventTypeCode = events?.eventTypeCode || "";
             const stationGraph = await nearbyStationsRepository.findByEventTypeCode(eventTypeCode);
-            const convertedStationGraph = DijkstraUtils.convertToStationGraph(stationGraph);
+            const convertedStationGraph = DijkstraUtils.convertNearbyStationsToStationGraph(stationGraph);
 
             // TeamsをTeamDataに変換
             const teamData: TeamData[] = teams.map((team) => ({
@@ -48,7 +48,7 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
                 remainingStationsNumber: DijkstraUtils.calculateRemainingStationsNumber(
                     convertedStationGraph,
                     team.transitStations.at(0)?.stationCode || "",
-                    nextGoalStation?.stationCode || ""
+                    nextGoalStation?.stationCode || "",
                 ),
                 points: totalPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 scoredPoints: totalScoredPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,

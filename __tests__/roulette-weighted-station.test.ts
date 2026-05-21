@@ -12,11 +12,13 @@
  * 設定:
  *   EVENT_TYPE_CODE: イベント種別コード
  *   START_STATION_CODE: 開始駅コード
+ *  VERSION: ルーレットロジックのバージョン選択（v2: 旧ロジック, v3: 新ロジック）
+ *  ELIMINATION_TIME_RANGE_MINUTES: 除外する時間範囲（分）。この値以下の駅は候補から除外
  */
 
 import { PrismaClient, Stations, LatestTransitStations } from "@/generated/prisma";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
-import DijkstraUtils from "@/utils/dijkstraUtils";
+import DijkstraUtils, { DistancesMap, StationsGraph } from "@/utils/dijkstraUtils";
 import { RouletteUtils } from "@/utils/rouletteUtils";
 import * as fs from "fs";
 import * as path from "path";
@@ -24,6 +26,7 @@ import * as path from "path";
 // ========== 設定 ==========
 const EVENT_TYPE_CODE = "METRO_V1"; // イベント種別コード
 const START_STATION_CODE = "METRO_V1_OTEMACHI"; // 開始駅コード
+const VERSION: "v2" | "v3" = "v3"; // ルーレットロジックのバージョン選択（v2: 旧ロジック, v3: 新ロジック）
 const ELIMINATION_TIME_RANGE_MINUTES = 10; // 除外する時間範囲（分）。この値以下の駅は候補から除外
 // ==========================
 
@@ -74,10 +77,10 @@ function calculateRouteInfo(
     startStationCode: string,
     destinationStationCode: string,
 ): { stationsNumber: number; timeMinutes: number } {
-    const graph = DijkstraUtils.convertToStationGraph(nearbyStations);
-    const times = DijkstraUtils.calculateRequiredTimeAndStations(graph, startStationCode);
+    const graph: StationsGraph = DijkstraUtils.convertNearbyStationsToStationGraph(nearbyStations);
+    const distances: DistancesMap = DijkstraUtils.calculateRequiredTimeAndStations(graph, startStationCode);
 
-    const result = times.get(destinationStationCode);
+    const result = distances.get(destinationStationCode);
     if (result) {
         return {
             stationsNumber: result.stationsNumber,
@@ -221,13 +224,22 @@ describe("RouletteUtils getWeightedStationCode テスト", () => {
 
             // 各セットで10回実行
             for (let i = 0; i < 10; i++) {
-                const selectedStationCode = RouletteUtils.getWeightedStationCode(
-                    nearbyStations,
-                    latestTransitStations,
-                    goalStations,
-                    currentStationCode, // 現在の位置から次の駅を選択
-                    ELIMINATION_TIME_RANGE_MINUTES, // 除外する時間範囲（分）
-                );
+                const selectedStationCode =
+                    VERSION === "v3"
+                        ? RouletteUtils.getWeightedStationCodeV3(
+                            nearbyStations,
+                            latestTransitStations,
+                            goalStations,
+                            currentStationCode, // 現在の位置から次の駅を選択
+                            ELIMINATION_TIME_RANGE_MINUTES, // 除外する時間範囲（分）
+                        )
+                        : RouletteUtils.getWeightedStationCode(
+                            nearbyStations,
+                            latestTransitStations,
+                            goalStations,
+                            currentStationCode, // 現在の位置から次の駅を選択
+                            ELIMINATION_TIME_RANGE_MINUTES, // 除外する時間範囲（分）
+                        );
 
                 // 駅コードから駅情報を取得
                 const selectedStation = stations.find((station) => station.stationCode === selectedStationCode);
