@@ -22,6 +22,8 @@ http://localhost:3000/tools/routemap-checker/index.html
 
 > ⚠️ HTMLファイルをブラウザで直接開いた場合（`file://`）、JSONの読み込みに失敗します。必ずローカルサーバー経由でアクセスしてください。
 
+> HTMLファイル内の設定データを使用する場合は、ローカルサーバーを起動せずに直接開いても動作します。
+
 ---
 
 ## 使い方
@@ -36,7 +38,7 @@ http://localhost:3000/tools/routemap-checker/index.html
 
 ### データの保存
 
-色の状態は自動的に **localStorage** に保存されます。  
+色の状態は自動的に **localStorage** に保存されます。
 次回起動時も前回の状態が表示されます。
 
 ### データの共有
