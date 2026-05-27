@@ -10,13 +10,11 @@ import Image from "next/image";
  * @property {string} goalStationName - 目的駅の名前
  * @property {boolean} isOpen - ダイアログの開閉状態
  * @property {() => void} handleClose - ダイアログを閉じるハンドラー
- * @property {() => void} handlePurchaseStation - 駅購入ページへ遷移するハンドラー
  */
 interface GoalDialogProps {
     goalStationName: string;
     isOpen: boolean;
     handleClose: () => void;
-    handlePurchaseStation: () => void;
 }
 
 /**
@@ -24,7 +22,7 @@ interface GoalDialogProps {
  * @param {GoalDialogProps} props - GoalDialogのプロパティ
  * @returns {JSX.Element} - GoalDialogコンポーネント
  */
-const GoalDialog: React.FC<GoalDialogProps> = ({ goalStationName, isOpen, handleClose, handlePurchaseStation }: GoalDialogProps): React.JSX.Element => {
+const GoalDialog: React.FC<GoalDialogProps> = ({ goalStationName, isOpen, handleClose }: GoalDialogProps): React.JSX.Element => {
 
     // Confettiの型定義
     type ConfettiOnInit = NonNullable<React.ComponentProps<typeof Confetti>['onInit']>;
@@ -213,7 +211,7 @@ const GoalDialog: React.FC<GoalDialogProps> = ({ goalStationName, isOpen, handle
                     </Typography>
                     に一番乗りで～～～～～す！
                     <br />
-                    駅を購入しますか？
+                    {goalStationName}駅の購入処理に進んでください！
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -228,15 +226,7 @@ const GoalDialog: React.FC<GoalDialogProps> = ({ goalStationName, isOpen, handle
                         variant="outlined"
                         fullWidth
                     >
-                        キャンセル
-                    </CustomButton>
-                    <CustomButton
-                        onClick={handlePurchaseStation}
-                        color="warning"
-                        variant="contained"
-                        fullWidth
-                    >
-                        購入する
+                        OK
                     </CustomButton>
                 </Stack>
 

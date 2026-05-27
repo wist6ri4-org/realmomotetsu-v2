@@ -69,7 +69,7 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
 
     const { isConfirmOpen, dialogOptions, showConfirmDialog, handleConfirm, handleCancel } = useConfirmDialog();
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
-    const { isGoalDialogOpen, showGoalDialog, handleGoalCancel, handlePurchaseStation } = useGoalDialog();
+    const { isGoalDialogOpen, showGoalDialog, handleClose } = useGoalDialog();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -305,8 +305,7 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
             <GoalDialog
                 goalStationName={stations.find((station) => station.stationCode === selectedStationCodeInput.value)?.name || "不明"}
                 isOpen={isGoalDialogOpen}
-                handleClose={handleGoalCancel}
-                handlePurchaseStation={handlePurchaseStation}
+                handleClose={handleClose}
             />
         </>
     );
