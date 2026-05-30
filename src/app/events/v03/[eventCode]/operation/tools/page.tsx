@@ -3,7 +3,7 @@
 import { useEventContext } from "@/app/events/layout";
 import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
-import ArrivalGoalStationsForm from "@/components/composite/form/ArrivalGoalStationsForm";
+import ArrivalGoalStationsFormV3 from "@/components/composite/form/ArrivalGoalStationsFormV3";
 import PointsExchangeForm from "@/components/composite/form/PointsExchangeForm";
 import PointsTransferForm from "@/components/composite/form/PointsTransferForm";
 import RegisterBombiiAutoForm from "@/components/composite/form/RegisterBombiiAutoForm";
@@ -29,7 +29,7 @@ import { useCallback, useEffect, useState } from "react";
 const ToolsPage: React.FC = (): React.JSX.Element => {
     const { eventCode } = useParams();
 
-    const { teams, stations, user, event, isInitDataLoading, contextError } = useEventContext();
+    const { teams, stations, nearbyStations, user, event, isInitDataLoading, contextError } = useEventContext();
 
     const [teamData, setTeamData] = useState<TeamData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -117,7 +117,7 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                     <>
                         <RegisterGoalStationsFormV3 stations={stations} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <ArrivalGoalStationsForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
+                        <ArrivalGoalStationsFormV3 teams={teams} stations={stations} nearbyStations={nearbyStations} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
                         <RegisterBombiiAutoForm teamData={teamData} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
