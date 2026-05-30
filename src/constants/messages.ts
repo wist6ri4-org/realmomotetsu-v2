@@ -1,5 +1,3 @@
-import { ALL } from "dns";
-
 export const Messages = {
     // 共通
     UNEXPECTED_ERROR: "予期しないエラーが発生しました。",

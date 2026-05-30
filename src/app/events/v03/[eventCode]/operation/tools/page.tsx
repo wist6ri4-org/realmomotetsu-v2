@@ -117,7 +117,7 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                     <>
                         <RegisterGoalStationsFormV3 stations={stations} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <ArrivalGoalStationsFormV3 teams={teams} stations={stations} nearbyStations={nearbyStations} onSubmit={handleUpdate} isOperating={isOperating} />
+                        <ArrivalGoalStationsFormV3 event={event} teams={teams} stations={stations} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
                         <RegisterBombiiAutoForm teamData={teamData} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />

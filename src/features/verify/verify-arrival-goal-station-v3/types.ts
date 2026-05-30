@@ -1,17 +1,16 @@
-import { NearbyStations, TransitStations } from "@/generated/prisma";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 
 /**
  * 処理可否チェック（目的駅到着処理（V3））のリクエスト
+ * @property { string } eventTypeCode - イベント種別コード
  * @property { string } eventCode - イベントコード
  * @property { string } teamCode - チームコード
- * @property { NearbyStationsWithRelations[] } nearbyStations - 隣接駅情報
  * @property { boolean } willPurchase - 物件駅購入選択
  */
 export type PostVerifyArrivalGoalStationV3Request = {
+    eventTypeCode: string;
     eventCode: string;
     teamCode: string;
-    nearbyStations: NearbyStationsWithRelations[];
     willPurchase: boolean;
 };
 

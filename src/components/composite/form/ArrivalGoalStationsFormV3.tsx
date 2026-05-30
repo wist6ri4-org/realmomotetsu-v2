@@ -12,7 +12,7 @@ import FormTitle from "@/components/base/FormTitle";
 import { DialogConstants } from "@/constants/dialogConstants";
 import { getMessage } from "@/constants/messages";
 import { ApplicationErrorFactory } from "@/error/applicationError";
-import { Stations, Teams } from "@/generated/prisma";
+import { Events, Stations, Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useSelectInput } from "@/hooks/useSelectInput";
@@ -29,15 +29,17 @@ import { Converter } from "@/utils/converter";
 
 /**
  * ArrivalGoalStationsFormV3コンポーネントのプロパティ型定義
+ * @property {Events} event - イベント情報
  * @property {Teams[]} teams - チームのリスト
+ * @property {Stations[]} stations - 駅のリスト
  * @property {NearbyStationsWithRelations[]} nearByStations - 近隣駅のリスト
  * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
  * @property {boolean} isOperating - 操作権限があるかどうか
  */
 interface ArrivalGoalStationsFormV3Props {
+    event: Events;
     teams: Teams[];
     stations: Stations[];
-    nearbyStations: NearbyStationsWithRelations[];
     onSubmit?: () => void;
     isOperating: boolean;
 }
@@ -60,9 +62,9 @@ const willBuyStationOptions: RadioOption[] = [
  * @return {JSX.Element} - ArrivalGoalStationsFormV3コンポーネント
  */
 const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
+    event,
     teams,
     stations,
-    nearbyStations,
     onSubmit,
     isOperating,
 }: ArrivalGoalStationsFormV3Props): React.JSX.Element => {
@@ -117,9 +119,9 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
+                    eventTypeCode: event.eventTypeCode,
                     eventCode: eventCode,
                     teamCode: teamCodeInput.value,
-                    nearbyStations: nearbyStations,
                     willPurchase: willBuyStationInput === WillBuyStation.YES,
                 }),
             });
@@ -164,10 +166,10 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
+                    eventTypeCode: event.eventTypeCode,
                     eventCode: eventCode,
                     teamCode: teamCodeInput.value,
                     stations: stations,
-                    nearbyStations: nearbyStations,
                     willPurchase: willBuyStationInput === WillBuyStation.YES,
                 }),
             });

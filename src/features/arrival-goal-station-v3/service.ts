@@ -1,10 +1,11 @@
 import { ArrivalGoalStationV3Service } from "./interface";
 import { PostArrivalGoalStationV3Request, PostArrivalGoalStationV3Response } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
-import { ApiError, InternalServerError } from "@/error";
+import { ApiError, BadRequestError, ConflictError, DataIntegrityError, InternalServerError } from "@/error";
 import { GameLogicUtils } from "@/utils/gameLogicUtils";
 import { GameConstants } from "@/constants/gameConstants";
 import { StationGrade } from "@/generated/prisma";
+import { VerifyArrivalGoalStationV3Result } from "../verify/verify-arrival-goal-station-v3/types";
 
 export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
     /**
@@ -13,11 +14,13 @@ export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
      * @return {Promise<PostArrivalGoalStationV3Response>} レスポンス
      */
     async postArrivalGoalStationV3(req: PostArrivalGoalStationV3Request): Promise<PostArrivalGoalStationV3Response> {
-        const [goalStationsRepository, pointsRepository, propertyPurchasesRepository] = await Promise.all([
-            RepositoryFactory.getGoalStationsRepository(),
-            RepositoryFactory.getPointsRepository(),
-            RepositoryFactory.getPropertyPurchasesRepository(),
-        ]);
+        const [nearbyStationsRepository, goalStationsRepository, pointsRepository, propertyPurchasesRepository] =
+            await Promise.all([
+                RepositoryFactory.getNearbyStationsRepository(),
+                RepositoryFactory.getGoalStationsRepository(),
+                RepositoryFactory.getPointsRepository(),
+                RepositoryFactory.getPropertyPurchasesRepository(),
+            ]);
 
         try {
             let latestGoalStationGrade: StationGrade | null = null;
@@ -30,13 +33,20 @@ export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
                 })) as string;
 
             // １つ前の目的駅コードを取得
-            const previousGoalStationCode = (await goalStationsRepository
+            const previousGoalStationCode = await goalStationsRepository
                 .findPreviousGoalStation(req.eventCode)
-                .then((goalStation) => goalStation?.stationCode)) as string;
+                .then((goalStation) => goalStation?.stationCode);
+            if (!previousGoalStationCode) {
+                throw new DataIntegrityError("Previous goal station code not found. Data integrity issue.", {
+                    eventCode: req.eventCode,
+                });
+            }
+
+            const nearbyStations = await nearbyStationsRepository.findByEventTypeCode(req.eventTypeCode);
 
             // ポイント計算
             const arrivalPoints = GameLogicUtils.calculateArrivalPrizeV3(
-                req.nearbyStations,
+                nearbyStations,
                 previousGoalStationCode,
                 latestGoalStationCode,
             );
@@ -44,6 +54,35 @@ export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
             // DB登録処理
             const { createdPoints, createdPropertyPurchases, createdPurchasePoints } =
                 await RepositoryFactory.withTransaction(async (tx) => {
+                    // E01: 購入済みチェック
+                    if (req.willPurchase) {
+                        const isPurchased = await propertyPurchasesRepository.findByEventCodeAndStationCode(
+                            req.eventCode,
+                            latestGoalStationCode,
+                            tx,
+                        );
+                        if (isPurchased) {
+                            throw new ConflictError({
+                                errorCode: VerifyArrivalGoalStationV3Result.E01_ALREADY_PURCHASED,
+                            });
+                        }
+                    }
+
+                    // E02: ポイント不足チェック
+                    if (req.willPurchase) {
+                        const currentPoints = await pointsRepository.sumScoredPointsByTeamCode(
+                            req.teamCode,
+                            req.eventCode,
+                            tx,
+                        );
+                        const price = GameConstants.STATION_GRADE[latestGoalStationGrade ?? StationGrade.none].price;
+                        if (currentPoints + arrivalPoints - price < 0) {
+                            throw new BadRequestError({
+                                errorCode: VerifyArrivalGoalStationV3Result.E02_INSUFFICIENT_POINTS,
+                            });
+                        }
+                    }
+
                     // ポイント加算
                     const createdPoints = await pointsRepository.create(
                         req.eventCode,

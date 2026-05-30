@@ -111,11 +111,17 @@ export class PointsRepository extends BaseRepository {
      * 指定されたチームコードのスコアポイントを合計
      * @param teamCode - チームコード
      * @param eventCode - イベントコード
+     * @param tx - トランザクションクライアント（オプション）
      * @return {Promise<number>} 合計スコアポイント
      */
-    async sumScoredPointsByTeamCode(teamCode: string, eventCode: string): Promise<number> {
+    async sumScoredPointsByTeamCode(
+        teamCode: string,
+        eventCode: string,
+        tx?: PrismaTransactionClient,
+    ): Promise<number> {
+        const client = tx ?? this.prisma;
         try {
-            const result = await this.prisma.points.aggregate({
+            const result = await client.points.aggregate({
                 _sum: {
                     points: true,
                 },

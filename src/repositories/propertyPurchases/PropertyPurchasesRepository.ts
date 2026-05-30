@@ -66,14 +66,17 @@ export class PropertyPurchasesRepository extends BaseRepository {
      * イベントコードと駅コードで物件駅購入情報を取得
      * @param eventCode - イベントコード
      * @param stationCode - 駅コード
+     * @param tx - トランザクションクライアント（オプション）
      * @returns {Promise<PropertyPurchasesWithRelations | null>} 物件駅購入情報
      */
     async findByEventCodeAndStationCode(
         eventCode: string,
         stationCode: string,
+        tx?: PrismaTransactionClient,
     ): Promise<PropertyPurchasesWithRelations | null> {
+        const client = tx ?? this.prisma;
         try {
-            return (await this.prisma.propertyPurchases.findFirst({
+            return (await client.propertyPurchases.findFirst({
                 where: {
                     eventCode: eventCode,
                     stationCode: stationCode,
@@ -127,7 +130,7 @@ export class PropertyPurchasesRepository extends BaseRepository {
             teamCode?: string;
             stationCode?: string;
         },
-        tx: PrismaTransactionClient,
+        tx?: PrismaTransactionClient,
     ): Promise<PropertyPurchases> {
         const client = tx ?? this.prisma;
         try {

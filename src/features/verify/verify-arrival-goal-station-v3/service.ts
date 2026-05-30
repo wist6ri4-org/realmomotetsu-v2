@@ -5,7 +5,7 @@ import {
     VerifyArrivalGoalStationV3Result,
 } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
-import { ApiError, BadRequestError, ConflictError, InternalServerError } from "@/error";
+import { ApiError, BadRequestError, ConflictError, DataIntegrityError, InternalServerError } from "@/error";
 import { GameLogicUtils } from "@/utils/gameLogicUtils";
 import { StationGrade } from "@/generated/prisma";
 import { GameConstants } from "@/constants/gameConstants";
@@ -19,13 +19,19 @@ export const VerifyArrivalGoalStationV3ServiceImpl: VerifyArrivalGoalStationV3Se
     async postVerifyArrivalGoalStationV3(
         req: PostVerifyArrivalGoalStationV3Request,
     ): Promise<PostVerifyArrivalGoalStationV3Response> {
-        const [transitStationsRepository, propertyPurchasesRepository, goalStationsRepository, pointsRepository] =
-            await Promise.all([
-                RepositoryFactory.getTransitStationsRepository(),
-                RepositoryFactory.getPropertyPurchasesRepository(),
-                RepositoryFactory.getGoalStationsRepository(),
-                RepositoryFactory.getPointsRepository(),
-            ]);
+        const [
+            nearbyStationsRepository,
+            transitStationsRepository,
+            propertyPurchasesRepository,
+            goalStationsRepository,
+            pointsRepository,
+        ] = await Promise.all([
+            RepositoryFactory.getNearbyStationsRepository(),
+            RepositoryFactory.getTransitStationsRepository(),
+            RepositoryFactory.getPropertyPurchasesRepository(),
+            RepositoryFactory.getGoalStationsRepository(),
+            RepositoryFactory.getPointsRepository(),
+        ]);
 
         try {
             let latestGoalStationGrade: StationGrade | null = null;
@@ -39,13 +45,21 @@ export const VerifyArrivalGoalStationV3ServiceImpl: VerifyArrivalGoalStationV3Se
                 })) as string;
 
             // １つ前の目的駅コード
-            const previousGoalStationCode = (await goalStationsRepository
+            const previousGoalStationCode = await goalStationsRepository
                 .findPreviousGoalStation(req.eventCode)
-                .then((goalStation) => goalStation?.stationCode)) as string;
+                .then((goalStation) => goalStation?.stationCode);
+
+            if (!previousGoalStationCode) {
+                throw new DataIntegrityError("Previous goal station code not found. Data integrity issue.", {
+                    eventCode: req.eventCode,
+                });
+            }
+
+            const nearbyStations = await nearbyStationsRepository.findByEventTypeCode(req.eventTypeCode);
 
             // 到着ポイント
             const arrivalPoints = GameLogicUtils.calculateArrivalPrizeV3(
-                req.nearbyStations,
+                nearbyStations,
                 previousGoalStationCode,
                 latestGoalStationCode,
             );
