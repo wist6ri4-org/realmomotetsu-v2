@@ -1,14 +1,17 @@
+import { ColorNames } from "@/theme/colors";
 import { useState, useCallback } from "react";
 
 /**
  * アラートダイアログのオプション型定義
  * @property {string} title - ダイアログのタイトル（オプション）
  * @property {string} message - ダイアログのメッセージ
+ * @property {ColorNames} buttonColor - ボタンの色（オプション）
  * @property {string} okText - 確認ボタンのテキスト（オプション）
  */
 interface AlertDialogOptions {
     title?: string;
     message: string;
+    buttonColor?: ColorNames;
     okText?: string;
 }
 
