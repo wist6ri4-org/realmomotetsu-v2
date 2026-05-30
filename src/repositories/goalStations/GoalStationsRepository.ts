@@ -11,11 +11,11 @@ export type GoalStationsWithRelations = GoalStations & {
  */
 export class GoalStationsRepository extends BaseRepository {
     /**
-     * 指定されたイベントの次の目的駅を取得
+     * 指定されたイベントの最新の目的駅を取得
      * @param eventCode - イベントコード
      * @returns {Promise<GoalStationsWithRelations | null>} 次の目的駅またはnull
      */
-    async findNextGoalStation(eventCode: string): Promise<GoalStationsWithRelations | null> {
+    async findLatestGoalStation(eventCode: string): Promise<GoalStationsWithRelations | null> {
         try {
             return await this.prisma.goalStations.findFirst({
                 where: {
@@ -30,6 +30,30 @@ export class GoalStationsRepository extends BaseRepository {
             });
         } catch (error) {
             this.handleDatabaseError(error, "findNextGoalStation");
+        }
+    }
+
+    /**
+     * 指定されたイベントの最新の１つ前の目的駅を取得
+     * @param eventCode - イベントコード
+     * @returns {Promise<GoalStationsWithRelations | null>} １つ前の目的駅またはnull
+     */
+    async findPreviousGoalStation(eventCode: string): Promise<GoalStationsWithRelations | null> {
+        try {
+            return await this.prisma.goalStations.findFirst({
+                where: {
+                    eventCode: eventCode,
+                },
+                include: {
+                    station: true, // Stations情報も含める
+                },
+                orderBy: {
+                    id: "desc",
+                },
+                skip: 1, // 最新の目的駅をスキップして次のレコードを取得
+            });
+        } catch (error) {
+            this.handleDatabaseError(error, "findPreviousGoalStation");
         }
     }
 

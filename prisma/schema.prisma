@@ -97,13 +97,34 @@ model EventTypes {
   @@map("event_types")
 }
 
-// 駅タイプ
+/**
+ * 駅種別
+ * - mission: ミッション駅
+ * - plus: プラス駅
+ * - minus: マイナス駅
+ * - treasure: 宝くじ駅
+ * - card: カード売り場駅
+ */
 enum StationType {
-  mission // ミッション駅
-  plus // プラス駅
-  minus // マイナス駅
-  treasure // 宝くじ駅
-  card // カード売り場駅
+  mission
+  plus
+  minus
+  treasure
+  card
+}
+
+/**
+ * 駅グレード
+ * - none: なし
+ * - a: Aグレード
+ * - b: Bグレード
+ * - c: Cグレード
+ */
+enum StationGrade {
+  none
+  a
+  b
+  c
 }
 
 /**
@@ -120,6 +141,7 @@ model Stations {
   longitude         Float?              @map("longitude")
   isMissionSet      Boolean             @default(false) @map("is_mission_set") // deprecated
   stationType       StationType?        @map("station_type")
+  stationGrade      StationGrade?       @map("station_grade") @default(none)
   eventTypeCode     String              @map("event_type_code")
   createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
@@ -227,10 +249,14 @@ model BombiiHistories {
 /**
  * PointStatus
  * ポイントステータス
+  * - points: ポイント
+  * - scored: 総資産
+  * - property: 物件
  */
 enum PointStatus {
   points
   scored
+  property
 }
 
 /**

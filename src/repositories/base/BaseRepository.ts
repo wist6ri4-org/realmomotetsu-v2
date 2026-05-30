@@ -1,6 +1,14 @@
 import { PrismaClient } from "@/generated/prisma";
 
 /**
+ * Prismaのトランザクション内で使用するクライアントの型定義
+ */
+export type PrismaTransactionClient = Omit<
+    PrismaClient,
+    "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+>;
+
+/**
  * 基底Repositoryクラス
  * 共通のデータベース操作やエラーハンドリングを提供
  */
@@ -17,10 +25,7 @@ export abstract class BaseRepository {
      */
     protected async executeTransaction<T>(
         operations: (
-            tx: Omit<
-                PrismaClient,
-                "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
-            >
+            tx: PrismaTransactionClient
         ) => Promise<T>
     ): Promise<T> {
         try {

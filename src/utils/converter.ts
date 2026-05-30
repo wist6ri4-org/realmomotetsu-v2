@@ -22,6 +22,27 @@ export class Converter {
     }
 
     /**
+     * ポイントを兆、億、万単位でフォーマットする(V3)
+     * @description V3ではポイントの単位は10,000円
+     * @param {number} point - ポイント値
+     * @return {string} フォーマットされたポイント文字列
+     */
+    static convertPointsToYenV3(point: number): string {
+        const absPoint = Math.abs(point * 10_000);
+
+        const trillion = Math.floor((absPoint % 100_000_000_000_000) / 100_000_000_000); // 兆
+        const oneHundredMillion = Math.floor((absPoint % 100_000_000_000) / 100_000_000); // 億
+        const tenThousand = Math.floor((absPoint % 100_000_000) / 10_000); // 万
+
+        const formattedPoint =
+            (trillion > 0 ? trillion + " 兆 " : "") +
+            (oneHundredMillion > 0 ? oneHundredMillion + " 億 " : "") +
+            (tenThousand > 0 ? tenThousand + " 万" : "0 万");
+
+        return point >= 0 ? formattedPoint : "－" + formattedPoint;
+    }
+
+    /**
      * UTC時間を日本時間に変換
      * @param {string | number | Date} utc - UTC時間
      * @return {string} 日本時間の文字列

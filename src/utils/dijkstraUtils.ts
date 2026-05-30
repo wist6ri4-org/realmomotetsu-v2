@@ -30,6 +30,7 @@ export default class DijkstraUtils {
      * 指定された駅からの残りの駅数を計算する
      * @param graph - 駅の接続情報を表すグラフ
      * @param startStationCode - 開始駅のコード
+     * @param nextGoalStationCode - 次の目的駅のコード
      * @returns {number} 残りの駅数
      */
     static calculateRemainingStationsNumber(

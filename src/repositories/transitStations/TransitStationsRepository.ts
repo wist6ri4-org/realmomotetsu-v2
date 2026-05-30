@@ -54,6 +54,23 @@ export class TransitStationsRepository extends BaseRepository {
     }
 
     /**
+     * 指定されたチームコードに紐づく最新の経由駅を取得
+     * @param teamCode - チームコード
+     * @returns {Promise<LatestTransitStations>} 最新経由駅
+     */
+    async findLatestByTeamCode(teamCode: string): Promise<LatestTransitStations | null> {
+        try {
+            return (await this.prisma.latestTransitStations.findFirst({
+                where: {
+                    teamCode: teamCode,
+                },
+            })) as LatestTransitStations | null;
+        } catch (error) {
+            this.handleDatabaseError(error, "findLatestByTeamCode");
+        }
+    }
+
+    /**
      * IDで経由駅を取得
      * @param id - 経由駅ID
      * @returns {Promise<TransitStationsWithRelations | null>} 経由駅情報またはnull
@@ -172,6 +189,8 @@ export class TransitStationsRepository extends BaseRepository {
      * @param transitStationData - 経由駅作成データ
      * @param pointsData - ポイント作成データ
      * @returns {Promise<{ transitStation: TransitStations; point: Points }>} 作成された経由駅とポイント
+     * @deprecated TSK-52でトランザクション機能を追加したため、削除予定
+     * FIXME: Service層でのトランザクション管理へ移行
      */
     async createWithPoints(
         transitStationData: {

@@ -2,6 +2,7 @@ import React from "react";
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Stack } from "@mui/material";
 import { DialogConstants } from "@/constants/dialogConstants";
 import CustomButton from "./CustomButton";
+import { ColorNames } from "@/theme/colors";
 
 /**
  * ConfirmDialogコンポーネントのプロパティ型定義
@@ -17,6 +18,8 @@ interface ConfirmDialogProps {
     isConfirmOpen: boolean;
     title?: string;
     message: string;
+    confirmButtonColor?: ColorNames;
+    cancelButtonColor?: ColorNames;
     onConfirm: () => void;
     onCancel: () => void;
     confirmText?: string;
@@ -32,6 +35,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     isConfirmOpen,
     title,
     message,
+    confirmButtonColor = "warning",
+    cancelButtonColor = "primary",
     onConfirm,
     onCancel,
     confirmText = DialogConstants.TEXT.OK,
@@ -75,7 +80,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 >
                     <CustomButton
                         onClick={handleCancel}
-                        color="primary"
+                        color={cancelButtonColor}
                         variant="outlined"
                         fullWidth
                     >
@@ -83,7 +88,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                     </CustomButton>
                     <CustomButton
                         onClick={handleConfirm}
-                        color="success"
+                        color={confirmButtonColor}
                         variant="contained"
                         fullWidth
                     >

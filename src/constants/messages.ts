@@ -35,6 +35,9 @@ export const Messages = {
     SAME_TEAM_ERROR: "移動元チームと移動先チームは異なるチームを選択してください。",
     POINTS_TRANSFER_FAILED: "ポイントの移動処理に失敗しました。",
     POINTS_TRANSFER_SUCCESS: "ポイントの移動処理が完了しました。",
+    ALREADY_PURCHASED: "すでに駅が購入されているため、到着処理を行うことができません。",
+    STATION_MISMATCH: "最新の経由駅が目的駅と一致しませんが、到着処理を強制的に行いますか？",
+    INSUFFICIENT_POINTS: "総資産が不足しているため、駅を購入することができません。",
 } as const;
 
 export type Messages = typeof Messages;
