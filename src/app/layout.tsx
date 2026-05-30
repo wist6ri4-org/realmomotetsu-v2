@@ -41,20 +41,21 @@ export const metadata: Metadata = {
             { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
         ],
     },
+    viewport: "width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no, interactive-widget=overlays-content ,viewport-fit=cover",
     other: {
         'emotion-insertion-point': '',
     },
 };
 
-export const viewport: Viewport = {
-    width: "device-width",
-    height: "device-height",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-    interactiveWidget: "overlays-content",
-    viewportFit: "cover",
-}
+// export const viewport: Viewport = {
+//     width: "device-width",
+//     height: "device-height",
+//     initialScale: 1,
+//     maximumScale: 1,
+//     userScalable: false,
+//     interactiveWidget: "overlays-content",
+//     viewportFit: "cover",
+// }
 
 /**
  * アプリケーションのルートレイアウト
