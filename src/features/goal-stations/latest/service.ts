@@ -14,7 +14,7 @@ export const LatestGoalStationsServiceImpl: LatestGoalStationsService = {
 
         try {
             const eventCode = req.eventCode;
-            const latestGoalStation = await goalStationsRepository.findNextGoalStation(eventCode);
+            const latestGoalStation = await goalStationsRepository.findLatestGoalStation(eventCode);
 
             if (!latestGoalStation) {
                 throw new ResourceNotFoundError("latest_goal_station", eventCode);

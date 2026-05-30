@@ -31,7 +31,7 @@ export const InitOperationServiceImpl: InitOperationService = {
                     nearbyStationsRepository.findByEventTypeCode(eventTypeCode),
                     pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
                     pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
-                    goalStationsRepository.findNextGoalStation(req.eventCode),
+                    goalStationsRepository.findLatestGoalStation(req.eventCode),
                     bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
                 ]);
 

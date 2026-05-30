@@ -25,7 +25,7 @@ export const InitHomeServiceImpl: InitHomeService = {
             const [teams, nextGoalStation, currentBombiiHistory, totalPoints, totalScoredPoints, events, bombiiCounts] =
                 await Promise.all([
                     teamsRepository.findByEventCode(req.eventCode),
-                    goalStationsRepository.findNextGoalStation(req.eventCode),
+                    goalStationsRepository.findLatestGoalStation(req.eventCode),
                     bombiiHistoriesRepository.findCurrentBombiiTeam(req.eventCode),
                     pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
                     pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
