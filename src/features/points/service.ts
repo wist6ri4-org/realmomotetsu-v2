@@ -30,7 +30,7 @@ export const PointsServiceImpl: PointsService = {
             const res: GetPointsResponse = { points: {} };
             points.forEach((point) => {
                 if (!res.points[point.teamCode]) {
-                    res.points[point.teamCode] = { points: [], scored: [] };
+                    res.points[point.teamCode] = { points: [], scored: [], property: [] };
                 }
                 if (!res.points[point.teamCode][point.status]) {
                     res.points[point.teamCode][point.status] = [];
