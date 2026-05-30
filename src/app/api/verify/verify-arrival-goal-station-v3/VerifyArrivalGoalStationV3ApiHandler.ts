@@ -49,8 +49,7 @@ class VerifyArrivalGoalStationV3ApiHandler extends BaseApiHandler {
             // Zodでバリデーション
             const validatedBody = PostVerifyArrivalGoalStationV3RequestSchema.parse(body);
 
-            const { nearbyStations, ...logBody } = validatedBody;
-            this.logDebug("Request body", logBody);
+            this.logDebug("Request body", validatedBody);
 
             // サービスからデータを取得
             const data: PostVerifyArrivalGoalStationV3Response =

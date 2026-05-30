@@ -49,7 +49,7 @@ class ArrivalGoalStationV3ApiHandler extends BaseApiHandler {
             // Zodでバリデーション
             const validatedBody = PostArrivalGoalStationV3RequestSchema.parse(body);
 
-            const { stations, nearbyStations, ...logBody } = validatedBody;
+            const { stations, ...logBody } = validatedBody;
             this.logDebug("Request body", logBody);
 
             // サービスからデータを取得
