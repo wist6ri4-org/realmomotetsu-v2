@@ -8,6 +8,7 @@ import CustomAutoComplete from "@/components/base/CustomAutoComplete";
 import CustomButton from "@/components/base/CustomButton";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
+import { DialogConstants } from "@/constants/dialogConstants";
 import { Stations } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useSelectInput } from "@/hooks/useSelectInput";
@@ -52,25 +53,33 @@ const CalculateDistanceToolForm: React.FC<CalculateDistanceToolFormProps> = (
     const calculateDistance = async (): Promise<void> => {
         setIsLoading(true);
 
-        const startStationCode = selectedStartStationCodeInput.value;
-        const goalStationCode = selectedGoalStationCodeInput.value;
+        try {
+            const startStationCode = selectedStartStationCodeInput.value;
+            const goalStationCode = selectedGoalStationCodeInput.value;
 
-        const distance = startStationCode === goalStationCode
-            ? 0
-            : DijkstraUtils.calculateRemainingStationsNumber(
-                DijkstraUtils.convertNearbyStationsToStationGraph(nearbyStations),
-                startStationCode,
-                goalStationCode
-            );
+            const distance = startStationCode === goalStationCode
+                ? 0
+                : DijkstraUtils.calculateRemainingStationsNumber(
+                    DijkstraUtils.convertNearbyStationsToStationGraph(nearbyStations),
+                    startStationCode,
+                    goalStationCode
+                );
 
-        const alertMessage = `駅数は ${distance} です。`;
-        await showAlertDialog({
-            title: "計算結果",
-            message: alertMessage,
-            buttonColor: "primary",
-        });
-
-        setIsLoading(false);
+            const alertMessage = `駅数は ${distance} です。`;
+            await showAlertDialog({
+                title: "計算結果",
+                message: alertMessage,
+                buttonColor: "primary",
+            });
+        } catch (error) {
+            await showAlertDialog({
+                title: DialogConstants.TITLE.ERROR,
+                message: "マス数の計算に失敗しました。",
+                buttonColor: "error",
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     /**
