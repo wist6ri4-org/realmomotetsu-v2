@@ -64,6 +64,7 @@ export const InitHomeServiceImpl: InitHomeService = {
                     teamName: team.teamName,
                     teamColor: team.teamColor || "",
                     eventCode: team.eventCode,
+                    discordWebhookUrl: team.discordWebhookUrl,
                     createdAt: team.createdAt,
                     updatedAt: team.updatedAt,
                 };

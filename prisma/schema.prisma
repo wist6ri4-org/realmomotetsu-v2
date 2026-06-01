@@ -141,7 +141,7 @@ model Stations {
   longitude         Float?              @map("longitude")
   isMissionSet      Boolean             @default(false) @map("is_mission_set") // deprecated
   stationType       StationType?        @map("station_type")
-  stationGrade      StationGrade?       @map("station_grade") @default(none)
+  stationGrade      StationGrade?       @default(none) @map("station_grade")
   eventTypeCode     String              @map("event_type_code")
   createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
@@ -184,6 +184,7 @@ model Teams {
   teamName          String              @map("team_name")
   teamColor         String?             @map("team_color")
   eventCode         String              @map("event_code")
+  discordWebhookUrl String?             @map("discord_url")
   createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   event             Events              @relation(fields: [eventCode], references: [eventCode])
@@ -249,14 +250,16 @@ model BombiiHistories {
 /**
  * PointStatus
  * ポイントステータス
-  * - points: ポイント
-  * - scored: 総資産
-  * - property: 物件
+ * - points: ポイント
+ * - scored: 総資産
+ * - property: 物件
+ * - revenue: 収益
  */
 enum PointStatus {
   points
   scored
   property
+  revenue
 }
 
 /**

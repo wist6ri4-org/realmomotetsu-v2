@@ -94,6 +94,7 @@ export class PointsRepository extends BaseRepository {
                     OR: [
                         { status: GameConstants.POINT_STATUS.SCORED }, // 総資産
                         { status: GameConstants.POINT_STATUS.PROPERTY }, // 物件
+                        { status: GameConstants.POINT_STATUS.REVENUE }, // 収益
                     ],
                     eventCode: eventCode,
                 },
@@ -131,6 +132,7 @@ export class PointsRepository extends BaseRepository {
                     OR: [
                         { status: GameConstants.POINT_STATUS.SCORED },
                         { status: GameConstants.POINT_STATUS.PROPERTY },
+                        { status: GameConstants.POINT_STATUS.REVENUE }, // 収益
                     ],
                 },
             });
