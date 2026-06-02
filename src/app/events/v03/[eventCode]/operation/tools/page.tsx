@@ -11,6 +11,7 @@ import RegisterBombiiAutoForm from "@/components/composite/form/RegisterBombiiAu
 import RegisterBombiiManualForm from "@/components/composite/form/RegisterBombiiManualForm";
 import RegisterGoalStationsFormV3 from "@/components/composite/form/RegisterGoalStationsFormV3";
 import RegisterPointsForm from "@/components/composite/form/RegisterPointsForm";
+import RegisterPropertyPurchasesFormV3 from "@/components/composite/form/RegisterPropertyPurchasesFormV3";
 import InformationDialog from "@/components/composite/InformationDialog";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
@@ -119,6 +120,8 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                         <RegisterGoalStationsFormV3 stations={stations} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
                         <ArrivalGoalStationsFormV3 event={event} teams={teams} stations={stations} onSubmit={handleUpdate} isOperating={isOperating} />
+                        <Divider />
+                        <RegisterPropertyPurchasesFormV3 teams={teams} stations={stations} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
                         <RegisterBombiiAutoForm teamData={teamData} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
