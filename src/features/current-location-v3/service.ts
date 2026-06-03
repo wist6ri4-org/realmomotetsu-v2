@@ -35,14 +35,14 @@ export const CurrentLocationV3ServiceImpl: CurrentLocationV3Service = {
 
                 if (propertyPurchase) {
                     // ポイント登録
-                    const price =
+                    const revenue =
                         GameConstants.STATION_GRADE[propertyPurchase.station.stationGrade ?? StationGrade.none].price *
                         GameConstants.REVENUE_RATE;
 
                     const createdPoints = await pointsRepository.create(
                         req.eventCode,
-                        req.teamCode,
-                        price,
+                        propertyPurchase.teamCode,
+                        revenue,
                         GameConstants.POINT_STATUS.REVENUE,
                         tx,
                     );
