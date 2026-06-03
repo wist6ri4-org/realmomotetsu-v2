@@ -74,14 +74,14 @@ export class PointsRepository extends BaseRepository {
                 totalPoints: item._sum.points || 0, // nullの場合は0にする
             })) as SummedPoints[];
         } catch (error) {
-            this.handleDatabaseError(error, "sumGroupedByTeamCode");
+            this.handleDatabaseError(error, "sumPointsGroupedByTeamCode");
         }
     }
 
     /**
-     * 指定されたチームコードごとのスコアポイントを合計
-     * @param teamCode - チームコード
-     * @return {Promise<ScoredPointsGroupedByTeamCode[]>} チームコードごとの合計スコアポイント
+     * 指定されたイベントコードにおけるチームごとのスコアポイントを合計
+     * @param eventCode - イベントコード
+     * @return {Promise<SummedPoints[]>} チームごとの合計スコアポイント
      */
     async sumScoredPointsGroupedByTeamCode(eventCode: string): Promise<SummedPoints[]> {
         try {
@@ -104,7 +104,59 @@ export class PointsRepository extends BaseRepository {
                 totalPoints: item._sum.points || 0, // nullの場合は0にする
             })) as SummedPoints[];
         } catch (error) {
-            this.handleDatabaseError(error, "sumScoredPointsByTeamCode");
+            this.handleDatabaseError(error, "sumScoredPointsGroupedByTeamCode");
+        }
+    }
+
+    /**
+     * 指定されたイベントコードにおけるチームごとの物件駅購入ポイントを合計
+     * @param eventCode - イベントコード
+     * @return {Promise<SummedPoints[]>} チームごとの合計ポイント
+     */
+    async sumPropertyPointsGroupedByTeamCode(eventCode: string): Promise<SummedPoints[]> {
+        try {
+            const result = await this.prisma.points.groupBy({
+                by: ["teamCode"],
+                _sum: {
+                    points: true,
+                },
+                where: {
+                    status: GameConstants.POINT_STATUS.PROPERTY, // 物件
+                    eventCode: eventCode,
+                },
+            });
+            return result.map((item) => ({
+                teamCode: item.teamCode,
+                totalPoints: item._sum.points || 0, // nullの場合は0にする
+            })) as SummedPoints[];
+        } catch (error) {
+            this.handleDatabaseError(error, "sumPropertyPointsGroupedByTeamCode");
+        }
+    }
+
+    /**
+     * 指定されたイベントコードにおけるチームごとの収益ポイントを合計
+     * @param eventCode - イベントコード
+     * @return {Promise<SummedPoints[]>} チームごとの合計ポイント
+     */
+    async sumRevenuePointsGroupedByTeamCode(eventCode: string): Promise<SummedPoints[]> {
+        try {
+            const result = await this.prisma.points.groupBy({
+                by: ["teamCode"],
+                _sum: {
+                    points: true,
+                },
+                where: {
+                    status: GameConstants.POINT_STATUS.REVENUE, // 収益
+                    eventCode: eventCode,
+                },
+            });
+            return result.map((item) => ({
+                teamCode: item.teamCode,
+                totalPoints: item._sum.points || 0, // nullの場合は0にする
+            })) as SummedPoints[];
+        } catch (error) {
+            this.handleDatabaseError(error, "sumRevenuePointsGroupedByTeamCode");
         }
     }
 

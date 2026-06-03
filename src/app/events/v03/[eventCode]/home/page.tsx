@@ -3,7 +3,6 @@
 import BulletinBoard from "@/components/base/BulletinBoard";
 import CustomButton from "@/components/base/CustomButton";
 import { UpdatedTime } from "@/components/base/UpdatedTime";
-import { TeamCard } from "@/components/base/TeamCard";
 import { Teams } from "@/generated/prisma";
 import { GoalStationsWithRelations } from "@/repositories/goalStations/GoalStationsRepository";
 import { TeamData } from "@/types/TeamData";
@@ -15,6 +14,7 @@ import { InitHomeResponse } from "@/features/init-home/types";
 import { useEventContext } from "../../../layout";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
+import { TeamCardV3 } from "@/components/base/TeamCardV3";
 
 /**
  * ホームページ
@@ -138,7 +138,7 @@ const HomePage: React.FC = (): React.JSX.Element => {
                                 <Grid container spacing={2}>
                                     {teamData.map((team) => (
                                         <Grid key={team.id} size={{ xs: 6, sm: 6, md: 3, lg: 3 }}>
-                                            <TeamCard
+                                            <TeamCardV3
                                                 teamData={team}
                                                 bombiiTeamData={bombiiTeamData}
                                                 onClick={() => handleTransitStationsHistoryDialogOpen(team)}

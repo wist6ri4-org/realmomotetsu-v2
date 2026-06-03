@@ -22,16 +22,27 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
 
         try {
             // 並列でデータを取得
-            const [teams, nextGoalStation, currentBombiiHistory, totalPoints, totalScoredPoints, events, bombiiCounts] =
-                await Promise.all([
-                    teamsRepository.findByEventCode(req.eventCode),
-                    goalStationsRepository.findLatestGoalStation(req.eventCode),
-                    bombiiHistoriesRepository.findCurrentBombiiTeam(req.eventCode),
-                    pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
-                    pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
-                    eventsRepository.findByEventCode(req.eventCode),
-                    bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
-                ]);
+            const [
+                teams,
+                nextGoalStation,
+                currentBombiiHistory,
+                totalPoints,
+                totalScoredPoints,
+                totalPropertyPoints,
+                totalRevenuePoints,
+                events,
+                bombiiCounts,
+            ] = await Promise.all([
+                teamsRepository.findByEventCode(req.eventCode),
+                goalStationsRepository.findLatestGoalStation(req.eventCode),
+                bombiiHistoriesRepository.findCurrentBombiiTeam(req.eventCode),
+                pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
+                pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
+                pointsRepository.sumPropertyPointsGroupedByTeamCode(req.eventCode),
+                pointsRepository.sumRevenuePointsGroupedByTeamCode(req.eventCode),
+                eventsRepository.findByEventCode(req.eventCode),
+                bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
+            ]);
 
             // イベント種別コードでデータを取得
             const eventTypeCode = events?.eventTypeCode || "";
@@ -52,6 +63,8 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
                 ),
                 points: totalPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 scoredPoints: totalScoredPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
+                propertyPurchasePoints: totalPropertyPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
+                revenuePoints: totalRevenuePoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 bombiiCounts: bombiiCounts.find((b) => b.teamCode === team.teamCode)?.count || 0,
             }));
 
