@@ -25,15 +25,25 @@ export const InitOperationServiceImpl: InitOperationService = {
             const eventTypeCode = events?.eventTypeCode || "";
 
             // レスポンスの作成
-            const [teams, nearbyStations, totalPoints, totalScoredPoints, nextGoalStation, bombiiCounts] =
-                await Promise.all([
-                    teamsRepository.findByEventCode(req.eventCode),
-                    nearbyStationsRepository.findByEventTypeCode(eventTypeCode),
-                    pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
-                    pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
-                    goalStationsRepository.findLatestGoalStation(req.eventCode),
-                    bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
-                ]);
+            const [
+                teams,
+                nearbyStations,
+                totalPoints,
+                totalScoredPoints,
+                totalPropertyPoints,
+                totalRevenuePoints,
+                nextGoalStation,
+                bombiiCounts,
+            ] = await Promise.all([
+                teamsRepository.findByEventCode(req.eventCode),
+                nearbyStationsRepository.findByEventTypeCode(eventTypeCode),
+                pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
+                pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
+                pointsRepository.sumPropertyPointsGroupedByTeamCode(req.eventCode),
+                pointsRepository.sumRevenuePointsGroupedByTeamCode(req.eventCode),
+                goalStationsRepository.findLatestGoalStation(req.eventCode),
+                bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
+            ]);
 
             const convertedStationGraph = DijkstraUtils.convertNearbyStationsToStationGraph(nearbyStations);
             const teamData: TeamData[] = teams.map((team) => ({
@@ -49,6 +59,8 @@ export const InitOperationServiceImpl: InitOperationService = {
                 ),
                 points: totalPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 scoredPoints: totalScoredPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
+                propertyPurchasePoints: totalPropertyPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
+                revenuePoints: totalRevenuePoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 bombiiCounts: bombiiCounts.find((b) => b.teamCode === team.teamCode)?.count || 0,
             }));
 

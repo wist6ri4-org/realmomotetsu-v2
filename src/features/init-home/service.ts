@@ -22,16 +22,27 @@ export const InitHomeServiceImpl: InitHomeService = {
 
         try {
             // 並列でデータを取得
-            const [teams, nextGoalStation, currentBombiiHistory, totalPoints, totalScoredPoints, events, bombiiCounts] =
-                await Promise.all([
-                    teamsRepository.findByEventCode(req.eventCode),
-                    goalStationsRepository.findLatestGoalStation(req.eventCode),
-                    bombiiHistoriesRepository.findCurrentBombiiTeam(req.eventCode),
-                    pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
-                    pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
-                    eventsRepository.findByEventCode(req.eventCode),
-                    bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
-                ]);
+            const [
+                teams,
+                nextGoalStation,
+                currentBombiiHistory,
+                totalPoints,
+                totalScoredPoints,
+                totalPropertyPoint,
+                totalRevenuePoint,
+                events,
+                bombiiCounts,
+            ] = await Promise.all([
+                teamsRepository.findByEventCode(req.eventCode),
+                goalStationsRepository.findLatestGoalStation(req.eventCode),
+                bombiiHistoriesRepository.findCurrentBombiiTeam(req.eventCode),
+                pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
+                pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
+                pointsRepository.sumPropertyPointsGroupedByTeamCode(req.eventCode),
+                pointsRepository.sumRevenuePointsGroupedByTeamCode(req.eventCode),
+                eventsRepository.findByEventCode(req.eventCode),
+                bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
+            ]);
 
             const eventTypeCode = events?.eventTypeCode || "";
             const stationGraph = await nearbyStationsRepository.findByEventTypeCode(eventTypeCode);
@@ -51,6 +62,8 @@ export const InitHomeServiceImpl: InitHomeService = {
                 ),
                 points: totalPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 scoredPoints: totalScoredPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
+                propertyPurchasePoints: totalPropertyPoint.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
+                revenuePoints: totalRevenuePoint.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 bombiiCounts: bombiiCounts.find((b) => b.teamCode === team.teamCode)?.count || 0,
             }));
 
