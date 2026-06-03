@@ -64,6 +64,7 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
                     teamCode: team.teamCode,
                     teamName: team.teamName,
                     teamColor: team.teamColor || "",
+                    discordWebhookUrl: team.discordWebhookUrl,
                     eventCode: team.eventCode,
                     createdAt: team.createdAt,
                     updatedAt: team.updatedAt,

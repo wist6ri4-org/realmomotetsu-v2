@@ -1,5 +1,5 @@
 import { TransitStations, Stations, LatestTransitStations, PointStatus, Points } from "@/generated/prisma";
-import { BaseRepository } from "../base/BaseRepository";
+import { BaseRepository, PrismaTransactionClient } from "../base/BaseRepository";
 
 // includeありのTransitStationsの型定義
 export type TransitStationsWithRelations = TransitStations & {
@@ -93,15 +93,20 @@ export class TransitStationsRepository extends BaseRepository {
     /**
      * 新しい経由駅を作成
      * @param transitStationData - 経由駅作成データ
+     * @param tx - トランザクションクライアント（オプション）
      * @returns {Promise<TransitStations>} 作成された経由駅
      */
-    async create(transitStationData: {
-        eventCode: string;
-        teamCode: string;
-        stationCode: string;
-    }): Promise<TransitStations> {
+    async create(
+        transitStationData: {
+            eventCode: string;
+            teamCode: string;
+            stationCode: string;
+        },
+        tx?: PrismaTransactionClient,
+    ): Promise<TransitStations> {
+        const client = tx ?? this.prisma;
         try {
-            return await this.prisma.transitStations.create({
+            return await client.transitStations.create({
                 data: transitStationData,
             });
         } catch (error) {
@@ -119,7 +124,7 @@ export class TransitStationsRepository extends BaseRepository {
             stationCode: string;
             eventCode: string;
             teamCode: string;
-        }[]
+        }[],
     ): Promise<number> {
         try {
             const result = await this.prisma.transitStations.createMany({
@@ -203,7 +208,7 @@ export class TransitStationsRepository extends BaseRepository {
             teamCode: string;
             points: number;
             status: PointStatus;
-        }
+        },
     ): Promise<{ transitStation: TransitStations; point: Points }> {
         try {
             return await this.executeTransaction(async (tx) => {

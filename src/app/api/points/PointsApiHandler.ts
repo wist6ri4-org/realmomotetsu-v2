@@ -66,16 +66,20 @@ class PointsApiHandler extends BaseApiHandler {
                 [teamCode: string]: {
                     pointsCount: number;
                     scoredCount: number;
+                    propertyCount: number;
+                    revenueCount: number;
                 };
             };
 
             const logObject: LogObject = {};
             Object.entries(validatedResponse.points).forEach(([teamCode, items]) => {
                 if (!logObject[teamCode]) {
-                    logObject[teamCode] = { pointsCount: 0, scoredCount: 0 };
+                    logObject[teamCode] = { pointsCount: 0, scoredCount: 0, propertyCount: 0, revenueCount: 0 };
                 }
                 logObject[teamCode].pointsCount = items.points.length;
                 logObject[teamCode].scoredCount = items.scored.length;
+                logObject[teamCode].propertyCount = items.property.length;
+                logObject[teamCode].revenueCount = items.revenue.length;
             });
             this.logInfo("Successfully retrieved points data", {
                 ...logObject,

@@ -26,8 +26,9 @@ import { Box, CircularProgress } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import GoalDialog from "../GoalDialog";
-import { PostCurrentLocationV3Request } from "@/features/current-location-v3/types";
+import { PostCurrentLocationV3Request, PostCurrentLocationV3Response } from "@/features/current-location-v3/types";
 import CustomAutoComplete from "@/components/base/CustomAutoComplete";
+import { Converter } from "@/utils/converter";
 
 /**
  * CurrentLocationFormV3コンポーネントのプロパティ型定義
@@ -60,7 +61,8 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
     initialTeamCode,
     isOperating,
 }: CurrentLocationFormV3Props): React.JSX.Element => {
-    const { eventCode } = useParams();
+    const params = useParams();
+    const eventCode = typeof params.eventCode === "string" ? params.eventCode : "";
 
     const selectedTeamCodeInput = useSelectInput(initialTeamCode || "");
     const selectedStationCodeInput = useSelectInput(
@@ -94,6 +96,21 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
     };
 
     /**
+     * 収益獲得通知を送信する
+     * @returns {Promise<void>} - 通知送信の完了を示すPromise
+     */
+    const notifyToTeamDiscord = async (discordWebhookUrl: string, revenue: number): Promise<void> => {
+        await sendNotification({
+            discordWebhookUrl: discordWebhookUrl,
+            templateName: DiscordNotificationTemplates.EARN_REVENUE,
+            variables: {
+                stationName: stations.find((station) => station.stationCode === selectedStationCodeInput.value)?.name || "不明",
+                revenueYen: Converter.convertPointsToYenV3(revenue),
+            }
+        })
+    }
+
+    /**
      * 最新の目的駅の駅コードを取得
      * @returns {Promise<string>} - 次の目的駅の駅コード
      */
@@ -118,7 +135,7 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
      * @param {React.FormEvent<HTMLFormElement>} e - フォームの送信イベント
      * @returns {Promise<void>} - 登録処理の完了を示すPromise
      */
-    const registerTransitStation = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    const registerTransitStation = async (e: React.SubmitEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
         clearError();
 
@@ -142,7 +159,7 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
 
             // 二重登録チェック
             const params = new URLSearchParams();
-            params.append("eventCode", eventCode as string);
+            params.append("eventCode", eventCode);
             const responseForCheck = await fetch("/api/transit-stations/latest?" + params.toString());
             if (!responseForCheck.ok) {
                 throw ApplicationErrorFactory.createFromResponse(responseForCheck);
@@ -164,14 +181,14 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
                 }
             }
 
-            // 経由駅と移動ポイントの登録
+            // 経由駅と収益の登録
             const response = await fetch("/api/current-location-v3", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    eventCode: eventCode?.toString() || "",
+                    eventCode: eventCode,
                     teamCode: selectedTeamCodeInput.value,
                     stationCode: selectedStationCodeInput.value,
                 } satisfies PostCurrentLocationV3Request),
@@ -179,6 +196,12 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
 
             if (!response.ok) {
                 throw ApplicationErrorFactory.createFromResponse(response);
+            }
+            const responseData: PostCurrentLocationV3Response = (await response.json()).data;
+
+            // 収益獲得通知を送信
+            if (responseData.point && event.isNotificationEnabled && responseData.teamDiscordWebhookUrl) {
+                notifyToTeamDiscord(responseData.teamDiscordWebhookUrl, responseData.point.points);
             }
 
             // 最新の目的駅の駅コードを取得

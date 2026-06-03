@@ -91,3 +91,16 @@ POST http://localhost:3001/api/current-location
     "points": 10,
     "status": "points"
 }
+
+### GET property-purchases
+GET http://localhost:3001/api/property-purchases
+    ?eventCode=METRO_V1_TESTPLAY_20261010
+
+### POST property-purchases
+POST http://localhost:3001/api/property-purchases
+
+{
+    "eventCode": "METRO_V1_TESTPLAY_20261010",
+    "teamCode": "METRO_V1_TESTPLAY_20261010_TEAM_A",
+    "stationCode": "METRO_V1_WASEDA"
+}

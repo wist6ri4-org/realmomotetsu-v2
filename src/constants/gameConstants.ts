@@ -29,19 +29,21 @@ export const GameConstants = {
      * @property {string} POINTS ポイント
      * @property {string} SCORED 総資産
      * @property {string} PROPERTY 物件
+     * @property {string} REVENUE 収益
      */
     POINT_STATUS: {
         POINTS: "points" as PointStatus,
         SCORED: "scored" as PointStatus,
         PROPERTY: "property" as PointStatus,
+        REVENUE: "revenue" as PointStatus,
     } as const,
+    // TODO 駅グレードの価格設定は暫定。ゲームバランスを見ながら調整する。
     /**
      * 駅グレード（キーはStationGrade値）
      * @property {string} none グレードなし
      * @property {string} a グレードA
      * @property {string} b グレードB
      * @property {string} c グレードC
-     * TODO 価格設定は暫定
      */
     STATION_GRADE: {
         none: {
@@ -68,7 +70,10 @@ export const GameConstants = {
             plus: 500,
             minus: 500,
         },
-    },
+    } as const,
+    // TODO 物件駅の価格設定は暫定。ゲームバランスを見ながら調整する。
+    /** 購入済み物件駅到着時の収益率 */
+    REVENUE_RATE: 0.1,
     /** イベントバージョン */
     VERSION: {
         /**

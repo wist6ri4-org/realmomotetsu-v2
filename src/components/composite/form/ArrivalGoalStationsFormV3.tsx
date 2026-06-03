@@ -24,7 +24,7 @@ import React, { useState } from "react";
 import CustomRadio, { RadioOption } from "@/components/base/CustomRadio";
 import { PostVerifyArrivalGoalStationV3Response, VerifyArrivalGoalStationV3Result } from "@/features/verify/verify-arrival-goal-station-v3/types";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
-import { PostArrivalGoalStationV3Response } from "@/features/arrival-goal-station-v3/types";
+import { PostArrivalGoalStationV3Request, PostArrivalGoalStationV3Response } from "@/features/arrival-goal-station-v3/types";
 import { Converter } from "@/utils/converter";
 
 /**
@@ -68,7 +68,8 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
     onSubmit,
     isOperating,
 }: ArrivalGoalStationsFormV3Props): React.JSX.Element => {
-    const { eventCode } = useParams();
+    const params = useParams();
+    const eventCode = typeof params.eventCode === "string" ? params.eventCode : "";
 
     const teamCodeInput = useSelectInput("");
     const [willBuyStationInput, setWillBuyStationInput] = useState<number>(WillBuyStation.YES);
@@ -171,13 +172,13 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
                     teamCode: teamCodeInput.value,
                     stations: stations,
                     willPurchase: willBuyStationInput === WillBuyStation.YES,
-                }),
+                } satisfies PostArrivalGoalStationV3Request),
             });
 
-            const responseArrivalData: PostArrivalGoalStationV3Response = (await responseArrival.json()).data;
             if (!responseArrival.ok) {
                 throw ApplicationErrorFactory.createFromResponse(responseArrival);
             }
+            const responseArrivalData: PostArrivalGoalStationV3Response = (await responseArrival.json()).data;
 
             teamCodeInput.reset();
             setWillBuyStationInput(WillBuyStation.YES);
