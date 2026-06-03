@@ -5,12 +5,11 @@ import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
 import ArrivalGoalStationsFormV3 from "@/components/composite/form/ArrivalGoalStationsFormV3";
 import CalculateDistanceToolForm from "@/components/composite/form/CalculateDistanceToolForm";
-import PointsExchangeForm from "@/components/composite/form/PointsExchangeForm";
-import PointsTransferForm from "@/components/composite/form/PointsTransferForm";
+import PointsTransferFormV3 from "@/components/composite/form/PointsTransferFormV3";
 import RegisterBombiiAutoForm from "@/components/composite/form/RegisterBombiiAutoForm";
 import RegisterBombiiManualForm from "@/components/composite/form/RegisterBombiiManualForm";
 import RegisterGoalStationsFormV3 from "@/components/composite/form/RegisterGoalStationsFormV3";
-import RegisterPointsForm from "@/components/composite/form/RegisterPointsForm";
+import RegisterPointsFormV3 from "@/components/composite/form/RegisterPointsFormV3";
 import RegisterPropertyPurchasesFormV3 from "@/components/composite/form/RegisterPropertyPurchasesFormV3";
 import InformationDialog from "@/components/composite/InformationDialog";
 import { ApplicationErrorFactory } from "@/error/applicationError";
@@ -121,15 +120,13 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                         <Divider />
                         <ArrivalGoalStationsFormV3 event={event} teams={teams} stations={stations} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <RegisterPropertyPurchasesFormV3 teams={teams} stations={stations} onSubmit={handleUpdate} isOperating={isOperating} />
-                        <Divider />
                         <RegisterBombiiAutoForm teamData={teamData} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <RegisterPointsForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
+                        <RegisterPointsFormV3 teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <PointsTransferForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
+                        <PointsTransferFormV3 teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <PointsExchangeForm teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
+                        <RegisterPropertyPurchasesFormV3 teams={teams} stations={stations} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
                         <RegisterBombiiManualForm teams={teams} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
