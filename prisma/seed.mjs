@@ -18,6 +18,7 @@ const csvTransitStationsPath = join(process.cwd(), "./prisma/csv/transit_station
 const csvBombiiHistoriesPath = join(process.cwd(), "./prisma/csv/bombii_histories.csv");
 const csvDocumentsPath = join(process.cwd(), "./prisma/csv/documents.csv");
 const csvAttendancesPath = join(process.cwd(), "./prisma/csv/attendances.csv");
+const csvPropertyPurchasesPath = join(process.cwd(), "./prisma/csv/property_purchases.csv");
 const csvAuthenticationPath = join(process.cwd(), "./prisma/csv/authentication.csv");
 const usersPath = join(process.cwd(), "./prisma/csv/users.csv");
 const viewsSqlPath = join(process.cwd(), "./supabase/sql/views.sql");
@@ -201,6 +202,8 @@ async function main() {
 
         // 依存関係を考慮して逆順で削除
         console.log("🗑️ 既存のPrismaデータを削除中...");
+        console.log("  🏠 propertyPurchasesテーブルを削除中...");
+        await prisma.propertyPurchases.deleteMany({});
         console.log("  📋 attendancesテーブルを削除中...");
         await prisma.attendances.deleteMany({});
         console.log("  📄 documentsテーブルを削除中...");
@@ -241,6 +244,7 @@ async function main() {
         await prisma.$executeRaw`ALTER SEQUENCE bombii_histories_id_seq RESTART WITH 1;`;
         await prisma.$executeRaw`ALTER SEQUENCE documents_id_seq RESTART WITH 1;`;
         await prisma.$executeRaw`ALTER SEQUENCE attendances_id_seq RESTART WITH 1;`;
+        await prisma.$executeRaw`ALTER SEQUENCE property_purchases_id_seq RESTART WITH 1;`;
         console.log("✅ 全てのIDシーケンスをリセットしました");
 
         // 0. usersを挿入
@@ -279,7 +283,7 @@ async function main() {
             const eventTypeCode = row.event_type_code?.trim();
             const description = row.description?.trim();
             const routemapConfigFile = row.routemap_config?.trim() || null;
-            const version = row.version?.trim() || null;
+            const version = Number(row.version?.trim()) || null;
             const createdAt = new Date(row.created_at?.trim());
             const updatedAt = new Date(row.updated_at?.trim());
 
@@ -301,6 +305,8 @@ async function main() {
             const latitude = parseFloat(row.latitude?.trim()) || null;
             const longitude = parseFloat(row.longitude?.trim()) || null;
             const eventTypeCode = row.event_type_code?.trim();
+            const stationType = row.station_type?.trim() || null;
+            const stationGrade = row.station_grade?.trim() || null;
 
             await prisma.stations.create({
                 data: {
@@ -312,6 +318,8 @@ async function main() {
                     latitude,
                     longitude,
                     eventTypeCode,
+                    stationType,
+                    stationGrade,
                 },
             });
         }
@@ -360,6 +368,7 @@ async function main() {
             const eventCode = row.event_code?.trim();
             const createdAt = new Date(row.created_at?.trim());
             const updatedAt = new Date(row.updated_at?.trim());
+            const discordWebhookUrl = row.discord_webhook_url?.trim() || null
 
             await prisma.teams.create({
                 data: {
@@ -369,6 +378,7 @@ async function main() {
                     eventCode,
                     createdAt,
                     updatedAt,
+                    discordWebhookUrl,
                 },
             });
         }
@@ -530,7 +540,29 @@ async function main() {
         }
         console.log(`✅ ${attendancesData.length}件のAttendancesを挿入しました`);
 
-        // 12. ビューを作成
+        // 12. PropertyPurchasesを挿入
+        console.log("🏠 PropertyPurchasesを挿入中...");
+        const propertyPurchasesData = await readCSV(csvPropertyPurchasesPath);
+        for (const row of propertyPurchasesData) {
+            const eventCode = row.event_code?.trim();
+            const teamCode = row.team_code?.trim();
+            const stationCode = row.station_code?.trim();
+            const createdAt = new Date(row.created_at?.trim());
+            const updatedAt = new Date(row.updated_at?.trim());
+
+            await prisma.propertyPurchases.create({
+                data: {
+                    eventCode,
+                    teamCode,
+                    stationCode,
+                    createdAt,
+                    updatedAt,
+                },
+            });
+        }
+        console.log(`✅ ${propertyPurchasesData.length}件のPropertyPurchasesを挿入しました`);
+
+        // 13. ビューを作成
         console.log("🔧 データベースビューを作成中...");
         await executeSQLFile(viewsSqlPath);
 
