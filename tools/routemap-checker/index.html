@@ -181,6 +181,65 @@
                 background: #aaa;
                 color: #fff;
             }
+            #station-list-section {
+                padding: 16px 20px 24px;
+                background: #fff;
+                border-top: 2px solid #ddd;
+            }
+            #station-list-section h2 {
+                font-size: 14px;
+                font-weight: bold;
+                margin-bottom: 12px;
+                color: #333;
+            }
+            #station-list-empty {
+                color: #999;
+                font-size: 13px;
+                padding: 4px 0;
+            }
+            .sl-group {
+                margin-bottom: 14px;
+            }
+            .sl-group-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 13px;
+                font-weight: bold;
+                border-left: 4px solid #ccc;
+                padding-left: 8px;
+                margin-bottom: 6px;
+                color: #333;
+            }
+            .sl-swatch {
+                width: 20px;
+                height: 20px;
+                border: 1.5px solid #999;
+                border-radius: 2px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 11px;
+                font-weight: bold;
+                flex-shrink: 0;
+            }
+            .sl-count {
+                font-weight: normal;
+                color: #777;
+                font-size: 12px;
+            }
+            .sl-chips {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                padding-left: 4px;
+            }
+            .sl-chip {
+                padding: 3px 10px;
+                border: 1.5px solid;
+                border-radius: 12px;
+                font-size: 12px;
+            }
         </style>
     </head>
     <body>
@@ -209,6 +268,78 @@
                 <div class="legend-box" style="background: orange"></div>
                 オレンジ
             </div>
+            <div class="legend-item">
+                <div
+                    class="legend-box"
+                    style="
+                        background: #ddeeff;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #2196f3;
+                        font-weight: bold;
+                        font-size: 14px;
+                        line-height: 1;
+                    "
+                >
+                    +
+                </div>
+                プラス（青）
+            </div>
+            <div class="legend-item">
+                <div
+                    class="legend-box"
+                    style="
+                        background: #ffeeee;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #f44336;
+                        font-weight: bold;
+                        font-size: 14px;
+                        line-height: 1;
+                    "
+                >
+                    −
+                </div>
+                マイナス（赤）
+            </div>
+            <div class="legend-item">
+                <div
+                    class="legend-box"
+                    style="
+                        background: #fff8d0;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #b8860b;
+                        font-weight: bold;
+                        font-size: 11px;
+                        line-height: 1;
+                    "
+                >
+                    宝
+                </div>
+                宝
+            </div>
+            <div class="legend-item">
+                <div
+                    class="legend-box"
+                    style="
+                        background: #eeffee;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #388e3c;
+                        font-weight: bold;
+                        font-size: 12px;
+                        line-height: 1;
+                    "
+                >
+                    ★
+                </div>
+                ★（緑）
+            </div>
         </div>
 
         <div id="stats">
@@ -229,7 +360,87 @@
             </div>
             <div class="stat-divider"></div>
             <div class="stat-item">
+                <div
+                    class="legend-box"
+                    style="
+                        background: #ddeeff;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #2196f3;
+                        font-weight: bold;
+                        font-size: 14px;
+                        line-height: 1;
+                    "
+                >
+                    +
+                </div>
+                プラス <strong id="stat-plus">0</strong>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <div
+                    class="legend-box"
+                    style="
+                        background: #ffeeee;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #f44336;
+                        font-weight: bold;
+                        font-size: 14px;
+                        line-height: 1;
+                    "
+                >
+                    −
+                </div>
+                マイナス <strong id="stat-minus">0</strong>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <div
+                    class="legend-box"
+                    style="
+                        background: #fff8d0;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #b8860b;
+                        font-weight: bold;
+                        font-size: 11px;
+                        line-height: 1;
+                    "
+                >
+                    宝
+                </div>
+                宝 <strong id="stat-treasure">0</strong>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <div
+                    class="legend-box"
+                    style="
+                        background: #eeffee;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #388e3c;
+                        font-weight: bold;
+                        font-size: 12px;
+                        line-height: 1;
+                    "
+                >
+                    ★
+                </div>
+                ★ <strong id="stat-star">0</strong>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
                 色付き合計 <strong id="stat-colored">0</strong> / <span id="stat-all">0</span> 駅
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                駅ミッション数 <strong id="stat-mission">0</strong> / <span id="stat-mission-all">0</span> 駅
             </div>
         </div>
 
@@ -242,8 +453,14 @@
             >
                 <g id="routes-layer"></g>
                 <g id="stations-layer"></g>
+                <g id="marks-layer"></g>
                 <g id="names-layer"></g>
             </svg>
+        </div>
+
+        <div id="station-list-section">
+            <h2>📍 カテゴリ別駅一覧</h2>
+            <div id="station-list"><p id="station-list-empty">まだカテゴリが設定された駅がありません</p></div>
         </div>
 
         <div id="toast"></div>
@@ -4576,7 +4793,16 @@
         <script>
             const CONFIG_PATH = "../../src/data/routemap/metro-v1-routemap-config.json";
             const STORAGE_KEY = "routemap-checker-state";
-            const COLOR_CYCLE = ["rgb(255,255,255)", "red", "blue", "orange"];
+            const MARK_CYCLE = [
+                { fill: "rgb(255,255,255)", mark: null },
+                { fill: "red", mark: null },
+                { fill: "blue", mark: null },
+                { fill: "orange", mark: null },
+                { fill: "#ddeeff", mark: { text: "+", color: "#2196f3" } },
+                { fill: "#ffeeee", mark: { text: "−", color: "#f44336" } },
+                { fill: "#fff8d0", mark: { text: "宝", color: "#b8860b" } },
+                { fill: "#eeffee", mark: { text: "★", color: "#388e3c" } },
+            ];
 
             let config = null;
             let state = {};
@@ -4622,33 +4848,111 @@
 
             function getStationColor(code) {
                 const idx = state[code] || 0;
-                return COLOR_CYCLE[idx % COLOR_CYCLE.length];
+                return MARK_CYCLE[idx % MARK_CYCLE.length].fill;
+            }
+
+            function getStationMark(code) {
+                const idx = state[code] || 0;
+                return MARK_CYCLE[idx % MARK_CYCLE.length].mark;
+            }
+
+            function updateMarkElement(station) {
+                const markG = document.getElementById("marks-layer");
+                const existing = document.getElementById(`mark-${station.code}`);
+                if (existing) existing.remove();
+                const mark = getStationMark(station.code);
+                if (mark) {
+                    const cx = parseFloat(station.box.x) + parseFloat(station.box.width) / 2;
+                    const cy = parseFloat(station.box.y) + parseFloat(station.box.height) / 2;
+                    const size = Math.min(parseFloat(station.box.width), parseFloat(station.box.height)) * 0.55;
+                    const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    t.setAttribute("id", `mark-${station.code}`);
+                    t.setAttribute("x", cx);
+                    t.setAttribute("y", cy);
+                    t.setAttribute("fill", mark.color);
+                    t.style.fontSize = `${size}px`;
+                    t.style.fontFamily = "sans-serif";
+                    t.style.fontWeight = "bold";
+                    t.style.textAnchor = "middle";
+                    t.style.dominantBaseline = "central";
+                    t.style.pointerEvents = "none";
+                    t.textContent = mark.text;
+                    markG.appendChild(t);
+                }
             }
 
             function updateStats() {
                 if (!config) return;
                 const total = config.stations.length;
-                let red = 0,
-                    blue = 0,
-                    orange = 0;
+                const counts = new Array(MARK_CYCLE.length).fill(0);
                 config.stations.forEach((station) => {
-                    const color = getStationColor(station.code);
-                    if (color === "red") red++;
-                    else if (color === "blue") blue++;
-                    else if (color === "orange") orange++;
+                    const idx = state[station.code] || 0;
+                    counts[idx % MARK_CYCLE.length]++;
                 });
-                document.getElementById("stat-red").textContent = red;
-                document.getElementById("stat-blue").textContent = blue;
-                document.getElementById("stat-orange").textContent = orange;
-                document.getElementById("stat-colored").textContent = red + blue + orange;
+                document.getElementById("stat-red").textContent = counts[1];
+                document.getElementById("stat-blue").textContent = counts[2];
+                document.getElementById("stat-orange").textContent = counts[3];
+                document.getElementById("stat-plus").textContent = counts[4];
+                document.getElementById("stat-minus").textContent = counts[5];
+                document.getElementById("stat-treasure").textContent = counts[6];
+                document.getElementById("stat-star").textContent = counts[7];
+                document.getElementById("stat-colored").textContent = counts.slice(1).reduce((a, b) => a + b, 0);
                 document.getElementById("stat-all").textContent = total;
+                document.getElementById("stat-mission").textContent = counts[1] + counts[2] + counts[3];
+                document.getElementById("stat-mission-all").textContent = total;
+                renderStationList();
+            }
+
+            const SL_LABELS = ["未設定", "赤", "青", "オレンジ", "プラス（青）", "マイナス（赤）", "宝", "★（緑）"];
+            const SL_BORDER = [null, "red", "blue", "orange", "#2196f3", "#f44336", "#b8860b", "#388e3c"];
+            const SL_BG = [null, "#fff0f0", "#e8eeff", "#fff7e0", "#ddeeff", "#ffeeee", "#fff8d0", "#eeffee"];
+
+            function renderStationList() {
+                const container = document.getElementById("station-list");
+                if (!config) {
+                    container.innerHTML = "";
+                    return;
+                }
+
+                const groups = MARK_CYCLE.map(() => []);
+                config.stations.forEach((station) => {
+                    const idx = (state[station.code] || 0) % MARK_CYCLE.length;
+                    if (idx > 0) groups[idx].push(station.name);
+                });
+
+                const hasAny = groups.slice(1).some((g) => g.length > 0);
+                if (!hasAny) {
+                    container.innerHTML = '<p id="station-list-empty">まだカテゴリが設定された駅がありません</p>';
+                    return;
+                }
+
+                let html = "";
+                for (let i = 1; i < MARK_CYCLE.length; i++) {
+                    if (groups[i].length === 0) continue;
+                    const m = MARK_CYCLE[i];
+                    const markText = m.mark ? m.mark.text : "";
+                    const markColor = m.mark ? m.mark.color : "#333";
+                    html += `<div class="sl-group">
+                        <div class="sl-group-header" style="border-left-color:${SL_BORDER[i]}">
+                            <span class="sl-swatch" style="background:${m.fill}; color:${markColor}">${markText}</span>
+                            ${SL_LABELS[i]}
+                            <span class="sl-count">${groups[i].length}駅</span>
+                        </div>
+                        <div class="sl-chips">
+                            ${groups[i].map((name) => `<span class="sl-chip" style="background:${SL_BG[i]}; border-color:${SL_BORDER[i]}">${name}</span>`).join("")}
+                        </div>
+                    </div>`;
+                }
+                container.innerHTML = html;
             }
 
             function renderStations() {
                 const boxG = document.getElementById("stations-layer");
                 const nameG = document.getElementById("names-layer");
+                const markG = document.getElementById("marks-layer");
                 boxG.innerHTML = "";
                 nameG.innerHTML = "";
+                markG.innerHTML = "";
 
                 config.stations.forEach((station) => {
                     const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
@@ -4665,13 +4969,15 @@
 
                     rect.addEventListener("click", () => {
                         const cur = state[station.code] || 0;
-                        state[station.code] = (cur + 1) % COLOR_CYCLE.length;
+                        state[station.code] = (cur + 1) % MARK_CYCLE.length;
                         rect.style.fill = getStationColor(station.code);
+                        updateMarkElement(station);
                         saveState();
                         updateStats();
                     });
 
                     boxG.appendChild(rect);
+                    updateMarkElement(station);
 
                     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
                     text.setAttribute("x", station.text.x);
@@ -4723,6 +5029,7 @@
                 config.stations.forEach((station) => {
                     const rect = document.getElementById(`box-${station.code}`);
                     if (rect) rect.style.fill = getStationColor(station.code);
+                    updateMarkElement(station);
                 });
                 updateStats();
             }
