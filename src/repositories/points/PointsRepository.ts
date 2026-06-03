@@ -121,9 +121,7 @@ export class PointsRepository extends BaseRepository {
                     points: true,
                 },
                 where: {
-                    OR: [
-                        { status: GameConstants.POINT_STATUS.PROPERTY }, // 物件
-                    ],
+                    status: GameConstants.POINT_STATUS.PROPERTY, // 物件
                     eventCode: eventCode,
                 },
             });
@@ -137,7 +135,7 @@ export class PointsRepository extends BaseRepository {
     }
 
     /**
-     * 指定されたイベントコードにおけるチームごとの物件駅購入ポイントを合計
+     * 指定されたイベントコードにおけるチームごとの収益ポイントを合計
      * @param eventCode - イベントコード
      * @return {Promise<SummedPoints[]>} チームごとの合計ポイント
      */
@@ -149,9 +147,7 @@ export class PointsRepository extends BaseRepository {
                     points: true,
                 },
                 where: {
-                    OR: [
-                        { status: GameConstants.POINT_STATUS.REVENUE }, // 収益
-                    ],
+                    status: GameConstants.POINT_STATUS.REVENUE, // 収益
                     eventCode: eventCode,
                 },
             });
