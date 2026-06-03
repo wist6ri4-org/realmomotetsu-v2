@@ -85,9 +85,10 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
                 } satisfies PostPropertyPurchasesRequest),
             });
 
+            // TODO Duplicate entryのエラーハンドリングをRepository層・Service層で行うように修正する
             if (!response.ok) {
                 const errorBody = await response.json().catch(() => null);
-                const errorMessage: string = typeof errorBody.error === "string" ? errorBody.error : "";
+                const errorMessage: string = typeof errorBody?.error === "string" ? errorBody.error : "";
 
                 if (errorMessage.includes("Duplicate entry")) {
                     throw ApplicationErrorFactory.create(ErrorCodes.DUPLICATE_ENTRY, getMessage("DUPLICATE_PROPERTY_PURCHASE"));

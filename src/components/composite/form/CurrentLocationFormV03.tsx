@@ -194,10 +194,10 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
                 } satisfies PostCurrentLocationV3Request),
             });
 
-            const responseData: PostCurrentLocationV3Response = (await response.json()).data;
             if (!response.ok) {
                 throw ApplicationErrorFactory.createFromResponse(response);
             }
+            const responseData: PostCurrentLocationV3Response = (await response.json()).data;
 
             // 収益獲得通知を送信
             if (responseData.point && event.isNotificationEnabled && responseData.teamDiscordWebhookUrl) {

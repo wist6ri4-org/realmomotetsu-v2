@@ -175,10 +175,10 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
                 } satisfies PostArrivalGoalStationV3Request),
             });
 
-            const responseArrivalData: PostArrivalGoalStationV3Response = (await responseArrival.json()).data;
             if (!responseArrival.ok) {
                 throw ApplicationErrorFactory.createFromResponse(responseArrival);
             }
+            const responseArrivalData: PostArrivalGoalStationV3Response = (await responseArrival.json()).data;
 
             teamCodeInput.reset();
             setWillBuyStationInput(WillBuyStation.YES);

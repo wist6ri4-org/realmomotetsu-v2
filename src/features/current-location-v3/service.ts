@@ -31,7 +31,7 @@ export const CurrentLocationV3ServiceImpl: CurrentLocationV3Service = {
             };
 
             const { transitStation, createdPoints } = await RepositoryFactory.withTransaction(async (tx) => {
-                const transitStation = await transitStationsRepository.create(transitStationsData);
+                const transitStation = await transitStationsRepository.create(transitStationsData, tx);
 
                 if (propertyPurchase) {
                     // ポイント登録

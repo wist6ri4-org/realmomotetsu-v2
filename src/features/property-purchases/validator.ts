@@ -1,6 +1,5 @@
 import { EventsSchema, PropertyPurchasesSchema, StationsSchema, TeamsSchema } from "@/generated/zod";
-import { stat } from "fs";
-import z from "zod";
+import { z } from "zod";
 
 /**
  * 物件駅情報のGETリクエストスキーマ

@@ -1,4 +1,4 @@
-import { PropertyPurchasesService } from "./interface"
+import { PropertyPurchasesService } from "./interface";
 import { PropertyPurchasesServiceImpl } from "./service";
 
 /**
@@ -7,4 +7,4 @@ import { PropertyPurchasesServiceImpl } from "./service";
  */
 export const getPropertyPurchasesService = (): PropertyPurchasesService => {
     return PropertyPurchasesServiceImpl;
-}
+};

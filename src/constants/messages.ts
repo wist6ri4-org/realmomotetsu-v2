@@ -38,7 +38,7 @@ export const Messages = {
     ALREADY_PURCHASED: "すでに駅が購入されているため、到着処理を行うことができません。",
     STATION_MISMATCH: "最新の経由駅が目的駅と一致しませんが、到着処理を強制的に行いますか？",
     INSUFFICIENT_POINTS: "総資産が不足しているため、駅を購入することができません。",
-    DUPLICATE_PROPERTY_PURCHASE: "同じチームと駅の組み合わせは既に登録されています。",
+    DUPLICATE_PROPERTY_PURCHASE: "この駅は既に購入されています。",
 } as const;
 
 export type Messages = typeof Messages;

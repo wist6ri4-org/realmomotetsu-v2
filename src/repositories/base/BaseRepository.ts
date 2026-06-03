@@ -1,3 +1,4 @@
+import { DuplicateResourceError } from "@/error";
 import { PrismaClient } from "@/generated/prisma";
 
 /**

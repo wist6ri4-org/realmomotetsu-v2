@@ -6,7 +6,7 @@ import {
     PostPropertyPurchasesRequest,
     PostPropertyPurchasesResponse,
 } from "./types";
-import { ApiError, InternalServerError } from "@/error";
+import { ApiError, InternalServerError, ConflictError } from "@/error";
 
 export const PropertyPurchasesServiceImpl: PropertyPurchasesService = {
     /**

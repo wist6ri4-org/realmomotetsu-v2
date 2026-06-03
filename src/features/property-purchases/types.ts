@@ -7,7 +7,7 @@ import { PropertyPurchasesWithRelations } from "@/repositories/propertyPurchases
  */
 export type GetPropertyPurchasesRequest = {
     eventCode: string;
-}
+};
 
 /**
  * 物件駅情報の取得レスポンス
@@ -15,7 +15,7 @@ export type GetPropertyPurchasesRequest = {
  */
 export type GetPropertyPurchasesResponse = {
     propertyPurchases: PropertyPurchasesWithRelations[];
-}
+};
 
 /**
  * 物件駅購入の追加リクエスト
@@ -27,7 +27,7 @@ export type PostPropertyPurchasesRequest = {
     eventCode: string;
     teamCode: string;
     stationCode: string;
-}
+};
 
 /**
  * 物件駅購入の追加レスポンス
@@ -35,4 +35,4 @@ export type PostPropertyPurchasesRequest = {
  */
 export type PostPropertyPurchasesResponse = {
     propertyPurchase: PropertyPurchases;
-}
+};
