@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
 import { Handlers } from "@/app/api/utils/types";
-import { PointsBulkServiceImpl } from "@/features/points/bulk/service";
 import { PostBulkPointsRequestSchema, PostBulkPointsResponseSchema } from "@/features/points/bulk/validator";
 import { PostBulkPointsResponse } from "@/features/points/bulk/types";
 import { PointsBulkService } from "@/features/points/bulk/interface";
