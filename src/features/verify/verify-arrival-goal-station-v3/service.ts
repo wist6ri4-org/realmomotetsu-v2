@@ -64,6 +64,18 @@ export const VerifyArrivalGoalStationV3ServiceImpl: VerifyArrivalGoalStationV3Se
                 latestGoalStationCode,
             );
 
+            // 連続ゴールボーナス計算
+            const transitStations = await transitStationsRepository.findGoalStationsByEventCode(req.eventCode);
+            let consecutiveGoalCount = 0;
+            for (const transitStation of transitStations) {
+                if (transitStation.teamCode === req.teamCode) {
+                    consecutiveGoalCount++;
+                } else {
+                    break;
+                }
+            }
+            const consecutiveGoalBonus = GameLogicUtils.calculateConsecutiveGoalBonusV3(consecutiveGoalCount);
+
             // 最新の経由駅コード
             const latestTransitStationCode = await transitStationsRepository
                 .findLatestByTeamCode(req.teamCode)
@@ -89,7 +101,7 @@ export const VerifyArrivalGoalStationV3ServiceImpl: VerifyArrivalGoalStationV3Se
             }
 
             // ポイント不足エラー
-            const hasSufficientPoints = req.willPurchase && (points + arrivalPoints - price < 0);
+            const hasSufficientPoints = req.willPurchase && points + arrivalPoints + consecutiveGoalBonus - price < 0;
             if (hasSufficientPoints) {
                 throw new BadRequestError({
                     errorCode: VerifyArrivalGoalStationV3Result.E02_INSUFFICIENT_POINTS,

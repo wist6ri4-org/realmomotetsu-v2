@@ -71,6 +71,27 @@ export class TransitStationsRepository extends BaseRepository {
     }
 
     /**
+     * 指定されたイベントコードに紐づくゴール判定フラグがtrueの経由駅を取得
+     * @param eventCode - イベントコード
+     * @returns {Promise<TransitStations[]>} ゴール駅の経由駅の配列
+     */
+    async findGoalStationsByEventCode(eventCode: string): Promise<TransitStations[]> {
+        try {
+            return (await this.prisma.transitStations.findMany({
+                where: {
+                    eventCode: eventCode,
+                    isGoal: true,
+                },
+                orderBy: {
+                    id: "desc",
+                },
+            })) as TransitStations[];
+        } catch (error) {
+            this.handleDatabaseError(error, "findGoalStationsByEventCode");
+        }
+    }
+
+    /**
      * IDで経由駅を取得
      * @param id - 経由駅ID
      * @returns {Promise<TransitStationsWithRelations | null>} 経由駅情報またはnull
@@ -134,6 +155,35 @@ export class TransitStationsRepository extends BaseRepository {
             return result.count;
         } catch (error) {
             this.handleDatabaseError(error, "createMany");
+        }
+    }
+
+    /**
+     * 指定されたIDの経由駅を更新
+     * @param id - 更新対象のID
+     * @param transitStationData - 更新データ
+     * @returns {Promise<TransitStations>} 更新された経由駅
+     */
+    async update(
+        id: number,
+        transitStationData: {
+            stationCode?: string;
+            eventCode?: string;
+            teamCode?: string;
+            isGoal?: boolean;
+        },
+        tx?: PrismaTransactionClient,
+    ): Promise<TransitStations> {
+        const client = tx ?? this.prisma;
+        try {
+            return await client.transitStations.update({
+                where: {
+                    id: id,
+                },
+                data: transitStationData,
+            });
+        } catch (error) {
+            this.handleDatabaseError(error, "update");
         }
     }
 

@@ -123,6 +123,10 @@ export const GameConstants = {
         /** 駅数ごとの増加額(万円) */
         INCREMENT_PER_STATION_NUMBER: 1_000,
     } as const,
+
+    // TODO 連続ゴールボーナスに使用する定数は暫定。ゲームバランスを見ながら調整する。
+    /** 連続ゴールボーナスに使用する定数 */
+    CONSECUTIVE_GOAL_BONUS_PER_STATION_NUMBER: 1_000,
 } as const;
 
 export type GameConstants = typeof GameConstants;

@@ -18,10 +18,16 @@ export type PostArrivalGoalStationV3Request = {
 
 /**
  * 目的駅到着処理（V3）のレスポンス
- * @property { TransitStations } transitStation - 登録された経由駅
+ * @property { number } points - ポイント
+ * @property { PropertyPurchases | null } propertyPurchases - 物件購入情報
+ * @property { number | null } purchasePoints - 購入ポイント
+ * @property { number } consecutiveGoalCounts - 連続ゴール数
+ * @property { number } consecutiveGoalBonus - 連続ゴールボーナス
  */
 export type PostArrivalGoalStationV3Response = {
     points: number;
     propertyPurchases: PropertyPurchases | null;
     purchasePoints: number | null;
+    consecutiveGoalCounts: number;
+    consecutiveGoalBonus: number | null;
 };
