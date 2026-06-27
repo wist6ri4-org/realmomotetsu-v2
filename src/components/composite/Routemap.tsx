@@ -7,6 +7,7 @@ import { GoalStationsWithRelations } from "@/repositories/goalStations/GoalStati
 import { Stations, StationType, Teams } from "@/generated/prisma";
 import RouteListSymbolSVG from "../base/symbol/RouteListSymbolSVG";
 import styles from "../../styles/Routemap.module.css";
+import { PropertyPurchasesForRoutemap } from "@/repositories/propertyPurchases/PropertyPurchasesRepository";
 
 /**
  * Routemapのプロパティ
@@ -20,6 +21,7 @@ interface RoutemapProps {
     teamData: TeamData[];
     nextGoalStation: GoalStationsWithRelations | null;
     bombiiTeam: Teams | null;
+    propertyPurchases: PropertyPurchasesForRoutemap[];
     stationsFromDB: Stations[];
     configFileName?: string;
     visibleTeams?: string[];
@@ -188,6 +190,7 @@ const Routemap: React.FC<RoutemapProps> = ({
     teamData,
     nextGoalStation,
     bombiiTeam,
+    propertyPurchases,
     stationsFromDB,
     configFileName,
     visibleTeams = [],
@@ -323,7 +326,16 @@ const Routemap: React.FC<RoutemapProps> = ({
                                             case StationType.treasure:
                                                 return BoxConfig.TREASURE;
                                             case StationType.mission:
-                                                return BoxConfig.MISSION;
+                                                const purchase = propertyPurchases.find((purchase) => purchase.stationCode === station.code);
+                                                if (purchase) {
+                                                    return {
+                                                        rectFillColor: purchase.team.teamColor || BoxConfig.MISSION.rectFillColor,
+                                                        textFillColor: "",
+                                                        text: "",
+                                                    };
+                                                } else {
+                                                    return BoxConfig.MISSION;
+                                                }
                                             default:
                                                 return {
                                                     rectFillColor: stationFromDB?.isMissionSet

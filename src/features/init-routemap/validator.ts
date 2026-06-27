@@ -9,7 +9,18 @@ export const InitRoutemapRequestSchema = z.object({
 
 // 路線図のレスポンススキーマ
 export const InitRoutemapResponseSchema = z.object({
-    teamData: z.array(TeamDataSchema),
+    teamData: z.array(TeamDataSchema.omit({
+        points: true,
+        scoredPoints: true,
+        propertyPurchasePoints: true,
+        revenuePoints: true,
+    })),
     nextGoalStation: GoalStationsSchema.nullable(),
     bombiiTeam: TeamsSchema.nullable(),
+    propertyPurchases: z.array(z.object({
+        stationCode: z.string(),
+        team: z.object({
+            teamColor: z.string().nullable(),
+        }),
+    })),
 });
