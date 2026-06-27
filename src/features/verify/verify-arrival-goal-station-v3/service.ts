@@ -101,8 +101,8 @@ export const VerifyArrivalGoalStationV3ServiceImpl: VerifyArrivalGoalStationV3Se
             }
 
             // ポイント不足エラー
-            const hasSufficientPoints = req.willPurchase && points + arrivalPoints + consecutiveGoalBonus - price < 0;
-            if (hasSufficientPoints) {
+            const isInsufficientPoints = req.willPurchase && points + arrivalPoints + consecutiveGoalBonus - price < 0;
+            if (isInsufficientPoints) {
                 throw new BadRequestError({
                     errorCode: VerifyArrivalGoalStationV3Result.E02_INSUFFICIENT_POINTS,
                 });

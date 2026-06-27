@@ -50,6 +50,12 @@ export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
 
             // 最新の経由駅を取得
             const latestTransitStation = await transitStationsRepository.findLatestByTeamCode(req.teamCode);
+            if (!latestTransitStation) {
+                throw new DataIntegrityError("Latest transit station not found for the team. Data integrity issue.", {
+                    eventCode: req.eventCode,
+                    teamCode: req.teamCode,
+                });
+            }
 
             const nearbyStations = await nearbyStationsRepository.findByEventTypeCode(req.eventTypeCode);
 
@@ -62,7 +68,7 @@ export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
 
             // 連続ゴールボーナス計算
             const transitStations = await transitStationsRepository.findGoalStationsByEventCode(req.eventCode);
-            let consecutiveGoalCount = 0;
+            let consecutiveGoalCount = 1;
             for (const transitStation of transitStations) {
                 if (transitStation.teamCode === req.teamCode) {
                     consecutiveGoalCount++;
@@ -128,7 +134,7 @@ export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
 
                     // 最新の経由駅のゴール判定フラグを更新
                     await transitStationsRepository.update(
-                        latestTransitStation?.id ?? 0,
+                        latestTransitStation.id,
                         {
                             isGoal: true,
                         },
@@ -173,7 +179,7 @@ export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
                 points: createdPoints.points,
                 propertyPurchases: createdPropertyPurchases,
                 purchasePoints: createdPurchasePoints?.points ?? null,
-                consecutiveGoalCounts: consecutiveGoalCount,
+                consecutiveGoalCount: consecutiveGoalCount,
                 consecutiveGoalBonus: createdGoalBonusPoints?.points ?? null,
             };
             return res;

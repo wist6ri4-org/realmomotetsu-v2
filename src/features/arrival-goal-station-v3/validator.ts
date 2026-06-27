@@ -19,6 +19,6 @@ export const PostArrivalGoalStationV3ResponseSchema = z.object({
     points: z.number(),
     propertyPurchases: PropertyPurchasesSchema.nullable(),
     purchasePoints: z.number().nullable(),
-    consecutiveGoalCounts: z.number(),
+    consecutiveGoalCount: z.number(),
     consecutiveGoalBonus: z.number().nullable(),
 });

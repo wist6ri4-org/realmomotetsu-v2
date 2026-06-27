@@ -22,12 +22,12 @@ export type PostArrivalGoalStationV3Request = {
  * @property { PropertyPurchases | null } propertyPurchases - 物件購入情報
  * @property { number | null } purchasePoints - 購入ポイント
  * @property { number } consecutiveGoalCounts - 連続ゴール数
- * @property { number } consecutiveGoalBonus - 連続ゴールボーナス
+ * @property { number | null } consecutiveGoalBonus - 連続ゴールボーナス
  */
 export type PostArrivalGoalStationV3Response = {
     points: number;
     propertyPurchases: PropertyPurchases | null;
     purchasePoints: number | null;
-    consecutiveGoalCounts: number;
+    consecutiveGoalCount: number;
     consecutiveGoalBonus: number | null;
 };
