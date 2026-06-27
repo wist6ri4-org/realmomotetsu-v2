@@ -4,7 +4,7 @@ import BombiiSymbolSVG from "../base/symbol/BombiiSymbolSVG";
 import StationSymbolSVG from "../base/symbol/StationSymbolSVG";
 import { TeamData } from "@/types/TeamData";
 import { GoalStationsWithRelations } from "@/repositories/goalStations/GoalStationsRepository";
-import { Stations, Teams } from "@/generated/prisma";
+import { Stations, StationType, Teams } from "@/generated/prisma";
 import RouteListSymbolSVG from "../base/symbol/RouteListSymbolSVG";
 import styles from "../../styles/Routemap.module.css";
 
@@ -132,6 +132,54 @@ interface RoutemapConfig {
 const MISSION_SET_COLOR = "orange";
 
 /**
+ * BoxConfig型定義
+ * @param {string} rectFillColor - 駅マスの塗りつぶし色
+ * @param {string} textFillColor - 駅マスの文字の塗りつぶし色
+ * @param {string} text - 駅マスに表示する文字
+ */
+type BoxConfigType = {
+    rectFillColor: string;
+    textFillColor: string;
+    text: string;
+}
+
+/**
+ * BoxConfigに関する定数
+ * @param {object} PLUS - プラス駅の設定
+ * @param {object} MINUS - マイナス駅の設定
+ * @param {object} CARD - カード駅の設定
+ * @param {object} TREASURE - 宝くじ駅の設定
+ * @param {object} MISSION - ミッション駅の設定
+ */
+const BoxConfig = {
+    PLUS: {
+        rectFillColor: "#d3eeff",
+        textFillColor: "blue",
+        text: "＋",
+    },
+    MINUS: {
+        rectFillColor: "#ffeeee",
+        textFillColor: "red",
+        text: "－",
+    },
+    CARD: {
+        rectFillColor: "white",
+        textFillColor: "green",
+        text: "★",
+    },
+    TREASURE: {
+        rectFillColor: "white",
+        textFillColor: "black",
+        text: "宝",
+    },
+    MISSION: {
+        rectFillColor: "whitesmoke",
+        textFillColor: "",
+        text: "",
+    }
+} as const;
+
+/**
  * Routemapコンポーネント
  * @param {RoutemapProps} props - Routemapのプロパティ
  * @return {React.JSX.Element} - Routemapコンポーネント
@@ -163,7 +211,7 @@ const Routemap: React.FC<RoutemapProps> = ({
                 setConfig(config.default as RoutemapConfig);
                 setGoalStationMapping(
                     config.default.stations.find((station: Station) => station.code === nextGoalStation?.stationCode) ||
-                        null
+                    null
                 );
                 if (handleAspectRatio) {
                     handleAspectRatio(
@@ -264,24 +312,62 @@ const Routemap: React.FC<RoutemapProps> = ({
                             <g className="u" data-layer="station-box" style={{ visibility: "visible" }}>
                                 {config.stations.map((station, index) => {
                                     const stationFromDB = stationsFromDB.find((s) => s.stationCode === station.code);
+                                    const boxConfig: BoxConfigType = (() => {
+                                        switch (stationFromDB?.stationType) {
+                                            case StationType.plus:
+                                                return BoxConfig.PLUS;
+                                            case StationType.minus:
+                                                return BoxConfig.MINUS;
+                                            case StationType.card:
+                                                return BoxConfig.CARD;
+                                            case StationType.treasure:
+                                                return BoxConfig.TREASURE;
+                                            case StationType.mission:
+                                                return BoxConfig.MISSION;
+                                            default:
+                                                return {
+                                                    rectFillColor: stationFromDB?.isMissionSet
+                                                        ? MISSION_SET_COLOR
+                                                        : config.stationBoxStyle.fill,
+                                                    textFillColor: "",
+                                                    text: "",
+                                                };
+                                        }
+                                    })();
+
                                     return (
-                                        <rect
-                                            key={`box-${index}`}
-                                            id={`box-${station.code}`}
-                                            x={station.box.x}
-                                            y={station.box.y}
-                                            width={station.box.width}
-                                            height={station.box.height}
-                                            style={{
-                                                stroke: config.stationBoxStyle.stroke,
-                                                fill: stationFromDB?.isMissionSet
-                                                    ? MISSION_SET_COLOR
-                                                    : config.stationBoxStyle.fill,
-                                                strokeWidth: config.stationBoxStyle.strokeWidth,
-                                                strokeLinejoin: config.stationBoxStyle.strokeLineJoin as "round",
-                                            }}
-                                            data-mut=""
-                                        />
+                                        <>
+                                            <rect
+                                                key={`box-${index}`}
+                                                id={`box-${station.code}`}
+                                                x={station.box.x}
+                                                y={station.box.y}
+                                                width={station.box.width}
+                                                height={station.box.height}
+                                                style={{
+                                                    stroke: config.stationBoxStyle.stroke,
+                                                    fill: boxConfig.rectFillColor,
+                                                    strokeWidth: config.stationBoxStyle.strokeWidth,
+                                                    strokeLinejoin: config.stationBoxStyle.strokeLineJoin as "round",
+                                                }}
+                                                data-mut=""
+                                            />
+                                            <text
+                                                key={`code-${index}`}
+                                                x={(parseFloat(station.box.x) + parseFloat(station.box.width) / 2).toString()}
+                                                y={(parseFloat(station.box.y) + parseFloat(station.box.height) / 2).toString()}
+                                                textAnchor="middle"
+                                                dominantBaseline="central"
+                                                fontSize={(parseFloat(station.box.height) * 0.6).toString()}
+                                                fontWeight="900"
+                                                fill={boxConfig.textFillColor}
+                                                pointerEvents="none"
+                                                style={{ userSelect: "none" }}
+                                            >
+                                                {boxConfig.text}
+                                            </text>
+                                        </>
+
                                     );
                                 })}
                             </g>
