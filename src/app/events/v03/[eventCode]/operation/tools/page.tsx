@@ -117,7 +117,7 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                 {!isLoading && !isInitDataLoading && !error && !contextError && (
                     <>
                         <RegisterGoalStationsFormV3
-                            stations={stations.filter((station) => station.stationType == StationType.mission)}
+                            stations={stations.filter((station) => station.stationType === StationType.mission)}
                             event={event!} onSubmit={handleUpdate}
                             isOperating={isOperating}
                         />
@@ -132,7 +132,7 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                         <Divider />
                         <RegisterPropertyPurchasesFormV3
                             teams={teams}
-                            stations={stations.filter((station) => station.stationType == StationType.mission)}
+                            stations={stations.filter((station) => station.stationType === StationType.mission)}
                             onSubmit={handleUpdate}
                             isOperating={isOperating}
                         />

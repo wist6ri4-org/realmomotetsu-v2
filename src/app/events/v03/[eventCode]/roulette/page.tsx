@@ -131,7 +131,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
                     <>
                         <Box sx={{ marginX: 2 }}>
                             <RouletteFormV3
-                                stations={stations.filter((station) => station.stationType == StationType.mission)}
+                                stations={stations.filter((station) => station.stationType === StationType.mission)}
                                 nearbyStations={nearbyStations}
                                 latestTransitStations={latestTransitStations}
                                 goalStations={goalStations}

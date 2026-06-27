@@ -118,8 +118,7 @@ export class RouletteUtils {
      * @param latestTransitStations - 最新の経由駅情報
      * @param goalStations - 既出目的駅のリスト
      * @param startStationCode - 開始駅のコード
-     * @param eliminationTimeRangeMinutes - 選択肢から除外する時間範囲（分）
-     * @returns {StationsProbabilitiesMap} 駅ごとの確率を含むマップ
+     * @return {string} 次に選択する駅のコード
      */
     static getWeightedStationCodeV3(
         stations: Stations[],
@@ -143,6 +142,7 @@ export class RouletteUtils {
 
     /**
      * 候補駅を絞り込む（V3）
+     * @param stations - すべての駅情報
      * @param graph - グラフ形式の駅接続情報
      * @param startStationCode - 開始駅のコード
      * @param latestTransitStations - 最新の経由駅情報
@@ -158,6 +158,13 @@ export class RouletteUtils {
     ): DistancesMap {
         const distances: DistancesMap = DijkstraUtils.calculateRequiredTimeAndStations(graph, startStationCode);
 
+        // mission駅のstationCodeをSetに変換して高速検索可能にする
+        const missionStationCodes = new Set(
+            stations
+                .filter((station) => station.stationType === StationType.mission)
+                .map((station) => station.stationCode)
+        );
+
         // 候補駅のフィルタリング
         const filteredDistances: DistancesMap = new Map(
             [...distances].filter(([key]) => {
@@ -170,7 +177,7 @@ export class RouletteUtils {
                     // 既出目的地駅に含まれないこと（空配列の場合はすべて選択可能）
                     (goalStations.length === 0 || !goalStations.some((station) => station.stationCode === key)) &&
                     // 駅の種類がmissionであること
-                    stations.find((station) => station.stationCode === key)?.stationType === StationType.mission
+                    missionStationCodes.has(key)
                 );
             }),
         );
