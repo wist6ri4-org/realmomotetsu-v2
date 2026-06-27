@@ -326,10 +326,10 @@ const Routemap: React.FC<RoutemapProps> = ({
                                             case StationType.treasure:
                                                 return BoxConfig.TREASURE;
                                             case StationType.mission:
-                                                if (propertyPurchases.some((purchase) => purchase.stationCode === station.code)) {
-                                                    const teamColor = propertyPurchases.find((purchase) => purchase.stationCode === station.code)?.team.teamColor;
+                                                const purchase = propertyPurchases.find((purchase) => purchase.stationCode === station.code);
+                                                if (purchase) {
                                                     return {
-                                                        rectFillColor: teamColor || BoxConfig.MISSION.rectFillColor,
+                                                        rectFillColor: purchase.team.teamColor || BoxConfig.MISSION.rectFillColor,
                                                         textFillColor: "",
                                                         text: "",
                                                     };

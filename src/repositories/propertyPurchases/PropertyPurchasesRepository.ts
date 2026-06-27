@@ -1,11 +1,29 @@
 import { Stations, PropertyPurchases, Events, Teams } from "@/generated/prisma";
 import { BaseRepository, PrismaTransactionClient } from "../base/BaseRepository";
 
-// includeありのPropertyPurchasesの型定義
+/**
+ * 物件駅購入情報のリレーションを含む型定義
+ * @property { Events } event - イベント情報
+ * @property { Teams } team - チーム情報
+ * @property { Stations } station - 駅情報
+ */
 export type PropertyPurchasesWithRelations = PropertyPurchases & {
     event: Events;
     team: Teams;
     station: Stations;
+};
+
+/**
+ * 物件駅購入情報の路線図用の型定義
+ * @property { string } stationCode - 駅コード
+ * @property { object } team - チーム情報
+ * @property { string | null } team.teamColor - チームカラー
+ */
+export type PropertyPurchasesForRoutemap = {
+    stationCode: string;
+    team: {
+        teamColor: string | null;
+    };
 };
 
 /**
@@ -34,6 +52,34 @@ export class PropertyPurchasesRepository extends BaseRepository {
             })) as PropertyPurchasesWithRelations[];
         } catch (error) {
             this.handleDatabaseError(error, this.findByEventCode.name);
+        }
+    }
+
+    /**
+     * 路線図用の物件駅情報を取得
+     *
+     * @param eventCode - イベントコード
+     */
+    async findPurchasedByEventCode(eventCode: string): Promise<PropertyPurchasesForRoutemap[]> {
+        try {
+            return await this.prisma.propertyPurchases.findMany({
+                select: {
+                    stationCode: true,
+                    team: {
+                        select: {
+                            teamColor: true,
+                        },
+                    },
+                },
+                where: {
+                    eventCode: eventCode,
+                },
+                orderBy: {
+                    createdAt: "asc",
+                },
+            });
+        } catch (error) {
+            this.handleDatabaseError(error, this.findPurchasedByEventCode.name);
         }
     }
 

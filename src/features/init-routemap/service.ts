@@ -16,36 +16,21 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
         const teamsRepository = RepositoryFactory.getTeamsRepository();
         const goalStationsRepository = RepositoryFactory.getGoalStationsRepository();
         const bombiiHistoriesRepository = RepositoryFactory.getBombiiHistoriesRepository();
-        const pointsRepository = RepositoryFactory.getPointsRepository();
         const eventsRepository = RepositoryFactory.getEventsRepository();
         const nearbyStationsRepository = RepositoryFactory.getNearbyStationsRepository();
         const propertyPurchasesRepository = RepositoryFactory.getPropertyPurchasesRepository();
 
         try {
             // 並列でデータを取得
-            const [
-                teams,
-                nextGoalStation,
-                currentBombiiHistory,
-                totalPoints,
-                totalScoredPoints,
-                totalPropertyPoints,
-                totalRevenuePoints,
-                events,
-                bombiiCounts,
-                propertyPurchases,
-            ] = await Promise.all([
-                teamsRepository.findByEventCode(req.eventCode),
-                goalStationsRepository.findLatestGoalStation(req.eventCode),
-                bombiiHistoriesRepository.findCurrentBombiiTeam(req.eventCode),
-                pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
-                pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
-                pointsRepository.sumPropertyPointsGroupedByTeamCode(req.eventCode),
-                pointsRepository.sumRevenuePointsGroupedByTeamCode(req.eventCode),
-                eventsRepository.findByEventCode(req.eventCode),
-                bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
-                propertyPurchasesRepository.findByEventCode(req.eventCode),
-            ]);
+            const [teams, nextGoalStation, currentBombiiHistory, events, bombiiCounts, propertyPurchases] =
+                await Promise.all([
+                    teamsRepository.findByEventCode(req.eventCode),
+                    goalStationsRepository.findLatestGoalStation(req.eventCode),
+                    bombiiHistoriesRepository.findCurrentBombiiTeam(req.eventCode),
+                    eventsRepository.findByEventCode(req.eventCode),
+                    bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
+                    propertyPurchasesRepository.findPurchasedByEventCode(req.eventCode),
+                ]);
 
             // イベント種別コードでデータを取得
             const eventTypeCode = events?.eventTypeCode || "";
@@ -64,10 +49,10 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
                     team.transitStations.at(0)?.stationCode || "",
                     nextGoalStation?.stationCode || "",
                 ),
-                points: totalPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
-                scoredPoints: totalScoredPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
-                propertyPurchasePoints: totalPropertyPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
-                revenuePoints: totalRevenuePoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
+                points: 0,
+                scoredPoints: 0,
+                propertyPurchasePoints: 0,
+                revenuePoints: 0,
                 bombiiCounts: bombiiCounts.find((b) => b.teamCode === team.teamCode)?.count || 0,
             }));
 

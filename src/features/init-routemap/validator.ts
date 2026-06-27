@@ -12,9 +12,10 @@ export const InitRoutemapResponseSchema = z.object({
     teamData: z.array(TeamDataSchema),
     nextGoalStation: GoalStationsSchema.nullable(),
     bombiiTeam: TeamsSchema.nullable(),
-    propertyPurchases: z.array(PropertyPurchasesSchema.extend({
-        event: EventsSchema,
-        team: TeamsSchema,
-        station: StationsSchema,
+    propertyPurchases: z.array(z.object({
+        stationCode: z.string(),
+        team: z.object({
+            teamColor: z.string().nullable(),
+        }),
     })),
 });
