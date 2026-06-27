@@ -3,7 +3,7 @@
  */
 "use client";
 
-import { GoalStations, Stations, TransitStations } from "@/generated/prisma";
+import { GoalStations, LatestTransitStations, Stations, TransitStations } from "@/generated/prisma";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
 import React, { useEffect, useReducer, useState } from "react";
@@ -29,7 +29,7 @@ import CustomAutoComplete from "@/components/base/CustomAutoComplete";
 interface RouletteFormV3Props {
     stations: Stations[];
     nearbyStations: NearbyStationsWithRelations[];
-    latestTransitStations: TransitStations[];
+    latestTransitStations: LatestTransitStations[];
     goalStations: GoalStations[];
     closestStations: ClosestStation[];
 }

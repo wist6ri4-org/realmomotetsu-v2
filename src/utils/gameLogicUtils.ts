@@ -72,7 +72,7 @@ export class GameLogicUtils {
      * @returns {number} 連続ゴールボーナス
      */
     static calculateConsecutiveGoalBonusV3(consecutiveGoalCount: number): number {
-        return consecutiveGoalCount === 0
+        return consecutiveGoalCount === 1
             ? 0
             : GameConstants.CONSECUTIVE_GOAL_BONUS_PER_STATION_NUMBER * (consecutiveGoalCount + 1);
     }
