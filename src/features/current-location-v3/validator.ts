@@ -1,4 +1,4 @@
-import { PointsSchema, TransitStationsSchema } from "@/generated/zod";
+import { PointsSchema, StationTypeSchema, TransitStationsSchema } from "@/generated/zod";
 import { z } from "zod";
 
 // 現在地登録のPOSTリクエストスキーマ
@@ -13,4 +13,5 @@ export const PostCurrentLocationV3ResponseSchema = z.object({
     transitStation: TransitStationsSchema,
     point: PointsSchema.optional(),
     teamDiscordWebhookUrl: z.string().url().optional(),
+    stationType: StationTypeSchema.optional(),
 });

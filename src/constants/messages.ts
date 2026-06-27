@@ -39,6 +39,11 @@ export const Messages = {
     STATION_MISMATCH: "最新の経由駅が目的駅と一致しませんが、到着処理を強制的に行いますか？",
     INSUFFICIENT_POINTS: "総資産が不足しているため、駅を購入することができません。",
     DUPLICATE_PROPERTY_PURCHASE: "この駅は既に購入されています。",
+    MISSION_STATION_ARRIVAL: "ミッション駅！\n{stationName}（{stationNameKana}）！\nミッションに　挑戦できます！",
+    PLUS_STATION_ARRIVAL: "{teamName}は　プラス駅に　止まった！\nプラス　{points}円！",
+    MINUS_STATION_ARRIVAL: "{teamName}は　マイナス駅に　止まった！\nマイナス　{points}円！",
+    CARD_STATION_ARRIVAL: "カード売り場駅！\n{stationName}（{stationNameKana}）！\nカードを　購入できます！",
+    TREASURE_STATION_ARRIVAL: "宝くじ駅！\n{stationName}（{stationNameKana}）！\n宝くじを　１枚差し上げます！",
 } as const;
 
 export type Messages = typeof Messages;
