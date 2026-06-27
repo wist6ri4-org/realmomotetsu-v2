@@ -1,6 +1,6 @@
 import { Teams } from "@/generated/prisma";
 import { InitRoutemapService } from "./interface";
-import { InitRoutemapRequest, InitRoutemapResponse } from "./types";
+import { InitRoutemapRequest, InitRoutemapResponse, TeamDataForRoutemap } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { TeamData } from "@/types/TeamData";
 import DijkstraUtils from "@/utils/dijkstraUtils";
@@ -38,7 +38,7 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
             const convertedStationGraph = DijkstraUtils.convertNearbyStationsToStationGraph(stationGraph);
 
             // TeamsをTeamDataに変換
-            const teamData: TeamData[] = teams.map((team) => ({
+            const teamData: TeamDataForRoutemap[] = teams.map((team) => ({
                 id: team.id,
                 teamCode: team.teamCode,
                 teamName: team.teamName,
@@ -49,10 +49,6 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
                     team.transitStations.at(0)?.stationCode || "",
                     nextGoalStation?.stationCode || "",
                 ),
-                points: 0,
-                scoredPoints: 0,
-                propertyPurchasePoints: 0,
-                revenuePoints: 0,
                 bombiiCounts: bombiiCounts.find((b) => b.teamCode === team.teamCode)?.count || 0,
             }));
 

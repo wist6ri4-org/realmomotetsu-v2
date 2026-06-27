@@ -1,5 +1,5 @@
 import { GoalStations, Teams } from "@/generated/prisma";
-import { PropertyPurchasesForRoutemap, PropertyPurchasesWithRelations } from "@/repositories/propertyPurchases/PropertyPurchasesRepository";
+import { PropertyPurchasesForRoutemap } from "@/repositories/propertyPurchases/PropertyPurchasesRepository";
 import { TeamData } from "@/types/TeamData";
 
 /**
@@ -10,6 +10,11 @@ export type InitRoutemapRequest = {
     eventCode: string;
 };
 
+export type TeamDataForRoutemap = Omit<
+    TeamData,
+    "points" | "scoredPoints" | "propertyPurchasePoints" | "revenuePoints"
+>;
+
 /**
  * 路線図の初期化レスポンス
  * @property { TeamData[] } teamData - チームごとのデータ配列
@@ -18,7 +23,7 @@ export type InitRoutemapRequest = {
  * @property { PropertyPurchasesForRoutemap[] } propertyPurchases - 物件駅購入情報の配列
  */
 export type InitRoutemapResponse = {
-    teamData: TeamData[];
+    teamData: TeamDataForRoutemap[];
     nextGoalStation: GoalStations | null;
     bombiiTeam: Teams | null;
     propertyPurchases: PropertyPurchasesForRoutemap[];

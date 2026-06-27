@@ -7,7 +7,7 @@ import { GoalStationsWithRelations } from "@/repositories/goalStations/GoalStati
 import { Stations, StationType, Teams } from "@/generated/prisma";
 import RouteListSymbolSVG from "../base/symbol/RouteListSymbolSVG";
 import styles from "../../styles/Routemap.module.css";
-import { PropertyPurchasesWithRelations } from "@/repositories/propertyPurchases/PropertyPurchasesRepository";
+import { PropertyPurchasesForRoutemap } from "@/repositories/propertyPurchases/PropertyPurchasesRepository";
 
 /**
  * Routemapのプロパティ
@@ -21,7 +21,7 @@ interface RoutemapProps {
     teamData: TeamData[];
     nextGoalStation: GoalStationsWithRelations | null;
     bombiiTeam: Teams | null;
-    propertyPurchases: PropertyPurchasesWithRelations[];
+    propertyPurchases: PropertyPurchasesForRoutemap[];
     stationsFromDB: Stations[];
     configFileName?: string;
     visibleTeams?: string[];

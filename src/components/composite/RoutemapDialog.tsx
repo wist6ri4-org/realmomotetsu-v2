@@ -28,7 +28,7 @@ import { Teams } from "@/generated/prisma";
 import { useEventContext } from "@/app/events/layout";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
-import { PropertyPurchasesWithRelations } from "@/repositories/propertyPurchases/PropertyPurchasesRepository";
+import { PropertyPurchasesForRoutemap } from "@/repositories/propertyPurchases/PropertyPurchasesRepository";
 
 // ズーム設定定数
 const ZOOM_CONFIG = {
@@ -51,7 +51,7 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
     const [teamData, setTeamData] = useState<TeamData[]>([]);
     const [nextGoalStation, setNextGoalStation] = useState<GoalStationsWithRelations | null>(null);
     const [bombiiTeam, setBombiiTeam] = useState<Teams | null>(null);
-    const [propertyPurchases, setPropertyPurchases] = useState<PropertyPurchasesWithRelations[]>([]);
+    const [propertyPurchases, setPropertyPurchases] = useState<PropertyPurchasesForRoutemap[]>([]);
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -110,7 +110,7 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
             setTeamData(teamData as TeamData[]);
             setNextGoalStation(nextGoalStationData as GoalStationsWithRelations);
             setBombiiTeam(bombiiTeamData as Teams);
-            setPropertyPurchases(propertyPurchases as PropertyPurchasesWithRelations[]);
+            setPropertyPurchases(propertyPurchases as PropertyPurchasesForRoutemap[]);
 
             // 初期表示では全チームを表示
             setVisibleTeams((teamData as TeamData[]).map((team) => team.teamCode));
