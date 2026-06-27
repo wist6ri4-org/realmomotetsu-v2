@@ -16,6 +16,7 @@
  *  "v3" - 新ルーレットロジック（経由駅と既出目的駅を考慮せず、開始駅からの距離のみで候補駅を絞り込む）
  */
 
+import { Stations } from "@/generated/zod/index.js";
 import { PrismaClient } from "../../src/generated/prisma/index.js";
 import DijkstraUtils, { StationsGraph, StationsProbabilitiesMap } from "../../src/utils/dijkstraUtils.js";
 import { RouletteUtils } from "../../src/utils/rouletteUtils.js";
@@ -45,21 +46,21 @@ function calculateProbabilitiesFromStation(graph: StationsGraph, startStationCod
     );
 }
 
-function calculateProbabilitiesFromStationV3(graph: StationsGraph, startStationCode: string): StationsProbabilitiesMap {
-    RouletteUtils.getCandidateStationDistancesV3(graph, startStationCode, [], []);
+function calculateProbabilitiesFromStationV3(stations: Stations[], graph: StationsGraph, startStationCode: string): StationsProbabilitiesMap {
+    RouletteUtils.getCandidateStationDistancesV3(stations, graph, startStationCode, [], []);
     return RouletteUtils.calculateProbabilitiesV3(
-        RouletteUtils.getCandidateStationDistancesV3(graph, startStationCode, [], []),
+        RouletteUtils.getCandidateStationDistancesV3(stations, graph, startStationCode, [], []),
     );
 }
 
 /**
  * ① 単一駅起点モード: 指定駅からの各候補駅の出現確率を表示
  */
-function runSingleMode(graph: StationsGraph, startStationCode: string, stationMap: Map<string, StationInfo>) {
+function runSingleMode(stations: Stations[], graph: StationsGraph, startStationCode: string, stationMap: Map<string, StationInfo>) {
     const startName = stationMap.get(startStationCode)?.name ?? startStationCode;
     const probabilities =
         VERSION === "v3"
-            ? calculateProbabilitiesFromStationV3(graph, startStationCode)
+            ? calculateProbabilitiesFromStationV3(stations, graph, startStationCode)
             : calculateProbabilitiesFromStation(graph, startStationCode);
     const distances = DijkstraUtils.calculateRequiredTimeAndStations(graph, startStationCode);
 
@@ -117,7 +118,7 @@ function runSingleMode(graph: StationsGraph, startStationCode: string, stationMa
 /**
  * ② 全駅起点モード: 全駅から計算したときの各駅の平均出現確率を表示
  */
-function runAllMode(graph: StationsGraph, stationMap: Map<string, StationInfo>) {
+function runAllMode(stations: Stations[], graph: StationsGraph, stationMap: Map<string, StationInfo>) {
     const allStationCodes = Array.from(stationMap.keys());
     // 各駅の出現確率の合計と出現回数
     const totalProb = new Map<string, number>();
@@ -137,7 +138,7 @@ function runAllMode(graph: StationsGraph, stationMap: Map<string, StationInfo>) 
 
         const probabilities =
             VERSION === "v3"
-                ? calculateProbabilitiesFromStationV3(graph, startCode)
+                ? calculateProbabilitiesFromStationV3(stations, graph, startCode)
                 : calculateProbabilitiesFromStation(graph, startCode);
 
         probabilities.forEach((prob, destCode) => {
@@ -266,9 +267,9 @@ async function main() {
 
     // 4. モードに応じて実行
     if (MODE === "single") {
-        runSingleMode(graph, START_STATION_CODE, stationMap);
+        runSingleMode(stations, graph, START_STATION_CODE, stationMap);
     } else {
-        runAllMode(graph, stationMap);
+        runAllMode(stations, graph, stationMap);
     }
 }
 
