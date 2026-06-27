@@ -140,7 +140,7 @@ export const TeamCardV3: React.FC<TeamCardV3Props> = ({
                         >
                             <Grid size={4}>
                                 <Typography variant="body2">
-                                    <strong>総資産</strong>
+                                    <strong>持ち金</strong>
                                 </Typography>
                             </Grid>
                             <Grid size={8}>
