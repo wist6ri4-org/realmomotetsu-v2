@@ -14,7 +14,7 @@ import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { GetLatestGoalStationsResponse } from "@/features/goal-stations/latest/types";
 import { GetLatestTransitStationsResponse } from "@/features/transit-stations/latest/types";
-import { Events, LatestTransitStations, Stations, Teams } from "@/generated/prisma";
+import { Events, LatestTransitStations, Stations, StationType, Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useGoalDialog } from "@/hooks/useGoalDialog";
@@ -214,11 +214,86 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
             await showAlertDialog({
                 title: DialogConstants.TITLE.REGISTERED,
                 message: getMessage("REGISTER_SUCCESS", { data: "現在地" }),
+                buttonColor: "primary",
             });
 
-            // 目的駅に到着した場合、ゴールダイアログを表示
-            if (selectedStationCodeInput.value === nextGoalStationCode) {
-                await showGoalDialog();
+            switch (responseData.stationType) {
+                // ミッション駅の場合
+                case StationType.mission: {
+                    // 目的駅に到着した場合、ゴールダイアログを表示
+                    if (selectedStationCodeInput.value === nextGoalStationCode) {
+                        await showGoalDialog();
+                    }
+
+                    // ミッション駅到着のダイアログを表示
+                    await showAlertDialog({
+                        title: DialogConstants.TITLE.MISSION_STATION,
+                        message: getMessage(
+                            "MISSION_STATION_ARRIVAL",
+                            { stationName: station.name, stationNameKana: station.kana }
+                        ),
+                        buttonColor: "primary",
+                    });
+                    break;
+                }
+
+                // プラス駅の場合
+                case StationType.plus: {
+                    // プラス額を表示するダイアログを表示
+                    const plusPoints = responseData.point?.points ?? 0;
+                    await showAlertDialog({
+                        title: DialogConstants.TITLE.PLUS_STATION,
+                        message: getMessage(
+                            "PLUS_STATION_ARRIVAL",
+                            { teamName: team.teamName, points: Converter.convertPointsToYenV3(plusPoints) }
+                        ),
+                        buttonColor: "primary",
+                    });
+                    break;
+                }
+
+                // マイナス駅の場合
+                case StationType.minus: {
+                    // マイナス額を表示するダイアログを表示
+                    const minusPoints = responseData.point?.points ?? 0;
+                    await showAlertDialog({
+                        title: DialogConstants.TITLE.MINUS_STATION,
+                        message: getMessage(
+                            "MINUS_STATION_ARRIVAL",
+                            { teamName: team.teamName, points: Converter.convertPointsToYenV3(-1 * minusPoints) }
+                        ),
+                        buttonColor: "primary",
+                    });
+                    break;
+                }
+
+                // カード駅の場合
+                case StationType.card: {
+                    // カード駅到着のダイアログを表示
+                    await showAlertDialog({
+                        title: DialogConstants.TITLE.CARD_STATION,
+                        message: getMessage(
+                            "CARD_STATION_ARRIVAL",
+                            { stationName: station.name, stationNameKana: station.kana }
+                        ),
+                        buttonColor: "primary",
+                    });
+                    break;
+                }
+
+                // 宝くじ駅の場合
+                case StationType.treasure: {
+                    // 宝くじ駅到着のダイアログを表示
+                    await showAlertDialog({
+                        title: DialogConstants.TITLE.TREASURE_STATION,
+                        message: getMessage(
+                            "TREASURE_STATION_ARRIVAL",
+                            { stationName: station.name, stationNameKana: station.kana }
+                        ),
+                        buttonColor: "primary",
+                    });
+                    break;
+                }
             }
 
             selectedTeamCodeInput.reset();
@@ -314,7 +389,9 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
                 isConfirmOpen={isConfirmOpen}
                 title={dialogOptions.title}
                 message={dialogOptions.message}
+                confirmButtonColor={dialogOptions.confirmButtonColor}
                 onConfirm={handleConfirm}
+                cancelButtonColor={dialogOptions.cancelButtonColor}
                 onCancel={handleCancel}
                 confirmText={dialogOptions.confirmText}
             />
@@ -322,6 +399,7 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
                 isAlertOpen={isAlertOpen}
                 title={alertOptions.title}
                 message={alertOptions.message}
+                buttonColor={alertOptions.buttonColor}
                 onOk={handleAlertOk}
                 okText={alertOptions.okText}
             />
