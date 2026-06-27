@@ -3,7 +3,7 @@
  */
 export const DialogConstants = {
     TEXT: {
-        OK: "OK",
+        OK: "ＯＫ",
         CANCEL: "キャンセル",
         CLOSE: "閉じる",
     },
@@ -12,6 +12,11 @@ export const DialogConstants = {
         UPDATED: "更新完了",
         ERROR: "エラー",
         WARNING: "警告",
+        PLUS_STATION: "プラス駅　到着！",
+        MINUS_STATION: "マイナス駅　到着！",
+        CARD_STATION: "カード駅　到着！",
+        MISSION_STATION: "ミッション駅　到着！",
+        TREASURE_STATION: "宝くじ駅　到着！",
     },
     MESSAGE: {
         REGISTER_SUCCESS: "登録が完了しました。",

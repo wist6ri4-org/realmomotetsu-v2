@@ -23,7 +23,11 @@ export class UsersRepository extends BaseRepository {
                 include: {
                     attendances: {
                         include: {
-                            event: true,
+                            event: {
+                                include: {
+                                    eventType: true,
+                                }
+                            },
                         },
                         where: {
                             event: {
@@ -34,7 +38,7 @@ export class UsersRepository extends BaseRepository {
                         },
                         orderBy: {
                             event: {
-                                startDate: "desc"
+                                startDate: "desc",
                             },
                         },
                     },
@@ -86,7 +90,7 @@ export class UsersRepository extends BaseRepository {
             email?: string;
             nickname?: string;
             iconUrl?: string;
-        }
+        },
     ): Promise<UsersWithRelations> {
         try {
             await this.prisma.users.update({

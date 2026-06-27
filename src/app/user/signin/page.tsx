@@ -47,10 +47,9 @@ const SignInPage: React.FC = (): React.JSX.Element => {
             if (error) {
                 setError(Messages.LOGIN_FAILED);
             } else {
-                const eventCode = await fetchEventCode(user as User);
-                if (eventCode) {
-                    router.push(`/events/${eventCode}/home`);
-                    return;
+                const [eventCode, versionPath] = await fetchEventCodeAndVersionPath(user as User);
+                if (eventCode && versionPath) {
+                    router.replace(`/events/${versionPath}/${eventCode}/home`);
                 } else {
                     setError(Messages.ATTENDANCES_NOT_REGISTERED);
                 }
@@ -65,18 +64,18 @@ const SignInPage: React.FC = (): React.JSX.Element => {
     /**
      * 参加している最新のイベントコードを取得する
      * @param {User} sbUser - Supabaseのユーザーオブジェクト
-     * @return {Promise<string>} - 参加しているイベントコード
+     * @return {Promise<[string, string]>} - 参加しているイベントコード、イベントバージョンパスのタプル
      */
-    const fetchEventCode = async (sbUser: User): Promise<string> => {
+    const fetchEventCodeAndVersionPath = async (sbUser: User): Promise<[string, string]> => {
         try {
             setError(null);
 
             const uuid = sbUser.id;
-            return await UserUtils.fetchEventCode(uuid);
+            return await UserUtils.fetchEventCodeAndVersionPath(uuid);
         } catch (error) {
             const appError = ApplicationErrorFactory.normalize(error);
             ApplicationErrorHandler.logError(appError, "WARN");
-            return "";
+            return ["", ""];
         }
     };
 

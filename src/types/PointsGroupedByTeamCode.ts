@@ -23,5 +23,7 @@ export const PointsGroupedByTeamCodeSchema = z.record(
     z.object({
         points: z.array(PointsSchema),
         scored: z.array(PointsSchema),
+        property: z.array(PointsSchema),
+        revenue: z.array(PointsSchema),
     })
 );

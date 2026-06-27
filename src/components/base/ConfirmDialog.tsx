@@ -1,6 +1,8 @@
 import React from "react";
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Stack } from "@mui/material";
 import { DialogConstants } from "@/constants/dialogConstants";
+import CustomButton from "./CustomButton";
+import { ColorNames } from "@/theme/colors";
 
 /**
  * ConfirmDialogコンポーネントのプロパティ型定義
@@ -16,6 +18,8 @@ interface ConfirmDialogProps {
     isConfirmOpen: boolean;
     title?: string;
     message: string;
+    confirmButtonColor?: ColorNames;
+    cancelButtonColor?: ColorNames;
     onConfirm: () => void;
     onCancel: () => void;
     confirmText?: string;
@@ -31,6 +35,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     isConfirmOpen,
     title,
     message,
+    confirmButtonColor = "warning",
+    cancelButtonColor = "primary",
     onConfirm,
     onCancel,
     confirmText = DialogConstants.TEXT.OK,
@@ -57,6 +63,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             aria-labelledby="confirm-dialog-title"
             aria-describedby="confirm-dialog-description"
             sx={{ zIndex: 1000 }}
+            maxWidth="lg"
+            fullWidth
         >
             {title && <DialogTitle id="confirm-dialog-title">{title}</DialogTitle>}
             <DialogContent>
@@ -65,12 +73,28 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleCancel} color="primary">
-                    {cancelText}
-                </Button>
-                <Button onClick={handleConfirm} color="primary" variant="contained">
-                    {confirmText}
-                </Button>
+                <Stack
+                    direction="column"
+                    spacing={1.5}
+                    sx={{ width: "100%" }}
+                >
+                    <CustomButton
+                        onClick={handleCancel}
+                        color={cancelButtonColor}
+                        variant="outlined"
+                        fullWidth
+                    >
+                        {cancelText}
+                    </CustomButton>
+                    <CustomButton
+                        onClick={handleConfirm}
+                        color={confirmButtonColor}
+                        variant="contained"
+                        fullWidth
+                    >
+                        {confirmText}
+                    </CustomButton>
+                </Stack>
             </DialogActions>
         </Dialog>
     );

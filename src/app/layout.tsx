@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, DotGothic16 } from "next/font/google";
 import "./globals.css";
 import { Container } from "@mui/material";
@@ -46,6 +46,16 @@ export const metadata: Metadata = {
         'emotion-insertion-point': '',
     },
 };
+
+// export const viewport: Viewport = {
+//     width: "device-width",
+//     height: "device-height",
+//     initialScale: 1,
+//     maximumScale: 1,
+//     userScalable: false,
+//     interactiveWidget: "overlays-content",
+//     viewportFit: "cover",
+// }
 
 /**
  * アプリケーションのルートレイアウト

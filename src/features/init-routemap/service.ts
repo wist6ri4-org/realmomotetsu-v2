@@ -1,6 +1,6 @@
 import { Teams } from "@/generated/prisma";
 import { InitRoutemapService } from "./interface";
-import { InitRoutemapRequest, InitRoutemapResponse } from "./types";
+import { InitRoutemapRequest, InitRoutemapResponse, TeamDataForRoutemap } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { TeamData } from "@/types/TeamData";
 import DijkstraUtils from "@/utils/dijkstraUtils";
@@ -16,30 +16,29 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
         const teamsRepository = RepositoryFactory.getTeamsRepository();
         const goalStationsRepository = RepositoryFactory.getGoalStationsRepository();
         const bombiiHistoriesRepository = RepositoryFactory.getBombiiHistoriesRepository();
-        const pointsRepository = RepositoryFactory.getPointsRepository();
         const eventsRepository = RepositoryFactory.getEventsRepository();
         const nearbyStationsRepository = RepositoryFactory.getNearbyStationsRepository();
+        const propertyPurchasesRepository = RepositoryFactory.getPropertyPurchasesRepository();
 
         try {
             // 並列でデータを取得
-            const [teams, nextGoalStation, currentBombiiHistory, totalPoints, totalScoredPoints, events, bombiiCounts] =
+            const [teams, nextGoalStation, currentBombiiHistory, events, bombiiCounts, propertyPurchases] =
                 await Promise.all([
                     teamsRepository.findByEventCode(req.eventCode),
-                    goalStationsRepository.findNextGoalStation(req.eventCode),
+                    goalStationsRepository.findLatestGoalStation(req.eventCode),
                     bombiiHistoriesRepository.findCurrentBombiiTeam(req.eventCode),
-                    pointsRepository.sumPointsGroupedByTeamCode(req.eventCode),
-                    pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
                     eventsRepository.findByEventCode(req.eventCode),
                     bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
+                    propertyPurchasesRepository.findPurchasedByEventCode(req.eventCode),
                 ]);
 
             // イベント種別コードでデータを取得
             const eventTypeCode = events?.eventTypeCode || "";
             const stationGraph = await nearbyStationsRepository.findByEventTypeCode(eventTypeCode);
-            const convertedStationGraph = DijkstraUtils.convertToStationGraph(stationGraph);
+            const convertedStationGraph = DijkstraUtils.convertNearbyStationsToStationGraph(stationGraph);
 
             // TeamsをTeamDataに変換
-            const teamData: TeamData[] = teams.map((team) => ({
+            const teamData: TeamDataForRoutemap[] = teams.map((team) => ({
                 id: team.id,
                 teamCode: team.teamCode,
                 teamName: team.teamName,
@@ -48,10 +47,8 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
                 remainingStationsNumber: DijkstraUtils.calculateRemainingStationsNumber(
                     convertedStationGraph,
                     team.transitStations.at(0)?.stationCode || "",
-                    nextGoalStation?.stationCode || ""
+                    nextGoalStation?.stationCode || "",
                 ),
-                points: totalPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
-                scoredPoints: totalScoredPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 bombiiCounts: bombiiCounts.find((b) => b.teamCode === team.teamCode)?.count || 0,
             }));
 
@@ -64,6 +61,7 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
                     teamCode: team.teamCode,
                     teamName: team.teamName,
                     teamColor: team.teamColor || "",
+                    discordWebhookUrl: team.discordWebhookUrl,
                     eventCode: team.eventCode,
                     createdAt: team.createdAt,
                     updatedAt: team.updatedAt,
@@ -75,6 +73,7 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
                 teamData: teamData,
                 nextGoalStation: nextGoalStation,
                 bombiiTeam: bombiiTeam,
+                propertyPurchases: propertyPurchases,
             };
 
             return res;

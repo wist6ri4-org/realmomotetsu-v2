@@ -1,5 +1,5 @@
 import { TransitStations, Stations, LatestTransitStations, PointStatus, Points } from "@/generated/prisma";
-import { BaseRepository } from "../base/BaseRepository";
+import { BaseRepository, PrismaTransactionClient } from "../base/BaseRepository";
 
 // includeありのTransitStationsの型定義
 export type TransitStationsWithRelations = TransitStations & {
@@ -54,6 +54,44 @@ export class TransitStationsRepository extends BaseRepository {
     }
 
     /**
+     * 指定されたチームコードに紐づく最新の経由駅を取得
+     * @param teamCode - チームコード
+     * @returns {Promise<LatestTransitStations>} 最新経由駅
+     */
+    async findLatestByTeamCode(teamCode: string): Promise<LatestTransitStations | null> {
+        try {
+            return (await this.prisma.latestTransitStations.findFirst({
+                where: {
+                    teamCode: teamCode,
+                },
+            })) as LatestTransitStations | null;
+        } catch (error) {
+            this.handleDatabaseError(error, "findLatestByTeamCode");
+        }
+    }
+
+    /**
+     * 指定されたイベントコードに紐づくゴール判定フラグがtrueの経由駅を取得
+     * @param eventCode - イベントコード
+     * @returns {Promise<TransitStations[]>} ゴール駅の経由駅の配列
+     */
+    async findGoalStationsByEventCode(eventCode: string): Promise<TransitStations[]> {
+        try {
+            return (await this.prisma.transitStations.findMany({
+                where: {
+                    eventCode: eventCode,
+                    isGoal: true,
+                },
+                orderBy: {
+                    id: "desc",
+                },
+            })) as TransitStations[];
+        } catch (error) {
+            this.handleDatabaseError(error, "findGoalStationsByEventCode");
+        }
+    }
+
+    /**
      * IDで経由駅を取得
      * @param id - 経由駅ID
      * @returns {Promise<TransitStationsWithRelations | null>} 経由駅情報またはnull
@@ -76,15 +114,20 @@ export class TransitStationsRepository extends BaseRepository {
     /**
      * 新しい経由駅を作成
      * @param transitStationData - 経由駅作成データ
+     * @param tx - トランザクションクライアント（オプション）
      * @returns {Promise<TransitStations>} 作成された経由駅
      */
-    async create(transitStationData: {
-        eventCode: string;
-        teamCode: string;
-        stationCode: string;
-    }): Promise<TransitStations> {
+    async create(
+        transitStationData: {
+            eventCode: string;
+            teamCode: string;
+            stationCode: string;
+        },
+        tx?: PrismaTransactionClient,
+    ): Promise<TransitStations> {
+        const client = tx ?? this.prisma;
         try {
-            return await this.prisma.transitStations.create({
+            return await client.transitStations.create({
                 data: transitStationData,
             });
         } catch (error) {
@@ -102,7 +145,7 @@ export class TransitStationsRepository extends BaseRepository {
             stationCode: string;
             eventCode: string;
             teamCode: string;
-        }[]
+        }[],
     ): Promise<number> {
         try {
             const result = await this.prisma.transitStations.createMany({
@@ -112,6 +155,35 @@ export class TransitStationsRepository extends BaseRepository {
             return result.count;
         } catch (error) {
             this.handleDatabaseError(error, "createMany");
+        }
+    }
+
+    /**
+     * 指定されたIDの経由駅を更新
+     * @param id - 更新対象のID
+     * @param transitStationData - 更新データ
+     * @returns {Promise<TransitStations>} 更新された経由駅
+     */
+    async update(
+        id: number,
+        transitStationData: {
+            stationCode?: string;
+            eventCode?: string;
+            teamCode?: string;
+            isGoal?: boolean;
+        },
+        tx?: PrismaTransactionClient,
+    ): Promise<TransitStations> {
+        const client = tx ?? this.prisma;
+        try {
+            return await client.transitStations.update({
+                where: {
+                    id: id,
+                },
+                data: transitStationData,
+            });
+        } catch (error) {
+            this.handleDatabaseError(error, "update");
         }
     }
 
@@ -172,6 +244,8 @@ export class TransitStationsRepository extends BaseRepository {
      * @param transitStationData - 経由駅作成データ
      * @param pointsData - ポイント作成データ
      * @returns {Promise<{ transitStation: TransitStations; point: Points }>} 作成された経由駅とポイント
+     * @deprecated TSK-52でトランザクション機能を追加したため、削除予定
+     * FIXME: Service層でのトランザクション管理へ移行
      */
     async createWithPoints(
         transitStationData: {
@@ -184,7 +258,7 @@ export class TransitStationsRepository extends BaseRepository {
             teamCode: string;
             points: number;
             status: PointStatus;
-        }
+        },
     ): Promise<{ transitStation: TransitStations; point: Points }> {
         try {
             return await this.executeTransaction(async (tx) => {

@@ -1,4 +1,13 @@
+import { DuplicateResourceError } from "@/error";
 import { PrismaClient } from "@/generated/prisma";
+
+/**
+ * Prismaのトランザクション内で使用するクライアントの型定義
+ */
+export type PrismaTransactionClient = Omit<
+    PrismaClient,
+    "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+>;
 
 /**
  * 基底Repositoryクラス
@@ -17,10 +26,7 @@ export abstract class BaseRepository {
      */
     protected async executeTransaction<T>(
         operations: (
-            tx: Omit<
-                PrismaClient,
-                "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
-            >
+            tx: PrismaTransactionClient
         ) => Promise<T>
     ): Promise<T> {
         try {

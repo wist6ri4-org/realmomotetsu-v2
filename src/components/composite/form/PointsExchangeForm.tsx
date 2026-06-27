@@ -57,7 +57,7 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
         e.preventDefault();
 
         const confirmMessage =
-            "以下の内容でポイントを換金しますか？\n" +
+            "以下の内容でポイントを換金しますか？\n\n" +
             `チーム: ${teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"}`;
         const isConfirmed = await showConfirmDialog({
             message: confirmMessage,

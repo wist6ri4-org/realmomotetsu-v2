@@ -1,8 +1,10 @@
-import { Attendances, Events } from "@/generated/prisma";
+import { Attendances, Events, EventTypes } from "@/generated/prisma";
 import { BaseRepository } from "../base/BaseRepository";
 
 export type AttendancesWithRelations = Attendances & {
-    event: Events;
+    event: Events & {
+        eventType: EventTypes;
+    };
 }
 
 export class AttendancesRepository extends BaseRepository {

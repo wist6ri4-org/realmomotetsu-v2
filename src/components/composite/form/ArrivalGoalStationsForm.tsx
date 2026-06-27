@@ -66,7 +66,7 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
         e.preventDefault();
 
         const confirmMessage =
-            "以下の内容で到着処理を行いますか？\n" +
+            "以下の内容で到着処理を行いますか？\n\n" +
             `チーム: ${teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"}\n` +
             `到着ポイント: ${pointsInput.value}`;
         const isConfirmed = await showConfirmDialog({

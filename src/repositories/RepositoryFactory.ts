@@ -10,6 +10,8 @@ import { TransitStationsRepository } from "./transitStations/TransitStationsRepo
 import { PointsRepository } from "./points/PointsRepository";
 import { DocumentsRepository } from "./documents/DocumentsRepository";
 import { UsersRepository } from "./users/UsersRepository";
+import { PropertyPurchasesRepository } from "./propertyPurchases/PropertyPurchasesRepository";
+import { PrismaTransactionClient } from "./base/BaseRepository";
 
 /**
  * Repositoryのファクトリークラス
@@ -27,6 +29,19 @@ export class RepositoryFactory {
     private static pointsRepository: PointsRepository | null = null;
     private static documentsRepository: DocumentsRepository | null = null;
     private static usersRepository: UsersRepository | null = null;
+    private static propertyPurchasesRepository: PropertyPurchasesRepository | null = null;
+
+    /**
+     * トランザクション内で複数のRepositoryを使用するためのユーティリティメソッド
+     * @param operations - トランザクション内で実行する操作
+     * @returns トランザクション内での操作の結果
+     */
+    static async withTransaction<T>(
+        operations: (tx: PrismaTransactionClient) => Promise<T>
+    ): Promise<T> {
+        return await prisma.$transaction(operations);
+    }
+
     /**
      * TeamsRepositoryのインスタンスを取得（シングルトン）
      * @returns {TeamsRepository} TeamsRepositoryのインスタンス
@@ -149,6 +164,17 @@ export class RepositoryFactory {
     }
 
     /**
+     * PropertyPurchasesRepositoryのインスタンスを取得（シングルトン）
+     * @returns {PropertyPurchasesRepository} PropertyPurchasesRepositoryのインスタンス
+     */
+    static getPropertyPurchasesRepository(): PropertyPurchasesRepository {
+        if (!this.propertyPurchasesRepository) {
+            this.propertyPurchasesRepository = new PropertyPurchasesRepository(prisma);
+        }
+        return this.propertyPurchasesRepository;
+    }
+
+    /**
      * すべてのRepositoryをリセット（主にテスト用）
      */
     static resetAll(): void {
@@ -163,5 +189,6 @@ export class RepositoryFactory {
         this.pointsRepository = null;
         this.documentsRepository = null;
         this.usersRepository = null;
+        this.propertyPurchasesRepository = null;
     }
 }

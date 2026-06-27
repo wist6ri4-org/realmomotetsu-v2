@@ -1,4 +1,4 @@
-import { AttendancesSchema, EventsSchema, UsersSchema } from "@/generated/zod";
+import { AttendancesSchema, EventsSchema, EventTypesSchema, UsersSchema } from "@/generated/zod";
 import { z } from "zod";
 
 // ユーザーをUUIDで取得するためのリクエストスキーマ
@@ -11,8 +11,10 @@ export const GetUsersByUuidResponseScheme = z.object({
     user: UsersSchema.extend({
         attendances: z.array(
             AttendancesSchema.extend({
-                event: EventsSchema,
-            })
+                event: EventsSchema.extend({
+                    eventType: EventTypesSchema,
+                }),
+            }),
         ),
     }),
 });
@@ -30,8 +32,10 @@ export const PutUsersByUuidResponseScheme = z.object({
     user: UsersSchema.extend({
         attendances: z.array(
             AttendancesSchema.extend({
-                event: EventsSchema,
-            })
+                event: EventsSchema.extend({
+                    eventType: EventTypesSchema,
+                }),
+            }),
         ),
     }),
 });

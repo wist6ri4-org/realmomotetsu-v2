@@ -1,4 +1,4 @@
-import { Documents, Stations, Teams } from "@/generated/prisma";
+import { Documents, EventTypes, Stations, Teams } from "@/generated/prisma";
 import { EventWithRelations } from "@/repositories/events/EventsRepository";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 import { UsersWithRelations } from "@/repositories/users/UsersRepository";
@@ -15,6 +15,7 @@ export type InitRequest = {
 
 /**
  * 初期化のレスポンス
+ * @property {EventTypes} eventType - イベント種別
  * @property {Teams[]} teams - チームの配列
  * @property {Stations[]} stations - 駅の配列
  * @property {NearbyStationsWithRelations[]} [nearbyStations] - 近隣駅の配列
@@ -23,6 +24,7 @@ export type InitRequest = {
  * @property {EventWithRelations} event - イベント情報
  */
 export type InitResponse = {
+    eventType: EventTypes | null;
     teams: Teams[];
     stations: Stations[];
     nearbyStations: NearbyStationsWithRelations[];

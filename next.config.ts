@@ -12,9 +12,6 @@ const nextConfig: NextConfig = {
     experimental: {
         optimizePackageImports: ["@mui/material", "@mui/icons-material"],
     },
-    eslint: {
-        ignoreDuringBuilds: true,
-    },
 
     // ルートパスのリダイレクト設定
     // NOTE 特定のパスへのアクセスをNext.js側でリダイレクトするための設定。2025.9現在不要。学習用に残している。

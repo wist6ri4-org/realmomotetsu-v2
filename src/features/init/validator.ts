@@ -21,17 +21,18 @@ export const InitRequestSchema = z.object({
 
 // 初期化データのレスポンススキーマ
 export const InitResponseSchema = z.object({
+    eventType: EventTypesSchema.nullable(),
     teams: z.array(TeamsSchema),
     stations: z.array(StationsSchema),
     nearbyStations: z.array(
         NearbyStationsSchema.extend({
             fromStation: StationsSchema,
             toStation: StationsSchema,
-        })
+        }),
     ),
     documents: z.array(DocumentsSchema),
     user: UsersSchema.extend({
-        attendances: z.array(AttendancesSchema.extend({ event: EventsSchema })),
+        attendances: z.array(AttendancesSchema.extend({ event: EventsSchema.extend({ eventType: EventTypesSchema }) })),
     }),
     event: EventsSchema.extend({
         eventType: EventTypesSchema,

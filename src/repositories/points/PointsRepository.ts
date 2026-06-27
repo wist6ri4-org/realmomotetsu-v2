@@ -1,5 +1,5 @@
 import { Points, PointStatus } from "@/generated/prisma";
-import { BaseRepository } from "../base/BaseRepository";
+import { BaseRepository, PrismaTransactionClient } from "../base/BaseRepository";
 import { SummedPoints } from "@/types/SummedPoints";
 import { GameConstants } from "@/constants/gameConstants";
 
@@ -74,14 +74,14 @@ export class PointsRepository extends BaseRepository {
                 totalPoints: item._sum.points || 0, // nullの場合は0にする
             })) as SummedPoints[];
         } catch (error) {
-            this.handleDatabaseError(error, "sumGroupedByTeamCode");
+            this.handleDatabaseError(error, "sumPointsGroupedByTeamCode");
         }
     }
 
     /**
-     * 指定されたチームコードごとのスコアポイントを合計
-     * @param teamCode - チームコード
-     * @return {Promise<ScoredPointsGroupedByTeamCode[]>} チームコードごとの合計スコアポイント
+     * 指定されたイベントコードにおけるチームごとのスコアポイントを合計
+     * @param eventCode - イベントコード
+     * @return {Promise<SummedPoints[]>} チームごとの合計スコアポイント
      */
     async sumScoredPointsGroupedByTeamCode(eventCode: string): Promise<SummedPoints[]> {
         try {
@@ -91,7 +91,11 @@ export class PointsRepository extends BaseRepository {
                     points: true,
                 },
                 where: {
-                    status: GameConstants.POINT_STATUS.SCORED, // スコア済みのポイントのみを対象
+                    OR: [
+                        { status: GameConstants.POINT_STATUS.SCORED }, // 総資産
+                        { status: GameConstants.POINT_STATUS.PROPERTY }, // 物件
+                        { status: GameConstants.POINT_STATUS.REVENUE }, // 収益
+                    ],
                     eventCode: eventCode,
                 },
             });
@@ -99,6 +103,92 @@ export class PointsRepository extends BaseRepository {
                 teamCode: item.teamCode,
                 totalPoints: item._sum.points || 0, // nullの場合は0にする
             })) as SummedPoints[];
+        } catch (error) {
+            this.handleDatabaseError(error, "sumScoredPointsGroupedByTeamCode");
+        }
+    }
+
+    /**
+     * 指定されたイベントコードにおけるチームごとの物件駅購入ポイントを合計
+     * @param eventCode - イベントコード
+     * @return {Promise<SummedPoints[]>} チームごとの合計ポイント
+     */
+    async sumPropertyPointsGroupedByTeamCode(eventCode: string): Promise<SummedPoints[]> {
+        try {
+            const result = await this.prisma.points.groupBy({
+                by: ["teamCode"],
+                _sum: {
+                    points: true,
+                },
+                where: {
+                    status: GameConstants.POINT_STATUS.PROPERTY, // 物件
+                    eventCode: eventCode,
+                },
+            });
+            return result.map((item) => ({
+                teamCode: item.teamCode,
+                totalPoints: item._sum.points || 0, // nullの場合は0にする
+            })) as SummedPoints[];
+        } catch (error) {
+            this.handleDatabaseError(error, "sumPropertyPointsGroupedByTeamCode");
+        }
+    }
+
+    /**
+     * 指定されたイベントコードにおけるチームごとの収益ポイントを合計
+     * @param eventCode - イベントコード
+     * @return {Promise<SummedPoints[]>} チームごとの合計ポイント
+     */
+    async sumRevenuePointsGroupedByTeamCode(eventCode: string): Promise<SummedPoints[]> {
+        try {
+            const result = await this.prisma.points.groupBy({
+                by: ["teamCode"],
+                _sum: {
+                    points: true,
+                },
+                where: {
+                    status: GameConstants.POINT_STATUS.REVENUE, // 収益
+                    eventCode: eventCode,
+                },
+            });
+            return result.map((item) => ({
+                teamCode: item.teamCode,
+                totalPoints: item._sum.points || 0, // nullの場合は0にする
+            })) as SummedPoints[];
+        } catch (error) {
+            this.handleDatabaseError(error, "sumRevenuePointsGroupedByTeamCode");
+        }
+    }
+
+    /**
+     * 指定されたチームコードのスコアポイントを合計
+     * @param teamCode - チームコード
+     * @param eventCode - イベントコード
+     * @param tx - トランザクションクライアント（オプション）
+     * @return {Promise<number>} 合計スコアポイント
+     */
+    async sumScoredPointsByTeamCode(
+        teamCode: string,
+        eventCode: string,
+        tx?: PrismaTransactionClient,
+    ): Promise<number> {
+        const client = tx ?? this.prisma;
+        try {
+            const result = await client.points.aggregate({
+                _sum: {
+                    points: true,
+                },
+                where: {
+                    teamCode: teamCode,
+                    eventCode: eventCode,
+                    OR: [
+                        { status: GameConstants.POINT_STATUS.SCORED },
+                        { status: GameConstants.POINT_STATUS.PROPERTY },
+                        { status: GameConstants.POINT_STATUS.REVENUE }, // 収益
+                    ],
+                },
+            });
+            return result._sum.points || 0; // nullの場合は0にする
         } catch (error) {
             this.handleDatabaseError(error, "sumScoredPointsByTeamCode");
         }
@@ -109,16 +199,20 @@ export class PointsRepository extends BaseRepository {
      * @param eventCode - イベントコード
      * @param teamCode - チームコード
      * @param points - ポイント数
+     * @param status - ポイントのステータス（デフォルトは"points"）
+     * @param tx - トランザクションクライアント（オプション）
      * @return {Promise<Points>} 作成されたポイント
      */
     async create(
         eventCode: string,
         teamCode: string,
         points: number,
-        status: PointStatus = GameConstants.POINT_STATUS.POINTS
+        status: PointStatus = GameConstants.POINT_STATUS.POINTS,
+        tx?: PrismaTransactionClient,
     ): Promise<Points> {
+        const client = tx ?? this.prisma;
         try {
-            return await this.prisma.points.create({
+            return await client.points.create({
                 data: {
                     teamCode: teamCode,
                     eventCode: eventCode,
@@ -162,7 +256,7 @@ export class PointsRepository extends BaseRepository {
      */
     async updateStatusByTeamCode(
         teamCode: string,
-        status: PointStatus = GameConstants.POINT_STATUS.SCORED
+        status: PointStatus = GameConstants.POINT_STATUS.SCORED,
     ): Promise<{ count: number }> {
         try {
             return await this.prisma.points.updateMany({
