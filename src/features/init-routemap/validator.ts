@@ -1,4 +1,4 @@
-import { GoalStationsSchema, TeamsSchema } from "@/generated/zod";
+import { EventsSchema, GoalStationsSchema, PropertyPurchasesSchema, StationsSchema, TeamsSchema } from "@/generated/zod";
 import { TeamDataSchema } from "@/types/TeamData";
 import { z } from "zod";
 
@@ -12,4 +12,9 @@ export const InitRoutemapResponseSchema = z.object({
     teamData: z.array(TeamDataSchema),
     nextGoalStation: GoalStationsSchema.nullable(),
     bombiiTeam: TeamsSchema.nullable(),
+    propertyPurchases: z.array(PropertyPurchasesSchema.extend({
+        event: EventsSchema,
+        team: TeamsSchema,
+        station: StationsSchema,
+    })),
 });

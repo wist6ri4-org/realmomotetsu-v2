@@ -19,6 +19,7 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
         const pointsRepository = RepositoryFactory.getPointsRepository();
         const eventsRepository = RepositoryFactory.getEventsRepository();
         const nearbyStationsRepository = RepositoryFactory.getNearbyStationsRepository();
+        const propertyPurchasesRepository = RepositoryFactory.getPropertyPurchasesRepository();
 
         try {
             // 並列でデータを取得
@@ -32,6 +33,7 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
                 totalRevenuePoints,
                 events,
                 bombiiCounts,
+                propertyPurchases,
             ] = await Promise.all([
                 teamsRepository.findByEventCode(req.eventCode),
                 goalStationsRepository.findLatestGoalStation(req.eventCode),
@@ -42,6 +44,7 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
                 pointsRepository.sumRevenuePointsGroupedByTeamCode(req.eventCode),
                 eventsRepository.findByEventCode(req.eventCode),
                 bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
+                propertyPurchasesRepository.findByEventCode(req.eventCode),
             ]);
 
             // イベント種別コードでデータを取得
@@ -89,6 +92,7 @@ export const InitRoutemapServiceImpl: InitRoutemapService = {
                 teamData: teamData,
                 nextGoalStation: nextGoalStation,
                 bombiiTeam: bombiiTeam,
+                propertyPurchases: propertyPurchases,
             };
 
             return res;

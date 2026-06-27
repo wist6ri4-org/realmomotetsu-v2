@@ -1,4 +1,5 @@
 import { GoalStations, Teams } from "@/generated/prisma";
+import { PropertyPurchasesWithRelations } from "@/repositories/propertyPurchases/PropertyPurchasesRepository";
 import { TeamData } from "@/types/TeamData";
 
 /**
@@ -14,9 +15,11 @@ export type InitRoutemapRequest = {
  * @property { TeamData[] } teamData - チームごとのデータ配列
  * @property { GoalStations | null } nextGoalStation - 次のゴール駅情報
  * @property { Teams | null } bombiiTeam - Bombiiチームの情報
+ * @property { PropertyPurchasesWithRelations[] } propertyPurchases - 物件駅購入情報の配列
  */
 export type InitRoutemapResponse = {
     teamData: TeamData[];
     nextGoalStation: GoalStations | null;
     bombiiTeam: Teams | null;
+    propertyPurchases: PropertyPurchasesWithRelations[];
 };
