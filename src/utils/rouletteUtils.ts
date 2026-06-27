@@ -1,4 +1,4 @@
-import { GoalStations, LatestTransitStations, Stations } from "@/generated/prisma";
+import { GoalStations, LatestTransitStations, Stations, StationType } from "@/generated/prisma";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 import DijkstraUtils, { DistancesMap } from "./dijkstraUtils";
 import { StationsGraph, StationsProbabilitiesMap } from "./dijkstraUtils";
@@ -113,6 +113,7 @@ export class RouletteUtils {
     /**
      * 目的駅ルーレット（V3）
      * @description 開始駅からの距離に基づいて、次の目的駅を重み付きルーレットで選択する
+     * @param stations - すべての駅情報
      * @param nearbyStations - 近隣駅の接続情報
      * @param latestTransitStations - 最新の経由駅情報
      * @param goalStations - 既出目的駅のリスト
@@ -121,6 +122,7 @@ export class RouletteUtils {
      * @returns {StationsProbabilitiesMap} 駅ごとの確率を含むマップ
      */
     static getWeightedStationCodeV3(
+        stations: Stations[],
         nearbyStations: NearbyStationsWithRelations[],
         latestTransitStations: LatestTransitStations[] = [],
         goalStations: GoalStations[] = [],
@@ -128,6 +130,7 @@ export class RouletteUtils {
     ): string {
         const graph: StationsGraph = DijkstraUtils.convertNearbyStationsToStationGraph(nearbyStations);
         const distances: DistancesMap = this.getCandidateStationDistancesV3(
+            stations,
             graph,
             startStationCode,
             latestTransitStations,
@@ -147,6 +150,7 @@ export class RouletteUtils {
      * @return {DistancesMap} 絞り込み済みの候補駅のコードとその駅までの時間と駅数を含むマップ
      */
     static getCandidateStationDistancesV3(
+        stations: Stations[],
         graph: StationsGraph,
         startStationCode: string,
         latestTransitStations: LatestTransitStations[] = [],
@@ -164,7 +168,9 @@ export class RouletteUtils {
                     (latestTransitStations.length === 0 ||
                         !latestTransitStations.some((station) => station.stationCode === key)) &&
                     // 既出目的地駅に含まれないこと（空配列の場合はすべて選択可能）
-                    (goalStations.length === 0 || !goalStations.some((station) => station.stationCode === key))
+                    (goalStations.length === 0 || !goalStations.some((station) => station.stationCode === key)) &&
+                    // 駅の種類がmissionであること
+                    stations.find((station) => station.stationCode === key)?.stationType === StationType.mission
                 );
             }),
         );

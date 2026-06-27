@@ -65,6 +65,7 @@ const RouletteFormV3: React.FC<RouletteFormV3Props> = ({
      */
     const getWeightedStation = (): Stations | null => {
         const nextStationCode = RouletteUtils.getWeightedStationCodeV3(
+            stations,
             nearbyStations,
             latestTransitStations,
             goalStations,
