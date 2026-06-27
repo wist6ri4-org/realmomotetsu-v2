@@ -336,7 +336,7 @@ const Routemap: React.FC<RoutemapProps> = ({
                                     })();
 
                                     return (
-                                        <>
+                                        <React.Fragment key={`station-box-${index}`}>
                                             <rect
                                                 key={`box-${index}`}
                                                 id={`box-${station.code}`}
@@ -366,7 +366,7 @@ const Routemap: React.FC<RoutemapProps> = ({
                                             >
                                                 {boxConfig.text}
                                             </text>
-                                        </>
+                                        </React.Fragment>
 
                                     );
                                 })}

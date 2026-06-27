@@ -1,4 +1,3 @@
-import { StationType } from "@/generated/prisma";
 import { PointsSchema, StationTypeSchema, TransitStationsSchema } from "@/generated/zod";
 import { z } from "zod";
 
