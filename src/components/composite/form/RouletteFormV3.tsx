@@ -3,7 +3,7 @@
  */
 "use client";
 
-import { GoalStations, LatestTransitStations, Stations, TransitStations } from "@/generated/prisma";
+import { GoalStations, LatestTransitStations, Stations } from "@/generated/prisma";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
 import React, { useEffect, useReducer, useState } from "react";
