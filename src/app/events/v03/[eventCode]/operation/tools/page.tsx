@@ -15,7 +15,7 @@ import InformationDialog from "@/components/composite/InformationDialog";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { InitOperationResponse } from "@/features/init-operation/types";
-import { Events } from "@/generated/prisma";
+import { Events, StationType } from "@/generated/prisma";
 import { checkIsOperatingUser } from "@/lib/auth";
 import { UsersWithRelations } from "@/repositories/users/UsersRepository";
 import { TeamData } from "@/types/TeamData";
@@ -116,7 +116,11 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                 {/* メインコンテンツ */}
                 {!isLoading && !isInitDataLoading && !error && !contextError && (
                     <>
-                        <RegisterGoalStationsFormV3 stations={stations} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
+                        <RegisterGoalStationsFormV3
+                            stations={stations.filter((station) => station.stationType === StationType.mission)}
+                            event={event!} onSubmit={handleUpdate}
+                            isOperating={isOperating}
+                        />
                         <Divider />
                         <ArrivalGoalStationsFormV3 event={event} teams={teams} stations={stations} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
@@ -126,7 +130,12 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                         <Divider />
                         <PointsTransferFormV3 teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <RegisterPropertyPurchasesFormV3 teams={teams} stations={stations} onSubmit={handleUpdate} isOperating={isOperating} />
+                        <RegisterPropertyPurchasesFormV3
+                            teams={teams}
+                            stations={stations.filter((station) => station.stationType === StationType.mission)}
+                            onSubmit={handleUpdate}
+                            isOperating={isOperating}
+                        />
                         <Divider />
                         <RegisterBombiiManualForm teams={teams} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />

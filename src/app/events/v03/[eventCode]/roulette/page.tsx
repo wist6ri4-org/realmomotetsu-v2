@@ -2,7 +2,7 @@
 
 import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
-import { GoalStations, LatestTransitStations } from "@/generated/prisma";
+import { GoalStations, LatestTransitStations, StationType } from "@/generated/prisma";
 import { ClosestStation } from "@/types/ClosestStation";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
 import { ArrowDropDown, Casino, Help } from "@mui/icons-material";
@@ -131,7 +131,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
                     <>
                         <Box sx={{ marginX: 2 }}>
                             <RouletteFormV3
-                                stations={stations}
+                                stations={stations.filter((station) => station.stationType === StationType.mission)}
                                 nearbyStations={nearbyStations}
                                 latestTransitStations={latestTransitStations}
                                 goalStations={goalStations}
