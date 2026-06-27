@@ -222,6 +222,7 @@ model TransitStations {
   stationCode String   @map("station_code")
   teamCode    String   @map("team_code")
   eventCode   String   @map("event_code")
+  isGoal      Boolean  @default(false) @map("is_goal")
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   event       Events   @relation(fields: [eventCode], references: [eventCode])

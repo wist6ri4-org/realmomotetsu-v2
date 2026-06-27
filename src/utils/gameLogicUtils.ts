@@ -65,4 +65,15 @@ export class GameLogicUtils {
             remainingStationsNumber * GameConstants.ARRIVAL_PRIZE_V3.INCREMENT_PER_STATION_NUMBER;
         return prize;
     }
+
+    /**
+     * 連続ゴールボーナスを計算する(V3)
+     * @param {number} consecutiveGoalCount - 連続ゴール数
+     * @returns {number} 連続ゴールボーナス
+     */
+    static calculateConsecutiveGoalBonusV3(consecutiveGoalCount: number): number {
+        return consecutiveGoalCount === 0
+            ? 0
+            : GameConstants.CONSECUTIVE_GOAL_BONUS_PER_STATION_NUMBER * (consecutiveGoalCount + 1);
+    }
 }

@@ -190,7 +190,9 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
                 `賞金: ${Converter.convertPointsToYenV3(responseArrivalData.points)}\n` +
                 `物件駅購入: ${willBuyStationInput === WillBuyStation.YES
                     ? stationName + "駅 : " + Converter.convertPointsToYenV3(responseArrivalData.purchasePoints ?? 0) + "円"
-                    : "しない"}`;
+                    : "しない"}\n` +
+                `連続ゴール数: ${responseArrivalData.consecutiveGoalCounts}回\n` +
+                `連続ゴールボーナス: ${Converter.convertPointsToYenV3(responseArrivalData.consecutiveGoalBonus ?? 0)}` + "円";
             await showAlertDialog({
                 title: DialogConstants.TITLE.REGISTERED,
                 message: completionMessage,

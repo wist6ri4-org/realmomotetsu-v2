@@ -14,13 +14,19 @@ export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
      * @return {Promise<PostArrivalGoalStationV3Response>} レスポンス
      */
     async postArrivalGoalStationV3(req: PostArrivalGoalStationV3Request): Promise<PostArrivalGoalStationV3Response> {
-        const [nearbyStationsRepository, goalStationsRepository, pointsRepository, propertyPurchasesRepository] =
-            await Promise.all([
-                RepositoryFactory.getNearbyStationsRepository(),
-                RepositoryFactory.getGoalStationsRepository(),
-                RepositoryFactory.getPointsRepository(),
-                RepositoryFactory.getPropertyPurchasesRepository(),
-            ]);
+        const [
+            nearbyStationsRepository,
+            goalStationsRepository,
+            pointsRepository,
+            propertyPurchasesRepository,
+            transitStationsRepository,
+        ] = await Promise.all([
+            RepositoryFactory.getNearbyStationsRepository(),
+            RepositoryFactory.getGoalStationsRepository(),
+            RepositoryFactory.getPointsRepository(),
+            RepositoryFactory.getPropertyPurchasesRepository(),
+            RepositoryFactory.getTransitStationsRepository(),
+        ]);
 
         try {
             let latestGoalStationGrade: StationGrade | null = null;
@@ -42,6 +48,9 @@ export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
                 });
             }
 
+            // 最新の経由駅を取得
+            const latestTransitStation = await transitStationsRepository.findLatestByTeamCode(req.teamCode);
+
             const nearbyStations = await nearbyStationsRepository.findByEventTypeCode(req.eventTypeCode);
 
             // ポイント計算
@@ -51,8 +60,20 @@ export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
                 latestGoalStationCode,
             );
 
+            // 連続ゴールボーナス計算
+            const transitStations = await transitStationsRepository.findGoalStationsByEventCode(req.eventCode);
+            let consecutiveGoalCount = 0;
+            for (const transitStation of transitStations) {
+                if (transitStation.teamCode === req.teamCode) {
+                    consecutiveGoalCount++;
+                } else {
+                    break;
+                }
+            }
+            const consecutiveGoalBonus = GameLogicUtils.calculateConsecutiveGoalBonusV3(consecutiveGoalCount);
+
             // DB登録処理
-            const { createdPoints, createdPropertyPurchases, createdPurchasePoints } =
+            const { createdPoints, createdGoalBonusPoints, createdPropertyPurchases, createdPurchasePoints } =
                 await RepositoryFactory.withTransaction(async (tx) => {
                     // E01: 購入済みチェック
                     if (req.willPurchase) {
@@ -76,7 +97,7 @@ export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
                             tx,
                         );
                         const price = GameConstants.STATION_GRADE[latestGoalStationGrade ?? StationGrade.none].price;
-                        if (currentPoints + arrivalPoints - price < 0) {
+                        if (currentPoints + arrivalPoints + consecutiveGoalBonus - price < 0) {
                             throw new BadRequestError({
                                 errorCode: VerifyArrivalGoalStationV3Result.E02_INSUFFICIENT_POINTS,
                             });
@@ -89,6 +110,28 @@ export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
                         req.teamCode,
                         arrivalPoints,
                         GameConstants.POINT_STATUS.SCORED,
+                        tx,
+                    );
+
+                    // 連続ゴールボーナス加算
+                    const createdGoalBonusPoints = await (async () => {
+                        if (consecutiveGoalBonus > 0) {
+                            return await pointsRepository.create(
+                                req.eventCode,
+                                req.teamCode,
+                                consecutiveGoalBonus,
+                                GameConstants.POINT_STATUS.SCORED,
+                                tx,
+                            );
+                        }
+                    })();
+
+                    // 最新の経由駅のゴール判定フラグを更新
+                    await transitStationsRepository.update(
+                        latestTransitStation?.id ?? 0,
+                        {
+                            isGoal: true,
+                        },
                         tx,
                     );
 
@@ -111,15 +154,27 @@ export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
                             GameConstants.POINT_STATUS.PROPERTY,
                             tx,
                         );
-                        return { createdPoints, createdPropertyPurchases, createdPurchasePoints };
+                        return {
+                            createdPoints,
+                            createdGoalBonusPoints,
+                            createdPropertyPurchases,
+                            createdPurchasePoints,
+                        };
                     }
-                    return { createdPoints, createdPropertyPurchases: null, createdPurchasePoints: null };
+                    return {
+                        createdPoints,
+                        createdGoalBonusPoints,
+                        createdPropertyPurchases: null,
+                        createdPurchasePoints: null,
+                    };
                 });
 
             const res: PostArrivalGoalStationV3Response = {
                 points: createdPoints.points,
                 propertyPurchases: createdPropertyPurchases,
                 purchasePoints: createdPurchasePoints?.points ?? null,
+                consecutiveGoalCounts: consecutiveGoalCount,
+                consecutiveGoalBonus: createdGoalBonusPoints?.points ?? null,
             };
             return res;
         } catch (error) {
