@@ -2,65 +2,38 @@
 
 ## 概要
 
-このプロジェクトでは、フロントエンドでのエラーハンドリングを統一的に管理するため、以下の仕組みを提供しています：
+フロントエンドのエラーハンドリングは以下の仕組みで統一している。
 
-1. **ApplicationError クラス**: アプリケーション固有のエラーを表現
-2. **メッセージ管理システム**: 多言語対応と変数置換機能を持つメッセージ管理
-3. **エラーハンドリングユーティリティ**: 汎用的なエラー処理
+| クラス / 関数 | 場所 | 役割 |
+|---|---|---|
+| `ApplicationError` | `src/error/applicationError.ts` | フロントエンド用エラークラス |
+| `ApplicationErrorFactory` | `src/error/applicationError.ts` | エラー生成・正規化のファクトリ |
+| `ValidationErrorHandler` | `src/error/errorHandler.ts` | 入力バリデーション用ユーティリティ |
+| `ErrorCodes` | `src/constants/errorCodes.ts` | エラーコード定数 |
+| `Messages` / `getMessage` | `src/constants/messages.ts` | メッセージテンプレート管理 |
 
-## 使用方法
+---
 
-### 1. 基本的なエラーの投げ方
+## エラーの投げ方
+
+### 基本
 
 ```typescript
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ErrorCodes } from "@/constants/errorCodes";
 import { getMessage } from "@/constants/messages";
 
-// 基本的なエラー
+// シンプルなエラー
 throw ApplicationErrorFactory.create(ErrorCodes.VALIDATION_ERROR, "バリデーションエラーが発生しました。");
 
-// メッセージ定数を使用
+// メッセージ定数を使う（推奨）
 throw ApplicationErrorFactory.create(
-    ErrorCodes.VALIDATION_ERROR,
-    getMessage("FIELD_IS_REQUIRED", { field: "ユーザー名" })
+    ErrorCodes.REQUIRED_FIELD_ERROR,
+    getMessage("FIELD_IS_REQUIRED", { field: "チーム" })
 );
 ```
 
-### 2. バリデーションエラー
-
-```typescript
-import { ValidationErrorHandler } from "@/utils/errorHandler";
-
-// 必須チェック
-ValidationErrorHandler.validateRequired(value, "ユーザー名");
-
-// 正の値チェック
-ValidationErrorHandler.validatePositive(points, "ポイント");
-
-// 範囲チェック
-ValidationErrorHandler.validateRange(score, 0, 100, "スコア");
-```
-
-### 3. API エラー処理
-
-```typescript
-import { ApiErrorHandler } from "@/utils/errorHandler";
-
-try {
-    const response = await fetch("/api/users");
-    if (!response.ok) {
-        throw ApiErrorHandler.createFromResponse(response);
-    }
-} catch (error) {
-    if (error instanceof ApplicationError) {
-        throw error;
-    }
-    throw ApiErrorHandler.createNetworkError(error instanceof Error ? error : undefined);
-}
-```
-
-### 4. 統一的なエラーハンドリング
+### キャッチして統一処理
 
 ```typescript
 import { ApplicationErrorFactory } from "@/error/applicationError";
@@ -68,9 +41,9 @@ import { ApplicationErrorFactory } from "@/error/applicationError";
 try {
     // 何らかの処理
 } catch (err) {
-    const appError = ApplicationErrorFactory.fromUnknownError(err);
+    // 不明な型のエラーを ApplicationError に正規化する
+    const appError = ApplicationErrorFactory.normalize(err);
 
-    // エラーダイアログ表示
     await showAlertDialog({
         title: "エラー",
         message: appError.message,
@@ -78,66 +51,108 @@ try {
 }
 ```
 
-## メッセージの追加方法
+---
 
-### 1. messages.ts に新しいメッセージを追加
+## バリデーション
 
 ```typescript
+import { ValidationErrorHandler } from "@/error/errorHandler";
+
+// 必須チェック
+ValidationErrorHandler.validateRequired(value, "チーム名");
+
+// 正の値チェック
+ValidationErrorHandler.validatePositive(points, "ポイント");
+
+// 最小値チェック
+ValidationErrorHandler.validateMinValue(value, 1, "ポイント");
+
+// 最大値チェック
+ValidationErrorHandler.validateMaxValue(value, 100, "スコア");
+
+// 範囲チェック
+ValidationErrorHandler.validateRange(score, 0, 100, "スコア");
+```
+
+---
+
+## API 呼び出しのエラーハンドリング
+
+```typescript
+import { ApplicationError, ApplicationErrorFactory } from "@/error/applicationError";
+
+try {
+    const response = await fetch("/api/users");
+    if (!response.ok) {
+        throw ApplicationErrorFactory.createFromResponse(response);
+    }
+} catch (error) {
+    if (error instanceof ApplicationError) {
+        throw error; // 上位で処理
+    }
+    throw ApplicationErrorFactory.createNetworkError(error instanceof Error ? error : undefined);
+}
+```
+
+---
+
+## メッセージテンプレート
+
+`src/constants/messages.ts` の `Messages` 定数でメッセージを一元管理している。
+プレースホルダーは `{変数名}` 形式で記述する。
+
+### 追加方法
+
+```typescript
+// src/constants/messages.ts
 export const Messages = {
     // 既存のメッセージ...
-
-    // 新しいメッセージ
-    USER_AGE_INVALID: "{name}さんの年齢は{min}歳以上{max}歳以下で入力してください。",
+    MY_NEW_MESSAGE: "{name}の処理に失敗しました。",
 } as const;
 ```
 
-### 2. 使用例
+### 使用方法
 
 ```typescript
 import { getMessage } from "@/constants/messages";
 
-const message = getMessage("USER_AGE_INVALID", {
-    name: "田中",
-    min: "18",
-    max: "65",
-});
-// 結果: "田中さんの年齢は18歳以上65歳以下で入力してください。"
+const message = getMessage("MY_NEW_MESSAGE", { name: "チーム登録" });
+// → "チーム登録の処理に失敗しました。"
 ```
 
-## エラーコードの追加方法
+---
 
-### 1. errorCodes.ts に新しいエラーコードを追加
+## エラーコード
+
+`src/constants/errorCodes.ts` の `ErrorCodes` 定数で一元管理している。
+
+| コード | 用途 |
+|---|---|
+| `UNKNOWN_ERROR` | 不明なエラー |
+| `NETWORK_ERROR` | ネットワークエラー |
+| `SERVER_ERROR` | サーバーエラー（5xx） |
+| `VALIDATION_ERROR` | 汎用バリデーションエラー |
+| `REQUIRED_FIELD_ERROR` | 必須項目未入力 |
+| `INVALID_FORMAT_ERROR` | 入力形式不正 |
+| `VALUE_OUT_OF_RANGE_ERROR` | 値が範囲外 |
+| `DUPLICATE_ENTRY` | 重複エントリ |
+| `API_REQUEST_FAILED` | API リクエスト失敗（4xx） |
+
+### 追加方法
 
 ```typescript
+// src/constants/errorCodes.ts
 export const ErrorCodes = {
-    // 既存のエラーコード...
-
-    // 新しいエラーコード
-    USER_AGE_INVALID: "USER_AGE_INVALID",
+    // 既存のコード...
+    MY_NEW_ERROR: "MY_NEW_ERROR",
 } as const;
 ```
 
-### 2. 使用例
-
-```typescript
-import { ErrorCodes } from "@/constants/errorCodes";
-import { ApplicationErrorFactory } from "@/error/applicationError";
-
-throw ApplicationErrorFactory.create(
-    ErrorCodes.USER_AGE_INVALID,
-    getMessage("USER_AGE_INVALID", { name: "田中", min: "18", max: "65" })
-);
-```
+---
 
 ## ベストプラクティス
 
-1. **エラーメッセージは messages.ts で一元管理**
-2. **変数を含むメッセージはテンプレート形式で記述**
-3. **エラーコードは意味のある名前を付ける**
-4. **ApplicationErrorFactory.fromUnknownError() で不明なエラーを統一的に処理**
-5. **バリデーションには ValidationErrorHandler を使用**
-6. **API 呼び出しには ApiErrorHandler を使用**
-
-## 実装例
-
-完全な実装例については、`ArrivalGoalStationsForm.tsx` を参照してください。
+- エラーメッセージは `Messages` で一元管理し、コード中に文字列ハードコードしない
+- 不明な型のエラーをキャッチした場合は `ApplicationErrorFactory.normalize()` で正規化する
+- 入力バリデーションには `ValidationErrorHandler` を使う
+- API 呼び出しは `ApplicationErrorFactory.createFromResponse()` / `createNetworkError()` でエラー変換する
