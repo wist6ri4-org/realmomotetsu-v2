@@ -264,9 +264,11 @@ API エンドポイントは `BaseApiHandler` を継承したハンドラーク�
     ╰────────────┴──────────────────────────────────────────────────────────────────╯
     ```
 
-    ### .env.local の設定
+    ### .env/.env.local の設定
 
-    `.env.local` に以下を設定する。
+    `.env`および`.env.local`をルートディレクトリ（`/realmomotetsu-v2/`）に作成する。
+
+    `.env`および`.env.local`に以下を設定する。
     Published Keyを控え忘れた場合、`npx supabase status` コマンドで確認可能。
 
     ```env
