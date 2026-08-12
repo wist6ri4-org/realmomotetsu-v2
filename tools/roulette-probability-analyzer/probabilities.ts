@@ -46,7 +46,11 @@ function calculateProbabilitiesFromStation(graph: StationsGraph, startStationCod
     );
 }
 
-function calculateProbabilitiesFromStationV3(stations: Stations[], graph: StationsGraph, startStationCode: string): StationsProbabilitiesMap {
+function calculateProbabilitiesFromStationV3(
+    stations: Stations[],
+    graph: StationsGraph,
+    startStationCode: string,
+): StationsProbabilitiesMap {
     RouletteUtils.getCandidateStationDistancesV3(stations, graph, startStationCode, [], []);
     return RouletteUtils.calculateProbabilitiesV3(
         RouletteUtils.getCandidateStationDistancesV3(stations, graph, startStationCode, [], []),
@@ -56,7 +60,12 @@ function calculateProbabilitiesFromStationV3(stations: Stations[], graph: Statio
 /**
  * ① 単一駅起点モード: 指定駅からの各候補駅の出現確率を表示
  */
-function runSingleMode(stations: Stations[], graph: StationsGraph, startStationCode: string, stationMap: Map<string, StationInfo>) {
+function runSingleMode(
+    stations: Stations[],
+    graph: StationsGraph,
+    startStationCode: string,
+    stationMap: Map<string, StationInfo>,
+) {
     const startName = stationMap.get(startStationCode)?.name ?? startStationCode;
     const probabilities =
         VERSION === "v3"
@@ -233,10 +242,16 @@ async function main() {
     console.log("=".repeat(86));
 
     // 1. 駅マスタを取得
-    const stations = await prisma.stations.findMany({
-        where: { eventTypeCode: EVENT_TYPE_CODE },
-        orderBy: { kana: "asc" },
-    });
+    const stations =
+        VERSION === "v3"
+            ? await prisma.stations.findMany({
+                  where: { eventTypeCode: EVENT_TYPE_CODE },
+                  orderBy: { kana: "asc" },
+              })
+            : await prisma.stations.findMany({
+                  where: { eventTypeCode: EVENT_TYPE_CODE, stationType: "mission" },
+                  orderBy: { kana: "asc" },
+              });
 
     const stationMap = new Map<string, StationInfo>();
     stations.forEach((s) => {
