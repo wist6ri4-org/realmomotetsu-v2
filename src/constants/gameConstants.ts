@@ -83,6 +83,11 @@ export const GameConstants = {
     CANDIDATE_END_STATIONS_NUM: 1,
 
     /**
+     * 目的駅候補の最小距離（駅数）
+     */
+    MIN_CANDIDATE_END_STATION_DISTANCE: 7,
+
+    /**
      * 端駅の駅コード（V3）
      * NOTE 実装コストを考慮しコード側で定数として持つ。将来的にDBから取得するように変更する可能性あり。
      */

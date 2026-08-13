@@ -227,7 +227,7 @@ export class RouletteUtils {
 
         // 端駅からランダムに駅を選択して追加
         const selectedEdgeStations = endStationsDistances
-            .filter(([_, { stationsNumber }]) => stationsNumber >= 7) // 7マス以上離れた端駅のみを対象
+            .filter(([_, { stationsNumber }]) => stationsNumber >= GameConstants.MIN_CANDIDATE_END_STATION_DISTANCE) // 7マス以上離れた端駅のみを対象
             .sort(() => 0.5 - Math.random())
             .slice(0, GameConstants.CANDIDATE_END_STATIONS_NUM)
             .map(([stationCode]) => stationCode);
@@ -235,10 +235,13 @@ export class RouletteUtils {
 
         // 候補駅の数が少ない場合、7マス以上離れたすべての駅を均等な確率で選択する
         if (selectedStations.length < 5) {
-            distances.forEach(({ stationsNumber }, stationCode) => {
-                if (stationsNumber >= 7) {
-                    stationsProbabilities.set(stationCode, 1 / distances.size);
-                }
+            const filteredDistances = new Map(
+                [...distances].filter(
+                    ([_, { stationsNumber }]) => stationsNumber >= GameConstants.MIN_CANDIDATE_END_STATION_DISTANCE,
+                ),
+            );
+            filteredDistances.forEach((_, stationCode) => {
+                stationsProbabilities.set(stationCode, 1 / filteredDistances.size);
             });
             return stationsProbabilities;
         }

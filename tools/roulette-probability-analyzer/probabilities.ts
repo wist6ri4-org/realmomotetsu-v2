@@ -51,7 +51,6 @@ function calculateProbabilitiesFromStationV3(
     graph: StationsGraph,
     startStationCode: string,
 ): StationsProbabilitiesMap {
-    RouletteUtils.getCandidateStationDistancesV3(stations, graph, startStationCode, [], []);
     return RouletteUtils.calculateProbabilitiesV3(
         RouletteUtils.getCandidateStationDistancesV3(stations, graph, startStationCode, [], []),
     );
