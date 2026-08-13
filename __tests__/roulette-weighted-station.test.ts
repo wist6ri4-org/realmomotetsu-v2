@@ -9,6 +9,7 @@
  *
  * 使い方:
  *   npx dotenv -e .env.local -- npx jest __tests__/roulette-weighted-station.test.ts
+ *   npx dotenv -e .env.local -- node --inspect-brk ./node_modules/jest/bin/jest.js __tests__/roulette-weighted-station.test.ts --runInBand
  *
  * 設定:
  *   EVENT_TYPE_CODE: イベント種別コード
@@ -17,7 +18,7 @@
  *  ELIMINATION_TIME_RANGE_MINUTES: 除外する時間範囲（分）。この値以下の駅は候補から除外
  */
 
-import { PrismaClient, Stations, LatestTransitStations } from "@/generated/prisma";
+import { PrismaClient, Stations, LatestTransitStations, StationType } from "@/generated/prisma";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 import DijkstraUtils, { DistancesMap, StationsGraph } from "@/utils/dijkstraUtils";
 import { RouletteUtils } from "@/utils/rouletteUtils";
@@ -29,6 +30,8 @@ const EVENT_TYPE_CODE = "METRO_V1"; // イベント種別コード
 const START_STATION_CODE = "METRO_V1_OTEMACHI"; // 開始駅コード
 const VERSION: "v2" | "v3" = "v3"; // ルーレットロジックのバージョン選択（v2: 旧ロジック, v3: 新ロジック）
 const ELIMINATION_TIME_RANGE_MINUTES = 10; // 除外する時間範囲（分）。この値以下の駅は候補から除外
+const SET_COUNT = 20; // セット数
+const RUNS_PER_SET = 15; // 各セットの実行回数
 // ==========================
 
 // テスト用の型定義
@@ -212,7 +215,9 @@ describe("RouletteUtils getWeightedStationCode テスト", () => {
             dbConnected = false;
             console.error("Database connection failed:", error);
             // DATABASE_URLが設定されていない場合は、テストをスキップ
-            console.warn("Skipping test: DATABASE_URL environment variable not set. Please set it and run: npx dotenv -e .env.local -- npx jest");
+            console.warn(
+                "Skipping test: DATABASE_URL environment variable not set. Please set it and run: npx dotenv -e .env.local -- npx jest",
+            );
         }
     });
 
@@ -220,7 +225,7 @@ describe("RouletteUtils getWeightedStationCode テスト", () => {
         await prisma.$disconnect();
     });
 
-    test("指定駅から10回✕20セットのルーレットテスト", () => {
+    test(`指定駅から${SET_COUNT}回✕${RUNS_PER_SET}セットのルーレットテスト`, () => {
         if (!dbConnected || stations.length === 0 || nearbyStations.length === 0) {
             console.warn("Test skipped: Database connection failed or no data retrieved");
             return;
@@ -230,16 +235,22 @@ describe("RouletteUtils getWeightedStationCode テスト", () => {
         const setResultsArray: RouletteTestResult[][] = []; // CSV出力用にセット別データを保持
         const stationFrequency = new Map<string, number>();
 
-        // 20セットの実行
-        for (let setIndex = 0; setIndex < 20; setIndex++) {
+        // セットの実行
+        for (let setIndex = 0; setIndex < SET_COUNT; setIndex++) {
             const setResults: RouletteTestResult[] = [];
+            const selectedStationsSet = new Set<string>();
             let currentStationCode = START_STATION_CODE; // 開始駅から開始
 
-            // 各セットで10回実行
-            for (let i = 0; i < 10; i++) {
+            // 各セットで指定回数実行
+            for (let i = 0; i < RUNS_PER_SET; i++) {
                 const selectedStationCode =
                     VERSION === "v3"
                         ? RouletteUtils.getWeightedStationCodeV3(
+                              stations.filter(
+                                  (station) =>
+                                      station.stationType === StationType.mission &&
+                                      selectedStationsSet.has(station.stationCode) === false,
+                              ),
                               nearbyStations,
                               latestTransitStations,
                               goalStations,
@@ -279,6 +290,7 @@ describe("RouletteUtils getWeightedStationCode テスト", () => {
                     // 駅の出現頻度をカウント
                     const count = stationFrequency.get(selectedStation.stationCode) || 0;
                     stationFrequency.set(selectedStation.stationCode, count + 1);
+                    selectedStationsSet.add(selectedStation.stationCode);
                 }
             }
 
@@ -316,7 +328,7 @@ describe("RouletteUtils getWeightedStationCode テスト", () => {
         console.log(`CSV出力完了: ${csvFilePath}`);
 
         // アサーション（テストが実行されたことを確認）
-        expect(finalStats.totalRuns).toBe(200);
+        expect(finalStats.totalRuns).toBe(SET_COUNT * RUNS_PER_SET);
         expect(finalStats.stationFrequency.size).toBeGreaterThan(0);
         expect(finalStats.averageStations).toBeGreaterThan(0);
         expect(finalStats.averageTime).toBeGreaterThan(0);

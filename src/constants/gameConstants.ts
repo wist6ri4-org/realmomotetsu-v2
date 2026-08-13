@@ -58,22 +58,55 @@ export const GameConstants = {
     ELIMINATION_TIME_RANGE_MINUTES: 15,
 
     // ========== V3 ==========
-    // TODO 所要時間の上限と、そのバケットに入る駅の数は暫定。ゲームバランスを見ながら調整する。
+    // TODO 所要時間で昇順ソートしたときの上位%と、そのバケットに入る駅の数は暫定。ゲームバランスを見ながら調整する。
     /**
-     * 目的駅選択のバケット設定（所要時間の上限と、そのバケットに入る駅の数）
-     * @property {number} maxMinutes バケットに入る駅の所要時間の上限(分)
+     * 目的駅選択のバケット設定（所要時間で昇順ソートしたときの上位%と、そのバケットに入る駅の数）
+     * @property {number} percentile 所要時間で昇順ソートしたときの上位%
      * @property {number} count バケットに入る駅の数
-     * */
-    STATION_SELECTION_BUCKETS: [
-        { maxMinutes: 5, count: 0 },
-        { maxMinutes: 10, count: 0 },
-        { maxMinutes: 15, count: 0 },
-        { maxMinutes: 20, count: 0 },
-        { maxMinutes: 25, count: 32 },
-        { maxMinutes: 30, count: 4 },
-        { maxMinutes: 35, count: 2 },
-        { maxMinutes: 40, count: 1 },
-        { maxMinutes: Infinity, count: 1 },
+     */
+    STATION_SELECTION_RATIO_BUCKETS: [
+        { percentile: 10, count: 0 },
+        { percentile: 20, count: 0 },
+        { percentile: 30, count: 0 },
+        { percentile: 40, count: 0 },
+        { percentile: 50, count: 0 },
+        { percentile: 60, count: 1 },
+        { percentile: 70, count: 1 },
+        { percentile: 80, count: 2 },
+        { percentile: 90, count: 2 },
+        { percentile: 100, count: 1 },
+    ] as const,
+
+    /**
+     * 端駅からランダムに選択する駅の数
+     */
+    CANDIDATE_END_STATIONS_NUM: 1,
+
+    /**
+     * 目的駅候補の最小距離（駅数）
+     */
+    MIN_CANDIDATE_END_STATION_DISTANCE: 7,
+
+    /**
+     * 端駅の駅コード（V3）
+     * NOTE 実装コストを考慮しコード側で定数として持つ。将来的にDBから取得するように変更する可能性あり。
+     */
+    END_STATION_CODES_V3: [
+        "METRO_V1_AKABANE-IWABUCHI",
+        "METRO_V1_OGIKUBO",
+        "METRO_V1_KITA-AYASE",
+        "METRO_V1_SHIN-KIBA",
+        "METRO_V1_NAKANO",
+        "METRO_V1_NAKA-MEGURO",
+        "METRO_V1_NISHI-TAKASHIMADAIRA",
+        "METRO_V1_NISHI-FUNABASHI",
+        "METRO_V1_NISHI-MAGOME",
+        "METRO_V1_HIKARIGAOKA",
+        "METRO_V1_HONANCHO",
+        "METRO_V1_MEGURO",
+        "METRO_V1_MOTOYAWATA",
+        "METRO_V1_YOYOGI-UEHARA",
+        "METRO_V1_WAKOSHI",
     ] as const,
 
     // TODO 駅グレードの価格設定は暫定。ゲームバランスを見ながら調整する。
