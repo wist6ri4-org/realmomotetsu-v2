@@ -66,7 +66,7 @@ export const VerifyArrivalGoalStationV3ServiceImpl: VerifyArrivalGoalStationV3Se
 
             // 連続ゴールボーナス計算
             const transitStations = await transitStationsRepository.findGoalStationsByEventCode(req.eventCode);
-            let consecutiveGoalCount = 0;
+            let consecutiveGoalCount = 1;
             for (const transitStation of transitStations) {
                 if (transitStation.teamCode === req.teamCode) {
                     consecutiveGoalCount++;
