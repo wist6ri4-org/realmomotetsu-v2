@@ -82,7 +82,7 @@ export const CurrentLocationV3ServiceImpl: CurrentLocationV3Service = {
                     // ミッション駅/物件駅の場合
                     case StationType.mission: {
                         // 購入済みの物件駅の場合
-                        if (propertyPurchase) {
+                        if (propertyPurchase && propertyPurchase.teamCode != req.teamCode) {
                             // ポイント登録
                             const revenue =
                                 GameConstants.STATION_GRADE[propertyPurchase.station.stationGrade ?? StationGrade.none]
