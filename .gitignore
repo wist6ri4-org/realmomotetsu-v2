@@ -12,7 +12,9 @@
 
 # testing
 /coverage
-/__tests__/output
+
+# tools
+/tools/*/output
 
 # next.js
 /.next/
