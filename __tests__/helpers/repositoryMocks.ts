@@ -73,6 +73,22 @@ export const mockRepositories = (mocks: RepositoryMocks): void => {
 };
 
 /**
+ * Promiseがrejectしたエラーを取得する
+ * @description `rejects.toThrow`はクラスとプロパティを同時に検証できないため、
+ *              エラーを受け取ってから複数のexpectで検証したい場合に使う。
+ * @param {Promise<unknown>} promise - 検証対象のPromise
+ * @return {Promise<unknown>} rejectされたエラー
+ */
+export const captureError = async (promise: Promise<unknown>): Promise<unknown> => {
+    try {
+        await promise;
+    } catch (error) {
+        return error;
+    }
+    throw new Error("Promiseがrejectされませんでした");
+};
+
+/**
  * `RepositoryFactory.withTransaction`をモックし、コールバックをそのまま実行させる
  * @description トランザクションの有無ではなく、トランザクション内のロジックを検証するためのヘルパー。
  *              コールバックには「渡されたことが確認できる」ダミーのトランザクションクライアントを渡す。
