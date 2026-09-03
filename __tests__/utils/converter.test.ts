@@ -27,9 +27,7 @@ describe("Converter", () => {
             expect(Converter.convertPointsToYen(999_999)).toBe("999 億 9990 万");
         });
 
-        // FIXME 兆の桁の除数が10^11になっており、正しい10^12に対して10倍ずれている（1000億円が「1 兆」と表示される）。
-        // 現状のポイント規模では到達しないが、桁ずれであることを明示するため意図的に失敗するテストとして残す。
-        it.failing("兆の単位が繰り上がる", () => {
+        it("兆の単位が繰り上がる", () => {
             // 10,000,000ポイント = 1兆円
             expect(Converter.convertPointsToYen(10_000_000)).toBe("1 兆 0 万");
         });
@@ -43,6 +41,7 @@ describe("Converter", () => {
             [2_345, "2345 万"],
             [10_000, "1 億 0 万"],
             [12_345, "1 億 2345 万"],
+            [123_456_789, "1 兆 2345 億 6789 万"],
         ])("%iポイントは「%s」に整形される", (point, expected) => {
             expect(Converter.convertPointsToYenV3(point)).toBe(expected);
         });
@@ -56,8 +55,7 @@ describe("Converter", () => {
             expect(Converter.convertPointsToYenV3(9_999_999)).toBe("999 億 9999 万");
         });
 
-        // FIXME convertPointsToYenと同じ桁ずれ。詳細はconvertPointsToYen側のFIXMEを参照。
-        it.failing("兆の単位が繰り上がる", () => {
+        it("兆の単位が繰り上がる", () => {
             // 100,000,000ポイント = 1兆円
             expect(Converter.convertPointsToYenV3(100_000_000)).toBe("1 兆 0 万");
         });
