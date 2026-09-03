@@ -78,6 +78,36 @@ afterEach(() => {
 - 想定外のエラーが `InternalServerError` に変換され、`ApiError` はそのまま再スローされること
 - 書き込みが同一トランザクション（`mockWithTransaction()` の戻り値）で実行されていること
 
+### Repository（高優先）
+
+Repository は `BaseRepository` のサブクラスとして `PrismaClient` を注入されるため、
+使用するモデル・メソッドだけを持つモッククライアントを作って渡す。
+
+```ts
+const prisma = {
+    points: {
+        findMany: jest.fn(),
+        create: jest.fn(),
+    },
+} as unknown as PrismaClient;
+
+const repository = new PointsRepository(prisma);
+```
+
+検証する観点:
+
+- `where` / `include` / `orderBy` など Prisma に渡すクエリ条件が期待通りであること
+- トランザクションクライアント（`tx`）を引数で渡した場合、通常の `this.prisma` ではなく
+  `tx` 側が使われること
+- 集計結果が `null`（該当レコードなし）の場合に `0` へ変換されるなど、Prisma の戻り値を
+  そのまま返していない加工ロジック
+- DB エラー発生時に `handleDatabaseError` 経由でエラーメッセージが変換されること
+  （個別の Repository では代表的な1パターンを確認すれば十分。分岐の網羅は
+  `BaseRepository` 自体のテストで行う）
+
+`BaseRepository` の `executeTransaction` / `handleDatabaseError` は、テスト用の
+具象サブクラスを作って直接検証する（`__tests__/repositories/base/BaseRepository.test.ts`）。
+
 ### APIハンドラー（中優先）
 
 各ハンドラーはコンストラクタで Service を差し替えられる。モックの Service を注入して
@@ -94,6 +124,19 @@ const { status, body } = await readResponse(await new XxxApiHandler(req, service
 - Service が投げた `ApiError` のステータスコードが引き継がれること
 - 想定外のエラーが 500 になり、内部のエラーメッセージが漏れないこと
 - 未対応の HTTP メソッド → 405
+
+一部の古いハンドラー（例: `PointsApiHandler`）はコンストラクタで Service を注入できず、
+`XxxServiceImpl` をモジュールレベルで直接 import して呼び出している。この場合は
+`jest.mock("@/features/xxx/service")` でモジュールごとモックに差し替える。
+
+```ts
+jest.mock("@/features/points/service", () => ({
+    PointsServiceImpl: { getPointsByEventCodeGroupedByTeamCode: jest.fn(), /* ... */ },
+}));
+const { PointsServiceImpl } = jest.requireMock("@/features/points/service");
+// jest.mockの巻き上げにより、モック定義後でも問題なくハンドラーをimportできる
+import PointsApiHandler from "@/app/api/points/PointsApiHandler";
+```
 
 `route.ts` は `createApiHandler` に渡すだけの薄いラッパーのため、個別のテストは不要。
 
