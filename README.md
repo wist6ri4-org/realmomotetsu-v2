@@ -6,12 +6,35 @@
 
 このプロジェクトは、Next.js で構築された Web アプリケーションで、Prisma を ORM 、Supabase をバックエンドサービスとして利用している。
 
+### ドキュメント一覧
+
+本 README は全体像とセットアップ手順を扱う。個別の詳細は以下を参照。
+
+| ドキュメント                                                             | 内容                                                       |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| [src/app/api/README.md](src/app/api/README.md)                           | `BaseApiHandler` を使った API 実装ガイド                   |
+| [src/error/README.md](src/error/README.md)                               | サーバーサイド（API）のエラークラスとエラーハンドリング    |
+| [docs/ERROR_HANDLING_GUIDE.md](docs/ERROR_HANDLING_GUIDE.md)             | フロントエンドのエラーハンドリング                         |
+| [src/repositories/README.md](src/repositories/README.md)                 | Repository パターンの実装ガイド                            |
+| [prisma/README.md](prisma/README.md)                                     | Prisma の使用方法                                          |
+| [prisma/DATABASE.md](prisma/DATABASE.md)                                 | データベース定義書                                         |
+| [docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md)                           | テストの実行方法・各層のテスト方針                         |
+| [docs/USER_SETTINGS.md](docs/USER_SETTINGS.md)                           | ユーザー設定機能（プロフィール・アイコン・パスワード変更） |
+| [src/features/discord/README.md](src/features/discord/README.md)         | Discord 通知機能                                           |
+| [supabase/sql/setup_user_storage.md](supabase/sql/setup_user_storage.md) | Supabase ストレージ（ユーザーアイコン）の設定              |
+| [tools/routemap-checker/README.md](tools/routemap-checker/README.md)     | 路線図整合性チェックツール                                 |
+
 ### ディレクトリ構成
 
 ```plaintext
-├─__tests__         ユニットテスト
-│  ├─error          エラーハンドリングのテスト
-│  └─output         テスト出力ファイル
+├─__tests__         ユニットテスト（src/ の構成をミラーする）
+│  ├─app            APIハンドラー層のテスト
+│  ├─error          エラークラスのテスト
+│  ├─features       サービス層のテスト
+│  ├─helpers        テスト用ヘルパー（ファクトリ、モック）
+│  ├─repositories   データアクセス層のテスト
+│  └─utils          ユーティリティのテスト
+├─coverage          【Git管理外】カバレッジレポートの出力先
 ├─data              DB用初期投入データ、SQLファイル
 ├─docs              ドキュメント
 ├─node_modules      【Git管理外】node.jsのモジュール
@@ -19,6 +42,7 @@
 |  ├─csv            シード用CSVファイル
 │  └─migrations     データベースマイグレーション
 ├─public            静的ファイル（画像、フォントなど）
+│  └─openapi        【生成物】OpenAPI仕様書（openapi.json）
 ├─scripts           スクリプト（路線図設定ファイルの生成など）
 ├─src               アプリケーションのソースコード
 │  ├─app            Next.jsのアプリケーションディレクトリ、page.tsxによってルーティングされる
@@ -46,13 +70,16 @@
 │  ├─types          TypeScriptの型定義
 │  └─utils          ユーティリティ関数、共通して使用される関数やヘルパー
 ├─supabase          Supabaseの設定と一時ファイル
+│  ├─snippets       SQLスニペット
 │  └─sql            SQL スクリプト（ビュー作成、ストレージポリシーなど）
 ├─test              テスト関連
 │  └─http           HTTPリクエストのテスト
 └─tools             開発補助ツール
-   ├─roulette-probability-analyzer  ルーレット確率分析ツール
-   ├─routemap-checker               路線図整合性チェックツール
-   └─station-distance-calculator    駅間距離計算ツール
+   ├─openapi-generator                    OpenAPI仕様書生成ツール
+   ├─roulette-probability-analyzer        ルーレット確率分析ツール
+   ├─roulette-weighted-station-simulator  目的駅ルーレットのシミュレーター
+   ├─routemap-checker                     路線図整合性チェックツール
+   └─station-distance-calculator          駅間距離計算ツール
 ```
 
 ### アーキテクチャ概要図
@@ -163,169 +190,193 @@ API エンドポイントは `BaseApiHandler` を継承したハンドラーク�
 └── （features/ 配下のサービス層を呼び出す）
 ```
 
+なお `src/app/api/utils/` はエンドポイントではなく、`BaseApiHandler` / `createApiHandler` / `LogService` を置く共通基盤ディレクトリである。
+
 詳細は [src/app/api/README.md](src/app/api/README.md) を参照。
 
 **エンドポイント一覧**
 
-| エンドポイント                 | 概要                           |
-| ------------------------------ | ------------------------------ |
-| `/api/init`                    | イベント情報の初期取得         |
-| `/api/init-home`               | ホーム画面の初期データ取得     |
-| `/api/init-form`               | 操作フォームの初期データ取得   |
-| `/api/init-operation`          | 操作画面の初期データ取得       |
-| `/api/init-roulette`           | ルーレット画面の初期データ取得 |
-| `/api/init-routemap`           | 路線図画面の初期データ取得     |
-| `/api/transit-stations`        | 経由駅の登録                   |
-| `/api/goal-stations`           | ゴール駅の登録                 |
-| `/api/arrival-goal-station-v3` | ゴール到着処理（V3）           |
-| `/api/current-location`        | 現在地の更新                   |
-| `/api/current-location-v3`     | 現在地の更新（V3）             |
-| `/api/bombii-histories`        | ボンビー履歴の登録             |
-| `/api/points`                  | ポイントの登録                 |
-| `/api/property-purchases`      | 物件購入の登録                 |
-| `/api/events`                  | イベント情報の取得・更新       |
-| `/api/documents`               | ドキュメントの取得             |
-| `/api/discord`                 | Discord 通知の送信             |
-| `/api/users`                   | ユーザー情報の取得・更新       |
-| `/api/verify`                  | 各種検証処理                   |
+| エンドポイント                               | メソッド         | 概要                           |
+| -------------------------------------------- | ---------------- | ------------------------------ |
+| `/api/init`                                  | GET              | イベント情報の初期取得         |
+| `/api/init-home`                             | GET              | ホーム画面の初期データ取得     |
+| `/api/init-form`                             | GET              | 操作フォームの初期データ取得   |
+| `/api/init-operation`                        | GET              | 操作画面の初期データ取得       |
+| `/api/init-roulette`                         | GET              | ルーレット画面の初期データ取得 |
+| `/api/init-routemap`                         | GET              | 路線図画面の初期データ取得     |
+| `/api/transit-stations`                      | GET / POST       | 経由駅の取得・登録             |
+| `/api/transit-stations/latest`               | GET              | チームごとの最新経由駅の取得   |
+| `/api/goal-stations`                         | GET / POST       | 目的駅の取得・登録             |
+| `/api/goal-stations/latest`                  | GET              | 最新の目的駅の取得             |
+| `/api/arrival-goal-station-v3`               | POST             | 目的駅到着処理（V3）           |
+| `/api/verify/verify-arrival-goal-station-v3` | POST             | 目的駅到着処理の事前検証（V3） |
+| `/api/current-location`                      | POST             | 現在地の更新                   |
+| `/api/current-location-v3`                   | POST             | 現在地の更新（V3）             |
+| `/api/bombii-histories`                      | POST             | ボンビー履歴の登録             |
+| `/api/points`                                | GET / POST / PUT | ポイントの取得・登録・更新     |
+| `/api/points/bulk`                           | POST             | ポイントの一括登録             |
+| `/api/property-purchases`                    | GET / POST       | 物件購入の取得・登録           |
+| `/api/events/[eventCode]`                    | GET              | イベント情報の取得             |
+| `/api/documents`                             | GET              | ドキュメントの取得             |
+| `/api/discord/notify`                        | POST             | Discord 通知の送信             |
+| `/api/users`                                 | POST             | ユーザーの登録                 |
+| `/api/users/[uuid]`                          | GET / PUT        | ユーザー情報の取得・更新       |
+
+### API 仕様書（Swagger UI）
+
+`tools/openapi-generator/generate.ts` が `src/app/api/` 配下の `route.ts` と
+`src/features/<feature>/validator.ts` の Zod スキーマから OpenAPI 3.1 仕様書を生成する。
+
+```bash
+npx tsx tools/openapi-generator/generate.ts
+```
+
+出力先は `public/openapi/openapi.json` で、開発サーバー起動後に
+[http://localhost:3001/api-docs](http://localhost:3001/api-docs) で Swagger UI として閲覧できる。
 
 ## 開発環境のセットアップ
 
 1. **Node.js と Docker のインストール**: Node.js と Docker Desktop をインストールする。
 
-    ```bash
-    # Node.js のインストール（例: nvmを使用）
-    nvm install 22.17.0
-    nvm use 22.17.0
-    node -v  # バージョン確認
-    ```
+   ```bash
+   # Node.js のインストール（例: nvmを使用）
+   nvm install 22.17.0
+   nvm use 22.17.0
+   node -v  # バージョン確認
+   ```
 
 2. **依存関係のインストール**: プロジェクトディレクトリ（`/realmomotetsu-v2/`）で以下のコマンドを実行。
 
-    ```bash
-    npm install
-    ```
+   ```bash
+   npm install
+   ```
 
 3. **データベースのセットアップ**: Supabase と Prisma を使用してデータベースをセットアップする。
 
-    ### Supabase のローカル起動
+   ### Supabase のローカル起動
 
-    ```bash
-    # Supabaseの初期化。supabase/config.tomlがあれば不要（通常不要）。
-    npx supabase init
+   ```bash
+   # Supabaseの初期化。supabase/config.tomlがあれば不要（通常不要）。
+   npx supabase init
 
-    # Supabaseの起動。Docker Desktopを事前に起動しておく。
-    npx supabase start
-    ```
+   # Supabaseの起動。Docker Desktopを事前に起動しておく。
+   npx supabase start
+   ```
 
-    以下のような結果が表示されれば開発環境のSupabaseの起動は成功。
-    Authentication KeysのPublishableは後で.env.localに設定するので控えておく。
+   以下のような結果が表示されれば開発環境のSupabaseの起動は成功。
+   Authentication KeysのPublishableは後で.env.localに設定するので控えておく。
 
-    ```bash
-    Started supabase local development setup.
+   ```bash
+   Started supabase local development setup.
 
-    ╭──────────────────────────────────────╮
-    │ 🔧 Development Tools                 │
-    ├─────────┬────────────────────────────┤
-    │ Studio  │ http://127.0.0.1:54323     │
-    │ Mailpit │ http://127.0.0.1:54324     │
-    │ MCP     │ http://127.0.0.1:54321/mcp │
-    ╰─────────┴────────────────────────────╯
+   ╭──────────────────────────────────────╮
+   │ 🔧 Development Tools                 │
+   ├─────────┬────────────────────────────┤
+   │ Studio  │ http://127.0.0.1:54323     │
+   │ Mailpit │ http://127.0.0.1:54324     │
+   │ MCP     │ http://127.0.0.1:54321/mcp │
+   ╰─────────┴────────────────────────────╯
 
-    ╭──────────────────────────────────────────────────────╮
-    │ 🌐 APIs                                              │
-    ├────────────────┬─────────────────────────────────────┤
-    │ Project URL    │ http://127.0.0.1:54321              │
-    │ REST           │ http://127.0.0.1:54321/rest/v1      │
-    │ GraphQL        │ http://127.0.0.1:54321/graphql/v1   │
-    │ Edge Functions │ http://127.0.0.1:54321/functions/v1 │
-    ╰────────────────┴─────────────────────────────────────╯
+   ╭──────────────────────────────────────────────────────╮
+   │ 🌐 APIs                                              │
+   ├────────────────┬─────────────────────────────────────┤
+   │ Project URL    │ http://127.0.0.1:54321              │
+   │ REST           │ http://127.0.0.1:54321/rest/v1      │
+   │ GraphQL        │ http://127.0.0.1:54321/graphql/v1   │
+   │ Edge Functions │ http://127.0.0.1:54321/functions/v1 │
+   ╰────────────────┴─────────────────────────────────────╯
 
-    ╭───────────────────────────────────────────────────────────────╮
-    │ ⛁ Database                                                    │
-    ├─────┬─────────────────────────────────────────────────────────┤
-    │ URL │ postgresql://postgres:postgres@127.0.0.1:54322/postgres │
-    ╰─────┴─────────────────────────────────────────────────────────╯
+   ╭───────────────────────────────────────────────────────────────╮
+   │ ⛁ Database                                                    │
+   ├─────┬─────────────────────────────────────────────────────────┤
+   │ URL │ postgresql://postgres:postgres@127.0.0.1:54322/postgres │
+   ╰─────┴─────────────────────────────────────────────────────────╯
 
-    ╭──────────────────────────────────────────────────────────────╮
-    │ 🔑 Authentication Keys                                       │
-    ├─────────────┬────────────────────────────────────────────────┤
-    │ Publishable │ sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH │
-    │ Secret      │ sb_secret_XXXXXXXXXXXX-XXXXXXXX_XXXXXXXXX      │
-    ╰─────────────┴────────────────────────────────────────────────╯
+   ╭──────────────────────────────────────────────────────────────╮
+   │ 🔑 Authentication Keys                                       │
+   ├─────────────┬────────────────────────────────────────────────┤
+   │ Publishable │ sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH │
+   │ Secret      │ sb_secret_XXXXXXXXXXXX-XXXXXXXX_XXXXXXXXX      │
+   ╰─────────────┴────────────────────────────────────────────────╯
 
-    ╭───────────────────────────────────────────────────────────────────────────────╮
-    │ 📦 Storage (S3)                                                               │
-    ├────────────┬──────────────────────────────────────────────────────────────────┤
-    │ URL        │ http://127.0.0.1:54321/storage/v1/s3                             │
-    │ Access Key │ 00000000000000000000000000000000                                 │
-    │ Secret Key │ 0000000000000000000000000000000000000000000000000000000000000000 │
-    │ Region     │ local                                                            │
-    ╰────────────┴──────────────────────────────────────────────────────────────────╯
-    ```
+   ╭───────────────────────────────────────────────────────────────────────────────╮
+   │ 📦 Storage (S3)                                                               │
+   ├────────────┬──────────────────────────────────────────────────────────────────┤
+   │ URL        │ http://127.0.0.1:54321/storage/v1/s3                             │
+   │ Access Key │ 00000000000000000000000000000000                                 │
+   │ Secret Key │ 0000000000000000000000000000000000000000000000000000000000000000 │
+   │ Region     │ local                                                            │
+   ╰────────────┴──────────────────────────────────────────────────────────────────╯
+   ```
 
-    ### .env/.env.local の設定
+   ### .env/.env.local の設定
 
-    `.env`および`.env.local`をルートディレクトリ（`/realmomotetsu-v2/`）に作成する。
+   `.env`および`.env.local`をルートディレクトリ（`/realmomotetsu-v2/`）に作成する。
 
-    `.env`および`.env.local`に以下を設定する。
-    Published Keyを控え忘れた場合、`npx supabase status` コマンドで確認可能。
+   `.env`および`.env.local`に以下を設定する。
+   Published Keyを控え忘れた場合、`npx supabase status` コマンドで確認可能。
 
-    ```env
-    # Environment
-    NODE_ENV=development
+   ```env
+   # Environment
+   NODE_ENV=development
 
-    # Base URL of the application
-    NEXT_PUBLIC_BASE_URL=http://localhost:3000
+   # Base URL of the application
+   NEXT_PUBLIC_BASE_URL=http://localhost:3000
 
-    # Supabase Configuration
-    NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
-    NEXT_PUBLIC_SUPABASE_PUBLISHED_KEY=[控えたSupabaseのpublished key]
+   # Supabase Configuration
+   NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+   NEXT_PUBLIC_SUPABASE_PUBLISHED_KEY=[控えたSupabaseのpublished key]
 
-    # Connect to Supabase via connection pooling
-    DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
+   # Connect to Supabase via connection pooling
+   DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
 
-    # Direct connection to the database. Used for migrations
-    DIRECT_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
-    ```
+   # Direct connection to the database. Used for migrations
+   DIRECT_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
+   ```
 
-    ### Prisma マイグレーションの実行
+   ### Prisma マイグレーションの実行
 
-    ```bash
-    npx dotenv -e .env.local -- npx prisma migrate dev --name init
-    ```
+   ```bash
+   npx dotenv -e .env.local -- npx prisma migrate dev --name init
+   ```
 
-    これにより、データベースが初期化され、必要なテーブルが作成される。
+   これにより、データベースが初期化され、必要なテーブルが作成される。
 
 4. **シードスクリプトの実行**: 初期データを挿入するためにシードスクリプトを実行。
 
-    ```bash
-    npm run seed
-    ```
+   ```bash
+   npm run seed
+   ```
 
 5. **開発サーバーの起動**: 以下のコマンドで開発サーバーを起動。
 
-    ```bash
-    npm run dev
-    ```
+   ```bash
+   npm run dev
+   ```
 
-    [http://localhost:3001](http://localhost:3001) でアクセス可能。ポートは `package.json` の `dev` スクリプトで変更できる。
+   [http://localhost:3001](http://localhost:3001) でアクセス可能。ポートは `package.json` の `dev` スクリプトで変更できる。
 
 6. **DB の変更を反映**: Prisma スキーマを変更した場合はマイグレーションを再実行する。
-    ```bash
-    npx dotenv -e .env.local -- npx prisma migrate dev --name [マイグレーション名]
-    ```
+   ```bash
+   npx dotenv -e .env.local -- npx prisma migrate dev --name [マイグレーション名]
+   ```
 
 ## スクリプト一覧
 
-| コマンド             | 説明                                                                 |
-| -------------------- | -------------------------------------------------------------------- |
-| `npm run dev`        | Prisma クライアント生成 + 開発サーバー起動（Turbopack、ポート 3001） |
-| `npm run build`      | Prisma クライアント生成 + マイグレーション適用 + 本番ビルド          |
-| `npm run start`      | 本番サーバー起動                                                     |
-| `npm run lint`       | ESLint の実行                                                        |
-| `npm run format:fix` | Prettier + Prisma フォーマットの実行                                 |
-| `npm run seed`       | シードスクリプトの実行（.env.local を使用）                          |
+| コマンド                | 説明                                                                 |
+| ----------------------- | -------------------------------------------------------------------- |
+| `npm run dev`           | Prisma クライアント生成 + 開発サーバー起動（Turbopack、ポート 3001） |
+| `npm run debug:win`     | 開発サーバー起動（Windows 用、`prisma generate` を伴わない）         |
+| `npm run build`         | Prisma クライアント生成 + マイグレーション適用 + 本番ビルド          |
+| `npm run start`         | 本番サーバー起動                                                     |
+| `npm run lint`          | ESLint の実行（`next lint`）                                         |
+| `npm run format:fix`    | Prettier + Prisma フォーマットの実行                                 |
+| `npm run seed`          | シードスクリプトの実行（.env.local を使用）                          |
+| `npm test`              | Jest によるユニットテストの実行                                      |
+| `npm run test:watch`    | ユニットテストのウォッチ実行                                         |
+| `npm run test:coverage` | カバレッジ付きでユニットテストを実行（`coverage/` に出力）           |
+
+テストの方針や書き方は [docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md) を参照。
 
 ## Prisma の使用方法
 
@@ -365,7 +416,17 @@ generator zod {
 | `Points`            | ポイント履歴                                                        |
 | `PropertyPurchases` | 物件購入履歴                                                        |
 | `Documents`         | ドキュメント                                                        |
-| `Attendances`       | 参加者情報                                                          |
+| `Users`             | ユーザー（Supabase Auth の UUID を保持、`Role` で権限を管理）       |
+| `Attendances`       | 参加者情報（ユーザーとイベントの紐付け）                            |
+
+**ビュー**
+
+| ビュー                  | 概要                           |
+| ----------------------- | ------------------------------ |
+| `LatestTransitStations` | チームごとの最新の経由駅       |
+| `BombiiCounts`          | チームごとのボンビー回数の集計 |
+
+テーブルとカラムの詳細は [prisma/DATABASE.md](prisma/DATABASE.md) を参照。
 
 ### マイグレーション
 
@@ -413,13 +474,21 @@ Vercel へのデプロイは `vercel.json` の設定に従い、以下のブラ�
 | `develop`   | プレビュー環境 |
 | `release/*` | プレビュー環境 |
 | `feature/*` | 無効           |
+| `fix`       | 無効           |
+
+`npm run build` に `prisma migrate deploy` が含まれるため、デプロイ時にマイグレーションが自動適用される。
 
 ## 開発補助ツール
 
-`tools/` ディレクトリに以下の開発補助ツールが含まれている。
+`tools/` ディレクトリに以下の開発補助ツールが含まれている。いずれも `npx tsx` で直接実行する。
 
-| ツール                          | 概要                                           |
-| ------------------------------- | ---------------------------------------------- |
-| `roulette-probability-analyzer` | ルーレットの確率分布を分析するツール           |
-| `routemap-checker`              | 路線図設定ファイルの整合性をチェックするツール |
-| `station-distance-calculator`   | 駅間距離（移動時間）を計算するツール           |
+| ツール                                | 概要                                                      |
+| ------------------------------------- | --------------------------------------------------------- |
+| `openapi-generator`                   | OpenAPI 仕様書（`public/openapi/openapi.json`）を生成する |
+| `roulette-probability-analyzer`       | 目的駅の出現確率を分析するツール                          |
+| `roulette-weighted-station-simulator` | 目的駅ルーレットの抽選をシミュレートするツール            |
+| `routemap-checker`                    | 路線図設定ファイルの整合性をチェックするツール            |
+| `station-distance-calculator`         | 駅間距離（移動時間）を計算するツール                      |
+
+各ツールの出力先 `tools/*/output` は Git 管理外。
+これらは実行のたびに結果が変わるため、ユニットテスト（`__tests__/`）ではなくツールとして扱う。
