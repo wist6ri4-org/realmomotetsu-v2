@@ -6,18 +6,24 @@
  */
 
 import {
+    Attendances,
+    BombiiHistories,
+    Documents,
     Events,
+    EventTypes,
     GoalStations,
     LatestTransitStations,
     NearbyStations,
     Points,
     PointStatus,
     PropertyPurchases,
+    Role,
     Stations,
     StationGrade,
     StationType,
     Teams,
     TransitStations,
+    Users,
 } from "@/generated/prisma";
 import { GoalStationsWithRelations } from "@/repositories/goalStations/GoalStationsRepository";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
@@ -276,5 +282,84 @@ export const buildTeamData = (overrides: Partial<TeamData> = {}): TeamData => ({
     propertyPurchasePoints: 0,
     revenuePoints: 0,
     bombiiCounts: 0,
+    ...overrides,
+});
+
+/**
+ * イベント種別を生成する
+ * @param {Partial<EventTypes>} overrides - 上書きする項目
+ * @return {EventTypes} イベント種別
+ */
+export const buildEventType = (overrides: Partial<EventTypes> = {}): EventTypes => ({
+    id: 1,
+    eventTypeCode: TEST_EVENT_TYPE_CODE,
+    description: "テスト用イベント種別",
+    routemapConfigFile: null,
+    version: 100,
+    createdAt: FIXED_DATE,
+    updatedAt: FIXED_DATE,
+    ...overrides,
+});
+
+/**
+ * ボンビー履歴を生成する
+ * @param {Partial<BombiiHistories>} overrides - 上書きする項目
+ * @return {BombiiHistories} ボンビー履歴
+ */
+export const buildBombiiHistory = (overrides: Partial<BombiiHistories> = {}): BombiiHistories => ({
+    id: 1,
+    teamCode: "TEAM_A",
+    eventCode: TEST_EVENT_CODE,
+    createdAt: FIXED_DATE,
+    updatedAt: FIXED_DATE,
+    ...overrides,
+});
+
+/**
+ * ドキュメントを生成する
+ * @param {Partial<Documents>} overrides - 上書きする項目
+ * @return {Documents} ドキュメント
+ */
+export const buildDocument = (overrides: Partial<Documents> = {}): Documents => ({
+    id: 1,
+    name: "テスト資料",
+    url: "https://example.com/doc",
+    eventCode: TEST_EVENT_CODE,
+    order: 0,
+    createdAt: FIXED_DATE,
+    updatedAt: FIXED_DATE,
+    ...overrides,
+});
+
+/**
+ * ユーザーを生成する
+ * @param {Partial<Users>} overrides - 上書きする項目
+ * @return {Users} ユーザー
+ */
+export const buildUser = (overrides: Partial<Users> = {}): Users => ({
+    id: 1,
+    uuid: "00000000-0000-0000-0000-000000000001",
+    email: "test@example.com",
+    nickname: "テストユーザー",
+    iconUrl: null,
+    masterRole: Role.user,
+    createdAt: FIXED_DATE,
+    updatedAt: FIXED_DATE,
+    ...overrides,
+});
+
+/**
+ * 参加情報を生成する
+ * @param {Partial<Attendances>} overrides - 上書きする項目
+ * @return {Attendances} 参加情報
+ */
+export const buildAttendance = (overrides: Partial<Attendances> = {}): Attendances => ({
+    id: 1,
+    userId: 1,
+    eventCode: TEST_EVENT_CODE,
+    eventRole: Role.user,
+    teamCode: "TEAM_A",
+    createdAt: FIXED_DATE,
+    updatedAt: FIXED_DATE,
     ...overrides,
 });
