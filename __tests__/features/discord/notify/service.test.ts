@@ -17,6 +17,10 @@ describe("DiscordNotifyServiceImpl", () => {
     beforeEach(() => {
         sendNotification = jest.fn().mockResolvedValue(undefined);
         getDiscordNotifier.mockReturnValue({ sendNotification });
+        // serviceが送信結果をconsole.log/warn/errorに直接出力するため、テスト結果を読みやすくするために抑止する
+        jest.spyOn(console, "log").mockImplementation(() => {});
+        jest.spyOn(console, "warn").mockImplementation(() => {});
+        jest.spyOn(console, "error").mockImplementation(() => {});
     });
 
     afterEach(() => {
