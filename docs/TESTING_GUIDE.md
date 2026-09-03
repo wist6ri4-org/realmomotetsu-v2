@@ -81,18 +81,33 @@ afterEach(() => {
 ### Repository（高優先）
 
 Repository は `BaseRepository` のサブクラスとして `PrismaClient` を注入されるため、
-使用するモデル・メソッドだけを持つモッククライアントを作って渡す。
+`jest-mock-extended` の `mockDeep<PrismaClient>()` でモック化したクライアントを渡す。
+ヘルパーとして `__tests__/helpers/prismaMock.ts` の `createPrismaMock()` /
+`createPrismaTransactionMock()` を使う。
 
 ```ts
-const prisma = {
-    points: {
-        findMany: jest.fn(),
-        create: jest.fn(),
-    },
-} as unknown as PrismaClient;
+import { createPrismaMock, MockPrismaClient } from "../../helpers/prismaMock";
 
-const repository = new PointsRepository(prisma);
+let prisma: MockPrismaClient;
+let repository: PointsRepository;
+
+beforeEach(() => {
+    prisma = createPrismaMock();
+    repository = new PointsRepository(prisma);
+});
+
+it("...", async () => {
+    prisma.points.findMany.mockResolvedValue(points);
+    // ...
+});
 ```
+
+`mockDeep` は全メソッドを自動でモック化するため、使わないメソッドの定義漏れを
+気にする必要がない。`groupBy` / `aggregate` など戻り値の型が厳密で合わせづらい場合は
+`mockResolvedValue(value as never)` のようにキャストしてよい。
+
+トランザクションクライアント（`tx`）を検証する場合は `createPrismaTransactionMock()` で
+別のモックを用意し、tx指定時にそちらが呼ばれ、通常の `prisma` 側は呼ばれないことを確認する。
 
 検証する観点:
 

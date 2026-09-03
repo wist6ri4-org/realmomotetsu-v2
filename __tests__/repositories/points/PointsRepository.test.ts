@@ -3,40 +3,16 @@
  */
 
 import { PointsRepository } from "@/repositories/points/PointsRepository";
-import { PrismaClient, PointStatus } from "@/generated/prisma";
-import { PrismaTransactionClient } from "@/repositories/base/BaseRepository";
+import { PointStatus } from "@/generated/prisma";
 import { buildPoints } from "../../helpers/factories";
-
-/** points周りのPrismaメソッドのみを持つモッククライアント */
-const buildPrismaMock = () =>
-    ({
-        points: {
-            findMany: jest.fn(),
-            groupBy: jest.fn(),
-            aggregate: jest.fn(),
-            create: jest.fn(),
-            update: jest.fn(),
-            updateMany: jest.fn(),
-            delete: jest.fn(),
-        },
-    }) as unknown as PrismaClient & {
-        points: {
-            findMany: jest.Mock;
-            groupBy: jest.Mock;
-            aggregate: jest.Mock;
-            create: jest.Mock;
-            update: jest.Mock;
-            updateMany: jest.Mock;
-            delete: jest.Mock;
-        };
-    };
+import { createPrismaMock, createPrismaTransactionMock, MockPrismaClient } from "../../helpers/prismaMock";
 
 describe("PointsRepository", () => {
-    let prisma: ReturnType<typeof buildPrismaMock>;
+    let prisma: MockPrismaClient;
     let repository: PointsRepository;
 
     beforeEach(() => {
-        prisma = buildPrismaMock();
+        prisma = createPrismaMock();
         repository = new PointsRepository(prisma);
         jest.spyOn(console, "error").mockImplementation(() => {});
     });
@@ -87,7 +63,8 @@ describe("PointsRepository", () => {
 
     describe("sumPointsGroupedByTeamCode", () => {
         it("ステータスがpointsのレコードのみをチームごとに合計する", async () => {
-            prisma.points.groupBy.mockResolvedValue([
+            // groupByはオーバーロードが複雑でmockResolvedValueの型解決に失敗するため、jest.Mockとして扱う
+            (prisma.points.groupBy as jest.Mock).mockResolvedValue([
                 { teamCode: "TEAM_A", _sum: { points: 100 } },
                 { teamCode: "TEAM_B", _sum: { points: null } },
             ]);
@@ -109,7 +86,9 @@ describe("PointsRepository", () => {
 
     describe("sumScoredPointsGroupedByTeamCode", () => {
         it("scored/property/revenueのいずれかのレコードを合計する", async () => {
-            prisma.points.groupBy.mockResolvedValue([{ teamCode: "TEAM_A", _sum: { points: 300 } }]);
+            (prisma.points.groupBy as jest.Mock).mockResolvedValue([
+                { teamCode: "TEAM_A", _sum: { points: 300 } },
+            ]);
 
             const result = await repository.sumScoredPointsGroupedByTeamCode("EVENT_A");
 
@@ -131,7 +110,7 @@ describe("PointsRepository", () => {
 
     describe("sumPropertyPointsGroupedByTeamCode", () => {
         it("ステータスがpropertyのレコードのみを合計する", async () => {
-            prisma.points.groupBy.mockResolvedValue([{ teamCode: "TEAM_A", _sum: { points: 50 } }]);
+            (prisma.points.groupBy as jest.Mock).mockResolvedValue([{ teamCode: "TEAM_A", _sum: { points: 50 } }]);
 
             await repository.sumPropertyPointsGroupedByTeamCode("EVENT_A");
 
@@ -145,7 +124,7 @@ describe("PointsRepository", () => {
 
     describe("sumRevenuePointsGroupedByTeamCode", () => {
         it("ステータスがrevenueのレコードのみを合計する", async () => {
-            prisma.points.groupBy.mockResolvedValue([{ teamCode: "TEAM_A", _sum: { points: 20 } }]);
+            (prisma.points.groupBy as jest.Mock).mockResolvedValue([{ teamCode: "TEAM_A", _sum: { points: 20 } }]);
 
             await repository.sumRevenuePointsGroupedByTeamCode("EVENT_A");
 
@@ -159,12 +138,12 @@ describe("PointsRepository", () => {
 
     describe("sumScoredPointsByTeamCode", () => {
         it("トランザクションクライアントが指定された場合はそちらを使用する", async () => {
-            const aggregate = jest.fn().mockResolvedValue({ _sum: { points: 400 } });
-            const tx = { points: { aggregate } } as unknown as PrismaTransactionClient;
+            const tx = createPrismaTransactionMock();
+            tx.points.aggregate.mockResolvedValue({ _sum: { points: 400 } } as never);
 
             const result = await repository.sumScoredPointsByTeamCode("TEAM_A", "EVENT_A", tx);
 
-            expect(aggregate).toHaveBeenCalledWith({
+            expect(tx.points.aggregate).toHaveBeenCalledWith({
                 _sum: { points: true },
                 where: {
                     teamCode: "TEAM_A",
@@ -181,7 +160,7 @@ describe("PointsRepository", () => {
         });
 
         it("トランザクションクライアントが未指定の場合は通常のprismaクライアントを使用する", async () => {
-            prisma.points.aggregate.mockResolvedValue({ _sum: { points: null } });
+            prisma.points.aggregate.mockResolvedValue({ _sum: { points: null } } as never);
 
             const result = await repository.sumScoredPointsByTeamCode("TEAM_A", "EVENT_A");
 
@@ -210,12 +189,12 @@ describe("PointsRepository", () => {
         });
 
         it("トランザクションクライアントが指定された場合はそちらを使用する", async () => {
-            const create = jest.fn().mockResolvedValue(buildPoints());
-            const tx = { points: { create } } as unknown as PrismaTransactionClient;
+            const tx = createPrismaTransactionMock();
+            tx.points.create.mockResolvedValue(buildPoints());
 
             await repository.create("EVENT_A", "TEAM_A", 100, PointStatus.property, tx);
 
-            expect(create).toHaveBeenCalledWith({
+            expect(tx.points.create).toHaveBeenCalledWith({
                 data: {
                     teamCode: "TEAM_A",
                     eventCode: "EVENT_A",

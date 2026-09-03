@@ -3,7 +3,7 @@
  */
 
 import { BaseRepository, PrismaTransactionClient } from "@/repositories/base/BaseRepository";
-import { PrismaClient } from "@/generated/prisma";
+import { createPrismaMock } from "../../helpers/prismaMock";
 
 /** BaseRepositoryのprotectedメソッドを検証するためのテスト用サブクラス */
 class TestRepository extends BaseRepository {
@@ -29,22 +29,21 @@ describe("BaseRepository", () => {
 
     describe("executeTransaction", () => {
         it("prisma.$transactionに操作を委譲し、結果を返す", async () => {
-            const transactionMock = jest.fn().mockResolvedValue("result");
-            const prisma = { $transaction: transactionMock } as unknown as PrismaClient;
+            const prisma = createPrismaMock();
+            prisma.$transaction.mockResolvedValue("result" as never);
             const repository = new TestRepository(prisma);
             const operations = jest.fn().mockResolvedValue("result");
 
             const result = await repository.runTransaction(operations);
 
-            expect(transactionMock).toHaveBeenCalledWith(operations);
+            expect(prisma.$transaction).toHaveBeenCalledWith(operations);
             expect(result).toBe("result");
         });
 
         it("トランザクションが失敗した場合はログを出力してエラーを再スローする", async () => {
             const error = new Error("transaction failed");
-            const prisma = {
-                $transaction: jest.fn().mockRejectedValue(error),
-            } as unknown as PrismaClient;
+            const prisma = createPrismaMock();
+            prisma.$transaction.mockRejectedValue(error as never);
             const repository = new TestRepository(prisma);
 
             await expect(repository.runTransaction(jest.fn())).rejects.toThrow("transaction failed");
@@ -56,7 +55,7 @@ describe("BaseRepository", () => {
         let repository: TestRepository;
 
         beforeEach(() => {
-            repository = new TestRepository({} as PrismaClient);
+            repository = new TestRepository(createPrismaMock());
         });
 
         it("一意制約違反のエラーは重複エラーに変換される", () => {
