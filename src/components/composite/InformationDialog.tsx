@@ -4,11 +4,8 @@ import { TeamData } from "@/types/TeamData";
 import { Info } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Fab } from "@mui/material";
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import CustomButton from "../base/CustomButton";
-import { InitOperationResponse } from "@/features/init-operation/types";
-import { ApplicationErrorFactory } from "@/error/applicationError";
-import { ApplicationErrorHandler } from "@/error/errorHandler";
 
 /**
  * InformationDialogコンポーネントのプロパティ型定義
@@ -16,62 +13,27 @@ import { ApplicationErrorHandler } from "@/error/errorHandler";
  */
 interface InformationDialogProps {
     teamData: TeamData[];
-    eventCode: string;
-    onDataUpdate: (data: TeamData[]) => void;
 }
 
 /**
  * チーム情報ダイアログコンポーネント
+ *
+ * 以前は開くたびに取得APIを叩いて親のstateを更新していたが、
+ * 親側がリアルタイム通知で最新のチームデータを保持するようになったため、
+ * ここでは受け取ったデータを表示するだけとする。
+ *
  * @param {InformationDialogProps} props - InformationDialogのプロパティ
  * @returns {JSX.Element} - InformationDialogコンポーネント
  */
 const InformationDialog: React.FC<InformationDialogProps> = ({
     teamData,
-    eventCode,
-    onDataUpdate: setTeamData,
 }: InformationDialogProps): React.JSX.Element => {
     const [isOpen, setIsOpen] = useState(false);
-
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-
-    /**
-     * データの取得
-     * @returns {Promise<void>} データ取得の非同期処理
-     */
-    const fetchData = useCallback(async (): Promise<void> => {
-        try {
-            setIsLoading(true);
-            setError(null);
-
-            const params = new URLSearchParams();
-            params.append("eventCode", eventCode as string);
-
-            const response = await fetch("/api/init-operation?" + params.toString());
-            if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
-            }
-
-            const data: InitOperationResponse = (await response.json()).data;
-            const teamData = data.teamData || [];
-
-            setTeamData(teamData as TeamData[]);
-        } catch (error) {
-            const appError = ApplicationErrorFactory.normalize(error);
-            ApplicationErrorHandler.logError(appError);
-
-            setError(appError.message);
-            setTeamData([]);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [eventCode]);
 
     /**
      * ダイアログを開くハンドラー
      */
     const handleClickOpen = () => {
-        fetchData();
         setIsOpen(true);
     };
 
@@ -98,31 +60,29 @@ const InformationDialog: React.FC<InformationDialogProps> = ({
             <Fab color="success" aria-label="info" onClick={handleClickOpen} sx={{ bottom: 175, zIndex: 400 }}>
                 <Info />
             </Fab>
-            {!isLoading && !error && (
-                <Dialog
-                    open={isOpen}
-                    onClose={handleClose}
-                    aria-labelledby="information-dialog-title"
-                    aria-describedby="information-dialog-description"
-                    sx={{ zIndex: 500 }}
-                >
-                    <DialogTitle id="information-dialog-title">チーム情報</DialogTitle>
-                    <DialogContent sx={{ padding: 1 }}>
-                        <DataGrid
-                            rows={teamData}
-                            columns={fields}
-                            initialState={{ pagination: { paginationModel } }}
-                            pageSizeOptions={[5, 10]}
-                            density="compact"
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <CustomButton onClick={handleClose} color="warning">
-                            閉じる
-                        </CustomButton>
-                    </DialogActions>
-                </Dialog>
-            )}
+            <Dialog
+                open={isOpen}
+                onClose={handleClose}
+                aria-labelledby="information-dialog-title"
+                aria-describedby="information-dialog-description"
+                sx={{ zIndex: 500 }}
+            >
+                <DialogTitle id="information-dialog-title">チーム情報</DialogTitle>
+                <DialogContent sx={{ padding: 1 }}>
+                    <DataGrid
+                        rows={teamData}
+                        columns={fields}
+                        initialState={{ pagination: { paginationModel } }}
+                        pageSizeOptions={[5, 10]}
+                        density="compact"
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <CustomButton onClick={handleClose} color="warning">
+                        閉じる
+                    </CustomButton>
+                </DialogActions>
+            </Dialog>
         </>
     );
 };

@@ -108,6 +108,7 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
+                    eventCode: eventCode,
                     teamCode: teamCodeInput.value,
                 }),
             });

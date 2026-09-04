@@ -151,19 +151,27 @@ describe("PointsApiHandler", () => {
     });
 
     describe("PUT", () => {
+        const validPutBody = {
+            eventCode: "EVENT_A",
+            teamCode: "TEAM_A",
+        };
+
         it("リクエストボディをServiceに渡し、更新件数を返す", async () => {
             PointsServiceImpl.putPoints.mockResolvedValue({ count: 2 });
 
-            const req = buildPutRequest({ teamCode: "TEAM_A" });
+            const req = buildPutRequest(validPutBody);
             const { status, body } = await readResponse(await new PointsApiHandler(req).handle());
 
-            expect(PointsServiceImpl.putPoints).toHaveBeenCalledWith({ teamCode: "TEAM_A" });
+            expect(PointsServiceImpl.putPoints).toHaveBeenCalledWith(validPutBody);
             expect(status).toBe(StatusCode.OK);
             expect(body).toHaveProperty("data");
         });
 
-        it("teamCodeが空文字の場合は400を返す", async () => {
-            const req = buildPutRequest({ teamCode: "" });
+        it.each([
+            ["teamCodeが空文字", { ...validPutBody, teamCode: "" }],
+            ["eventCodeが空文字", { ...validPutBody, eventCode: "" }],
+        ])("%sの場合は400を返す", async (_label, body) => {
+            const req = buildPutRequest(body);
             const { status } = await readResponse(await new PointsApiHandler(req).handle());
 
             expect(status).toBe(StatusCode.BAD_REQUEST);

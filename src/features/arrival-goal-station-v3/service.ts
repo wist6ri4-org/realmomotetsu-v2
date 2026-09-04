@@ -6,6 +6,7 @@ import { GameLogicUtils } from "@/utils/gameLogicUtils";
 import { GameConstants } from "@/constants/gameConstants";
 import { StationGrade } from "@/generated/prisma";
 import { VerifyArrivalGoalStationV3Result } from "../verify/verify-arrival-goal-station-v3/types";
+import { notifyEventDataChanged } from "@/lib/realtimeNotifier";
 
 export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
     /**
@@ -182,6 +183,9 @@ export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
                 consecutiveGoalCount: consecutiveGoalCount,
                 consecutiveGoalBonus: createdGoalBonusPoints?.points ?? null,
             };
+
+            await notifyEventDataChanged(req.eventCode);
+
             return res;
         } catch (error) {
             if (error instanceof ApiError) {
