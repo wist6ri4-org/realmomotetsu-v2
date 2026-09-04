@@ -4,6 +4,7 @@ import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { ApiError, DataIntegrityError, InternalServerError } from "@/error";
 import { GameConstants } from "@/constants/gameConstants";
 import { StationGrade, StationType } from "@/generated/prisma";
+import { notifyEventDataChanged } from "@/lib/realtimeNotifier";
 
 export const CurrentLocationV3ServiceImpl: CurrentLocationV3Service = {
     /**
@@ -112,6 +113,9 @@ export const CurrentLocationV3ServiceImpl: CurrentLocationV3Service = {
                 teamDiscordWebhookUrl: propertyPurchase?.team.discordWebhookUrl ?? undefined,
                 stationType: station.stationType ?? undefined,
             };
+
+            await notifyEventDataChanged(req.eventCode);
+
             return res;
         } catch (error) {
             if (error instanceof ApiError) {

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, createContext, useContext } from "react";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
-import { CircularProgress, Box, Typography } from "@mui/material";
+import { Alert, CircularProgress, Box, Typography } from "@mui/material";
 import ApplicationBar from "@/components/composite/ApplicationBar";
 import Header from "@/components/composite/Header";
 import { NavigationBar } from "@/components/composite/NavigationBar";
@@ -133,6 +133,11 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
         fetchInitData();
     }, [eventCode, sbUser]);
 
+    // 初期データを一度でも取得できたか。
+    // 取得済みの場合は再取得中・再取得失敗でも children をアンマウントしない。
+    // これによりページ側の state と購読（今後追加する Supabase Realtime の subscription を含む）が維持される。
+    const hasInitDataLoaded = rawInitData !== null;
+
     // 認証中の表示
     if (isAuthLoading) {
         return (
@@ -181,18 +186,29 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
             >
                 <Header />
                 <Box sx={{ flex: 1, padding: 1 }}>
-                    {isInitDataLoading ? (
-                        <Box sx={{ textAlign: "center", margin: 4 }}>
-                            <CircularProgress size={40} color="primary" />
-                        </Box>
-                    ) : contextError ? (
-                        <Box sx={{ textAlign: "center", margin: 4 }}>
-                            <Typography variant="body1" color="error">
-                                エラーが発生しました: {contextError}
-                            </Typography>
-                        </Box>
+                    {!hasInitDataLoaded ? (
+                        // 初回ロード中・初回ロード失敗時のみ children の代わりに全体表示を出す
+                        isInitDataLoading ? (
+                            <Box sx={{ textAlign: "center", margin: 4 }}>
+                                <CircularProgress size={40} color="primary" />
+                            </Box>
+                        ) : (
+                            <Box sx={{ textAlign: "center", margin: 4 }}>
+                                <Typography variant="body1" color="error">
+                                    エラーが発生しました: {contextError}
+                                </Typography>
+                            </Box>
+                        )
                     ) : (
-                        children
+                        // 取得済みデータがある場合は children を維持し、エラーは上部に併記するだけに留める
+                        <>
+                            {contextError && (
+                                <Alert severity="error" sx={{ marginBottom: 2 }}>
+                                    エラーが発生しました: {contextError}
+                                </Alert>
+                            )}
+                            {children}
+                        </>
                     )}
                 </Box>
                 <Footer />

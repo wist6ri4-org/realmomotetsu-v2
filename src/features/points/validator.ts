@@ -30,6 +30,7 @@ export const PostPointsResponseSchema = z.object({
 
 // ポイントの更新リクエストスキーマ
 export const PutPointsRequestSchema = z.object({
+    eventCode: z.string().min(1, "イベントコードは必須です"),
     teamCode: z.string().min(1, "チームコードは必須です"),
 });
 

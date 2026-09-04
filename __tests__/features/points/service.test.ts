@@ -122,7 +122,7 @@ describe("PointsServiceImpl", () => {
         it("チームコードを指定してポイントのステータスをscoredに更新する", async () => {
             updateStatusByTeamCode.mockResolvedValue({ count: 3 });
 
-            const res = await PointsServiceImpl.putPoints({ teamCode: "TEAM_A" });
+            const res = await PointsServiceImpl.putPoints({ eventCode: TEST_EVENT_CODE, teamCode: "TEAM_A" });
 
             expect(updateStatusByTeamCode).toHaveBeenCalledWith("TEAM_A", GameConstants.POINT_STATUS.SCORED);
             expect(res).toEqual({ count: 3 });
@@ -131,7 +131,7 @@ describe("PointsServiceImpl", () => {
         it("想定外のエラーはInternalServerErrorに変換される", async () => {
             updateStatusByTeamCode.mockRejectedValue(new Error("DB connection lost"));
 
-            await expect(PointsServiceImpl.putPoints({ teamCode: "TEAM_A" })).rejects.toThrow(
+            await expect(PointsServiceImpl.putPoints({ eventCode: TEST_EVENT_CODE, teamCode: "TEAM_A" })).rejects.toThrow(
                 InternalServerError,
             );
         });
@@ -140,7 +140,7 @@ describe("PointsServiceImpl", () => {
             const apiError = new ConflictError({ message: "conflict" });
             updateStatusByTeamCode.mockRejectedValue(apiError);
 
-            await expect(PointsServiceImpl.putPoints({ teamCode: "TEAM_A" })).rejects.toBe(apiError);
+            await expect(PointsServiceImpl.putPoints({ eventCode: TEST_EVENT_CODE, teamCode: "TEAM_A" })).rejects.toBe(apiError);
         });
     });
 });

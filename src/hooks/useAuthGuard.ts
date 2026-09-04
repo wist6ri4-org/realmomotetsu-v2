@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import supabase from "@/lib/supabase";
@@ -26,6 +26,10 @@ export const useAuthGuard = (): {
     const [user, setUser] = useState<UsersWithRelations | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
+
+    // 現在 state に反映済みの認証ユーザーID。
+    // onAuthStateChange のコールバックは再生成されないクロージャのため、state ではなく ref で保持する。
+    const currentSbUserIdRef = useRef<string | null>(null);
 
     /**
      * publicスキーマのユーザー情報を取得
@@ -95,11 +99,20 @@ export const useAuthGuard = (): {
                     throw new Error("No user data found in public schema");
                 }
 
+                // onAuthStateChange の SIGNED_IN 側で既に同一ユーザーを反映済みの場合、
+                // ここで setSbUser すると中身が同じでも参照だけが変わり、初期データ取得が二重に走る。
+                if (currentSbUserIdRef.current === authUser.id) {
+                    setIsLoading(false);
+                    return;
+                }
+
+                currentSbUserIdRef.current = authUser.id;
                 setSbUser(authUser);
                 setUser(userData);
                 setIsLoading(false);
             } catch (error) {
                 console.error("Initial auth check failed:", error);
+                currentSbUserIdRef.current = null;
                 setSbUser(null);
                 setUser(null);
                 setIsLoading(false);
@@ -115,13 +128,24 @@ export const useAuthGuard = (): {
 
             if (event === "SIGNED_OUT" || !session || !session.user) {
                 console.log("User signed out or session invalid");
+                currentSbUserIdRef.current = null;
                 setSbUser(null);
                 setUser(null);
                 setIsLoading(false);
                 router.push(SIGN_IN_URL);
             } else if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+                // supabase/auth-js は visibilitychange（他アプリ・他タブから戻った時）のたびに
+                // _recoverAndRefresh() から同一セッションの SIGNED_IN を再通知する。
+                // ここで無条件に setSbUser すると中身が同じでも参照だけが変わり、
+                // sbUser を依存に持つ購読側（EventsLayout の初期データ取得など）が
+                // 不要な再フェッチと再マウントを起こすため、ユーザーが変わっていなければ何もしない。
+                if (currentSbUserIdRef.current === session.user.id) {
+                    return;
+                }
+
                 console.log("User signed in or token refreshed");
                 const userData = await fetchUserData(session.user);
+                currentSbUserIdRef.current = session.user.id;
                 setSbUser(session.user);
                 setUser(userData);
                 setIsLoading(false);
@@ -134,6 +158,7 @@ export const useAuthGuard = (): {
             if ((e.key && e.key.includes("supabase")) || (e.key && e.key.includes("sb-"))) {
                 if (!e.newValue || e.newValue === "null") {
                     console.log("Auth data removed from localStorage");
+                    currentSbUserIdRef.current = null;
                     setSbUser(null);
                     setUser(null);
                     setIsLoading(false);
