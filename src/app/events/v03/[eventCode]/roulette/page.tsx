@@ -9,7 +9,7 @@ import { ArrowDropDown, Casino, Help } from "@mui/icons-material";
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, CircularProgress, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useEventContext } from "../../../layout";
+import { useEventContext } from "../../../EventContext";
 import { InitRouletteResponse } from "@/features/init-roulette/types";
 import LocationUtils from "@/utils/locationUtils";
 import { ApplicationErrorFactory } from "@/error/applicationError";
