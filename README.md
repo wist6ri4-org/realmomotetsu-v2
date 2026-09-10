@@ -19,6 +19,7 @@
 | [prisma/README.md](prisma/README.md)                                     | Prisma の使用方法                                          |
 | [prisma/DATABASE.md](prisma/DATABASE.md)                                 | データベース定義書                                         |
 | [docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md)                           | テストの実行方法・各層のテスト方針                         |
+| [docs/STORYBOOK_GUIDE.md](docs/STORYBOOK_GUIDE.md)                       | Storybook の見方・動かし方・story の書き方                 |
 | [docs/USER_SETTINGS.md](docs/USER_SETTINGS.md)                           | ユーザー設定機能（プロフィール・アイコン・パスワード変更） |
 | [src/features/discord/README.md](src/features/discord/README.md)         | Discord 通知機能                                           |
 | [supabase/sql/setup_user_storage.md](supabase/sql/setup_user_storage.md) | Supabase ストレージ（ユーザーアイコン）の設定              |
@@ -375,8 +376,26 @@ npx tsx tools/openapi-generator/generate.ts
 | `npm test`              | Jest によるユニットテストの実行                                      |
 | `npm run test:watch`    | ユニットテストのウォッチ実行                                         |
 | `npm run test:coverage` | カバレッジ付きでユニットテストを実行（`coverage/` に出力）           |
+| `npm run storybook`     | Storybook をローカル起動（<http://localhost:6006>）                  |
+| `npm run build-storybook` | Storybook の静的ビルド（`storybook-static/` に出力）                |
+| `npm run test:storybook`  | Storybook の story（コンポーネント/画面レベル試験）を一括実行        |
 
 テストの方針や書き方は [docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md) を参照。
+
+## Storybook
+
+`src/components/` 配下の UI コンポーネントのカタログ化と、v03 の主要画面（home / form / roulette /
+operation/tools）を対象にした画面レベル（結合）試験の自動化に Storybook を使用している。
+
+```bash
+npm run storybook         # http://localhost:6006 でカタログを見る
+npm run test:storybook    # 全storyのplay functionをPlaywrightで自動実行
+npm run build-storybook   # storybook-static/ に静的ビルド
+
+npx playwright install chromium   # test:storybook に必要なブラウザバイナリの取得（初回のみ）
+```
+
+見方・動かし方・story の書き方・既知の注意点は [docs/STORYBOOK_GUIDE.md](docs/STORYBOOK_GUIDE.md) を参照。
 
 ## Prisma の使用方法
 

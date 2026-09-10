@@ -16,7 +16,7 @@ import {
 import { Save, Cancel, Email, Person } from "@mui/icons-material";
 import { UserUtils } from "@/utils/userUtils";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
-import { useEventContext } from "@/app/events/layout";
+import { useEventContext } from "@/app/events/EventContext";
 
 /**
  * ログイン中ユーザーのプロフィール編集ページコンポーネント

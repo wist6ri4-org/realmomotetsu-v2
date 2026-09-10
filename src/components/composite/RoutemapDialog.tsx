@@ -25,7 +25,7 @@ import Routemap from "./Routemap";
 import { useParams } from "next/navigation";
 import { InitRoutemapResponse } from "@/features/init-routemap/types";
 import { Teams } from "@/generated/prisma";
-import { useEventContext } from "@/app/events/layout";
+import { useEventContext } from "@/app/events/EventContext";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { PropertyPurchasesForRoutemap } from "@/repositories/propertyPurchases/PropertyPurchasesRepository";

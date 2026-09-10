@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import { checkIsVisibleUser, signOut } from "@/lib/auth";
 import { useUserIcon } from "@/contexts/UserIconContext";
 import { CommonConstants } from "@/constants/commonConstants";
-import { useEventContext } from "@/app/events/layout";
+import { useEventContext } from "@/app/events/EventContext";
 import { GameConstants } from "@/constants/gameConstants";
 import { Converter } from "@/utils/converter";
 

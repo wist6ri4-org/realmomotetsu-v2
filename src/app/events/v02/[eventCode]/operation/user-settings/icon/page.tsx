@@ -8,7 +8,7 @@ import { UserUtils } from "@/utils/userUtils";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { useUserIcon } from "@/contexts/UserIconContext";
 import supabase from "@/lib/supabase";
-import { useEventContext } from "@/app/events/layout";
+import { useEventContext } from "@/app/events/EventContext";
 
 /**
  * ユーザーアイコン編集ページコンポーネント
