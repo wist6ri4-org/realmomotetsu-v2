@@ -198,7 +198,7 @@ export const TeamCardV3: React.FC<TeamCardV3Props> = ({
                         {/* 残り駅数と最終更新時刻 */}
                         <Grid container spacing={1} justifyContent={"space-between"}>
                             <Grid size={6}>
-                                <Typography variant="body2">残り {teamData.remainingStationsNumber} 駅</Typography>
+                                <Typography variant="body2">残り {teamData.remainingStationsNumber ?? "-"} 駅</Typography>
                             </Grid>
                             <Grid size={6}>
                                 <Typography variant="body2" textAlign={"right"}>

@@ -31,17 +31,17 @@ export default class DijkstraUtils {
      * @param graph - 駅の接続情報を表すグラフ
      * @param startStationCode - 開始駅のコード
      * @param nextGoalStationCode - 次の目的駅のコード
-     * @returns {number} 残りの駅数
+     * @returns {number | null} 残りの駅数
      */
     static calculateRemainingStationsNumber(
         graph: StationsGraph,
         startStationCode: string,
         nextGoalStationCode: string,
-    ): number {
+    ): number | null {
         const times = this.calculateRequiredTimeAndStations(graph, startStationCode);
         const stationsNumber = times.get(nextGoalStationCode)?.stationsNumber;
         if (!stationsNumber && stationsNumber !== 0) {
-            throw new Error(`Station ${startStationCode} not found in the graph`);
+            return null;
         }
         return stationsNumber;
     }

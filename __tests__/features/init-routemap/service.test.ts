@@ -97,9 +97,7 @@ describe("InitRoutemapServiceImpl.getDataForRoutemap", () => {
 
     describe("チームデータの組み立て", () => {
         it("チームごとのボンビー回数をteamCodeで突き合わせて集計する", async () => {
-            countByEventCodeGroupedByTeamCode.mockResolvedValue([
-                buildBombiiCount({ teamCode: "TEAM_B", count: 3 }),
-            ]);
+            countByEventCodeGroupedByTeamCode.mockResolvedValue([buildBombiiCount({ teamCode: "TEAM_B", count: 3 })]);
 
             const res = await InitRoutemapServiceImpl.getDataForRoutemap({ eventCode: TEST_EVENT_CODE });
 
@@ -180,10 +178,7 @@ describe("InitRoutemapServiceImpl.getDataForRoutemap", () => {
             expect(res.nextGoalStation).toEqual(goalStation);
         });
 
-        // FIXME 目的駅が未設定の場合、remainingStationsNumberの算出で目的駅コード=""を
-        // グラフ上で探索できずエラーとなり、InternalServerErrorに変換されてしまう。
-        // 本来はnextGoalStation: nullを含むレスポンスを返すべき。
-        it.failing("次の目的駅が存在しない場合はnullを返す", async () => {
+        it("次の目的駅が存在しない場合はnullを返す", async () => {
             findLatestGoalStation.mockResolvedValue(null);
 
             const res = await InitRoutemapServiceImpl.getDataForRoutemap({ eventCode: TEST_EVENT_CODE });
@@ -256,26 +251,26 @@ describe("InitRoutemapServiceImpl.getDataForRoutemap", () => {
         it("想定外のエラーはInternalServerErrorに変換される", async () => {
             findByEventCode.mockRejectedValue(new Error("DB connection lost"));
 
-            await expect(
-                InitRoutemapServiceImpl.getDataForRoutemap({ eventCode: TEST_EVENT_CODE }),
-            ).rejects.toThrow(InternalServerError);
+            await expect(InitRoutemapServiceImpl.getDataForRoutemap({ eventCode: TEST_EVENT_CODE })).rejects.toThrow(
+                InternalServerError,
+            );
         });
 
         it("ApiErrorはそのまま再スローされる", async () => {
             const apiError = new ConflictError({ message: "conflict" });
             findByEventCode.mockRejectedValue(apiError);
 
-            await expect(
-                InitRoutemapServiceImpl.getDataForRoutemap({ eventCode: TEST_EVENT_CODE }),
-            ).rejects.toBe(apiError);
+            await expect(InitRoutemapServiceImpl.getDataForRoutemap({ eventCode: TEST_EVENT_CODE })).rejects.toBe(
+                apiError,
+            );
         });
 
         it("物件駅購入情報の取得が失敗した場合もInternalServerErrorに変換される", async () => {
             findPurchasedByEventCode.mockRejectedValue(new Error("DB connection lost"));
 
-            await expect(
-                InitRoutemapServiceImpl.getDataForRoutemap({ eventCode: TEST_EVENT_CODE }),
-            ).rejects.toThrow(InternalServerError);
+            await expect(InitRoutemapServiceImpl.getDataForRoutemap({ eventCode: TEST_EVENT_CODE })).rejects.toThrow(
+                InternalServerError,
+            );
         });
     });
 });

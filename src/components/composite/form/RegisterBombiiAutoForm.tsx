@@ -84,6 +84,14 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
         // ボンビーのチームを条件に基づき決定
         const bombiiTeam = GameLogicUtils.confirmBombii(teamData);
 
+        if (!bombiiTeam) {
+            await showAlertDialog({
+                title: DialogConstants.TITLE.ERROR,
+                message: "ボンビーを登録できませんでした。\n目的駅が設定されていません。",
+            });
+            return;
+        }
+
         const confirmMessage =
             `以下の内容でボンビーを登録しますか？\n\n` +
             `チーム: ${bombiiTeam.teamName}\n` +
@@ -113,7 +121,7 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
             });
 
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
 
             if (event.isNotificationEnabled && event.discordWebhookUrl) {

@@ -91,7 +91,9 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
     const space = "　";
 
     // 表示するテキストコンテンツ
-    const displayText = `次は ${nextStation + space.repeat(7)} Next ${nextStationEng}`;
+    const displayText = (nextStation || nextStationEng)
+        ? `次は ${nextStation + space.repeat(7)} Next ${nextStationEng}`
+        : "ゲームの開始まで いましばらくお待ちください";
 
     return (
         <Box

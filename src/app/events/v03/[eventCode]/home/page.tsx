@@ -132,8 +132,8 @@ const HomePage: React.FC = (): React.JSX.Element => {
                 <Box>
 
                     <BulletinBoard
-                        nextStation={nextGoalStationData.station?.name || "ー"}
-                        nextStationEng={nextGoalStationData.station?.englishName || "ー"}
+                        nextStation={nextGoalStationData.station?.name}
+                        nextStationEng={nextGoalStationData.station?.englishName}
                     />
                 </Box>
                 <Divider sx={{ marginY: 2 }} />

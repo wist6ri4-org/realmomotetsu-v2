@@ -457,15 +457,18 @@ const Routemap: React.FC<RoutemapProps> = ({
                                 style={{ visibility: "visible" }}
                             >
                                 {/* 目的駅 */}
-                                <use
-                                    id="goal-station"
-                                    href="#station-symbol"
-                                    x={goalStationMapping?.box.x || "0"}
-                                    y={goalStationMapping?.box.y || "0"}
-                                    width="150"
-                                    height="150"
-                                    transform="translate(-25, -45)"
-                                />
+                                {goalStationMapping != null && (
+                                    <use
+                                        id="goal-station"
+                                        href="#station-symbol"
+                                        x={goalStationMapping.box.x}
+                                        y={goalStationMapping.box.y}
+                                        width="150"
+                                        height="150"
+                                        transform="translate(-25, -45)"
+                                    />)
+                                }
+
                                 {/* 路線 */}
                                 <use id="route-on-routemap" href="#route-list-symbol" x="150" y="450" />
                                 {/* チームの電車 */}

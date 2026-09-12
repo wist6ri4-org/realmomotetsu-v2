@@ -118,10 +118,8 @@ describe("DijkstraUtils", () => {
             expect(DijkstraUtils.calculateRemainingStationsNumber(graph, "A", "A")).toBe(0);
         });
 
-        it("目的駅がグラフに存在しない場合はエラーになる", () => {
-            expect(() => DijkstraUtils.calculateRemainingStationsNumber(graph, "A", "UNKNOWN")).toThrow(
-                "Station A not found in the graph",
-            );
+        it("目的駅がグラフに存在しない場合はnullを返す", () => {
+            expect(DijkstraUtils.calculateRemainingStationsNumber(graph, "A", "UNKNOWN")).toBe(null);
         });
     });
 });

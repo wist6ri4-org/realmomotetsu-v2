@@ -88,10 +88,10 @@ describe("GameLogicUtils", () => {
             expect(prize).toBe(GameConstants.ARRIVAL_PRIZE_V3.BASIC_PRIZE);
         });
 
-        it("到着駅が路線に存在しない場合はエラーになる", () => {
-            expect(() =>
-                GameLogicUtils.calculateArrivalPrizeV3(nearbyStations, "STATION_A", "STATION_UNKNOWN"),
-            ).toThrow();
+        it("到着駅が路線に存在しない場合は基本賞金のみが返る", () => {
+            const prize = GameLogicUtils.calculateArrivalPrizeV3(nearbyStations, "STATION_A", "STATION_UNKNOWN");
+
+            expect(prize).toBe(GameConstants.ARRIVAL_PRIZE_V3.BASIC_PRIZE);
         });
     });
 
@@ -111,9 +111,7 @@ describe("GameLogicUtils", () => {
         });
 
         it("連続ゴール数が増えるとボーナスは単調増加する", () => {
-            const bonuses = [1, 2, 3, 4, 5].map((count) =>
-                GameLogicUtils.calculateConsecutiveGoalBonusV3(count),
-            );
+            const bonuses = [1, 2, 3, 4, 5].map((count) => GameLogicUtils.calculateConsecutiveGoalBonusV3(count));
 
             bonuses.forEach((bonus, index) => {
                 if (index > 0) {

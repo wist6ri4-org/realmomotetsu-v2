@@ -147,7 +147,7 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
                         );
                         return;
                     default:
-                        throw ApplicationErrorFactory.createFromResponse(responseValidation);
+                        throw ApplicationErrorFactory.createFromErrorBody(responseValidation.status, responseValidationJson);
                 }
             } else if (responseValidationData.result === VerifyArrivalGoalStationV3Result.W01_STATION_MISMATCH) {
                 const isForceConfirmed = await showConfirmDialog({
