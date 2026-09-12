@@ -1,0 +1,24 @@
+{
+    "embed": {
+        "title": "✅ API 実行成功",
+        "description": "API `{{endpoint}}` が正常に実行されました。",
+        "color": 5763719,
+        "fields": [
+            {
+                "name": "エンドポイント",
+                "value": "{{endpoint}}",
+                "inline": true
+            },
+            {
+                "name": "実行時間",
+                "value": "{{timestamp}}",
+                "inline": true
+            },
+            {
+                "name": "ユーザー",
+                "value": "{{user}}",
+                "inline": true
+            }
+        ]
+    }
+}

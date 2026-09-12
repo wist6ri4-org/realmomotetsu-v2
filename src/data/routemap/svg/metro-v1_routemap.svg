@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 7000 4950" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1;">
+    <g id="テキスト">
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,2533.801852,-1841.670715)">
+            <text x="4039.994px" y="5191.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">西馬込</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,2592.380496,-1983.092072)">
+            <text x="4239.994px" y="5191.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">馬込</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,2650.95914,-2124.513428)">
+            <text x="4439.994px" y="5191.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">中延</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,2709.537784,-2265.934784)">
+            <text x="4639.994px" y="5191.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">戸越</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,2782.761088,-2442.711479)">
+            <text x="4889.994px" y="5191.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">五反田</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,2973.141681,-2902.330887)">
+            <text x="5539.994px" y="5191.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">高輪台</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,3075.654307,-3149.818261)">
+            <text x="5889.994px" y="5191.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">泉岳寺</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,3166.034899,-3568.016312)">
+            <text x="6439.994px" y="5091.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">三田</text>
+        </g>
+        <text x="4062.5px" y="4328.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">芝公園</text>
+        <text x="3850px" y="4328.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">赤羽橋</text>
+        <text x="4062.5px" y="4128.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">御成門</text>
+        <text x="4312.5px" y="3778.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">内幸町</text>
+        <text x="4300px" y="3446.886px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">日比谷</text>
+        <text x="4600px" y="3178.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">有楽町</text>
+        <text x="4425px" y="3053.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">二重橋前〈丸の内〉</text>
+        <text x="4600px" y="2878.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">東京</text>
+        <text x="4450px" y="2678.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">大手町</text>
+        <text x="4000px" y="2278.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">神保町</text>
+        <text x="4012.5px" y="1828.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">水道橋</text>
+        <text x="4012.5px" y="1453.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">春日</text>
+        <text x="4012.5px" y="1328.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">白山</text>
+        <text x="4012.5px" y="1128.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">千石</text>
+        <text x="4012.5px" y="928.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">巣鴨</text>
+        <text x="4012.5px" y="728.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">西巣鴨</text>
+        <text x="4012.5px" y="528.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">新板橋</text>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,-133.845372,-4651.400606)">
+            <text x="6097.815px" y="566.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">板橋区役所前</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,-133.515511,-4533.478528)">
+            <text x="5955.635px" y="625.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">板橋本町</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,-167.094155,-4402.412511)">
+            <text x="5780.635px" y="650.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">本蓮沼</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,-250.672798,-4250.635816)">
+            <text x="5555.635px" y="625.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">志村坂上</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,-334.251442,-4098.859121)">
+            <text x="5330.635px" y="600.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">志村三丁目</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,-309.558983,-3992.831208)">
+            <text x="5214.994px" y="683.234px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">蓮根</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,-365.847087,-3856.939703)">
+            <text x="5022.815px" y="683.234px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">西台</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,-457.696834,-3700.835582)">
+            <text x="4788.455px" y="650.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">高島平</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,-540.824766,-3550.147)">
+            <text x="4564.994px" y="625.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">新高島平</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,-602.144661,-3402.107679)">
+            <text x="4355.635px" y="625.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">西高島平</text>
+        </g>
+        <text x="3862.5px" y="4153.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">神谷町</text>
+        <text x="3687.5px" y="3966.425px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">虎ノ門ヒルズ</text>
+        <text x="4100px" y="3994.642px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">虎ノ門</text>
+        <text x="4712.5px" y="3928.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">新橋</text>
+        <text x="4675px" y="3653.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">銀座</text>
+        <text x="4950px" y="3378.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">銀座一丁目</text>
+        <text x="5212.5px" y="3828.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">築地</text>
+        <text x="5512.5px" y="3828.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">月島</text>
+        <text x="5275px" y="3428.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">八丁堀</text>
+        <text x="5150px" y="3528.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">新富町</text>
+        <text x="4975px" y="3696.886px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">東銀座</text>
+        <text x="5112.5px" y="3178.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">京橋</text>
+        <text x="5050px" y="2903.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">日本橋</text>
+        <text x="5050px" y="2628.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">三越前</text>
+        <text x="4912.5px" y="2528.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">神田</text>
+        <text x="4812.5px" y="2128.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">末広町</text>
+        <text x="4475px" y="1778.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">上野広小路</text>
+        <text x="5212.5px" y="2028.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">仲御徒町</text>
+        <text x="5212.5px" y="2178.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">秋葉原</text>
+        <text x="4862.5px" y="2303.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">岩本町</text>
+        <text x="5450px" y="2328.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">馬喰横山</text>
+        <text x="5512.5px" y="2628.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">人形町</text>
+        <text x="5750px" y="2496.886px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">東日本橋</text>
+        <text x="5562.5px" y="2228.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">浅草橋</text>
+        <text x="5800px" y="1828.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">蔵前</text>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,1388.895654,-5608.904211)">
+            <text x="8014.994px" y="1925.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">浅草</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,1305.317011,-5457.127516)">
+            <text x="7789.994px" y="1900.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">田原町</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,1246.738367,-5315.70616)">
+            <text x="7589.994px" y="1900.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">稲荷町</text>
+        </g>
+        <text x="5012.5px" y="1478.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">上野</text>
+        <text x="5200px" y="1278.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">入谷</text>
+        <text x="5150px" y="1078.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">三ノ輪</text>
+        <text x="5512.5px" y="1178.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">南千住</text>
+        <text x="6412.5px" y="2228.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">錦糸町</text>
+        <text x="6012.5px" y="2228.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">両国</text>
+        <text x="5645.32px" y="2946.886px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">水天宮前</text>
+        <text x="6000px" y="2778.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">清澄白河</text>
+        <text x="6150px" y="2528.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">菊川</text>
+        <text x="6400px" y="2528.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">住吉</text>
+        <text x="6612.5px" y="2628.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">西大島</text>
+        <text x="6612.5px" y="2828.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">大島</text>
+        <text x="6612.5px" y="3028.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">東大島</text>
+        <text x="6612.5px" y="3228.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">船堀</text>
+        <text x="6612.5px" y="3428.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">一之江</text>
+        <text x="6612.5px" y="3628.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">瑞江</text>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,3376.294417,-5475.627692)">
+            <text x="8847.815px" y="4391.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">篠崎</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,3434.873061,-5617.049048)">
+            <text x="9047.815px" y="4391.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">本八幡</text>
+        </g>
+        <text x="5675px" y="3296.886px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">門前仲町</text>
+        <text x="5850px" y="3128.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">木場</text>
+        <text x="6112.5px" y="3228.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">東陽町</text>
+        <text x="6112.5px" y="3428.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">南砂町</text>
+        <text x="6112.5px" y="3628.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">西葛西</text>
+        <text x="6112.5px" y="3828.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">葛西</text>
+        <text x="6112.5px" y="4028.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">浦安</text>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,3654.111877,-4946.33837)">
+            <text x="8347.815px" y="4991.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">行徳</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,3712.69052,-5087.759726)">
+            <text x="8547.815px" y="4991.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">妙典</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,3771.269164,-5229.181083)">
+            <text x="8747.815px" y="4991.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">原木中山</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,3829.847808,-5370.602439)">
+            <text x="8947.815px" y="4991.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">西船橋</text>
+        </g>
+        <text x="4000px" y="3578.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">霞ケ関</text>
+        <text x="3650px" y="3178.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">永田町</text>
+        <text x="3662.5px" y="2871.886px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">麴町</text>
+        <text x="3450px" y="2278.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">市ケ谷</text>
+        <text x="3562.5px" y="2428.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">九段下</text>
+        <text x="3950px" y="2578.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">竹橋</text>
+        <text x="3225px" y="2503.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">四ツ谷</text>
+        <text x="5300px" y="3096.886px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">茅場町</text>
+        <text x="3150px" y="4028.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">六本木</text>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,2342.627612,-2811.416838)">
+            <text x="5114.994px" y="4475.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">広尾</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,2241.663056,-2617.666838)">
+            <text x="4830.635px" y="4450.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">恵比寿</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,2168.439751,-2440.890142)">
+            <text x="4580.635px" y="4450.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">中目黒</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,2572.919594,-2536.109297)">
+            <text x="4897.815px" y="4891.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">目黒</text>
+        </g>
+        <text x="5300px" y="4528.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">辰巳</text>
+        <text x="5712.5px" y="4528.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">新木場</text>
+        <text x="400px" y="1678.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">荻窪</text>
+        <text x="287.5px" y="1878.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">南阿佐ヶ谷</text>
+        <text x="800px" y="1778.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">中野</text>
+        <text x="1500px" y="1778.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">落合</text>
+        <text x="1062.5px" y="1978.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">東中野</text>
+        <text x="1062.5px" y="1678.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">中井</text>
+        <text x="1062.5px" y="1478.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">落合南長崎</text>
+        <text x="1062.5px" y="1278.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">新江古田</text>
+        <text x="1062.5px" y="1078.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">練馬</text>
+        <text x="600px" y="1078.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">豊島園</text>
+        <text x="525px" y="878.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">練馬春日町</text>
+        <text x="612.5px" y="678.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">光が丘</text>
+        <text x="312.5px" y="2078.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">新高円寺</text>
+        <text x="1500px" y="2181.537px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">西新宿</text>
+        <text x="1900px" y="2178.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">新宿西口</text>
+        <text x="1950px" y="2378.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">新宿</text>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,890.62883,-2155.981685)">
+            <text x="3597.815px" y="3050.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">西新宿五丁目</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,978.496795,-2368.113719)">
+            <text x="3897.815px" y="3050.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">都庁前</text>
+        </g>
+        <text x="1950px" y="2678.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">代々木</text>
+        <text x="2600px" y="2678.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">国立競技場</text>
+        <text x="3150px" y="3178.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">青山一丁目</text>
+        <text x="2412.5px" y="2878.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">北参道</text>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,1308.490482,-2583.507387)">
+            <text x="4322.815px" y="3341.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">代々木公園</text>
+        </g>
+        <text x="2400px" y="3178.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">渋谷</text>
+        <text x="2700px" y="3178.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">表参道</text>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,1939.036117,-3005.779211)">
+            <text x="5147.815px" y="3891.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">外苑前</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,2193.141456,-2900.525333)">
+            <text x="5147.815px" y="4250.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">乃木坂</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,2146.157739,-3221.455822)">
+            <text x="5511.72px" y="4033.234px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">赤坂</text>
+        </g>
+        <text x="3162.5px" y="3428.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">赤坂見附</text>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,1249.911838,-2442.086031)">
+            <text x="4122.815px" y="3341.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">代々木上原</text>
+        </g>
+        <text x="2400px" y="2978.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">明治神宮前〈原宿〉</text>
+        <text x="2400px" y="2328.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">新宿三丁目</text>
+        <text x="2650px" y="2478.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">新宿御苑前</text>
+        <text x="3050px" y="2328.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">曙橋</text>
+        <text x="3100px" y="2128.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">牛込神楽坂</text>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,946.383476,-3340.58531)">
+            <text x="5055.635px" y="2525.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">牛込柳町</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,887.804833,-3199.163953)">
+            <text x="4855.635px" y="2525.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">若松河田</text>
+        </g>
+        <text x="2950px" y="2646.886px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">四谷三丁目</text>
+        <text x="2112.5px" y="2028.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">西早稲田</text>
+        <text x="2412.5px" y="1578.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">雑司が谷</text>
+        <text x="2200px" y="1178.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">池袋</text>
+        <text x="1900px" y="1178.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">要町</text>
+        <text x="1550px" y="1278.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">千川</text>
+        <text x="1762.5px" y="1078.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">小竹向原</text>
+        <text x="1312.5px" y="1078.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">氷川台</text>
+        <text x="1312.5px" y="878.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">平和台</text>
+        <text x="2400px" y="2128.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">東新宿</text>
+        <text x="1562.5px" y="478.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">地下鉄成増</text>
+        <text x="1200px" y="378.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">和光市</text>
+        <text x="312.5px" y="2275.103px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">東高円寺</text>
+        <text x="512.5px" y="2478.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">中野新橋</text>
+        <text x="437.5px" y="2678.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">中野富士見町</text>
+        <text x="550px" y="2878.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">方南町</text>
+        <text x="750px" y="2181.537px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">新中野</text>
+        <text x="1050px" y="2181.537px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">中野坂上</text>
+        <text x="2550px" y="1778.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">早稲田</text>
+        <text x="2950px" y="1778.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">神楽坂</text>
+        <text x="2650px" y="1453.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">東池袋</text>
+        <text x="3250px" y="1178.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">新大塚</text>
+        <text x="3550px" y="1178.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">茗荷谷</text>
+        <text x="3575px" y="1746.886px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">後楽園</text>
+        <text x="3987.5px" y="1603.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">本郷三丁目</text>
+        <text x="4037.5px" y="2028.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">御茶ノ水</text>
+        <text x="4087.5px" y="2178.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">新御茶ノ水</text>
+        <text x="4550px" y="2596.886px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">淡路町</text>
+        <text x="4225px" y="2396.886px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">小川町</text>
+        <text x="4612.5px" y="1578.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">湯島</text>
+        <text x="4612.5px" y="1378.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">根津</text>
+        <text x="4612.5px" y="1178.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">千駄木</text>
+        <text x="4800px" y="828.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">西日暮里</text>
+        <text x="5150px" y="728.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">町屋</text>
+        <text x="5450px" y="628.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">北千住</text>
+        <text x="5812.5px" y="728.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">綾瀬</text>
+        <text x="5812.5px" y="528.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">北綾瀬</text>
+        <text x="4312.5px" y="1328.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">東大前</text>
+        <text x="4312.5px" y="1128.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">本駒込</text>
+        <text x="4312.5px" y="928.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">駒込</text>
+        <text x="4450px" y="628.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">西ケ原</text>
+        <text x="4712.5px" y="528.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">王子</text>
+        <text x="4712.5px" y="328.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">王子神谷</text>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,129.780845,-5053.491379)">
+            <text x="6714.994px" y="683.234px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">志茂</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,12.931099,-4887.031919)">
+            <text x="6455.635px" y="625.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">赤羽岩淵</text>
+        </g>
+        <text x="4500px" y="4228.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">大門</text>
+        <text x="4825px" y="4303.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">汐留</text>
+        <text x="5512.5px" y="4328.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">豊洲</text>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,3000.618911,-4312.232807)">
+            <text x="7255.635px" y="4519.271px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">築地市場</text>
+        </g>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,3104.632259,-4469.777224)">
+            <text x="7497.815px" y="4566.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">勝どき</text>
+        </g>
+        <text x="1225px" y="678.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">地下鉄赤塚</text>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,2646.142898,-2712.885992)">
+            <text x="5147.815px" y="4891.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">白金台</text>
+        </g>
+        <text x="3250px" y="4328.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">白金高輪</text>
+        <text x="3375px" y="4153.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">麻布十番</text>
+        <text x="6112.5px" y="4228.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">南行徳</text>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,1360.824542,-5709.852984)">
+            <text x="8122.815px" y="1841.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">本所吾妻橋</text>
+        </g>
+        <text x="6211.091px" y="1578.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">押上〈スカイツリー前〉</text>
+        <text x="5450px" y="1828.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">新御徒町</text>
+        <text x="5737.5px" y="2696.886px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">浜町</text>
+        <text x="6000px" y="2528.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">森下</text>
+        <text x="5212.5px" y="2553.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">小伝馬町</text>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,1317.709236,-4905.763428)">
+            <text x="7130.635px" y="2191.054px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">上野御徒町</text>
+        </g>
+        <text x="5312.5px" y="3328.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">宝町</text>
+        <text x="3287.5px" y="3953.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">六本木一丁目</text>
+        <text x="3662.5px" y="3771.886px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">溜池山王</text>
+        <g transform="matrix(0.707107,-0.707107,0.707107,0.707107,-933.574349,1384.882307)">
+            <text x="1754.914px" y="4872.685px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">国会議事堂前</text>
+        </g>
+        <text x="3912.5px" y="2978.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">半蔵門</text>
+        <text x="3950px" y="3178.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">桜田門</text>
+        <g transform="matrix(0.707107,0.707107,-0.707107,0.707107,493.87085,-2948.123189)">
+            <text x="4355.635px" y="2175.414px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">高田馬場</text>
+        </g>
+        <text x="3212.5px" y="1778.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">飯田橋</text>
+        <text x="3162.5px" y="1578.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">江戸川橋</text>
+        <text x="3050px" y="1453.32px" style="font-family:'MS-UIGothic', 'MS UI Gothic', sans-serif;font-size:41.667px;">護国寺</text>
+    </g>
+    <g id="路線">
+        <g id="徒歩">
+            <path d="M3725,3650L3600,3775" style="fill:none;stroke:black;stroke-width:25px;"/>
+            <path d="M4950,1900L4950,2000L5150,2000" style="fill:none;stroke:black;stroke-width:25px;"/>
+            <path d="M4750,1750L4950,1900" style="fill:none;stroke:black;stroke-width:25px;"/>
+            <path d="M4350,2200L4450,2200L4450,2350L4550,2500" style="fill:none;stroke:black;stroke-width:25px;"/>
+            <path d="M3750,1650L3950,1500" style="fill:none;stroke:black;stroke-width:25px;"/>
+            <path d="M3400,3400L3500,3400L3500,3275L3575,3275" style="fill:none;stroke:black;stroke-width:25px;"/>
+            <path d="M3950,4000L4075,4000L4075,3925" style="fill:none;stroke:black;stroke-width:25px;"/>
+            <path d="M4275,3325L4400,3325L4400,3250L4600,3250" style="fill:none;stroke:black;stroke-width:25px;"/>
+            <path d="M4675,3525L4800,3525L4800,3475L4925,3475" style="fill:none;stroke:black;stroke-width:25px;"/>
+            <path d="M1900,2450L1900,2250" style="fill:none;stroke:black;stroke-width:25px;"/>
+        </g>
+        <g id="副都心線">
+            <path d="M1175,425L1525,425L1525,1025L1725,1025L1725,1225L2175,1225L2350,1550L2350,3250" style="fill:none;stroke:rgb(187,72,0);stroke-width:25px;"/>
+        </g>
+        <g id="有楽町線">
+            <path d="M1175,475L1475,475L1475,1075L1675,1075L1675,1275L2150,1275L2150,1350L3400,1350L3400,1550" style="fill:none;stroke:rgb(235,182,0);stroke-width:25px;"/>
+            <path d="M3400,1575L3400,1825" style="fill:none;stroke:rgb(235,182,0);stroke-width:25px;"/>
+            <path d="M3425,1875L3425,2325" style="fill:none;stroke:rgb(235,182,0);stroke-width:25px;"/>
+            <path d="M3425,2375L3600,2550L3600,3275L3925,3275L3925,3225L4575,3225L4575,3250" style="fill:none;stroke:rgb(235,182,0);stroke-width:25px;"/>
+            <path d="M5450,3800L4600,3225" style="fill:none;stroke:rgb(235,182,0);stroke-width:25px;"/>
+            <path d="M5450,3800L5450,4500L5650,4500" style="fill:none;stroke:rgb(235,182,0);stroke-width:25px;"/>
+        </g>
+        <g id="大江戸線">
+            <path d="M1300,2450L1900,2450L1900,2750L3100,2750L3100,4200L3800,4200L3800,4400L4425,4400L4425,4300L4800,4300L4800,4200L5250,4200" style="fill:none;stroke:rgb(220,0,111);stroke-width:25px;"/>
+            <path d="M800,650L800,1050L1000,1050L1000,2450L1275,2450" style="fill:none;stroke:rgb(220,0,111);stroke-width:25px;"/>
+            <path d="M2350,2200L2100,2200L2100,2250L1900,2250L1600,2425" style="fill:none;stroke:rgb(220,0,111);stroke-width:25px;"/>
+            <path d="M3375,1875L3050,1875L3050,2200L2350,2200" style="fill:none;stroke:rgb(220,0,111);stroke-width:25px;"/>
+            <path d="M5250,4200L5650,3400L5650,3000L5950,3000L5950,1900L4275,1900L4275,1500L3550,1500L3550,1825L3425,1825" style="fill:none;stroke:rgb(220,0,111);stroke-width:25px;"/>
+        </g>
+        <g id="東西線">
+            <path d="M800,1850L2950,1850" style="fill:none;stroke:rgb(0,162,225);stroke-width:25px;"/>
+            <path d="M2950,1825L3400,1825" style="fill:none;stroke:rgb(0,162,225);stroke-width:25px;"/>
+            <path d="M3400,1850L3750,2200L3750,2375L3775,2375L3775,2650L4150,2650L4150,2775L4850,2775L4850,2850L5225,2850L5275,2875L5450,2875L5450,3000L5650,3200L6050,3200L6050,4400L6650,4400" style="fill:none;stroke:rgb(0,162,225);stroke-width:25px;"/>
+        </g>
+        <g id="丸ノ内線">
+            <path d="M4425,2725L4425,2500L4550,2500L4550,2000L4225,2000L4225,1650L3650,1650L3650,1250L2150,1250" style="fill:none;stroke:rgb(222,28,28);stroke-width:25px;"/>
+            <path d="M4625,3525L4925,3225L4925,2950L4600,2950L4400,2750" style="fill:none;stroke:rgb(222,28,28);stroke-width:25px;"/>
+            <path d="M2350,2400L2650,2550L3425,2550L3425,3625L4500,3625L4500,3550L4625,3550" style="fill:none;stroke:rgb(222,28,28);stroke-width:25px;"/>
+            <path d="M550,1650L550,2250L1500,2250L1900,2425L2325,2425" style="fill:none;stroke:rgb(222,28,28);stroke-width:25px;"/>
+            <path d="M1000,2250L750,2450L750,2850" style="fill:none;stroke:rgb(222,28,28);stroke-width:25px;"/>
+        </g>
+        <g id="新宿線">
+            <path d="M1900,2475L2325,2475L2325,2433.216" style="fill:none;stroke:rgb(125,180,40);stroke-width:25px;"/>
+            <path d="M2375,2375L3375,2375" style="fill:none;stroke:rgb(125,180,40);stroke-width:25px;"/>
+            <path d="M3400,2350L3750,2350L3750,2325L4450,2325L4450,2350L5250,2350L5250,2400L5450,2400L5750,2600L6550,2600L6550,3800" style="fill:none;stroke:rgb(125,180,40);stroke-width:25px;"/>
+            <path d="M6550,3800L6750,3800" style="fill:none;stroke:rgb(125,180,40);stroke-width:25px;"/>
+        </g>
+        <g id="三田線">
+            <path d="M4225,3725L4225,2850L4375,2850L4375,2725L3950,2375L3950,300L2150,300" style="fill:none;stroke:rgb(0,99,179);stroke-width:25px;"/>
+            <path d="M4150,4500L4250,4300L4250,3750" style="fill:none;stroke:rgb(0,99,179);stroke-width:25px;"/>
+            <path d="M2600,4325L3100,4325L3100,4425L3600,4425L3600,4475L4150,4475" style="fill:none;stroke:rgb(0,99,179);stroke-width:25px;"/>
+        </g>
+        <g id="千代田線">
+            <path d="M4375,2750L4375,2225L4350,2200L4350,1750L4550,1550L4550,1150L4800,900L5150,900L5150,800L5425,800L5425,725" style="fill:none;stroke:rgb(0,152,66);stroke-width:25px;"/>
+            <path d="M1950,3050L2611.111,3050L2611.111,3650L3225,3650" style="fill:none;stroke:rgb(0,152,66);stroke-width:25px;"/>
+            <path d="M3275,3675L4269.186,3675L4269.186,3100L4400,3100L4400,2950" style="fill:none;stroke:rgb(0,152,66);stroke-width:25px;"/>
+            <path d="M4425,2925L4425,2775" style="fill:none;stroke:rgb(0,152,66);stroke-width:25px;"/>
+            <path d="M5450,700L5750,700L5750,500" style="fill:none;stroke:rgb(0,152,66);stroke-width:25px;"/>
+        </g>
+        <g id="銀座線">
+            <path d="M4675,3550L5225,3000L5225,2875L5250,2825L5250,2675L4850,2675L4850,2500L4750,2500L4750,1550L5750,1550" style="fill:none;stroke:rgb(242,143,0);stroke-width:25px;"/>
+            <path d="M2375,3275L3375,3275L3375,3800L3750,3800L3750,3900L4650,3900L4650,3575" style="fill:none;stroke:rgb(242,143,0);stroke-width:25px;"/>
+        </g>
+        <g id="日比谷線">
+            <path d="M2350,4100L3950,4100L3950,3509.091L4125,3350L4375,3350L4619.672,3509.091" style="fill:none;stroke:rgb(137,169,184);stroke-width:25px;"/>
+            <path d="M4675,3575L4925,3575" style="fill:none;stroke:rgb(137,169,184);stroke-width:25px;"/>
+            <path d="M4950,3600L4950,3800L5150,3800L5450,3500L5450,3000L5550,2900L5550,2700L5450,2600L5450,2500L5150,2500L5150,1150L5475,1150L5475,725" style="fill:none;stroke:rgb(137,169,184);stroke-width:25px;"/>
+        </g>
+        <g id="浅草線">
+            <path d="M1750,4600L3600,4600L3600,4525L4475,4525L4475,4325" style="fill:none;stroke:rgb(235,102,102);stroke-width:25px;"/>
+            <path d="M4450,4275L4450,4100L4650,4100L4650,3900L5250,3300" style="fill:none;stroke:rgb(235,102,102);stroke-width:25px;"/>
+            <path d="M5275,3275L5275,2875" style="fill:none;stroke:rgb(235,102,102);stroke-width:25px;"/>
+            <path d="M5275,2825L5450,2825L5450,2600L5750,2400L5750,1550L6150,1550" style="fill:none;stroke:rgb(235,102,102);stroke-width:25px;"/>
+        </g>
+        <g id="半蔵門線">
+            <path d="M5450,2725L5650,2725L5650,2850L6350,2850L6350,1900L6150,1900L6150,1550" style="fill:none;stroke:rgb(163,139,192);stroke-width:25px;"/>
+            <path d="M2350,3225L3850,3225L3850,2700L3725,2700L3725,2375L4200,2375L4200,2725L5450,2725" style="fill:none;stroke:rgb(163,139,192);stroke-width:25px;"/>
+        </g>
+        <g id="南北線">
+            <path d="M3425,1875L3750,1875L3750,1400L4250,1400L4250,700L4650,700L4650,300L4250,300" style="fill:none;stroke:rgb(0,173,156);stroke-width:25px;"/>
+            <path d="M2625,4275L3150,4275L3150,4375L3600,4375L3600,3250L3375,3050L3375,1875" style="fill:none;stroke:rgb(0,173,156);stroke-width:25px;"/>
+        </g>
+    </g>
+    <g id="マス">
+        <rect id="地下鉄成増" x="1450" y="400" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="和光市" x="1100" y="400" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="地下鉄赤塚" x="1450" y="600" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.03px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="平和台" x="1450" y="800" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="氷川台" x="1450" y="1000" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="小竹向原" x="1650" y="1000" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="千川" x="1650" y="1200" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="要町" x="1850" y="1200" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="池袋" x="2100" y="1200" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="雑司が谷" x="2300" y="1500" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="西早稲田" x="2300" y="1950" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="東新宿" x="2300" y="2150" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="新宿三丁目" x="2300" y="2350" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="新宿御苑前" x="2600" y="2500" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="四谷三丁目" x="2900" y="2500" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="四ツ谷" x="3350" y="2500" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="市ケ谷" x="3350" y="2300" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="九段下" x="3700" y="2300" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="竹橋" x="3900" y="2600" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="大手町" x="4350" y="2700" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="新御茶ノ水" x="4300" y="2150" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="湯島" x="4500" y="1500" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="根津" x="4500" y="1300" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="千駄木" x="4500" y="1100" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="小川町" x="4400" y="2300" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="岩本町" x="5000" y="2300" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="淡路町" x="4500" y="2450" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="神保町" x="3900" y="2300" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="水道橋" x="3900" y="1750" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="本郷三丁目" x="4200" y="1600" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="御茶ノ水" x="4200" y="1950" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="春日" x="3900" y="1450" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="東大前" x="4200" y="1250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="本駒込" x="4200" y="1050" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="駒込" x="4200" y="850" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="西ケ原" x="4400" y="650" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="王子" x="4600" y="450" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="王子神谷" x="4600" y="250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="志茂" x="4400" y="250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="赤羽岩淵" x="4200" y="250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="白山" x="3900" y="1250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="千石" x="3900" y="1050" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="巣鴨" x="3900" y="850" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="西巣鴨" x="3900" y="650" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="新板橋" x="3900" y="450" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="板橋区役所前" x="3900" y="250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="板橋本町" x="3700" y="250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="本蓮沼" x="3500" y="250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="志村坂上" x="3300" y="250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="志村三丁目" x="3100" y="250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="蓮根" x="2900" y="250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="西台" x="2700" y="250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="高島平" x="2500" y="250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="新高島平" x="2300" y="250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="西高島平" x="2101" y="250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="飯田橋" x="3350" y="1800" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="後楽園" x="3700" y="1600" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="曙橋" x="3000" y="2350" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="赤坂見附" x="3350" y="3350" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="永田町" x="3550" y="3200" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="半蔵門" x="3800" y="2900" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="麴町" x="3550" y="2800" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="北参道" x="2300" y="2800" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="明治神宮前〈原宿〉" x="2300" y="3000" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="外苑前" x="2800" y="3250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="青山一丁目" x="3050" y="3200" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="代々木公園" x="2100" y="3000" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="表参道" x="2600" y="3200" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="渋谷" x="2300" y="3200" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="代々木上原" x="1900" y="3000" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="新宿" x="1850" y="2400" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="西新宿" x="1450" y="2200" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="中野坂上" x="950" y="2200" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="新中野" x="700" y="2200" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="東高円寺" x="500" y="2200" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="中野新橋" x="700" y="2400" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="中野富士見町" x="700" y="2600" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="方南町" x="700" y="2800" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="新高円寺" x="500" y="2000" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="南阿佐ヶ谷" x="500" y="1800" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="荻窪" x="500" y="1600" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="中野" x="750" y="1800" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="落合" x="1450" y="1800" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="高田馬場" x="2100" y="1800" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="早稲田" x="2500" y="1800" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="護国寺" x="3000" y="1300" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="茗荷谷" x="3500" y="1200" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="江戸川橋" x="3350" y="1500" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="東池袋" x="2600" y="1300" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="新大塚" x="3200" y="1200" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="中目黒" x="2300" y="4050" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="恵比寿" x="2550" y="4050" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="広尾" x="2800" y="4050" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="神楽坂" x="2900" y="1800" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="若松河田" x="2600" y="2150" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="牛込柳町" x="2800" y="2150" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="牛込神楽坂" x="3000" y="2150" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="新宿西口" x="1850" y="2200" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="都庁前" x="1550" y="2400" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="代々木" x="1850" y="2700" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="西新宿五丁目" x="1250" y="2400" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="東中野" x="950" y="1900" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="中井" x="950" y="1600" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="落合南長崎" x="950" y="1400" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="新江古田" x="950" y="1200" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="練馬" x="950" y="1000" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="豊島園" x="750" y="1000" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="練馬春日町" x="750" y="800" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="光が丘" x="750" y="600" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="国立競技場" x="2550" y="2700" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="六本木" x="3050" y="4050" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="神谷町" x="3750" y="4050" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="虎ノ門ヒルズ" x="3900" y="3950" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="内幸町" x="4200" y="3700" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="虎ノ門" x="4050" y="3850" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="新橋" x="4600" y="3850" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="東銀座" x="4900" y="3550" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="築地" x="5100" y="3750" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="八丁堀" x="5400" y="3450" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="門前仲町" x="5600" y="3150" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="木場" x="5800" y="3150" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="東陽町" x="6000" y="3150" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="南砂町" x="6000" y="3350" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="西葛西" x="6000" y="3550" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="葛西" x="6000" y="3750" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="浦安" x="6000" y="3950" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="南行徳" x="6000" y="4150" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="行徳" x="6000" y="4350" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="妙典" x="6200" y="4350" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="原木中山" x="6400" y="4350" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="西船橋" x="6600" y="4350" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="豊洲" x="5400" y="4250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="辰巳" x="5400" y="4450" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="新木場" x="5600" y="4450" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="茅場町" x="5400" y="2950" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="水天宮前" x="5600" y="2800" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="清澄白河" x="5900" y="2800" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="人形町" x="5400" y="2550" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="馬喰横山" x="5400" y="2350" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="東日本橋" x="5700" y="2350" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="浅草橋" x="5700" y="2150" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="蔵前" x="5700" y="1850" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="本所吾妻橋" x="5900" y="1500" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="浅草" x="5700" y="1500" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="押上〈スカイツリー前〉" x="6100" y="1500" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="新御徒町" x="5400" y="1850" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="浜町" x="5700" y="2550" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="森下" x="5900" y="2550" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="両国" x="5900" y="2150" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="錦糸町" x="6300" y="2150" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="住吉" x="6300" y="2550" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="西大島" x="6500" y="2550" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="大島" x="6500" y="2750" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="東大島" x="6500" y="2950" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="船堀" x="6500" y="3150" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="一之江" x="6500" y="3350" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="瑞江" x="6500" y="3550" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="篠崎" x="6500" y="3750" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="本八幡" x="6700" y="3750" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="日本橋" x="5200" y="2800" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="京橋" x="5000" y="3100" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="銀座一丁目" x="4900" y="3400" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="宝町" x="5200" y="3250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="三越前" x="5000" y="2650" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="神田" x="4800" y="2450" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="末広町" x="4700" y="2050" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="上野広小路" x="4700" y="1700" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="上野御徒町" x="4900" y="1850" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="秋葉原" x="5100" y="2100" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="小伝馬町" x="5100" y="2450" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="仲御徒町" x="5100" y="1950" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="上野" x="5100" y="1500" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="稲荷町" x="5300" y="1500" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="田原町" x="5500" y="1500" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="入谷" x="5100" y="1300" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="三ノ輪" x="5100" y="1100" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="南千住" x="5400" y="1100" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="北千住" x="5400" y="650" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="町屋" x="5100" y="750" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="西日暮里" x="4750" y="850" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="綾瀬" x="5700" y="650" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="北綾瀬" x="5700" y="450" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="新富町" x="5100" y="3550" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="銀座" x="4600" y="3500" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="東京" x="4550" y="2900" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="霞ケ関" x="3900" y="3600" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="日比谷" x="4200" y="3296.783" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="有楽町" x="4550" y="3200" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="菊川" x="6100" y="2550" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="桜田門" x="3900" y="3200" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="二重橋前〈丸の内〉" x="4350" y="2900" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="麻布十番" x="3550" y="4150" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="白金高輪" x="3200" y="4350" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="白金台" x="2800" y="4250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="目黒" x="2550" y="4250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="六本木一丁目" x="3550" y="3950" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="溜池山王" x="3550" y="3750" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="国会議事堂前" x="3700" y="3600" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="赤坂" x="3200" y="3600" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="乃木坂" x="2800" y="3600" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="赤羽橋" x="3750" y="4350" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="大門" x="4400" y="4250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="汐留" x="4750" y="4150" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="築地市場" x="5000" y="4150" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="勝どき" x="5200" y="4150" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="月島" x="5400" y="3750" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="三田" x="4100" y="4450" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="芝公園" x="4200" y="4250" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="御成門" x="4200" y="4050" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="泉岳寺" x="3550" y="4550" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="高輪台" x="3200" y="4550" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="戸越" x="2300" y="4550" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="中延" x="2100" y="4550" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="馬込" x="1900" y="4550" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="西馬込" x="1700" y="4550" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+        <rect id="五反田" x="2550" y="4550" width="100" height="100" style="fill:white;stroke:black;stroke-width:4.07px;stroke-linecap:round;stroke-miterlimit:1.5;"/>
+    </g>
+</svg>

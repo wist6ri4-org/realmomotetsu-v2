@@ -1,0 +1,2 @@
+event_code,event_name,event_type_code,visibility_level,operation_level,discord_webhook_url,isNotificationEnabled,start_date,created_at,updated_at
+TOKYU_20250517,東急線リアル桃鉄20250517,TOKYU,admin,read_only,https://discord.com/api/webhooks/1399778937579769856/RGfpm4VZ9GUqPh0c7dZRJ_8giWctEHt3EdGXoP4NcLUFqOJCKzJnwLfrm4u3uxuFpsLt,TRUE,2025-05-17 01:30:00.000+09,,

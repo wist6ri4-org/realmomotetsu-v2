@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export type MethodHandler = (req: NextRequest) => Promise<NextResponse>;
 
+/**
+ * HTTPメソッドごとのハンドラーを定義するインターフェース
+ */
 export interface Handlers {
     GET?: MethodHandler;
     POST?: MethodHandler;
@@ -10,6 +13,9 @@ export interface Handlers {
     [key: string]: MethodHandler | undefined;
 }
 
+/**
+ * ログコンテキストのインターフェース
+ */
 export interface LogContext {
     method: string;
     url: string;
@@ -18,11 +24,17 @@ export interface LogContext {
     requestId: string;
 }
 
+/**
+ * エラーログのインターフェース
+ */
 export interface ErrorLog extends LogContext {
     error: Error | unknown;
     stackTrace?: string;
 }
 
+/**
+ * アクセスログのインターフェース
+ */
 export interface AccessLog extends LogContext {
     statusCode: number;
     responseTime: number;
