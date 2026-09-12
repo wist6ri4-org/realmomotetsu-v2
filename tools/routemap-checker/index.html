@@ -17,22 +17,37 @@
             header {
                 background: #333;
                 color: #fff;
-                padding: 12px 20px;
+                padding: 12px;
                 display: flex;
                 align-items: center;
-                gap: 12px;
+                gap: 8px;
                 flex-wrap: wrap;
             }
             header h1 {
-                font-size: 18px;
-                flex: 1;
+                font-size: 16px;
+                flex: 1 1 100%;
+                margin-bottom: 4px;
+            }
+            @media (min-width: 600px) {
+                header {
+                    padding: 12px 20px;
+                    gap: 12px;
+                }
+                header h1 {
+                    font-size: 18px;
+                    flex: 1;
+                    margin-bottom: 0;
+                }
             }
             header button {
-                padding: 6px 14px;
+                padding: 6px 12px;
                 border: none;
                 border-radius: 4px;
                 cursor: pointer;
-                font-size: 14px;
+                font-size: 13px;
+                display: flex;
+                align-items: center;
+                gap: 4px;
             }
             #btn-export {
                 background: #4caf50;
@@ -42,18 +57,29 @@
                 background: #2196f3;
                 color: #fff;
             }
+            #btn-save-png {
+                background: #9c27b0;
+                color: #fff;
+            }
             #btn-reset {
                 background: #f44336;
                 color: #fff;
             }
             #legend {
                 display: flex;
-                gap: 16px;
-                padding: 8px 20px;
+                flex-wrap: wrap;
+                gap: 12px;
+                padding: 8px 16px;
                 background: #fff;
                 border-bottom: 1px solid #ddd;
                 font-size: 13px;
                 align-items: center;
+            }
+            @media (min-width: 600px) {
+                #legend {
+                    gap: 16px;
+                    padding: 8px 20px;
+                }
             }
             .legend-item {
                 display: flex;
@@ -68,13 +94,19 @@
             }
             #stats {
                 display: flex;
-                gap: 20px;
-                padding: 8px 20px;
+                gap: 12px;
+                padding: 8px 16px;
                 background: #f0f4ff;
                 border-bottom: 1px solid #ddd;
                 font-size: 13px;
                 align-items: center;
                 flex-wrap: wrap;
+            }
+            @media (min-width: 600px) {
+                #stats {
+                    gap: 20px;
+                    padding: 8px 20px;
+                }
             }
             .stat-item {
                 display: flex;
@@ -90,11 +122,18 @@
                 width: 1px;
                 height: 18px;
                 background: #bbb;
+                display: none;
+            }
+            @media (min-width: 600px) {
+                .stat-divider {
+                    display: block;
+                }
             }
             #svg-container {
                 width: 100%;
-                overflow: auto;
+                overflow-x: auto;
                 padding: 16px;
+                -webkit-overflow-scrolling: touch;
             }
             #routemap {
                 display: block;
@@ -124,6 +163,7 @@
                 opacity: 0;
                 transition: opacity 0.3s;
                 pointer-events: none;
+                z-index: 3000;
             }
             #toast.show {
                 opacity: 1;
@@ -182,9 +222,14 @@
                 color: #fff;
             }
             #station-list-section {
-                padding: 16px 20px 24px;
+                padding: 16px 16px 24px;
                 background: #fff;
                 border-top: 2px solid #ddd;
+            }
+            @media (min-width: 600px) {
+                #station-list-section {
+                    padding: 16px 20px 24px;
+                }
             }
             #station-list-section h2 {
                 font-size: 14px;
@@ -240,6 +285,57 @@
                 border-radius: 12px;
                 font-size: 12px;
             }
+            /* スマホ画像保存用モーダル */
+            #image-modal {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.85);
+                z-index: 2000;
+                flex-direction: column;
+            }
+            #image-modal.show {
+                display: flex;
+            }
+            .image-modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px;
+                background: #111;
+                color: #fff;
+            }
+            .image-modal-header p {
+                font-size: 14px;
+                font-weight: bold;
+            }
+            #btn-close-image {
+                background: #555;
+                color: #fff;
+                border: none;
+                padding: 6px 16px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+            }
+            .image-modal-body {
+                flex: 1;
+                overflow: auto;
+                padding: 16px;
+                text-align: center;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .image-modal-body img {
+                max-width: 100%;
+                height: auto;
+                background: #fff;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+                user-select: none;
+                -webkit-user-select: none;
+                /* 長押し（コンテキストメニュー）を許可するため pointer-events は制限しない */
+            }
         </style>
     </head>
     <body>
@@ -247,6 +343,7 @@
             <h1>🚇 路線図チェッカー（東京メトロ v1）</h1>
             <button id="btn-export">📤 エクスポート</button>
             <button id="btn-import">📥 インポート</button>
+            <button id="btn-save-png">🖼 PNG保存</button>
             <button id="btn-reset">🗑 リセット</button>
         </header>
 
@@ -465,6 +562,7 @@
 
         <div id="toast"></div>
 
+        <!-- JSONインポート用モーダル -->
         <div id="import-modal">
             <div class="modal-box">
                 <h2>📥 データをインポート</h2>
@@ -473,6 +571,17 @@
                     <button id="btn-import-cancel">キャンセル</button>
                     <button id="btn-import-ok">インポート</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- スマホの画像保存用モーダル -->
+        <div id="image-modal">
+            <div class="image-modal-header">
+                <p>👇 画像を長押しして保存してください</p>
+                <button id="btn-close-image">閉じる</button>
+            </div>
+            <div class="image-modal-body">
+                <img id="generated-image" src="" alt="生成された路線図" />
             </div>
         </div>
 
@@ -5034,6 +5143,74 @@
                 updateStats();
             }
 
+            // PNGとして保存する処理
+            function downloadPNG() {
+                showToast("PNGを生成中...");
+                const svgElement = document.getElementById("routemap");
+                let svgString = new XMLSerializer().serializeToString(svgElement);
+                svgString = '<?xml version="1.0" standalone="no"?>\r\n' + svgString;
+
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+
+                // スマホでもクラッシュしにくいよう、適度に縮小（元は7000x4950）
+                const targetWidth = 3500;
+                const targetHeight = targetWidth * (4950 / 7000);
+
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+
+                // 背景を白で塗りつぶし
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const img = new Image();
+                const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+                const url = URL.createObjectURL(blob);
+
+                img.onload = () => {
+                    ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+                    URL.revokeObjectURL(url);
+
+                    const pngUrl = canvas.toDataURL("image/png");
+
+                    // スマホ・タブレット判定
+                    const isMobile =
+                        matchMedia("(max-width: 768px)").matches ||
+                        /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+                    if (isMobile) {
+                        // スマホの場合はモーダルを表示して長押し保存を促す
+                        document.getElementById("generated-image").src = pngUrl;
+                        document.getElementById("image-modal").classList.add("show");
+                        showToast("✅ 画像を生成しました");
+                    } else {
+                        // PCの場合は直接ダウンロード
+                        const a = document.createElement("a");
+                        a.href = pngUrl;
+                        a.download = "routemap.png";
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        showToast("✅ PNGとして保存しました");
+                    }
+                };
+
+                img.onerror = () => {
+                    URL.revokeObjectURL(url);
+                    showToast("❌ PNGの保存に失敗しました");
+                };
+
+                img.src = url;
+            }
+
+            // モーダルを閉じる処理
+            document.getElementById("btn-close-image").addEventListener("click", () => {
+                document.getElementById("image-modal").classList.remove("show");
+                // メモリ解放のためにsrcを空にする
+                document.getElementById("generated-image").src = "";
+            });
+
             document.getElementById("btn-export").addEventListener("click", () => {
                 const json = JSON.stringify(state, null, 2);
                 navigator.clipboard
@@ -5068,6 +5245,8 @@
                     showToast("❌ JSONの形式が正しくありません");
                 }
             });
+
+            document.getElementById("btn-save-png").addEventListener("click", downloadPNG);
 
             document.getElementById("btn-reset").addEventListener("click", () => {
                 if (!confirm("全駅の色をリセットしますか？")) return;

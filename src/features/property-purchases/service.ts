@@ -7,6 +7,7 @@ import {
     PostPropertyPurchasesResponse,
 } from "./types";
 import { ApiError, InternalServerError, ConflictError } from "@/error";
+import { notifyEventDataChanged } from "@/lib/realtimeNotifier";
 
 export const PropertyPurchasesServiceImpl: PropertyPurchasesService = {
     /**
@@ -54,6 +55,9 @@ export const PropertyPurchasesServiceImpl: PropertyPurchasesService = {
             const res: PostPropertyPurchasesResponse = {
                 propertyPurchase,
             };
+
+            await notifyEventDataChanged(req.eventCode);
+
             return res;
         } catch (error) {
             if (error instanceof ApiError) {

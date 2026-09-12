@@ -19,6 +19,7 @@ import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box, CircularProgress } from "@mui/material";
+import { useParams } from "next/navigation";
 import React, { useState } from "react";
 
 /**
@@ -43,6 +44,8 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
     onSubmit,
     isOperating,
 }: PointsExchangeFormProps): React.JSX.Element => {
+    const { eventCode } = useParams();
+
     const teamCodeInput = useSelectInput("");
 
     const { isConfirmOpen, dialogOptions, showConfirmDialog, handleConfirm, handleCancel } = useConfirmDialog();
@@ -77,12 +80,13 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
+                    eventCode: eventCode,
                     teamCode: teamCodeInput.value,
                 }),
             });
 
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
 
             teamCodeInput.reset();

@@ -12,7 +12,13 @@
 
 # testing
 /coverage
-/__tests__/output
+
+# storybook
+/storybook-static
+*storybook.log
+
+# tools
+/tools/*/output
 
 # next.js
 /.next/

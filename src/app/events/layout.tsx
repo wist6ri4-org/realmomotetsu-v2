@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useState, createContext, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
-import { CircularProgress, Box, Typography } from "@mui/material";
+import { Alert, CircularProgress, Box, Typography } from "@mui/material";
 import ApplicationBar from "@/components/composite/ApplicationBar";
 import Header from "@/components/composite/Header";
 import { NavigationBar } from "@/components/composite/NavigationBar";
@@ -19,50 +19,7 @@ import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { GameConstants } from "@/constants/gameConstants";
 import { Converter } from "@/utils/converter";
-
-/**
- * Contextの型定義
- * @property {Teams[]} teams - チームの配列
- * @property {Stations[]} stations - 駅の配列
- * @property {NearbyStationsWithRelations[]} nearbyStations - 近隣駅の配列
- * @property {Documents[]} documents - ドキュメントの配列
- * @property {UsersWithRelations | null} user - ユーザー情報
- * @property {EventWithRelations} event - イベント情報
- * @property {string} versionPath - イベントのバージョンに対応するパス
- * @property {boolean} isInitDataLoading - 初期データのロード状態
- * @property {string | null} contextError - コンテキストのエラー情報
- * @property {InitResponse | null} rawInitData - 元の初期化データ（必要に応じて）
- */
-interface EventContextType {
-    // 個別データ
-    teams: Teams[];
-    stations: Stations[];
-    nearbyStations: NearbyStationsWithRelations[];
-    documents: Documents[];
-    user: UsersWithRelations | null;
-    event: EventWithRelations;
-
-    versionPath: string;
-
-    // 状態管理
-    isInitDataLoading: boolean;
-    contextError: string | null;
-
-    // 元データも保持（必要に応じて）
-    rawInitData: InitResponse | null;
-}
-
-// Context作成
-const EventContext = createContext<EventContextType | undefined>(undefined);
-
-// カスタムhook
-export const useEventContext = () => {
-    const context = useContext(EventContext);
-    if (context === undefined) {
-        throw new Error("useEventContext must be used within EventsLayout");
-    }
-    return context;
-};
+import { EventContext, EventContextType } from "@/app/events/EventContext";
 
 /**
  * EventContextのプロバイダープロパティ
@@ -104,7 +61,7 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
 
                 const response = await fetch(`/api/init?eventCode=${eventCode}&uuid=${sbUser.id}`);
                 if (!response.ok) {
-                    throw ApplicationErrorFactory.createFromResponse(response);
+                    throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
                 }
 
                 const data = await response.json();
@@ -132,6 +89,11 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
 
         fetchInitData();
     }, [eventCode, sbUser]);
+
+    // 初期データを一度でも取得できたか。
+    // 取得済みの場合は再取得中・再取得失敗でも children をアンマウントしない。
+    // これによりページ側の state と購読（今後追加する Supabase Realtime の subscription を含む）が維持される。
+    const hasInitDataLoaded = rawInitData !== null;
 
     // 認証中の表示
     if (isAuthLoading) {
@@ -181,18 +143,29 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
             >
                 <Header />
                 <Box sx={{ flex: 1, padding: 1 }}>
-                    {isInitDataLoading ? (
-                        <Box sx={{ textAlign: "center", margin: 4 }}>
-                            <CircularProgress size={40} color="primary" />
-                        </Box>
-                    ) : contextError ? (
-                        <Box sx={{ textAlign: "center", margin: 4 }}>
-                            <Typography variant="body1" color="error">
-                                エラーが発生しました: {contextError}
-                            </Typography>
-                        </Box>
+                    {!hasInitDataLoaded ? (
+                        // 初回ロード中・初回ロード失敗時のみ children の代わりに全体表示を出す
+                        isInitDataLoading ? (
+                            <Box sx={{ textAlign: "center", margin: 4 }}>
+                                <CircularProgress size={40} color="primary" />
+                            </Box>
+                        ) : (
+                            <Box sx={{ textAlign: "center", margin: 4 }}>
+                                <Typography variant="body1" color="error">
+                                    エラーが発生しました: {contextError}
+                                </Typography>
+                            </Box>
+                        )
                     ) : (
-                        children
+                        // 取得済みデータがある場合は children を維持し、エラーは上部に併記するだけに留める
+                        <>
+                            {contextError && (
+                                <Alert severity="error" sx={{ marginBottom: 2 }}>
+                                    エラーが発生しました: {contextError}
+                                </Alert>
+                            )}
+                            {children}
+                        </>
                     )}
                 </Box>
                 <Footer />

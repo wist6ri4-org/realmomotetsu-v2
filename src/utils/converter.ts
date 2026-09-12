@@ -7,11 +7,11 @@ export class Converter {
      * @return {string} フォーマットされたポイント文字列
      */
     static convertPointsToYen(point: number): string {
-        const absPoint = Math.abs(point * 100000);
+        const absPoint = Math.abs(point * 100_000);
 
-        const trillion = Math.floor((absPoint % 100000000000000) / 100000000000); // 兆
-        const oneHundredMillion = Math.floor((absPoint % 100000000000) / 100000000); // 億
-        const tenThousand = Math.floor((absPoint % 100000000) / 10000); // 万
+        const trillion = Math.floor((absPoint % 10**16) / 10**12); // 兆
+        const oneHundredMillion = Math.floor((absPoint % 10**12) / 10**8); // 億
+        const tenThousand = Math.floor((absPoint % 10**8) / 10_000); // 万
 
         const formattedPoint =
             (trillion > 0 ? trillion + " 兆 " : "") +
@@ -30,9 +30,9 @@ export class Converter {
     static convertPointsToYenV3(point: number): string {
         const absPoint = Math.abs(point * 10_000);
 
-        const trillion = Math.floor((absPoint % 100_000_000_000_000) / 100_000_000_000); // 兆
-        const oneHundredMillion = Math.floor((absPoint % 100_000_000_000) / 100_000_000); // 億
-        const tenThousand = Math.floor((absPoint % 100_000_000) / 10_000); // 万
+        const trillion = Math.floor((absPoint % 10**16) / 10**12); // 兆
+        const oneHundredMillion = Math.floor((absPoint % 10**12) / 10**8); // 億
+        const tenThousand = Math.floor((absPoint % 10**8) / 10_000); // 万
 
         const formattedPoint =
             (trillion > 0 ? trillion + " 兆 " : "") +

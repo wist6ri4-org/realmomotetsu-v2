@@ -97,7 +97,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
         try {
             const response = await fetch(`/api/goal-stations/latest?eventCode=${eventCode}`);
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
             const data: GetLatestGoalStationsResponse = (await response.json()).data;
             const nextGoalStation = data.goalStation;
@@ -141,7 +141,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
             params.append("eventCode", eventCode as string);
             const responseForCheck = await fetch("/api/transit-stations/latest?" + params.toString());
             if (!responseForCheck.ok) {
-                throw ApplicationErrorFactory.createFromResponse(responseForCheck);
+                throw ApplicationErrorFactory.createFromErrorBody(responseForCheck.status, await responseForCheck.json());
             }
             const data: GetLatestTransitStationsResponse = (await responseForCheck.json()).data;
             const latestTransitStations: LatestTransitStations[] = data.latestTransitStations || [];
@@ -175,7 +175,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
             });
 
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
 
             // 最新の目的駅の駅コードを取得

@@ -115,7 +115,7 @@ export const signOut = async (): Promise<Error | null> => {
  * Server Component用のSupabaseクライアントを作成
  */
 const createServerSupabaseClient = () => {
-    return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+    return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHED_KEY!, {
         auth: {
             flowType: "pkce",
             autoRefreshToken: false,

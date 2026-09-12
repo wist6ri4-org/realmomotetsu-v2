@@ -25,10 +25,11 @@ import Routemap from "./Routemap";
 import { useParams } from "next/navigation";
 import { InitRoutemapResponse } from "@/features/init-routemap/types";
 import { Teams } from "@/generated/prisma";
-import { useEventContext } from "@/app/events/layout";
+import { useEventContext } from "@/app/events/EventContext";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { PropertyPurchasesForRoutemap } from "@/repositories/propertyPurchases/PropertyPurchasesRepository";
+import { useRealtimeRefresh } from "@/hooks/useRealtimeRefresh";
 
 // ズーム設定定数
 const ZOOM_CONFIG = {
@@ -53,8 +54,10 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
     const [bombiiTeam, setBombiiTeam] = useState<Teams | null>(null);
     const [propertyPurchases, setPropertyPurchases] = useState<PropertyPurchasesForRoutemap[]>([]);
 
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+    // 初期データを一度でも取得できたか。
+    // 取得済みの場合は再取得中・再取得失敗でもダイアログをアンマウントしない
+    // （アンマウントするとズーム/パン位置やチーム表示設定が失われるため）。
+    const [hasLoaded, setHasLoaded] = useState<boolean>(false);
 
     const [isOpen, setIsOpen] = useState(false);
     const [visibleTeams, setVisibleTeams] = useState<string[]>([]);
@@ -88,49 +91,71 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
         }),
         [teamData, nextGoalStation, bombiiTeam, propertyPurchases, stations, visibleTeams]
     );
-    const fetchData = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            setError(null);
+    /**
+     * データの取得
+     * @param {boolean} isBackground - リアルタイム通知による背景更新かどうか。
+     *                                 背景更新ではローディング表示に切り替えず、表示中の内容と操作状態を維持する。
+     */
+    const fetchData = useCallback(
+        async (isBackground: boolean = false) => {
+            try {
+                const params = new URLSearchParams();
+                params.append("eventCode", eventCode as string);
 
-            const params = new URLSearchParams();
-            params.append("eventCode", eventCode as string);
+                const response = await fetch("/api/init-routemap?" + params.toString());
+                if (!response.ok) {
+                    throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
+                }
 
-            const response = await fetch("/api/init-routemap?" + params.toString());
-            if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                const data: InitRoutemapResponse = (await response.json()).data;
+                const teamData = data?.teamData || [];
+                const nextGoalStationData = data?.nextGoalStation || {};
+                const bombiiTeamData = data?.bombiiTeam || {};
+                const propertyPurchases = data?.propertyPurchases || [];
+
+                setTeamData(teamData as TeamData[]);
+                setNextGoalStation(nextGoalStationData as GoalStationsWithRelations);
+                setBombiiTeam(bombiiTeamData as Teams);
+                setPropertyPurchases(propertyPurchases as PropertyPurchasesForRoutemap[]);
+
+                // 初期表示では全チームを表示する。
+                // 背景更新でここを通すとユーザーのチーム表示設定が戻ってしまうため、初回のみ設定する。
+                if (!isBackground) {
+                    setVisibleTeams((teamData as TeamData[]).map((team) => team.teamCode));
+                }
+                setHasLoaded(true);
+            } catch (error) {
+                const appError = ApplicationErrorFactory.normalize(error);
+                ApplicationErrorHandler.logError(appError);
+
+                // 背景更新の失敗で表示中のデータを消さない
+                if (!isBackground) {
+                    setTeamData([]);
+                }
             }
-
-            const data: InitRoutemapResponse = (await response.json()).data;
-            const teamData = data?.teamData || [];
-            const nextGoalStationData = data?.nextGoalStation || {};
-            const bombiiTeamData = data?.bombiiTeam || {};
-            const propertyPurchases = data?.propertyPurchases || [];
-
-            setTeamData(teamData as TeamData[]);
-            setNextGoalStation(nextGoalStationData as GoalStationsWithRelations);
-            setBombiiTeam(bombiiTeamData as Teams);
-            setPropertyPurchases(propertyPurchases as PropertyPurchasesForRoutemap[]);
-
-            // 初期表示では全チームを表示
-            setVisibleTeams((teamData as TeamData[]).map((team) => team.teamCode));
-        } catch (error) {
-            const appError = ApplicationErrorFactory.normalize(error);
-            ApplicationErrorHandler.logError(appError);
-
-            setError(appError.message);
-            setTeamData([]);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [eventCode]);
+        },
+        [eventCode]
+    );
 
     /**
-     * 初期表示
+     * 初期表示。
+     * 以前は依存に`isOpen`を含めており開閉のたびに再取得していたが、
+     * リアルタイム更新に置き換えたため除外する。
+     * このコンポーネントはレイアウトに常駐し、イベントを切り替えても再マウントされないため、
+     * `eventCode`に依存する`fetchData`を依存に残して切り替え時には取得し直す。
      */
     useEffect(() => {
         fetchData();
-    }, [fetchData, isOpen]);
+    }, [fetchData]);
+
+    /**
+     * リアルタイム通知による背景更新
+     */
+    const handleRealtimeRefresh = useCallback((): void => {
+        fetchData(true);
+    }, [fetchData]);
+
+    useRealtimeRefresh(eventCode as string, handleRealtimeRefresh);
 
     /**
      * ダイアログを開くハンドラー
@@ -162,7 +187,7 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
             <Fab color="primary" aria-label="info" onClick={handleOpen} sx={{ zIndex: 400 }}>
                 <MapIcon />
             </Fab>
-            {!isLoading && !isInitDataLoading && !error && !contextError && (
+            {hasLoaded && !isInitDataLoading && !contextError && (
                 <Dialog
                     open={isOpen}
                     onClose={handleClose}

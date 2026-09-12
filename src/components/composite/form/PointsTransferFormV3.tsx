@@ -134,7 +134,7 @@ const PointsTransferFormV3: React.FC<PointsTransferFormV3Props> = ({
             });
 
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
 
             fromTeamCodeInput.reset();

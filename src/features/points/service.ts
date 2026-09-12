@@ -11,6 +11,7 @@ import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { Points } from "@/generated/prisma";
 import { ApiError, InternalServerError } from "@/error";
 import { GameConstants } from "@/constants/gameConstants";
+import { notifyEventDataChanged } from "@/lib/realtimeNotifier";
 
 export const PointsServiceImpl: PointsService = {
     /**
@@ -63,6 +64,9 @@ export const PointsServiceImpl: PointsService = {
             const res: PostPointsResponse = {
                 point: point as Points,
             };
+
+            await notifyEventDataChanged(req.eventCode);
+
             return res;
         } catch (error) {
             if (error instanceof ApiError) {
@@ -83,7 +87,14 @@ export const PointsServiceImpl: PointsService = {
     async putPoints(req: PutPointsRequest): Promise<PutPointsResponse> {
         const pointRepository = RepositoryFactory.getPointsRepository();
         try {
-            return await pointRepository.updateStatusByTeamCode(req.teamCode, GameConstants.POINT_STATUS.SCORED);
+            const res = await pointRepository.updateStatusByTeamCode(
+                req.teamCode,
+                GameConstants.POINT_STATUS.SCORED
+            );
+
+            await notifyEventDataChanged(req.eventCode);
+
+            return res;
         } catch (error) {
             if (error instanceof ApiError) {
                 throw error;

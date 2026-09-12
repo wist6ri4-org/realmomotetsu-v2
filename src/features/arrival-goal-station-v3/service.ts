@@ -6,6 +6,7 @@ import { GameLogicUtils } from "@/utils/gameLogicUtils";
 import { GameConstants } from "@/constants/gameConstants";
 import { StationGrade } from "@/generated/prisma";
 import { VerifyArrivalGoalStationV3Result } from "../verify/verify-arrival-goal-station-v3/types";
+import { notifyEventDataChanged } from "@/lib/realtimeNotifier";
 
 export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
     /**
@@ -42,8 +43,9 @@ export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
             const previousGoalStationCode = await goalStationsRepository
                 .findPreviousGoalStation(req.eventCode)
                 .then((goalStation) => goalStation?.stationCode);
+
             if (!previousGoalStationCode) {
-                throw new DataIntegrityError("Previous goal station code not found. Data integrity issue.", {
+                throw new DataIntegrityError("目的駅が設定されていません。", {
                     eventCode: req.eventCode,
                 });
             }
@@ -182,6 +184,9 @@ export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
                 consecutiveGoalCount: consecutiveGoalCount,
                 consecutiveGoalBonus: createdGoalBonusPoints?.points ?? null,
             };
+
+            await notifyEventDataChanged(req.eventCode);
+
             return res;
         } catch (error) {
             if (error instanceof ApiError) {

@@ -95,7 +95,7 @@ describe("ApiError", () => {
         it("should create error with rule description", () => {
             const error = new BusinessRuleViolationError("Maximum 5 projects per user");
 
-            expect(error.message).toBe("Business rule violation: Maximum 5 projects per user");
+            expect(error.message).toBe("Maximum 5 projects per user");
             expect(error.statusCode).toBe(422);
             expect(error.errorCode).toBe("BUSINESS_RULE_VIOLATION");
         });

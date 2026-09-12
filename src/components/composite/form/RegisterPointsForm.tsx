@@ -117,7 +117,7 @@ const RegisterPointsForm: React.FC<RegisterPointsFormProps> = ({
             });
 
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
 
             teamCodeInput.reset();

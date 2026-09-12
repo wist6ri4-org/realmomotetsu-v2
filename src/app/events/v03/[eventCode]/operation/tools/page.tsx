@@ -1,6 +1,6 @@
 "use client";
 
-import { useEventContext } from "@/app/events/layout";
+import { useEventContext } from "@/app/events/EventContext";
 import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
 import ArrivalGoalStationsFormV3 from "@/components/composite/form/ArrivalGoalStationsFormV3";
@@ -23,6 +23,7 @@ import { Construction } from "@mui/icons-material";
 import { Alert, Box, CircularProgress, Divider } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { useRealtimeRefresh } from "@/hooks/useRealtimeRefresh";
 
 /**
  * GMツールページ
@@ -35,47 +36,72 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
     const [teamData, setTeamData] = useState<TeamData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    // 初期データを一度でも取得できたか。
+    // 取得済みの場合は再取得中・再取得失敗でも表示中の内容を消さない。
+    const [hasLoaded, setHasLoaded] = useState<boolean>(false);
 
     const isOperating: boolean = checkIsOperatingUser(user as UsersWithRelations, event as Events);
 
     /**
      * データの取得
+     * @param {boolean} isBackground - リアルタイム通知による背景更新かどうか。
+     *                                 背景更新ではローディング表示に切り替えず、入力中のフォームを維持する。
      * @returns {Promise<void>} データ取得の非同期処理
      */
-    const fetchData = useCallback(async (): Promise<void> => {
-        try {
-            setIsLoading(true);
-            setError(null);
+    const fetchData = useCallback(
+        async (isBackground: boolean = false): Promise<void> => {
+            try {
+                if (!isBackground) {
+                    setIsLoading(true);
+                }
+                setError(null);
 
-            const params = new URLSearchParams();
-            params.append("eventCode", eventCode as string);
+                const params = new URLSearchParams();
+                params.append("eventCode", eventCode as string);
 
-            const response = await fetch("/api/init-operation?" + params.toString());
-            if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                const response = await fetch("/api/init-operation?" + params.toString());
+                if (!response.ok) {
+                    throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
+                }
+
+                const data: InitOperationResponse = (await response.json()).data;
+                const teamData = data.teamData || [];
+
+                setTeamData(teamData as TeamData[]);
+                setHasLoaded(true);
+            } catch (error) {
+                const appError = ApplicationErrorFactory.normalize(error);
+                ApplicationErrorHandler.logError(appError);
+
+                setError(appError.message);
+                // 背景更新の失敗で表示中のデータを消さない
+                if (!isBackground) {
+                    setTeamData([]);
+                }
+            } finally {
+                if (!isBackground) {
+                    setIsLoading(false);
+                }
             }
-
-            const data: InitOperationResponse = (await response.json()).data;
-            const teamData = data.teamData || [];
-
-            setTeamData(teamData as TeamData[]);
-        } catch (error) {
-            const appError = ApplicationErrorFactory.normalize(error);
-            ApplicationErrorHandler.logError(appError);
-
-            setError(appError.message);
-            setTeamData([]);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [eventCode]);
+        },
+        [eventCode]
+    );
 
     /**
-     * 初期表示
+     * 初期表示（イベントを切り替えた場合も取得し直す）
      */
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
+
+    /**
+     * リアルタイム通知による背景更新
+     */
+    const handleRealtimeRefresh = useCallback((): void => {
+        fetchData(true);
+    }, [fetchData]);
+
+    useRealtimeRefresh(eventCode as string, handleRealtimeRefresh);
 
     /**
      * データ更新用ハンドラー
@@ -99,22 +125,22 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
             </Box>
             {/* コンテンツセクション */}
             <Box>
-                {/* ローディング */}
-                {(isLoading || isInitDataLoading) && (
+                {/* ローディング（初回取得時のみ表示を差し替える） */}
+                {!hasLoaded && (isLoading || isInitDataLoading) && (
                     <Box sx={{ textAlign: "center", margin: 4 }}>
                         <CircularProgress size={40} color="primary" />
                     </Box>
                 )}
-                {/* エラー */}
+                {/* エラー（取得済みの場合は表示を消さず、上部に併記するだけに留める） */}
                 {(error || contextError) && (
                     <Box sx={{ margin: 4 }}>
-                        <Alert severity="error" action={<CustomButton onClick={fetchData}>再試行</CustomButton>}>
-                            {error}
+                        <Alert severity="error" action={<CustomButton onClick={() => fetchData()}>再試行</CustomButton>}>
+                            {error || contextError}
                         </Alert>
                     </Box>
                 )}
                 {/* メインコンテンツ */}
-                {!isLoading && !isInitDataLoading && !error && !contextError && (
+                {hasLoaded && (
                     <>
                         <RegisterGoalStationsFormV3
                             stations={stations.filter((station) => station.stationType === StationType.mission)}
@@ -144,11 +170,7 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                             nearbyStations={nearbyStations}
                         />
                         <Divider />
-                        <InformationDialog
-                            teamData={teamData}
-                            eventCode={eventCode as string}
-                            onDataUpdate={setTeamData}
-                        />
+                        <InformationDialog teamData={teamData} />
                     </>
                 )}
             </Box>
