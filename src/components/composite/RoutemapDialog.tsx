@@ -104,7 +104,7 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
 
                 const response = await fetch("/api/init-routemap?" + params.toString());
                 if (!response.ok) {
-                    throw ApplicationErrorFactory.createFromResponse(response);
+                    throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
                 }
 
                 const data: InitRoutemapResponse = (await response.json()).data;

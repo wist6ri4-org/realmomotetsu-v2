@@ -118,7 +118,7 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
         try {
             const response = await fetch(`/api/goal-stations/latest?eventCode=${eventCode}`);
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
             const data: GetLatestGoalStationsResponse = (await response.json()).data;
             const nextGoalStation = data.goalStation;
@@ -162,7 +162,7 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
             params.append("eventCode", eventCode);
             const responseForCheck = await fetch("/api/transit-stations/latest?" + params.toString());
             if (!responseForCheck.ok) {
-                throw ApplicationErrorFactory.createFromResponse(responseForCheck);
+                throw ApplicationErrorFactory.createFromErrorBody(responseForCheck.status, await responseForCheck.json());
             }
             const data: GetLatestTransitStationsResponse = (await responseForCheck.json()).data;
             const latestTransitStations: LatestTransitStations[] = data.latestTransitStations || [];
@@ -195,7 +195,7 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
             });
 
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
             const responseData: PostCurrentLocationV3Response = (await response.json()).data;
 

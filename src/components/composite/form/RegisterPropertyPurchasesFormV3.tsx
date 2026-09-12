@@ -94,7 +94,7 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
                     throw ApplicationErrorFactory.create(ErrorCodes.DUPLICATE_ENTRY, getMessage("DUPLICATE_PROPERTY_PURCHASE"));
                 }
 
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
 
             teamCodeInput.reset();

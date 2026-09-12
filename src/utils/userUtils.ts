@@ -337,7 +337,7 @@ export class UserUtils {
         try {
             const response = await fetch(`/api/users/${uuid}`);
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
 
             const data: GetUsersByUuidResponse = (await response.json()).data as GetUsersByUuidResponse;

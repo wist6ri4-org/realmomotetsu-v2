@@ -112,7 +112,7 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
             });
 
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
 
             stationCodeInput.reset();

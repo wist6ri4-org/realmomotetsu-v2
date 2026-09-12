@@ -87,7 +87,7 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
         if (!bombiiTeam) {
             await showAlertDialog({
                 title: DialogConstants.TITLE.ERROR,
-                message: "ボンビーを登録できませんでした。\n目的駅が設定されていません。",
+                message: getMessage("REGISTER_BOMBII_FAILED_FOR_NO_GOAL_STATIONS"),
             });
             return;
         }

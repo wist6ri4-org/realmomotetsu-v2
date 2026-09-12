@@ -113,7 +113,7 @@ const RegisterGoalStationsFormV3: React.FC<RegisterGoalStationsFormV3Props> = ({
             });
 
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
 
             stationCodeInput.reset();

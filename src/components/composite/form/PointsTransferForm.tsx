@@ -142,11 +142,11 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
             ]);
 
             if (!responseOfFrom.ok) {
-                throw ApplicationErrorFactory.createFromResponse(responseOfFrom);
+                throw ApplicationErrorFactory.createFromErrorBody(responseOfFrom.status, await responseOfFrom.json());
             }
 
             if (!responseOfTo.ok) {
-                throw ApplicationErrorFactory.createFromResponse(responseOfTo);
+                throw ApplicationErrorFactory.createFromErrorBody(responseOfTo.status, await responseOfTo.json());
             }
 
             fromTeamCodeInput.reset();

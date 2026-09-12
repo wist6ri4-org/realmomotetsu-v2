@@ -61,7 +61,7 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
 
                 const response = await fetch("/api/init-operation?" + params.toString());
                 if (!response.ok) {
-                    throw ApplicationErrorFactory.createFromResponse(response);
+                    throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
                 }
 
                 const data: InitOperationResponse = (await response.json()).data;

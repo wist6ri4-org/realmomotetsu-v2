@@ -176,7 +176,7 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
             });
 
             if (!responseArrival.ok) {
-                throw ApplicationErrorFactory.createFromResponse(responseArrival);
+                throw ApplicationErrorFactory.createFromErrorBody(responseArrival.status, await responseArrival.json());
             }
             const responseArrivalData: PostArrivalGoalStationV3Response = (await responseArrival.json()).data;
 

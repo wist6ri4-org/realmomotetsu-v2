@@ -6,12 +6,12 @@ import { keyframes } from "@mui/system";
 
 /**
  * BulletinBoardコンポーネントのプロパティ型定義
- * @param {string} nextStation - 次の駅名
- * @param {string} nextStationEng - 次の駅名（英語表記、駅コード）
+ * @param {string | undefined} nextStation - 次の駅名
+ * @param {string | undefined} nextStationEng - 次の駅名（英語表記、駅コード）
  */
 interface BulletinBoardProps {
-    nextStation: string;
-    nextStationEng: string;
+    nextStation?: string;
+    nextStationEng?: string;
 }
 
 // 無限スクロールアニメーションの定義（電光掲示板風）
