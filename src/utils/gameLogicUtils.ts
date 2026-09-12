@@ -7,9 +7,9 @@ export class GameLogicUtils {
     /**
      * ボンビーを決める
      * @param {TeamData[]} teamData - チームデータの配列
-     * @returns {TeamData} ボンビーを持つチームデータ
+     * @returns {TeamData | null} ボンビーを持つチームデータ
      */
-    static confirmBombii(teamData: TeamData[]): TeamData {
+    static confirmBombii(teamData: TeamData[]): TeamData | null {
         const candidateTeams: TeamData[] = teamData.reduce((candidates: TeamData[], team: TeamData) => {
             if (candidates.length === 0) {
                 return [team];
@@ -19,6 +19,10 @@ export class GameLogicUtils {
             const ir = team.remainingStationsNumber;
             const cc = candidates[0].scoredPoints;
             const ic = team.scoredPoints;
+
+            if (cr === null || ir === null) {
+                return [];
+            }
 
             // 目的駅から遠いほうがボンビー
             if (cr > ir) {
@@ -37,6 +41,10 @@ export class GameLogicUtils {
                 }
             }
         }, []);
+
+        if (candidateTeams.length === 0) {
+            return null;
+        }
 
         const bombiiTeam = candidateTeams[Math.floor(Math.random() * candidateTeams.length)];
         return bombiiTeam;
@@ -59,7 +67,8 @@ export class GameLogicUtils {
             stationGraph,
             fromStationCode,
             toStationCode,
-        );
+        ) ?? 0;
+
         const prize =
             GameConstants.ARRIVAL_PRIZE_V3.BASIC_PRIZE +
             remainingStationsNumber * GameConstants.ARRIVAL_PRIZE_V3.INCREMENT_PER_STATION_NUMBER;

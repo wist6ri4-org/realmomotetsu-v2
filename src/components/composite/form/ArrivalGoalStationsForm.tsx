@@ -98,7 +98,7 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
             });
 
             if (!responseCreatePoints.ok) {
-                throw ApplicationErrorFactory.createFromResponse(responseCreatePoints);
+                throw ApplicationErrorFactory.createFromErrorBody(responseCreatePoints.status, await responseCreatePoints.json());
             }
 
             // 既存のポイントステータスをscoredに更新
@@ -114,7 +114,7 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
             });
 
             if (!responseUpdatePoints.ok) {
-                throw ApplicationErrorFactory.createFromResponse(responseUpdatePoints);
+                throw ApplicationErrorFactory.createFromErrorBody(responseUpdatePoints.status, await responseUpdatePoints.json());
             }
 
             teamCodeInput.reset();

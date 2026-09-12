@@ -43,8 +43,9 @@ export const ArrivalGoalStationV3ServiceImpl: ArrivalGoalStationV3Service = {
             const previousGoalStationCode = await goalStationsRepository
                 .findPreviousGoalStation(req.eventCode)
                 .then((goalStation) => goalStation?.stationCode);
+
             if (!previousGoalStationCode) {
-                throw new DataIntegrityError("Previous goal station code not found. Data integrity issue.", {
+                throw new DataIntegrityError("目的駅が設定されていません。", {
                     eventCode: req.eventCode,
                 });
             }

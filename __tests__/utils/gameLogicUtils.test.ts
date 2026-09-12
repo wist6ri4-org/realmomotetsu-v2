@@ -19,7 +19,7 @@ describe("GameLogicUtils", () => {
                 buildTeamData({ teamCode: "TEAM_C", remainingStationsNumber: 5 }),
             ];
 
-            expect(GameLogicUtils.confirmBombii(teams).teamCode).toBe("TEAM_B");
+            expect(GameLogicUtils.confirmBombii(teams)!.teamCode).toBe("TEAM_B");
         });
 
         it("残り駅数が同じ場合は総資産が多いチームがボンビーになる", () => {
@@ -28,7 +28,7 @@ describe("GameLogicUtils", () => {
                 buildTeamData({ teamCode: "TEAM_B", remainingStationsNumber: 5, scoredPoints: 9000 }),
             ];
 
-            expect(GameLogicUtils.confirmBombii(teams).teamCode).toBe("TEAM_B");
+            expect(GameLogicUtils.confirmBombii(teams)!.teamCode).toBe("TEAM_B");
         });
 
         it("残り駅数も総資産も同じ場合は候補からランダムに1チームが選ばれる", () => {
@@ -39,10 +39,10 @@ describe("GameLogicUtils", () => {
 
             // Math.randomの戻り値でどの候補が選ばれるかが決まるため、両端を固定して検証する
             jest.spyOn(Math, "random").mockReturnValue(0);
-            expect(GameLogicUtils.confirmBombii(teams).teamCode).toBe("TEAM_A");
+            expect(GameLogicUtils.confirmBombii(teams)!.teamCode).toBe("TEAM_A");
 
             jest.spyOn(Math, "random").mockReturnValue(0.99);
-            expect(GameLogicUtils.confirmBombii(teams).teamCode).toBe("TEAM_B");
+            expect(GameLogicUtils.confirmBombii(teams)!.teamCode).toBe("TEAM_B");
         });
 
         it("残り駅数が同点でも総資産で決着がつく場合は候補が1チームに絞られる", () => {
@@ -54,13 +54,13 @@ describe("GameLogicUtils", () => {
 
             // 同点候補が残っていても、より総資産の多いTEAM_Cが候補を置き換える
             jest.spyOn(Math, "random").mockReturnValue(0.99);
-            expect(GameLogicUtils.confirmBombii(teams).teamCode).toBe("TEAM_C");
+            expect(GameLogicUtils.confirmBombii(teams)!.teamCode).toBe("TEAM_C");
         });
 
         it("チームが1つの場合はそのチームが返る", () => {
             const teams = [buildTeamData({ teamCode: "TEAM_A", remainingStationsNumber: 0 })];
 
-            expect(GameLogicUtils.confirmBombii(teams).teamCode).toBe("TEAM_A");
+            expect(GameLogicUtils.confirmBombii(teams)!.teamCode).toBe("TEAM_A");
         });
     });
 
@@ -88,10 +88,10 @@ describe("GameLogicUtils", () => {
             expect(prize).toBe(GameConstants.ARRIVAL_PRIZE_V3.BASIC_PRIZE);
         });
 
-        it("到着駅が路線に存在しない場合はエラーになる", () => {
-            expect(() =>
-                GameLogicUtils.calculateArrivalPrizeV3(nearbyStations, "STATION_A", "STATION_UNKNOWN"),
-            ).toThrow();
+        it("到着駅が路線に存在しない場合は基本賞金のみが返る", () => {
+            const prize = GameLogicUtils.calculateArrivalPrizeV3(nearbyStations, "STATION_A", "STATION_UNKNOWN");
+
+            expect(prize).toBe(GameConstants.ARRIVAL_PRIZE_V3.BASIC_PRIZE);
         });
     });
 
@@ -111,9 +111,7 @@ describe("GameLogicUtils", () => {
         });
 
         it("連続ゴール数が増えるとボーナスは単調増加する", () => {
-            const bonuses = [1, 2, 3, 4, 5].map((count) =>
-                GameLogicUtils.calculateConsecutiveGoalBonusV3(count),
-            );
+            const bonuses = [1, 2, 3, 4, 5].map((count) => GameLogicUtils.calculateConsecutiveGoalBonusV3(count));
 
             bonuses.forEach((bonus, index) => {
                 if (index > 0) {

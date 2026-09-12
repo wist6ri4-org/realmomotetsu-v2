@@ -54,7 +54,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
 
             const response = await fetch("/api/init-roulette?" + params.toString());
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
 
             const data: InitRouletteResponse = (await response.json()).data;

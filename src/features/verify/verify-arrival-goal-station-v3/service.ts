@@ -50,7 +50,7 @@ export const VerifyArrivalGoalStationV3ServiceImpl: VerifyArrivalGoalStationV3Se
                 .then((goalStation) => goalStation?.stationCode);
 
             if (!previousGoalStationCode) {
-                throw new DataIntegrityError("Previous goal station code not found. Data integrity issue.", {
+                throw new DataIntegrityError("目的駅が設定されていません。", {
                     eventCode: req.eventCode,
                 });
             }

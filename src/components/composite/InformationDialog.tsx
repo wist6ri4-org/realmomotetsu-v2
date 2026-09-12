@@ -2,7 +2,7 @@
 
 import { TeamData } from "@/types/TeamData";
 import { Info } from "@mui/icons-material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Fab } from "@mui/material";
 import React, { useState } from "react";
 import CustomButton from "../base/CustomButton";
@@ -45,11 +45,11 @@ const InformationDialog: React.FC<InformationDialogProps> = ({
     };
 
     // チームデータのフィールドとヘッダー名
-    const fields = [
+    const fields: GridColDef[] = [
         { field: "teamName", headerName: "チーム名", width: 120 },
         { field: "points", headerName: "PT", width: 80 },
         { field: "scoredPoints", headerName: "総資産", width: 80 },
-        { field: "remainingStationsNumber", headerName: "目的駅まで", width: 80 },
+        { field: "remainingStationsNumber", headerName: "目的駅まで", width: 80, valueFormatter: (value) => (value !== null ? value : "-") },
         { field: "bombiiCounts", headerName: "ボンビー回数", width: 80 },
     ];
     // ページネーションの初期設定

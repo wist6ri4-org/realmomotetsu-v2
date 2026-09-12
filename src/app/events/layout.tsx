@@ -61,7 +61,7 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
 
                 const response = await fetch(`/api/init?eventCode=${eventCode}&uuid=${sbUser.id}`);
                 if (!response.ok) {
-                    throw ApplicationErrorFactory.createFromResponse(response);
+                    throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
                 }
 
                 const data = await response.json();

@@ -22,7 +22,7 @@ export type TeamData = {
     teamName: string;
     teamColor: string;
     transitStations: TransitStationsWithRelations[];
-    remainingStationsNumber: number;
+    remainingStationsNumber: number | null;
     points: number;
     scoredPoints: number;
     propertyPurchasePoints: number;
@@ -39,7 +39,7 @@ export const TeamDataSchema = z.object({
     transitStations: TransitStationsSchema.extend({
         station: StationsSchema,
     }).array(),
-    remainingStationsNumber: z.number(),
+    remainingStationsNumber: z.number().nullable(),
     points: z.number(),
     scoredPoints: z.number(),
     propertyPurchasePoints: z.number(),

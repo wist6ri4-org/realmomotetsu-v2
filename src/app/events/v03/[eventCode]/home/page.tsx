@@ -60,7 +60,7 @@ const HomePage: React.FC = (): React.JSX.Element => {
 
                 const response = await fetch("/api/init-home?" + params.toString());
                 if (!response.ok) {
-                    throw ApplicationErrorFactory.createFromResponse(response);
+                    throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
                 }
 
                 const data: InitHomeResponse = (await response.json()).data;
@@ -132,8 +132,8 @@ const HomePage: React.FC = (): React.JSX.Element => {
                 <Box>
 
                     <BulletinBoard
-                        nextStation={nextGoalStationData.station?.name || "ー"}
-                        nextStationEng={nextGoalStationData.station?.englishName || "ー"}
+                        nextStation={nextGoalStationData.station?.name}
+                        nextStationEng={nextGoalStationData.station?.englishName}
                     />
                 </Box>
                 <Divider sx={{ marginY: 2 }} />

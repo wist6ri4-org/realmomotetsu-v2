@@ -267,7 +267,7 @@ export class InvalidOperationError extends BusinessError {
  */
 export class BusinessRuleViolationError extends BusinessError {
     constructor(rule: string, details?: unknown) {
-        super(`Business rule violation: ${rule}`, 422, "BUSINESS_RULE_VIOLATION", details);
+        super(`${rule}`, 422, "BUSINESS_RULE_VIOLATION", details);
     }
 }
 
@@ -276,7 +276,7 @@ export class BusinessRuleViolationError extends BusinessError {
  */
 export class DataIntegrityError extends BusinessError {
     constructor(message: string, details?: unknown) {
-        super(`Data integrity error: ${message}`, 422, "DATA_INTEGRITY_ERROR", details);
+        super(`${message}`, 422, "DATA_INTEGRITY_ERROR", details);
     }
 }
 

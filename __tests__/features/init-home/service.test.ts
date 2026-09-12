@@ -185,10 +185,7 @@ describe("InitHomeServiceImpl.getDataForHome", () => {
             expect(res.nextGoalStation).toEqual(goalStation);
         });
 
-        // FIXME 目的駅が未設定の場合、remainingStationsNumberの算出で目的駅コード=""を
-        // グラフ上で探索できずエラーとなり、InternalServerErrorに変換されてしまう。
-        // 本来はnextGoalStation: nullを含むレスポンスを返すべき。
-        it.failing("次の目的駅が存在しない場合はnullを返す", async () => {
+        it("次の目的駅が存在しない場合はnullを返す", async () => {
             findLatestGoalStation.mockResolvedValue(null);
 
             const res = await InitHomeServiceImpl.getDataForHome({ eventCode: TEST_EVENT_CODE });

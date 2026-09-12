@@ -64,18 +64,53 @@ export class ApplicationErrorFactory {
      * レスポンスステータスに基づいてエラーを作成
      * @param response HTTPレスポンス
      * @returns ApplicationError
+     * @deprecated このメソッドは非推奨です。代わりにcreateFromErrorBodyを使用してください。
      */
-    static createFromResponse(response: Response): ApplicationError {
+    static async createFromResponse(response: Response): Promise<ApplicationError> {
+        let customMessage = "";
+        try {
+            const errorBody = await response.clone().json();
+            if (typeof errorBody?.error === "string" && errorBody.error.trim()) {
+                customMessage = errorBody.error;
+            }
+        } catch (e) {
+            console.log("Failed to parse error response body:", e);
+        }
+
         if (response.status >= 500) {
             return this.create(ErrorCodes.SERVER_ERROR, getMessage("SERVER_ERROR"));
         } else if (response.status >= 400) {
             return this.create(
                 ErrorCodes.API_REQUEST_FAILED,
-                getMessage("API_REQUEST_FAILED", { status: response.status.toString() })
+                customMessage || getMessage("API_REQUEST_FAILED", { status: response.status.toString() }),
             );
         }
 
         return this.create(ErrorCodes.UNKNOWN_ERROR, getMessage("UNEXPECTED_ERROR"));
+    }
+
+    /**
+     * レスポンスのエラーボディに基づいてApplicationErrorを作成
+     * @param status HTTPステータスコード
+     * @param errorBody エラーボディ（オプション）
+     * @returns ApplicationError
+     */
+    static createFromErrorBody(
+        status: number,
+        errorBody: { error?: string; errorCode?: string; details?: unknown } | null,
+    ): ApplicationError {
+        const customMessage =
+            typeof errorBody?.error === "string" && errorBody.error.trim()
+                ? errorBody.error.trim()
+                : status >= 500
+                  ? getMessage("SERVER_ERROR")
+                  : getMessage("API_REQUEST_FAILED", { status: status.toString() });
+
+        if (status >= 500) {
+            return this.create(ErrorCodes.SERVER_ERROR, customMessage);
+        }
+
+        return this.create(ErrorCodes.API_REQUEST_FAILED, customMessage);
     }
 
     /**
@@ -103,7 +138,7 @@ export class ApplicationErrorFactory {
 
         return new ApplicationError(
             "UNKNOWN_ERROR",
-            typeof error === "string" ? error : "予期しないエラーが発生しました。"
+            typeof error === "string" ? error : "予期しないエラーが発生しました。",
         );
     }
 }
