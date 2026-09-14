@@ -11,7 +11,7 @@ import RegisterBombiiManualForm from "@/components/composite/form/RegisterBombii
 import RegisterGoalStationsFormV3 from "@/components/composite/form/RegisterGoalStationsFormV3";
 import RegisterPointsFormV3 from "@/components/composite/form/RegisterPointsFormV3";
 import RegisterPropertyPurchasesFormV3 from "@/components/composite/form/RegisterPropertyPurchasesFormV3";
-import InformationDialog from "@/components/composite/InformationDialog";
+import InformationDialogV3 from "@/components/composite/InformationDialogV3";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { InitOperationResponse } from "@/features/init-operation/types";
@@ -170,7 +170,7 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                             nearbyStations={nearbyStations}
                         />
                         <Divider />
-                        <InformationDialog teamData={teamData} />
+                        <InformationDialogV3 teamData={teamData} />
                     </>
                 )}
             </Box>

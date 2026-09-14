@@ -9,7 +9,7 @@ import { TeamData } from "@/types/TeamData";
 import { Alert, Box, CircularProgress, Divider, Grid, Typography } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import TransitStationsHistoryDialog from "@/components/composite/TransitStationsHistoryDialog";
+import TransitStationsHistoryDialogV3 from "@/components/composite/TransitStationsHistoryDialogV3";
 import { InitHomeResponse } from "@/features/init-home/types";
 import { useEventContext } from "../../../EventContext";
 import { ApplicationErrorFactory } from "@/error/applicationError";
@@ -186,7 +186,7 @@ const HomePage: React.FC = (): React.JSX.Element => {
 
             {/* ダイアログ */}
             {selectedTeamData && (
-                <TransitStationsHistoryDialog
+                <TransitStationsHistoryDialogV3
                     teamData={selectedTeamData}
                     team={teams.find((team) => team.id === selectedTeamData.id) as Teams}
                     isOpen={isTransitStationsHistoryDialogOpen}
