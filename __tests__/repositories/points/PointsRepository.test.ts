@@ -4,7 +4,7 @@
 
 import { PointsRepository } from "@/repositories/points/PointsRepository";
 import { PointStatus } from "@/generated/prisma";
-import { buildPoints } from "../../helpers/factories";
+import { buildPoints, TEST_EVENT_CODE } from "../../helpers/factories";
 import { createPrismaMock, createPrismaTransactionMock, MockPrismaClient } from "../../helpers/prismaMock";
 
 describe("PointsRepository", () => {
@@ -225,10 +225,10 @@ describe("PointsRepository", () => {
         it("scoredへの更新はpointsステータスのレコードを対象にする", async () => {
             prisma.points.updateMany.mockResolvedValue({ count: 3 });
 
-            const result = await repository.updateStatusByTeamCode("TEAM_A", PointStatus.scored);
+            const result = await repository.updateStatusByTeamCode("TEAM_A", TEST_EVENT_CODE, PointStatus.scored);
 
             expect(prisma.points.updateMany).toHaveBeenCalledWith({
-                where: { teamCode: "TEAM_A", status: PointStatus.points },
+                where: { teamCode: "TEAM_A", eventCode: TEST_EVENT_CODE, status: PointStatus.points },
                 data: { status: PointStatus.scored },
             });
             expect(result).toEqual({ count: 3 });
@@ -237,12 +237,26 @@ describe("PointsRepository", () => {
         it("scored以外への更新はscoredステータスのレコードを対象にする", async () => {
             prisma.points.updateMany.mockResolvedValue({ count: 1 });
 
-            await repository.updateStatusByTeamCode("TEAM_A", PointStatus.points);
+            await repository.updateStatusByTeamCode("TEAM_A", TEST_EVENT_CODE, PointStatus.points);
 
             expect(prisma.points.updateMany).toHaveBeenCalledWith({
-                where: { teamCode: "TEAM_A", status: PointStatus.scored },
+                where: { teamCode: "TEAM_A", eventCode: TEST_EVENT_CODE, status: PointStatus.scored },
                 data: { status: PointStatus.points },
             });
+        });
+
+        it("eventCodeが異なる同名チームのポイントは更新対象に含めない", async () => {
+            // teamCodeだけで絞り込むとイベントをまたいで意図しない行を更新してしまうため、
+            // eventCodeも必ずwhere句に含まれることを確認する
+            prisma.points.updateMany.mockResolvedValue({ count: 0 });
+
+            await repository.updateStatusByTeamCode("TEAM_A", "OTHER_EVENT", PointStatus.scored);
+
+            expect(prisma.points.updateMany).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: expect.objectContaining({ eventCode: "OTHER_EVENT" }),
+                })
+            );
         });
     });
 

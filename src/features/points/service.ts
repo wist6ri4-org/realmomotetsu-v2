@@ -89,6 +89,7 @@ export const PointsServiceImpl: PointsService = {
         try {
             const res = await pointRepository.updateStatusByTeamCode(
                 req.teamCode,
+                req.eventCode,
                 GameConstants.POINT_STATUS.SCORED
             );
 
