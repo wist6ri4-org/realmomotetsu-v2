@@ -3,6 +3,7 @@
  */
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import AlertDialog from "@/components/base/AlertDialog";
 import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomAutoComplete from "@/components/base/CustomAutoComplete";
@@ -101,7 +102,7 @@ const RegisterGoalStationsFormV3: React.FC<RegisterGoalStationsFormV3Props> = ({
             setIsLoading(true);
 
             // 目的駅の登録
-            const response = await fetch("/api/goal-stations", {
+            const response = await apiFetch("/api/goal-stations", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

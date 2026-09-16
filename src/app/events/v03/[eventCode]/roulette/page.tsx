@@ -1,5 +1,6 @@
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
 import { GoalStations, LatestTransitStations, StationType } from "@/generated/prisma";
@@ -52,7 +53,7 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
                 console.warn("Could not get current location:", locationError);
             }
 
-            const response = await fetch("/api/init-roulette?" + params.toString());
+            const response = await apiFetch("/api/init-roulette?" + params.toString());
             if (!response.ok) {
                 throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }

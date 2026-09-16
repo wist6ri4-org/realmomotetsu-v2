@@ -1,5 +1,6 @@
 import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
 import { Role } from "@/generated/prisma";
+import apiFetch from "@/lib/apiClient";
 import supabase from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@supabase/supabase-js";
@@ -243,7 +244,7 @@ export const checkIsAdminUser = async (userId: string, eventCode: string): Promi
     }
 
     try {
-        const response = await fetch(`/api/users/${userId}`);
+        const response = await apiFetch(`/api/users/${userId}`);
         if (!response.ok) {
             console.error("Failed to fetch user profile for admin check");
             return false;

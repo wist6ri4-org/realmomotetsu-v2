@@ -1,5 +1,6 @@
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import BulletinBoard from "@/components/base/BulletinBoard";
 import CustomButton from "@/components/base/CustomButton";
 import { UpdatedTime } from "@/components/base/UpdatedTime";
@@ -58,7 +59,7 @@ const HomePage: React.FC = (): React.JSX.Element => {
                 const params = new URLSearchParams();
                 params.append("eventCode", eventCode as string);
 
-                const response = await fetch("/api/init-home?" + params.toString());
+                const response = await apiFetch("/api/init-home?" + params.toString());
                 if (!response.ok) {
                     throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
                 }

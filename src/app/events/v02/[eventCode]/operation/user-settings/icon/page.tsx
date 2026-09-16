@@ -1,5 +1,6 @@
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Container, Paper, Typography, Button, Box, Avatar, Alert, CircularProgress } from "@mui/material";
@@ -123,7 +124,7 @@ const UserIconEditPage = (): React.JSX.Element => {
                 }
 
                 // データベースのユーザー情報を更新（アイコンURLを更新）
-                const response = await fetch(`/api/users/${user.uuid}`, {
+                const response = await apiFetch(`/api/users/${user.uuid}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",

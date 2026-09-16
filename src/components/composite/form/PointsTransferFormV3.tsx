@@ -3,6 +3,7 @@
  */
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import AlertDialog from "@/components/base/AlertDialog";
 import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
@@ -119,7 +120,7 @@ const PointsTransferFormV3: React.FC<PointsTransferFormV3Props> = ({
                 );
             }
 
-            const response = await fetch("/api/points/bulk", {
+            const response = await apiFetch("/api/points/bulk", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

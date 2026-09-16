@@ -3,6 +3,7 @@
  */
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import AlertDialog from "@/components/base/AlertDialog";
 import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
@@ -84,7 +85,7 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
             ValidationErrorHandler.validatePositive(pointsInput.value, "到着ポイント");
 
             // 到着ポイントの登録
-            const responseCreatePoints = await fetch("/api/points", {
+            const responseCreatePoints = await apiFetch("/api/points", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -102,7 +103,7 @@ const ArrivalGoalStationsForm: React.FC<ArrivalGoalStationsFormProps> = ({
             }
 
             // 既存のポイントステータスをscoredに更新
-            const responseUpdatePoints = await fetch("/api/points", {
+            const responseUpdatePoints = await apiFetch("/api/points", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

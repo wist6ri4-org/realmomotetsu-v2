@@ -3,6 +3,7 @@
  */
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import AlertDialog from "@/components/base/AlertDialog";
 import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
@@ -109,7 +110,7 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
             setIsLoading(true);
 
             // ボンビーを登録
-            const response = await fetch("/api/bombii-histories", {
+            const response = await apiFetch("/api/bombii-histories", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
