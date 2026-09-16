@@ -9,6 +9,7 @@ import { buildPoints, buildTransitStation } from "../../../helpers/factories";
 import {
     buildPostRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../helpers/apiRequest";
@@ -41,6 +42,7 @@ describe("CurrentLocationApiHandler", () => {
 
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         CurrentLocationServiceImpl.postCurrentLocation.mockReset();
     });
 

@@ -6,7 +6,12 @@ import { NextRequest } from "next/server";
 import { BadRequestError, ConflictError, ResourceNotFoundError } from "@/error";
 import { StatusCode } from "@/constants/statuscode";
 import { buildUser } from "../../../../helpers/factories";
-import { buildGetRequest, readResponse, silenceApiLogs } from "../../../../helpers/apiRequest";
+import {
+    buildGetRequest,
+    mockApiAuth,
+    readResponse,
+    silenceApiLogs,
+} from "../../../../helpers/apiRequest";
 
 /** テスト対象のUUID（認証したユーザーのuuidと一致させる） */
 const TEST_UUID = "00000000-0000-0000-0000-000000000001";
@@ -74,6 +79,7 @@ import UsersUuidApiHandler from "@/app/api/users/[uuid]/UsersUuidApiHandler";
 describe("UsersUuidApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         UsersByUuidServiceImpl.getUsersByUuid.mockReset();
         UsersByUuidServiceImpl.putUsersByUuid.mockReset();
         supabaseMock.auth.getUser.mockReset();

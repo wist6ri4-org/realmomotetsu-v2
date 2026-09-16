@@ -15,6 +15,7 @@ import {
     buildGetRequest,
     buildPostRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../helpers/apiRequest";
@@ -25,6 +26,7 @@ describe("PropertyPurchasesApiHandler", () => {
 
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         service = {
             getPropertyPurchasesByEventCode: jest.fn(),
             postPropertyPurchases: jest.fn(),

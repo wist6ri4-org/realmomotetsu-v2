@@ -9,6 +9,7 @@ import {
     buildGetRequest,
     buildPostRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../helpers/apiRequest";
@@ -33,6 +34,7 @@ import BombiiHistoriesApiHandler from "@/app/api/bombii-histories/BombiiHistorie
 describe("BombiiHistoriesApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         BombiiHistoriesServiceImpl.postBombiiHistories.mockReset();
     });
 

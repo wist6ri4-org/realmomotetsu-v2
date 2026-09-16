@@ -9,6 +9,7 @@ import { buildGoalStation, buildTeam, buildTeamData, TEST_EVENT_CODE } from "../
 import {
     buildGetRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../helpers/apiRequest";
@@ -31,6 +32,7 @@ import InitHomeApiHandler from "@/app/api/init-home/InitHomeApiHandler";
 describe("InitHomeApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         InitHomeServiceImpl.getDataForHome.mockReset();
     });
 

@@ -9,6 +9,7 @@ import { TEST_EVENT_CODE } from "../../../helpers/factories";
 import {
     buildGetRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../helpers/apiRequest";
@@ -31,6 +32,7 @@ import InitFormApiHandler from "@/app/api/init-form/InitFormApiHandler";
 describe("InitFormApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         InitFormServiceImpl.getDataForForm.mockReset();
     });
 

@@ -19,6 +19,7 @@ import {
 import {
     buildGetRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../helpers/apiRequest";
@@ -60,6 +61,7 @@ const buildValidInitResponse = (): InitResponse => ({
 describe("InitApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         InitServiceImpl.getDataForInit.mockReset();
     });
 

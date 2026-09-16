@@ -9,6 +9,7 @@ import { buildTeamData, TEST_EVENT_CODE } from "../../../helpers/factories";
 import {
     buildGetRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../helpers/apiRequest";
@@ -31,6 +32,7 @@ import InitOperationApiHandler from "@/app/api/init-operation/InitOperationApiHa
 describe("InitOperationApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         InitOperationServiceImpl.getDataForOperation.mockReset();
     });
 
