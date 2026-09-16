@@ -3,7 +3,6 @@
  */
 
 import { ConflictError, InternalServerError } from "@/error";
-import { Role } from "@/generated/prisma";
 import { UsersServiceImpl } from "@/features/users/service";
 import { buildUser } from "../../helpers/factories";
 import { mockRepositories } from "../../helpers/repositoryMocks";
@@ -28,7 +27,6 @@ describe("UsersServiceImpl", () => {
                 uuid: "00000000-0000-0000-0000-000000000099",
                 email: "new-user@example.com",
                 nickname: "新しいユーザー",
-                role: Role.admin,
             };
 
             const res = await UsersServiceImpl.postUsers(req);
@@ -37,12 +35,11 @@ describe("UsersServiceImpl", () => {
                 uuid: req.uuid,
                 email: req.email,
                 nickname: req.nickname,
-                role: req.role,
             });
             expect(res.user).toMatchObject(req);
         });
 
-        it("nicknameとroleを指定しない場合はundefinedのままRepositoryへ渡す", async () => {
+        it("nicknameを指定しない場合はundefinedのままRepositoryへ渡す", async () => {
             const req = {
                 uuid: "00000000-0000-0000-0000-000000000099",
                 email: "new-user@example.com",
@@ -54,7 +51,6 @@ describe("UsersServiceImpl", () => {
                 uuid: req.uuid,
                 email: req.email,
                 nickname: undefined,
-                role: undefined,
             });
         });
 
