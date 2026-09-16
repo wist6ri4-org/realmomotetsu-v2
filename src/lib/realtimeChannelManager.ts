@@ -2,7 +2,7 @@
 
 import supabase from "@/lib/supabase";
 import { CommonConstants } from "@/constants/commonConstants";
-import { buildEventChannelName } from "@/lib/realtimeNotifier";
+import { buildEventChannelName } from "@/lib/realtimeTopics";
 
 /**
  * イベントチャンネルの購読者が受け取るコールバック
@@ -50,14 +50,24 @@ export const acquireEventChannel = (eventCode: string, listener: EventChannelLis
         }
     } else {
         const listeners = new Set<EventChannelListener>();
+        // private channel化: realtime.messages のRLSポリシー（イベント参加者のみSELECT許可。
+        // supabase/sql/create_realtime_policies.sql）による認可を有効にする。
+        // これが無いと anon キーを持つ誰でも任意イベントのチャンネルを購読できてしまう。
         const channel = supabase
-            .channel(buildEventChannelName(eventCode))
+            .channel(buildEventChannelName(eventCode), { config: { private: true } })
             .on("broadcast", { event: CommonConstants.REALTIME.DATA_CHANGED_EVENT }, () => {
                 listeners.forEach((l) => l.onBroadcast());
             })
-            .subscribe((status: string) => {
+            .subscribe((status: string, error?: Error) => {
                 if (status === CommonConstants.REALTIME.SUBSCRIBED_STATUS) {
                     listeners.forEach((l) => l.onSubscribed());
+                    return;
+                }
+
+                // private channel の認可に失敗した場合など。realtime通知はあくまで補助
+                // （各画面は初回取得や復帰時の再取得を別途行う）ため、ログのみ残して握り潰す。
+                if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+                    console.error(`Realtime channel subscription failed. eventCode: ${eventCode}, status: ${status}.`, error);
                 }
             });
 
