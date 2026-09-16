@@ -41,6 +41,9 @@ export const TEST_EVENT_TYPE_CODE = "TEST_V1";
 /** テストで使う共通のイベントコード */
 export const TEST_EVENT_CODE = "TEST_EVENT";
 
+/** テストで使う共通のユーザーUUID（buildUser/buildUserWithRelationsの既定値と一致させる） */
+export const TEST_USER_UUID = "00000000-0000-0000-0000-000000000001";
+
 /**
  * イベントを生成する
  * @param {Partial<Events>} overrides - 上書きする項目
@@ -340,7 +343,7 @@ export const buildDocument = (overrides: Partial<Documents> = {}): Documents => 
  */
 export const buildUser = (overrides: Partial<Users> = {}): Users => ({
     id: 1,
-    uuid: "00000000-0000-0000-0000-000000000001",
+    uuid: TEST_USER_UUID,
     email: "test@example.com",
     nickname: "テストユーザー",
     iconUrl: null,

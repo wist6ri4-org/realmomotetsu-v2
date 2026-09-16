@@ -101,7 +101,6 @@ export const silenceApiLogs = (): void => {
 export type ApiAuthMocks = {
     resolveAuthUser: jest.SpyInstance;
     assertEventAccess: jest.SpyInstance;
-    assertSelfOrMasterAdmin: jest.SpyInstance;
 };
 
 /**
@@ -109,6 +108,11 @@ export type ApiAuthMocks = {
  *
  * `BaseApiHandler.handle()` はハンドラー実行前に `resolveAuthUser()` を呼ぶため、
  * DBとSupabase Authに触れずにハンドラー本体を検証できるようモックに差し替える。
+ *
+ * `assertSelfOrMasterAdmin` はDB・ネットワークに触れない純粋な同期関数のため、
+ * ここではモックしない。本人/master admin判定を検証するテスト
+ * （UsersUuidApiHandler・InitApiHandler）は `mockApiAuth({ user })` で
+ * 認証済みユーザーのuuid/masterRoleを差し替え、実装をそのまま通す。
  *
  * @param {object} [options] - オプション
  * @param {UsersWithRelations} [options.user] - 認証済みユーザーとして返す値
@@ -122,6 +126,5 @@ export const mockApiAuth = (options: { user?: UsersWithRelations; event?: Events
     return {
         resolveAuthUser: jest.spyOn(apiAuth, "resolveAuthUser").mockResolvedValue(user),
         assertEventAccess: jest.spyOn(apiAuth, "assertEventAccess").mockResolvedValue(event),
-        assertSelfOrMasterAdmin: jest.spyOn(apiAuth, "assertSelfOrMasterAdmin").mockImplementation(() => {}),
     };
 };
