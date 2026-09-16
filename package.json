@@ -15,6 +15,7 @@
     "test:coverage": "jest --coverage",
     "format:fix": "prettier --write \"**/*.{ts,tsx,js,jsx,cjs,mjs,md,json,lintstagedrc,yml,yaml}\" --cache && prisma format",
     "seed": "dotenv -e .env.local -- node prisma/seed.mjs",
+    "check:rls": "dotenv -e .env.local -- node scripts/check-rls.mjs",
     "storybook": "prisma generate && storybook dev -p 6006",
     "build-storybook": "prisma generate && storybook build",
     "test:storybook": "prisma generate && vitest run",
