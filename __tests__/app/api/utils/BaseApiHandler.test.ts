@@ -9,7 +9,16 @@ import { Handlers } from "@/app/api/utils/types";
 import { StatusCode } from "@/constants/statuscode";
 import { BadRequestError, ResourceNotFoundError } from "@/error";
 import { LogService } from "@/app/api/utils/logService";
-import { silenceApiLogs, readResponse, buildRequestWithMethod } from "../../../helpers/apiRequest";
+import {
+    buildRequestWithMethod,
+    buildUnauthenticatedRequest,
+    mockApiAuth,
+    readResponse,
+    silenceApiLogs,
+} from "../../../helpers/apiRequest";
+import { buildUserWithRelations } from "../../../helpers/factories";
+import * as apiAuth from "@/app/api/utils/auth";
+import { UnauthorizedError } from "@/error/apiError";
 
 /** BaseApiHandlerの共通処理を検証するためのテスト用サブクラス */
 class TestApiHandler extends BaseApiHandler {
@@ -39,12 +48,44 @@ class TestApiHandler extends BaseApiHandler {
     }
 }
 
+/** 認証を必須としないハンドラー（requireAuth のオーバーライドを検証する） */
+class PublicApiHandler extends BaseApiHandler {
+    static getHandler: jest.Mock = jest.fn();
+
+    protected getHandlers(): Handlers {
+        return {
+            GET: async (req: NextRequest) => PublicApiHandler.getHandler(req),
+        };
+    }
+
+    protected requireAuth(): boolean {
+        return false;
+    }
+}
+
+/** authUser の受け渡しを検証するためのハンドラー */
+class AuthUserApiHandler extends BaseApiHandler {
+    static seenUuid: string | null = null;
+
+    protected getHandlers(): Handlers {
+        return {
+            GET: async () => {
+                AuthUserApiHandler.seenUuid = this.getAuthUser().uuid;
+                return NextResponse.json({ ok: true }, { status: StatusCode.OK });
+            },
+        };
+    }
+}
+
 const buildReq = (method = "GET") => buildRequestWithMethod(method);
 
 describe("BaseApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         TestApiHandler.getHandler = jest.fn();
+        PublicApiHandler.getHandler = jest.fn();
+        AuthUserApiHandler.seenUuid = null;
     });
 
     afterEach(() => {
@@ -102,6 +143,67 @@ describe("BaseApiHandler", () => {
             expect(status).toBe(StatusCode.INTERNAL_SERVER_ERROR);
             expect(body.error).toBe("Internal Server Error");
             expect(JSON.stringify(body)).not.toContain("DB connection lost");
+        });
+    });
+
+    describe("認証ゲート", () => {
+        it("requireAuthが既定(true)のハンドラーは、トークンが無いと401を返しハンドラーを呼ばない", async () => {
+            // 認証モックを外して実際のresolveAuthUserを通す
+            jest.restoreAllMocks();
+            silenceApiLogs();
+
+            const handler = new TestApiHandler(buildUnauthenticatedRequest());
+            const { status, body } = await readResponse(await handler.handle());
+
+            expect(status).toBe(StatusCode.UNAUTHORIZED);
+            expect(body.errorCode).toBe("AUTH_TOKEN_MISSING");
+            expect(TestApiHandler.getHandler).not.toHaveBeenCalled();
+        });
+
+        it("resolveAuthUserがUnauthorizedErrorを投げた場合は401を返しハンドラーを呼ばない", async () => {
+            jest.spyOn(apiAuth, "resolveAuthUser").mockRejectedValue(
+                new UnauthorizedError({ message: "認証に失敗しました", errorCode: "AUTH_TOKEN_INVALID" })
+            );
+
+            const handler = new TestApiHandler(buildReq());
+            const { status, body } = await readResponse(await handler.handle());
+
+            expect(status).toBe(StatusCode.UNAUTHORIZED);
+            expect(body.errorCode).toBe("AUTH_TOKEN_INVALID");
+            expect(TestApiHandler.getHandler).not.toHaveBeenCalled();
+        });
+
+        it("requireAuthをfalseにしたハンドラーはトークン無しでも実行される", async () => {
+            jest.restoreAllMocks();
+            silenceApiLogs();
+            PublicApiHandler.getHandler.mockResolvedValue(NextResponse.json({ ok: true }, { status: StatusCode.OK }));
+
+            const handler = new PublicApiHandler(buildUnauthenticatedRequest());
+            const response = await handler.handle();
+
+            expect(response.status).toBe(StatusCode.OK);
+            expect(PublicApiHandler.getHandler).toHaveBeenCalled();
+        });
+
+        it("認証済みユーザーをgetAuthUser()で参照できる", async () => {
+            const user = buildUserWithRelations({ uuid: "11111111-1111-1111-1111-111111111111" });
+            jest.spyOn(apiAuth, "resolveAuthUser").mockResolvedValue(user);
+
+            const handler = new AuthUserApiHandler(buildReq());
+            const response = await handler.handle();
+
+            expect(response.status).toBe(StatusCode.OK);
+            expect(AuthUserApiHandler.seenUuid).toBe("11111111-1111-1111-1111-111111111111");
+        });
+
+        it("未対応のHTTPメソッドは認証前に405を返す", async () => {
+            jest.restoreAllMocks();
+            silenceApiLogs();
+
+            const handler = new TestApiHandler(buildUnauthenticatedRequest({ method: "DELETE" }));
+            const { status } = await readResponse(await handler.handle());
+
+            expect(status).toBe(StatusCode.METHOD_NOT_ALLOWED);
         });
     });
 
