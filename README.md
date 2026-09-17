@@ -328,6 +328,10 @@ npx tsx tools/openapi-generator/generate.ts
    NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
    NEXT_PUBLIC_SUPABASE_PUBLISHED_KEY=[控えたSupabaseのpublished key]
 
+   # Realtime（private channel）のサーバー側送信で使用する secret key。
+   # NEXT_PUBLIC_ を付けないこと（ブラウザに公開してはいけない）。
+   SUPABASE_SECRET_KEY=[控えたSupabaseのsecret key]
+
    # Connect to Supabase via connection pooling
    DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
 
@@ -481,7 +485,8 @@ npx supabase status
 
 1. Supabase のウェブサイトでプロジェクトを作成する。
 2. プロジェクトの設定から API キーを取得する。
-3. `.env.production` に接続情報を設定する。
+3. `.env.production` に接続情報を設定する。`SUPABASE_SECRET_KEY` も忘れずに設定し、
+   Vercel の環境変数（本番/プレビュー）にも同じ値を登録する。
 
 ## デプロイ
 

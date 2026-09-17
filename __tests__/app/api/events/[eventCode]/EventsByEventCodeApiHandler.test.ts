@@ -8,6 +8,7 @@ import { TEST_EVENT_CODE, buildEvent } from "../../../../helpers/factories";
 import {
     buildGetRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../../helpers/apiRequest";
@@ -32,6 +33,7 @@ import EventsByEventCodeApiHandler from "@/app/api/events/[eventCode]/EventsByEv
 describe("EventsByEventCodeApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         EventByEventCodeServiceImpl.getEventByEventCode.mockReset();
     });
 

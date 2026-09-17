@@ -11,6 +11,7 @@ import { buildPoints } from "../../../../helpers/factories";
 import {
     buildPostRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../../helpers/apiRequest";
@@ -20,6 +21,7 @@ describe("PointsBulkApiHandler", () => {
 
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         service = {
             postBulkPoints: jest.fn(),
         } as unknown as jest.Mocked<PointsBulkService>;

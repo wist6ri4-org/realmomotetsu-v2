@@ -3,6 +3,7 @@
  */
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import AlertDialog from "@/components/base/AlertDialog";
 import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
@@ -74,7 +75,7 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
             setIsLoading(true);
 
             // ポイントステータスをscoredに更新
-            const response = await fetch("/api/points", {
+            const response = await apiFetch("/api/points", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

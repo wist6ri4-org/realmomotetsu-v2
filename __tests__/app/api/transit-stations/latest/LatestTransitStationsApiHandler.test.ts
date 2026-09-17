@@ -8,6 +8,7 @@ import { TEST_EVENT_CODE, buildLatestTransitStation } from "../../../../helpers/
 import {
     buildGetRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../../helpers/apiRequest";
@@ -32,6 +33,7 @@ import LatestTransitStationsApiHandler from "@/app/api/transit-stations/latest/L
 describe("LatestTransitStationsApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         LatestTransitStationsServiceImpl.getLatestTransitStationsByEventCode.mockReset();
     });
 

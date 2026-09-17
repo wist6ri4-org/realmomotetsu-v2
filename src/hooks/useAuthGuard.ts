@@ -1,5 +1,6 @@
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
@@ -38,7 +39,7 @@ export const useAuthGuard = (): {
      */
     const fetchUserData = async (sbUser: User): Promise<UsersWithRelations | null> => {
         try {
-            const response = await fetch(`/api/users/${sbUser.id}`);
+            const response = await apiFetch(`/api/users/${sbUser.id}`);
             if (!response.ok) {
                 console.error(`Failed to fetch user data: ${response.status}`);
                 return null;

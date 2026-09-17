@@ -124,7 +124,11 @@ describe("PointsServiceImpl", () => {
 
             const res = await PointsServiceImpl.putPoints({ eventCode: TEST_EVENT_CODE, teamCode: "TEAM_A" });
 
-            expect(updateStatusByTeamCode).toHaveBeenCalledWith("TEAM_A", GameConstants.POINT_STATUS.SCORED);
+            expect(updateStatusByTeamCode).toHaveBeenCalledWith(
+                "TEAM_A",
+                TEST_EVENT_CODE,
+                GameConstants.POINT_STATUS.SCORED
+            );
             expect(res).toEqual({ count: 3 });
         });
 

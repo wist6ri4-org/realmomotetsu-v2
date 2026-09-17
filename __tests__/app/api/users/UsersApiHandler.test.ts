@@ -3,10 +3,16 @@
  */
 
 import { BadRequestError, ConflictError } from "@/error";
-import { Role } from "@/generated/prisma";
 import { StatusCode } from "@/constants/statuscode";
 import { buildUser } from "../../../helpers/factories";
-import { buildPostRequest, buildRequestWithMethod, readResponse, silenceApiLogs } from "../../../helpers/apiRequest";
+import {
+    buildPostRequest,
+    buildRequestWithMethod,
+    buildUnauthenticatedRequest,
+    mockApiAuth,
+    readResponse,
+    silenceApiLogs,
+} from "../../../helpers/apiRequest";
 
 // UsersApiHandlerはUsersServiceImplを直接importして呼び出すため、モジュールごとモックする
 jest.mock("@/features/users/service", () => ({
@@ -28,6 +34,7 @@ import UsersApiHandler from "@/app/api/users/UsersApiHandler";
 describe("UsersApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         UsersServiceImpl.postUsers.mockReset();
     });
 
@@ -40,7 +47,6 @@ describe("UsersApiHandler", () => {
             uuid: "00000000-0000-0000-0000-000000000001",
             email: "test@example.com",
             nickname: "テストユーザー",
-            role: Role.user,
         };
 
         it("リクエストボディをServiceに渡し、登録結果を返す", async () => {
@@ -54,7 +60,7 @@ describe("UsersApiHandler", () => {
             expect(body).toHaveProperty("data");
         });
 
-        it("nicknameとroleを省略しても登録できる", async () => {
+        it("nicknameを省略しても登録できる", async () => {
             const minimalBody = { uuid: validBody.uuid, email: validBody.email };
             UsersServiceImpl.postUsers.mockResolvedValue({ user: buildUser(minimalBody) });
 
@@ -70,13 +76,37 @@ describe("UsersApiHandler", () => {
             ["uuidが空文字", { ...validBody, uuid: "" }],
             ["emailがない", { uuid: validBody.uuid }],
             ["emailが不正な形式", { ...validBody, email: "not-an-email" }],
-            ["roleが不正な値", { ...validBody, role: "invalid" }],
         ])("ボディが不正な場合（%s）は400を返し、Serviceを呼ばない", async (_label, body) => {
             const req = buildPostRequest(body);
             const { status } = await readResponse(await new UsersApiHandler(req).handle());
 
             expect(status).toBe(StatusCode.BAD_REQUEST);
             expect(UsersServiceImpl.postUsers).not.toHaveBeenCalled();
+        });
+
+        it("roleを送っても無視される（権限昇格の防止）", async () => {
+            UsersServiceImpl.postUsers.mockResolvedValue({ user: buildUser(validBody) });
+
+            const req = buildPostRequest({ ...validBody, role: "admin" });
+            const { status } = await readResponse(await new UsersApiHandler(req).handle());
+
+            expect(status).toBe(StatusCode.OK);
+            // Zodがroleを除去するため、Serviceにはroleが渡らない
+            expect(UsersServiceImpl.postUsers).toHaveBeenCalledWith(validBody);
+            expect(UsersServiceImpl.postUsers.mock.calls[0][0]).not.toHaveProperty("role");
+        });
+
+        it("認証トークンが無くても登録できる（サインアップ直後に呼ばれるため）", async () => {
+            // 認証ゲートを迂回していることを確かめるため、認証モックを外してトークン無しで呼ぶ
+            jest.restoreAllMocks();
+            silenceApiLogs();
+            UsersServiceImpl.postUsers.mockResolvedValue({ user: buildUser(validBody) });
+
+            const req = buildUnauthenticatedRequest({ method: "POST", body: validBody });
+            const { status } = await readResponse(await new UsersApiHandler(req).handle());
+
+            expect(status).toBe(StatusCode.OK);
+            expect(UsersServiceImpl.postUsers).toHaveBeenCalledWith(validBody);
         });
 
         it("Serviceが投げたConflictErrorのステータスコードを引き継ぐ", async () => {

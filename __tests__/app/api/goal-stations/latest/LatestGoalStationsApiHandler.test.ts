@@ -8,6 +8,7 @@ import { TEST_EVENT_CODE, buildGoalStation } from "../../../../helpers/factories
 import {
     buildGetRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../../helpers/apiRequest";
@@ -32,6 +33,7 @@ import LatestGoalStationsApiHandler from "@/app/api/goal-stations/latest/LatestG
 describe("LatestGoalStationsApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         LatestGoalStationsServiceImpl.getLatestGoalStationByEventCode.mockReset();
     });
 

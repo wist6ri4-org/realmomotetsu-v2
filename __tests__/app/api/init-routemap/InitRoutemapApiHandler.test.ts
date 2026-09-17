@@ -9,6 +9,7 @@ import { buildGoalStation, buildTeam, buildTeamData, TEST_EVENT_CODE } from "../
 import {
     buildGetRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../helpers/apiRequest";
@@ -44,6 +45,7 @@ const buildValidInitRoutemapResponse = (): InitRoutemapResponse => {
 describe("InitRoutemapApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         InitRoutemapServiceImpl.getDataForRoutemap.mockReset();
     });
 

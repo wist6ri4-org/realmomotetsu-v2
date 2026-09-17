@@ -1,3 +1,4 @@
+import apiFetch from "@/lib/apiClient";
 import supabase from "@/lib/supabase";
 import { PutUsersResponse } from "@/features/users/types";
 import { ApplicationErrorFactory } from "@/error/applicationError";
@@ -112,7 +113,7 @@ export class UserUtils {
             throw new Error("認証が必要です。ログインしてください。");
         }
 
-        const response = await fetch(`/api/users/${userId}`, {
+        const response = await apiFetch(`/api/users/${userId}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -160,7 +161,7 @@ export class UserUtils {
         }
 
         // データベースのユーザー情報も更新
-        const response = await fetch(`/api/users/${userId}`, {
+        const response = await apiFetch(`/api/users/${userId}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -335,7 +336,7 @@ export class UserUtils {
      */
     static fetchUserAttendances = async (uuid: string): Promise<AttendancesWithRelations> => {
         try {
-            const response = await fetch(`/api/users/${uuid}`);
+            const response = await apiFetch(`/api/users/${uuid}`);
             if (!response.ok) {
                 throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }

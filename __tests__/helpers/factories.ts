@@ -25,9 +25,11 @@ import {
     TransitStations,
     Users,
 } from "@/generated/prisma";
+import { AttendancesWithRelations } from "@/repositories/attendances/AttendancesRepository";
 import { GoalStationsWithRelations } from "@/repositories/goalStations/GoalStationsRepository";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 import { PropertyPurchasesWithRelations } from "@/repositories/propertyPurchases/PropertyPurchasesRepository";
+import { UsersWithRelations } from "@/repositories/users/UsersRepository";
 import { TeamData } from "@/types/TeamData";
 
 /** 全ファクトリで共通に使う固定日時（createdAt/updatedAtの差分でテストが揺れないようにする） */
@@ -38,6 +40,9 @@ export const TEST_EVENT_TYPE_CODE = "TEST_V1";
 
 /** テストで使う共通のイベントコード */
 export const TEST_EVENT_CODE = "TEST_EVENT";
+
+/** テストで使う共通のユーザーUUID（buildUser/buildUserWithRelationsの既定値と一致させる） */
+export const TEST_USER_UUID = "00000000-0000-0000-0000-000000000001";
 
 /**
  * イベントを生成する
@@ -338,7 +343,7 @@ export const buildDocument = (overrides: Partial<Documents> = {}): Documents => 
  */
 export const buildUser = (overrides: Partial<Users> = {}): Users => ({
     id: 1,
-    uuid: "00000000-0000-0000-0000-000000000001",
+    uuid: TEST_USER_UUID,
     email: "test@example.com",
     nickname: "テストユーザー",
     iconUrl: null,
@@ -361,5 +366,33 @@ export const buildAttendance = (overrides: Partial<Attendances> = {}): Attendanc
     teamCode: "TEAM_A",
     createdAt: FIXED_DATE,
     updatedAt: FIXED_DATE,
+    ...overrides,
+});
+
+/**
+ * 関連情報付きの参加情報を生成する
+ * @param {Partial<AttendancesWithRelations>} overrides - 上書きする項目
+ * @return {AttendancesWithRelations} 参加情報（イベント・イベント種別を含む）
+ */
+export const buildAttendanceWithRelations = (
+    overrides: Partial<AttendancesWithRelations> = {}
+): AttendancesWithRelations => ({
+    ...buildAttendance(),
+    event: {
+        ...buildEvent(),
+        eventType: buildEventType(),
+    },
+    ...overrides,
+});
+
+/**
+ * 関連情報付きのユーザーを生成する
+ * @param {Partial<UsersWithRelations>} overrides - 上書きする項目
+ * @return {UsersWithRelations} ユーザー（参加情報を含む）
+ * @description 既定では TEST_EVENT_CODE に一般ユーザーとして参加している状態になる。
+ */
+export const buildUserWithRelations = (overrides: Partial<UsersWithRelations> = {}): UsersWithRelations => ({
+    ...buildUser(),
+    attendances: [buildAttendanceWithRelations()],
     ...overrides,
 });

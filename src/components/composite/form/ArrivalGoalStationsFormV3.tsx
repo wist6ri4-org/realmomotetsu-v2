@@ -3,6 +3,7 @@
  */
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import AlertDialog from "@/components/base/AlertDialog";
 import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
@@ -114,7 +115,7 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
             setIsLoading(true);
 
             // 処理可否チェック
-            const responseValidation = await fetch("/api/verify/verify-arrival-goal-station-v3", {
+            const responseValidation = await apiFetch("/api/verify/verify-arrival-goal-station-v3", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -161,7 +162,7 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
             }
 
             // 到着処理
-            const responseArrival = await fetch("/api/arrival-goal-station-v3", {
+            const responseArrival = await apiFetch("/api/arrival-goal-station-v3", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

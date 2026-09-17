@@ -11,6 +11,7 @@ import { TEST_EVENT_CODE, TEST_EVENT_TYPE_CODE } from "../../../../helpers/facto
 import {
     buildPostRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../../helpers/apiRequest";
@@ -28,6 +29,7 @@ describe("VerifyArrivalGoalStationV3ApiHandler", () => {
 
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         service = {
             postVerifyArrivalGoalStationV3: jest.fn(),
         } as unknown as jest.Mocked<VerifyArrivalGoalStationV3Service>;

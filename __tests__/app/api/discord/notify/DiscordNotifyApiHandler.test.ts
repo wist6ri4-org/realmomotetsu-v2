@@ -7,6 +7,7 @@ import { ExternalServiceError, BadRequestError } from "@/error";
 import {
     buildPostRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../../helpers/apiRequest";
@@ -37,6 +38,7 @@ describe("DiscordNotifyApiHandler", () => {
 
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         DiscordNotifyServiceImpl.postDiscordNotify.mockReset();
     });
 

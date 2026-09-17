@@ -3,6 +3,7 @@
  */
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import AlertDialog from "@/components/base/AlertDialog";
 import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomAutoComplete from "@/components/base/CustomAutoComplete";
@@ -73,7 +74,7 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
             setIsLoading(true);
 
             // 物件駅登録APIを呼び出す
-            const response = await fetch(`/api/property-purchases`, {
+            const response = await apiFetch(`/api/property-purchases`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

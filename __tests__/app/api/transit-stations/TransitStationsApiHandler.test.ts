@@ -8,6 +8,7 @@ import {
     buildGetRequest,
     buildPostRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../helpers/apiRequest";
@@ -35,6 +36,7 @@ import TransitStationsApiHandler from "@/app/api/transit-stations/TransitStation
 describe("TransitStationsApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         TransitStationsServiceImpl.getTransitStationsByEventCodeGroupedByTeamCode.mockReset();
         TransitStationsServiceImpl.postTransitStations.mockReset();
     });

@@ -9,6 +9,7 @@ import { buildGoalStation, buildLatestTransitStation, TEST_EVENT_CODE } from "..
 import {
     buildGetRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../helpers/apiRequest";
@@ -31,6 +32,7 @@ import InitRouletteApiHandler from "@/app/api/init-roulette/InitRouletteApiHandl
 describe("InitRouletteApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         InitRouletteServiceImpl.getDataForRoulette.mockReset();
     });
 

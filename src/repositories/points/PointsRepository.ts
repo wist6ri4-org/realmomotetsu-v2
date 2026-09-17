@@ -251,17 +251,24 @@ export class PointsRepository extends BaseRepository {
     /**
      * チームコードに基づいてポイントのステータスを更新
      * @param teamCode - チームコード
+     * @param eventCode - イベントコード
      * @param status - 更新するステータス（デフォルトは"scored"）
      * @return {Promise<{ count: number }>} 更新されたレコード数
+     * @description eventCodeも絞り込み条件に含める。teamCodeはTeamsテーブル上は一意だが、
+     *              APIの呼び出し元は認証済みユーザーが操作権限を持つeventCodeと、
+     *              リクエストボディのteamCodeが実際に対応しているとは限らないため、
+     *              リポジトリ層でも二重にスコープを絞る。
      */
     async updateStatusByTeamCode(
         teamCode: string,
+        eventCode: string,
         status: PointStatus = GameConstants.POINT_STATUS.SCORED,
     ): Promise<{ count: number }> {
         try {
             return await this.prisma.points.updateMany({
                 where: {
                     teamCode: teamCode,
+                    eventCode: eventCode,
                     status:
                         status === GameConstants.POINT_STATUS.SCORED
                             ? GameConstants.POINT_STATUS.POINTS

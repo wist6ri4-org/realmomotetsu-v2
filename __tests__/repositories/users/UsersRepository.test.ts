@@ -3,7 +3,6 @@
  */
 
 import { UsersRepository } from "@/repositories/users/UsersRepository";
-import { Role } from "@/generated/prisma";
 import { buildUser, buildAttendance, buildEvent, buildEventType } from "../../helpers/factories";
 import { createPrismaMock, MockPrismaClient } from "../../helpers/prismaMock";
 
@@ -90,11 +89,11 @@ describe("UsersRepository", () => {
             expect(result).toBe(created);
         });
 
-        it("ロールを含むデータが渡された場合もそのまま作成データとして使用する", async () => {
+        it("iconUrlを含むデータが渡された場合もそのまま作成データとして使用する", async () => {
             const userData = {
                 uuid: "00000000-0000-0000-0000-000000000003",
-                email: "admin@example.com",
-                role: Role.admin,
+                email: "icon@example.com",
+                iconUrl: "https://example.com/icon.png",
             };
             prisma.users.create.mockResolvedValue(buildUser(userData));
 

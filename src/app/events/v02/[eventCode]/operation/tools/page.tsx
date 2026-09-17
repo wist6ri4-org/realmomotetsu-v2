@@ -1,5 +1,6 @@
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import { useEventContext } from "@/app/events/EventContext";
 import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
@@ -59,7 +60,7 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                 const params = new URLSearchParams();
                 params.append("eventCode", eventCode as string);
 
-                const response = await fetch("/api/init-operation?" + params.toString());
+                const response = await apiFetch("/api/init-operation?" + params.toString());
                 if (!response.ok) {
                     throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
                 }

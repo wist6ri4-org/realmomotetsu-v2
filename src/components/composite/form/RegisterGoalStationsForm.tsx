@@ -3,6 +3,7 @@
  */
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import AlertDialog from "@/components/base/AlertDialog";
 import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
@@ -100,7 +101,7 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
             setIsLoading(true);
 
             // 目的駅の登録
-            const response = await fetch("/api/goal-stations", {
+            const response = await apiFetch("/api/goal-stations", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
+import { assertEventAccess, assertSelfOrMasterAdmin } from "@/app/api/utils/auth";
 import { Handlers } from "@/app/api/utils/types";
 import { InitServiceImpl } from "@/features/init/service";
 import { InitRequestSchema, InitResponseSchema } from "@/features/init/validator";
@@ -42,6 +43,11 @@ class InitApiHandler extends BaseApiHandler {
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
             const queryParams = Object.fromEntries(searchParams.entries());
             const validatedParams = InitRequestSchema.parse(queryParams);
+
+            // uuidはクエリパラメータとして自由に指定できてしまうため、本人（または master admin）
+            // のものであることを確認する。eventCodeについては参加者かどうかをassertEventAccessで検証する。
+            assertSelfOrMasterAdmin(this.getAuthUser(), validatedParams.uuid);
+            await assertEventAccess(this.getAuthUser(), validatedParams.eventCode, "view");
 
             this.logDebug("Request parameters", validatedParams);
 

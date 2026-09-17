@@ -8,6 +8,7 @@ import { TEST_EVENT_CODE, buildDocument } from "../../../helpers/factories";
 import {
     buildGetRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../helpers/apiRequest";
@@ -32,6 +33,7 @@ import DocumentsApiHandler from "@/app/api/documents/DocumentsApiHandler";
 describe("DocumentsApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         DocumentsServiceImpl.getDocumentsByEventCode.mockReset();
     });
 

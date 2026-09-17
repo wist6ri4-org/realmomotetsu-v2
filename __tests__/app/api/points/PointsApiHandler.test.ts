@@ -11,6 +11,7 @@ import {
     buildGetRequest,
     buildPostRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../helpers/apiRequest";
@@ -47,6 +48,7 @@ import PointsApiHandler from "@/app/api/points/PointsApiHandler";
 describe("PointsApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         PointsServiceImpl.getPointsByEventCodeGroupedByTeamCode.mockReset();
         PointsServiceImpl.postPoints.mockReset();
         PointsServiceImpl.putPoints.mockReset();

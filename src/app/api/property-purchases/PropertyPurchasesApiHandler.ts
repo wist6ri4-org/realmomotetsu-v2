@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "../utils/BaseApiHandler";
+import { assertEventAccess } from "../utils/auth";
 import { getPropertyPurchasesService } from "@/features/property-purchases/provider";
 import { PropertyPurchasesService } from "@/features/property-purchases/interface";
 import { Handlers } from "../utils/types";
@@ -52,6 +53,8 @@ class PropertyPurchasesApiHandler extends BaseApiHandler {
             const queryParams = Object.fromEntries(searchParams.entries());
             const validatedParams = GetPropertyPurchasesRequestSchema.parse(queryParams);
 
+            await assertEventAccess(this.getAuthUser(), validatedParams.eventCode, "view");
+
             this.logDebug("Request body", validatedParams);
 
             // サービスからデータを取得
@@ -86,6 +89,8 @@ class PropertyPurchasesApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション
             const validatedBody = PostPropertyPurchasesRequestSchema.parse(body);
+
+            await assertEventAccess(this.getAuthUser(), validatedBody.eventCode, "operate");
 
             this.logDebug("Request body", validatedBody);
 

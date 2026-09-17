@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { LogService } from "./logService";
 import { Handlers, LogContext } from "./types";
+import { resolveAuthUser } from "./auth";
 import { StatusCode } from "@/constants/statuscode";
 import { ZodError } from "zod";
-import { ApiError } from "@/error/apiError";
+import { ApiError, UnauthorizedError } from "@/error/apiError";
+import { UsersWithRelations } from "@/repositories/users/UsersRepository";
 
 export abstract class BaseApiHandler {
     protected logContext: LogContext;
+
+    /**
+     * 認証済みユーザー。
+     * `requireAuth()` が true の場合、`handle()` がハンドラー実行前に解決する。
+     */
+    protected authUser: UsersWithRelations | null = null;
 
     /**
      * コンストラクタ
@@ -21,6 +29,35 @@ export abstract class BaseApiHandler {
      * @return {Handlers} - HTTPメソッドごとのハンドラーを定義したオブジェクト
      */
     protected abstract getHandlers(): Handlers;
+
+    /**
+     * 認証を必須とするかどうか。
+     *
+     * デフォルトは true（安全側）。認証前に呼ぶ必要があるエンドポイント
+     * （サインアップ直後の POST /api/users など）だけが false に上書きする。
+     *
+     * @return {boolean} - 認証を必須とする場合はtrue
+     */
+    protected requireAuth(): boolean {
+        return true;
+    }
+
+    /**
+     * 認証済みユーザーを取得する。
+     * `requireAuth()` が true のハンドラー内から呼ぶこと。
+     *
+     * @return {UsersWithRelations} - 認証済みユーザー
+     * @throws {UnauthorizedError} - 認証されていない場合
+     */
+    protected getAuthUser(): UsersWithRelations {
+        if (!this.authUser) {
+            throw new UnauthorizedError({
+                message: "認証が必要です",
+                errorCode: "AUTH_TOKEN_MISSING",
+            });
+        }
+        return this.authUser;
+    }
 
     /**
      * メインの処理メソッド
@@ -47,6 +84,12 @@ export abstract class BaseApiHandler {
                 );
                 this.logResponse(StatusCode.METHOD_NOT_ALLOWED, startTime);
                 return response;
+            }
+
+            // 認証はここに集約している。createApiHandler / createApiHandlerWithParams 経由で
+            // 全エンドポイントがこの handle() を通るため、1箇所で全ルートに効く。
+            if (this.requireAuth()) {
+                this.authUser = await resolveAuthUser(this.req);
             }
 
             const response = await handler(this.req);

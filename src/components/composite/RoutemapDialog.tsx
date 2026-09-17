@@ -1,3 +1,4 @@
+import apiFetch from "@/lib/apiClient";
 import { GoalStationsWithRelations } from "@/repositories/goalStations/GoalStationsRepository";
 import { TeamData } from "@/types/TeamData";
 import {
@@ -102,7 +103,7 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
                 const params = new URLSearchParams();
                 params.append("eventCode", eventCode as string);
 
-                const response = await fetch("/api/init-routemap?" + params.toString());
+                const response = await apiFetch("/api/init-routemap?" + params.toString());
                 if (!response.ok) {
                     throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
                 }

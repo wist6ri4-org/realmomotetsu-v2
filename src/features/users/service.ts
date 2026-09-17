@@ -17,7 +17,6 @@ export const UsersServiceImpl: UsersService = {
                 uuid: req.uuid,
                 email: req.email,
                 nickname: req.nickname,
-                role: req.role,
             });
             const res: PostUsersResponse = {
                 user: user as Users,

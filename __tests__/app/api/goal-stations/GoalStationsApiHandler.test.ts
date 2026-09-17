@@ -9,6 +9,7 @@ import {
     buildGetRequest,
     buildPostRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../helpers/apiRequest";
@@ -35,6 +36,7 @@ import GoalStationsApiHandler from "@/app/api/goal-stations/GoalStationsApiHandl
 describe("GoalStationsApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         GoalStationsServiceImpl.getGoalStationsByEventCode.mockReset();
         GoalStationsServiceImpl.postGoalStations.mockReset();
     });

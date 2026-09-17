@@ -15,6 +15,7 @@ import {
 import {
     buildPostRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../helpers/apiRequest";
@@ -33,6 +34,7 @@ describe("ArrivalGoalStationV3ApiHandler", () => {
 
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         service = {
             postArrivalGoalStationV3: jest.fn(),
         } as unknown as jest.Mocked<ArrivalGoalStationV3Service>;

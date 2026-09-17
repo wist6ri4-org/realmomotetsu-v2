@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
+import { assertEventAccess } from "@/app/api/utils/auth";
 import { Handlers } from "@/app/api/utils/types";
 import { EventByEventCodeServiceImpl } from "@/features/events/[eventCode]/service";
 import {
@@ -45,6 +46,8 @@ class EventsByEventCodeApiHandler extends BaseApiHandler {
             const validatedParams = GetEventByEventCodeRequestScheme.parse({
                 eventCode: this.eventCode,
             });
+
+            await assertEventAccess(this.getAuthUser(), validatedParams.eventCode, "view");
 
             this.logDebug("Request parameters", validatedParams);
 

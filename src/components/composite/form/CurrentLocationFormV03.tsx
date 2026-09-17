@@ -3,6 +3,7 @@
  */
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import AlertDialog from "@/components/base/AlertDialog";
 import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
@@ -116,7 +117,7 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
      */
     const fetchNextGoalStationCode = async (): Promise<string> => {
         try {
-            const response = await fetch(`/api/goal-stations/latest?eventCode=${eventCode}`);
+            const response = await apiFetch(`/api/goal-stations/latest?eventCode=${eventCode}`);
             if (!response.ok) {
                 throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
@@ -160,7 +161,7 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
             // 二重登録チェック
             const params = new URLSearchParams();
             params.append("eventCode", eventCode);
-            const responseForCheck = await fetch("/api/transit-stations/latest?" + params.toString());
+            const responseForCheck = await apiFetch("/api/transit-stations/latest?" + params.toString());
             if (!responseForCheck.ok) {
                 throw ApplicationErrorFactory.createFromErrorBody(responseForCheck.status, await responseForCheck.json());
             }
@@ -182,7 +183,7 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
             }
 
             // 経由駅と収益の登録
-            const response = await fetch("/api/current-location-v3", {
+            const response = await apiFetch("/api/current-location-v3", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

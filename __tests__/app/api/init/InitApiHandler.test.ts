@@ -3,7 +3,9 @@
  */
 
 import { StatusCode } from "@/constants/statuscode";
-import { InternalServerError, ResourceNotFoundError } from "@/error";
+import { ForbiddenError, InternalServerError, ResourceNotFoundError } from "@/error";
+import { Role } from "@/generated/prisma";
+import * as apiAuth from "@/app/api/utils/auth";
 import { InitResponse } from "@/features/init/types";
 import {
     buildAttendance,
@@ -14,11 +16,14 @@ import {
     buildStation,
     buildTeam,
     buildUser,
+    buildUserWithRelations,
     TEST_EVENT_CODE,
+    TEST_USER_UUID,
 } from "../../../helpers/factories";
 import {
     buildGetRequest,
     buildRequestWithMethod,
+    mockApiAuth,
     readResponse,
     silenceApiLogs,
 } from "../../../helpers/apiRequest";
@@ -60,6 +65,7 @@ const buildValidInitResponse = (): InitResponse => ({
 describe("InitApiHandler", () => {
     beforeEach(() => {
         silenceApiLogs();
+        mockApiAuth();
         InitServiceImpl.getDataForInit.mockReset();
     });
 
@@ -72,21 +78,21 @@ describe("InitApiHandler", () => {
             const data = buildValidInitResponse();
             InitServiceImpl.getDataForInit.mockResolvedValue(data);
 
-            const req = buildGetRequest({ eventCode: TEST_EVENT_CODE, uuid: "uuid-1" });
+            const req = buildGetRequest({ eventCode: TEST_EVENT_CODE, uuid: TEST_USER_UUID });
             const { status, body } = await readResponse(await new InitApiHandler(req).handle());
 
             expect(InitServiceImpl.getDataForInit).toHaveBeenCalledWith({
                 eventCode: TEST_EVENT_CODE,
-                uuid: "uuid-1",
+                uuid: TEST_USER_UUID,
             });
             expect(status).toBe(StatusCode.OK);
             expect(body).toHaveProperty("data");
         });
 
         it.each([
-            ["eventCodeがない", { uuid: "uuid-1" }],
+            ["eventCodeがない", { uuid: TEST_USER_UUID }],
             ["uuidがない", { eventCode: TEST_EVENT_CODE }],
-            ["eventCodeが空文字", { eventCode: "", uuid: "uuid-1" }],
+            ["eventCodeが空文字", { eventCode: "", uuid: TEST_USER_UUID }],
         ])("クエリパラメータが不正な場合（%s）は400を返す", async (_label, params) => {
             const req = buildGetRequest(params);
             const { status, body } = await readResponse(await new InitApiHandler(req).handle());
@@ -101,7 +107,7 @@ describe("InitApiHandler", () => {
                 new ResourceNotFoundError("User", "uuid-1"),
             );
 
-            const req = buildGetRequest({ eventCode: TEST_EVENT_CODE, uuid: "uuid-1" });
+            const req = buildGetRequest({ eventCode: TEST_EVENT_CODE, uuid: TEST_USER_UUID });
             const { status, body } = await readResponse(await new InitApiHandler(req).handle());
 
             expect(status).toBe(StatusCode.NOT_FOUND);
@@ -111,7 +117,7 @@ describe("InitApiHandler", () => {
         it("Serviceが想定外のエラーを投げた場合は500を返し、内部のエラーメッセージを含まない", async () => {
             InitServiceImpl.getDataForInit.mockRejectedValue(new Error("DB connection lost"));
 
-            const req = buildGetRequest({ eventCode: TEST_EVENT_CODE, uuid: "uuid-1" });
+            const req = buildGetRequest({ eventCode: TEST_EVENT_CODE, uuid: TEST_USER_UUID });
             const { status, body } = await readResponse(await new InitApiHandler(req).handle());
 
             expect(status).toBe(StatusCode.INTERNAL_SERVER_ERROR);
@@ -123,7 +129,7 @@ describe("InitApiHandler", () => {
             const { user: _user, ...invalidData } = buildValidInitResponse();
             InitServiceImpl.getDataForInit.mockResolvedValue(invalidData as never);
 
-            const req = buildGetRequest({ eventCode: TEST_EVENT_CODE, uuid: "uuid-1" });
+            const req = buildGetRequest({ eventCode: TEST_EVENT_CODE, uuid: TEST_USER_UUID });
             const { status, body } = await readResponse(await new InitApiHandler(req).handle());
 
             expect(status).toBe(StatusCode.BAD_REQUEST);
@@ -133,10 +139,45 @@ describe("InitApiHandler", () => {
         it("Serviceが投げたInternalServerErrorのステータスコードを引き継ぐ", async () => {
             InitServiceImpl.getDataForInit.mockRejectedValue(new InternalServerError("unexpected"));
 
-            const req = buildGetRequest({ eventCode: TEST_EVENT_CODE, uuid: "uuid-1" });
+            const req = buildGetRequest({ eventCode: TEST_EVENT_CODE, uuid: TEST_USER_UUID });
             const { status } = await readResponse(await new InitApiHandler(req).handle());
 
             expect(status).toBe(StatusCode.INTERNAL_SERVER_ERROR);
+        });
+    });
+
+    describe("認可", () => {
+        it("uuidが認証済みユーザー本人と異なり、master adminでもない場合は403を返す", async () => {
+            const req = buildGetRequest({ eventCode: TEST_EVENT_CODE, uuid: "other-users-uuid" });
+            const { status, body } = await readResponse(await new InitApiHandler(req).handle());
+
+            expect(status).toBe(StatusCode.FORBIDDEN);
+            expect(body.errorCode).toBe("USER_PROFILE_ACCESS_DENIED");
+            expect(InitServiceImpl.getDataForInit).not.toHaveBeenCalled();
+        });
+
+        it("uuidが本人と異なってもmaster adminなら許可される", async () => {
+            mockApiAuth({ user: buildUserWithRelations({ masterRole: Role.admin }) });
+            const data = buildValidInitResponse();
+            InitServiceImpl.getDataForInit.mockResolvedValue(data);
+
+            const req = buildGetRequest({ eventCode: TEST_EVENT_CODE, uuid: "other-users-uuid" });
+            const { status } = await readResponse(await new InitApiHandler(req).handle());
+
+            expect(status).toBe(StatusCode.OK);
+        });
+
+        it("assertEventAccessがForbiddenErrorを投げた場合は403を返し、Serviceを呼ばない", async () => {
+            jest.spyOn(apiAuth, "assertEventAccess").mockRejectedValue(
+                new ForbiddenError({ message: "denied", errorCode: "EVENT_ACCESS_DENIED" }),
+            );
+
+            const req = buildGetRequest({ eventCode: TEST_EVENT_CODE, uuid: TEST_USER_UUID });
+            const { status, body } = await readResponse(await new InitApiHandler(req).handle());
+
+            expect(status).toBe(StatusCode.FORBIDDEN);
+            expect(body.errorCode).toBe("EVENT_ACCESS_DENIED");
+            expect(InitServiceImpl.getDataForInit).not.toHaveBeenCalled();
         });
     });
 

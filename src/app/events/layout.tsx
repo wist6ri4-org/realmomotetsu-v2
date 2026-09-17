@@ -1,5 +1,6 @@
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import React, { useEffect, useState } from "react";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { Alert, CircularProgress, Box, Typography } from "@mui/material";
@@ -59,7 +60,7 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
                 setIsInitDataLoading(true);
                 setContextError(null);
 
-                const response = await fetch(`/api/init?eventCode=${eventCode}&uuid=${sbUser.id}`);
+                const response = await apiFetch(`/api/init?eventCode=${eventCode}&uuid=${sbUser.id}`);
                 if (!response.ok) {
                     throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
                 }
