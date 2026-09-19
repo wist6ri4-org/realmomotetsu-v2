@@ -3,6 +3,7 @@
  */
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import AlertDialog from "@/components/base/AlertDialog";
 import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
@@ -84,6 +85,14 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
         // ボンビーのチームを条件に基づき決定
         const bombiiTeam = GameLogicUtils.confirmBombii(teamData);
 
+        if (!bombiiTeam) {
+            await showAlertDialog({
+                title: DialogConstants.TITLE.ERROR,
+                message: getMessage("REGISTER_BOMBII_FAILED_FOR_NO_GOAL_STATIONS"),
+            });
+            return;
+        }
+
         const confirmMessage =
             `以下の内容でボンビーを登録しますか？\n\n` +
             `チーム: ${bombiiTeam.teamName}\n` +
@@ -101,7 +110,7 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
             setIsLoading(true);
 
             // ボンビーを登録
-            const response = await fetch("/api/bombii-histories", {
+            const response = await apiFetch("/api/bombii-histories", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -113,7 +122,7 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
             });
 
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
 
             if (event.isNotificationEnabled && event.discordWebhookUrl) {

@@ -3,6 +3,7 @@
  */
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import AlertDialog from "@/components/base/AlertDialog";
 import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
@@ -19,6 +20,7 @@ import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box, CircularProgress } from "@mui/material";
+import { useParams } from "next/navigation";
 import React, { useState } from "react";
 
 /**
@@ -43,6 +45,8 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
     onSubmit,
     isOperating,
 }: PointsExchangeFormProps): React.JSX.Element => {
+    const { eventCode } = useParams();
+
     const teamCodeInput = useSelectInput("");
 
     const { isConfirmOpen, dialogOptions, showConfirmDialog, handleConfirm, handleCancel } = useConfirmDialog();
@@ -71,18 +75,19 @@ const PointsExchangeForm: React.FC<PointsExchangeFormProps> = ({
             setIsLoading(true);
 
             // ポイントステータスをscoredに更新
-            const response = await fetch("/api/points", {
+            const response = await apiFetch("/api/points", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
+                    eventCode: eventCode,
                     teamCode: teamCodeInput.value,
                 }),
             });
 
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
 
             teamCodeInput.reset();

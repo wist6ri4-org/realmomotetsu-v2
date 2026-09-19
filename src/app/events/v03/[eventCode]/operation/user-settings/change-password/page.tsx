@@ -8,7 +8,7 @@ import { Lock, Save } from "@mui/icons-material";
 import { CustomTextField } from "@/components/base/CustomTextField";
 import CustomButton from "@/components/base/CustomButton";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
-import { useEventContext } from "@/app/events/layout";
+import { useEventContext } from "@/app/events/EventContext";
 
 /**
  * ログイン中ユーザー用パスワード変更ページコンポーネント

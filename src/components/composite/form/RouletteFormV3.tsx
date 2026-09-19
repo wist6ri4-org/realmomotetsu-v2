@@ -3,10 +3,10 @@
  */
 "use client";
 
-import { GoalStations, LatestTransitStations, Stations } from "@/generated/prisma";
+import { GoalStations, LatestTransitStations, Stations, StationType } from "@/generated/prisma";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 import { RouletteUtils } from "@/utils/rouletteUtils";
 import CustomButton from "@/components/base/CustomButton";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
@@ -17,21 +17,24 @@ import { ClosestStation } from "@/types/ClosestStation";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import AlertDialog from "@/components/base/AlertDialog";
 import CustomAutoComplete from "@/components/base/CustomAutoComplete";
+import LocationUtils from "@/utils/locationUtils";
 
 /**
  * RouletteFormV3コンポーネントのプロパティ型定義
  * @property {Stations[]} stations - 駅のリスト
- * @property {NearbyStationsWithRelations[]} nearbyStations - 最寄り駅のリスト
- * @property {TransitStations[]} latestTransitStations - 最新の乗り換え駅のリスト
+ * @property {NearbyStationsWithRelations[]} nearbyStations - 隣接駅情報のリスト
+ * @property {TransitStations[]} latestTransitStations - 最新経由駅のリスト
  * @property {GoalStations[]} goalStations - 既出目的地駅のリスト
- * @property {Stations[]} closestStations - 最寄り駅のリスト
+ * @property {number} latitude - 現在地の緯度
+ * @property {number} longitude - 現在地の経度
  */
 interface RouletteFormV3Props {
     stations: Stations[];
     nearbyStations: NearbyStationsWithRelations[];
     latestTransitStations: LatestTransitStations[];
     goalStations: GoalStations[];
-    closestStations: ClosestStation[];
+    latitude: number;
+    longitude: number;
 }
 
 // ルーレットモードのオプション
@@ -50,11 +53,14 @@ const RouletteFormV3: React.FC<RouletteFormV3Props> = ({
     nearbyStations,
     latestTransitStations,
     goalStations,
-    closestStations,
+    latitude,
+    longitude,
 }: RouletteFormV3Props): React.JSX.Element => {
-    const startStationCodeInput = useSelectInput(closestStations?.[0]?.stationCode || "");
     const [rouletteMode, setRouletteMode] = useState<"weighted" | "random">("weighted");
-    const [spinInterval, setSpinInterval] = useState<NodeJS.Timeout | null>(null);
+    const [targetStations, setTargetStations] = useState<Stations[]>(() => filterTargetStations(stations, rouletteMode));
+    const [closestStation, setClosestStation] = useState<ClosestStation>(() =>findClosestStation(stations, rouletteMode, latitude, longitude));
+    const startStationCodeInput = useSelectInput(closestStation.stationCode || "");
+    const spinIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const [isRolling, setIsRolling] = useState<boolean>(false);
 
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
@@ -65,7 +71,7 @@ const RouletteFormV3: React.FC<RouletteFormV3Props> = ({
      */
     const getWeightedStation = (): Stations | null => {
         const nextStationCode = RouletteUtils.getWeightedStationCodeV3(
-            stations,
+            targetStations,
             nearbyStations,
             latestTransitStations,
             goalStations,
@@ -79,7 +85,7 @@ const RouletteFormV3: React.FC<RouletteFormV3Props> = ({
      * @return {Stations | null} - ランダムな駅
      */
     const getRandomStation = (): Stations | null => {
-        const randomStationCode = RouletteUtils.getRandomStationCode(stations, startStationCodeInput.value);
+        const randomStationCode = RouletteUtils.getRandomStationCode(targetStations, startStationCodeInput.value);
         return stations.find((station) => station.stationCode === randomStationCode) || null;
     };
 
@@ -110,6 +116,39 @@ const RouletteFormV3: React.FC<RouletteFormV3Props> = ({
         const newValue = event.target.value as "weighted" | "random";
         setRouletteMode(newValue);
         console.log("選択されたルーレットモード:", newValue);
+
+        setTargetStations(filterTargetStations(stations, newValue));
+        const newClosestStation = findClosestStation(stations, newValue, latitude, longitude);
+        setClosestStation(newClosestStation);
+        startStationCodeInput.setValue(newClosestStation?.stationCode || "");
+        handleStop();
+    };
+
+    /**
+     * ルーレットの開始ボタンが押されたときのハンドラー
+     */
+    const handleStart = () => {
+        if (startStationCodeInput.value === "") {
+            showAlertDialog({
+                message: "今いる駅を選択してください。",
+            });
+            return;
+        }
+        setIsRolling(true);
+        console.log(
+            "Starting roulette with mode:",
+            rouletteMode,
+            "and start station:",
+            startStationCodeInput.value
+        );
+    }
+
+    /**
+     * ルーレットの停止ボタンが押されたときのハンドラー
+     */
+    const handleStop = () => {
+        setIsRolling(false);
+        console.log("Stopping roulette（v3）, displaying next station:", displayedStation);
     };
 
     /**
@@ -117,40 +156,29 @@ const RouletteFormV3: React.FC<RouletteFormV3Props> = ({
      */
     useEffect(() => {
         if (!isRolling) {
-            if (spinInterval) {
-                clearInterval(spinInterval);
-                console.log("Stopping roulette（v3）, displaying next station:", displayedStation);
+            if (spinIntervalRef.current) {
+                clearInterval(spinIntervalRef.current);
             }
+            return;
         } else {
-            if (startStationCodeInput.value === "") {
-                setIsRolling(false);
-                showAlertDialog({
-                    message: "今いる駅を選択してください。",
-                });
-                return;
-            }
-            console.log(
-                "Starting roulette with mode:",
-                rouletteMode,
-                "and start station:",
-                startStationCodeInput.value
-            );
-            if (spinInterval) {
-                clearInterval(spinInterval);
-            }
-            const interval = setInterval(() => {
+            spinIntervalRef.current = setInterval(() => {
                 dispatch({ type: rouletteMode });
             }, 100);
-            setSpinInterval(interval);
+
+            return () => {
+                if (spinIntervalRef.current) {
+                    clearInterval(spinIntervalRef.current);
+                }
+            }
         }
-    }, [isRolling]);
+    }, [isRolling, rouletteMode]);
 
     return (
         <>
             <Box sx={{ display: "flex", flexDirection: "column", margin: 2 }}>
                 <Box sx={{ marginBottom: 2 }}>
                     <CustomAutoComplete
-                        options={TypeConverter.convertStationsToAutoCompleteOptions(stations)}
+                        options={TypeConverter.convertStationsToAutoCompleteOptions(targetStations)}
                         value={startStationCodeInput.value}
                         onChange={startStationCodeInput.handleChange}
                         size="small"
@@ -176,7 +204,7 @@ const RouletteFormV3: React.FC<RouletteFormV3Props> = ({
                             variant="contained"
                             color="success"
                             onClick={() => {
-                                setIsRolling(true);
+                                handleStart();
                             }}
                             fullWidth
                         >
@@ -187,7 +215,7 @@ const RouletteFormV3: React.FC<RouletteFormV3Props> = ({
                             variant="contained"
                             color="error"
                             onClick={() => {
-                                setIsRolling(false);
+                                handleStop();
                             }}
                             fullWidth
                         >
@@ -208,3 +236,31 @@ const RouletteFormV3: React.FC<RouletteFormV3Props> = ({
 };
 
 export default RouletteFormV3;
+
+/**
+ * 指定された駅の中からミッション駅のみを抽出する関数
+ * @param {Stations[]} stations - 駅の配列
+ * @param {string} rouletteMode - ルーレットのモード
+ * @return {Stations[]} - ミッション駅のみの配列
+ */
+function filterTargetStations(stations: Stations[], rouletteMode: ("weighted" | "random")): Stations[] {
+    return rouletteMode === "weighted" ? stations.filter((station) => station.stationType === StationType.mission) : stations;
+}
+
+/**
+ * 指定された駅の中から最も近い駅を見つける関数
+ * @param {Stations[]} stations - 駅の配列
+ * @param {("weighted" | "random")} rouletteMode - ルーレットのモード
+ * @param {number} latitude - 現在の緯度
+ * @param {number} longitude - 現在の経度
+ * @return {ClosestStation} - 最も近い駅
+ */
+function findClosestStation(
+    stations: Stations[],
+    rouletteMode: ("weighted" | "random"),
+    latitude: number,
+    longitude: number
+): ClosestStation {
+    const targetStations = filterTargetStations(stations, rouletteMode);
+    return LocationUtils.calculate(targetStations, latitude, longitude)[0];
+};

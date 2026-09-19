@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
+import { assertEventAccess } from "@/app/api/utils/auth";
 import { Handlers } from "@/app/api/utils/types";
 import { PostBulkPointsRequestSchema, PostBulkPointsResponseSchema } from "@/features/points/bulk/validator";
 import { PostBulkPointsResponse } from "@/features/points/bulk/types";
@@ -45,6 +46,8 @@ class PointsBulkApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション
             const validatedBody = PostBulkPointsRequestSchema.parse(body);
+
+            await assertEventAccess(this.getAuthUser(), validatedBody.eventCode, "operate");
 
             this.logDebug("Request body", validatedBody);
 

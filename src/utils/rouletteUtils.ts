@@ -162,7 +162,7 @@ export class RouletteUtils {
         const missionStationCodes = new Set(
             stations
                 .filter((station) => station.stationType === StationType.mission)
-                .map((station) => station.stationCode)
+                .map((station) => station.stationCode),
         );
 
         // 候補駅のフィルタリング
@@ -193,24 +193,55 @@ export class RouletteUtils {
         // 確率を格納するマップを初期化
         const stationsProbabilities: StationsProbabilitiesMap = new Map<string, number>();
 
-        let prevMax = 0;
+        // 所要時間の昇順でソート
+        const sortedDistances = [...distances].sort((a, b) => a[1].timeMinutes - b[1].timeMinutes);
+
+        // 端駅のコードリスト
+        const endStationCodes = new Set<string>(GameConstants.END_STATION_CODES_V3);
+        // 端駅のマップ
+        const endStationsDistances = sortedDistances.filter(([stationCode]) => endStationCodes.has(stationCode));
+        // 非端駅のマップ
+        const nonEndStationsDistances = sortedDistances.filter(([stationCode]) => !endStationCodes.has(stationCode));
+
+        // 現在のバケットの開始インデックス
+        let prevIndex = 0;
+        // 選択された最終候補駅の駅コードリスト
         const selectedStations: string[] = [];
-        for (const bucket of GameConstants.STATION_SELECTION_BUCKETS) {
-            const candidateStations = [...distances].filter(
-                ([_, { timeMinutes }]) => timeMinutes > prevMax && timeMinutes <= bucket.maxMinutes,
-            );
+        for (const bucket of GameConstants.STATION_SELECTION_RATIO_BUCKETS) {
+            // 上位N%までのインデックスを算出
+            const endIndex = Math.ceil((bucket.percentile / 100) * nonEndStationsDistances.length);
+            if (bucket.count === 0) {
+                prevIndex = endIndex;
+                continue; // バケットから選出される駅の数が0の場合はスキップ
+            }
+            // 上位N%にあたる候補駅を取得
+            const candidateStations = nonEndStationsDistances.slice(prevIndex, endIndex);
+            // 候補駅からランダムに指定された数の駅を選択
             const selectedInBucket = candidateStations
                 .sort(() => 0.5 - Math.random())
                 .slice(0, bucket.count)
                 .map(([stationCode]) => stationCode);
             selectedStations.push(...selectedInBucket);
-            prevMax = bucket.maxMinutes;
+            prevIndex = endIndex;
         }
 
-        // 候補駅の数が少ない場合、すべての駅を均等な確率で選択する
+        // 端駅からランダムに駅を選択して追加
+        const selectedEdgeStations = endStationsDistances
+            .filter(([_, { stationsNumber }]) => stationsNumber >= GameConstants.MIN_CANDIDATE_END_STATION_DISTANCE) // 7マス以上離れた端駅のみを対象
+            .sort(() => 0.5 - Math.random())
+            .slice(0, GameConstants.CANDIDATE_END_STATIONS_NUM)
+            .map(([stationCode]) => stationCode);
+        selectedStations.push(...selectedEdgeStations);
+
+        // 候補駅の数が少ない場合、7マス以上離れたすべての駅を均等な確率で選択する
         if (selectedStations.length < 5) {
-            distances.forEach((_, stationCode) => {
-                stationsProbabilities.set(stationCode, 1 / distances.size);
+            const filteredDistances = new Map(
+                [...distances].filter(
+                    ([_, { stationsNumber }]) => stationsNumber >= GameConstants.MIN_CANDIDATE_END_STATION_DISTANCE,
+                ),
+            );
+            filteredDistances.forEach((_, stationCode) => {
+                stationsProbabilities.set(stationCode, 1 / filteredDistances.size);
             });
             return stationsProbabilities;
         }

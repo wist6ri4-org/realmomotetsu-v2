@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
+import { assertSelfOrMasterAdmin } from "@/app/api/utils/auth";
 import { Handlers } from "@/app/api/utils/types";
 import {
     GetUsersByUuidRequestScheme,
@@ -9,7 +10,6 @@ import {
 } from "@/features/users/[uuid]/validator";
 import { UsersByUuidServiceImpl } from "@/features/users/[uuid]/service";
 import { GetUsersByUuidResponse, PutUsersByUuidResponse } from "@/features/users/[uuid]/types";
-import supabase from "@/lib/supabase";
 
 /**
  * UUIDに紐づくユーザーに関するAPIハンドラー
@@ -48,6 +48,10 @@ class UsersByUuidApiHandler extends BaseApiHandler {
         try {
             const validatedParams = GetUsersByUuidRequestScheme.parse({ uuid: this.uuid });
 
+            // 本人、またはmaster adminのみ他ユーザーのプロフィール（メールアドレス・ロール・
+            // 参加履歴を含む）を閲覧できる
+            assertSelfOrMasterAdmin(this.getAuthUser(), validatedParams.uuid);
+
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
@@ -73,29 +77,8 @@ class UsersByUuidApiHandler extends BaseApiHandler {
         this.logInfo("Handling PUT request for users/[uuid]");
 
         try {
-            // 認証チェック
-            const authHeader = this.req.headers.get("authorization");
-            if (!authHeader) {
-                return this.createErrorResponse("認証が必要です", 401);
-            }
-
-            // Authorizationヘッダーからトークンを取得
-            const token = authHeader.replace("Bearer ", "");
-
-            // Supabaseでトークンを検証
-            const {
-                data: { user },
-                error: authError,
-            } = await supabase.auth.getUser(token);
-
-            if (authError || !user) {
-                return this.createErrorResponse("認証に失敗しました", 401);
-            }
-
-            // 自分のプロファイルのみ更新可能かチェック
-            if (user.id !== this.uuid) {
-                return this.createErrorResponse("他のユーザーのプロファイルは更新できません", 403);
-            }
+            // 本人、またはmaster adminのみ更新可能（認証自体はBaseApiHandlerが検証済み）
+            assertSelfOrMasterAdmin(this.getAuthUser(), this.uuid);
 
             const requestBody = await this.req.json();
             const validatedParams = PutUsersByUuidRequestScheme.parse({

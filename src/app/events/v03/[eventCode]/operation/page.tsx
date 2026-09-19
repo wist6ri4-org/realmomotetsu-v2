@@ -6,7 +6,7 @@ import PageTitle from "@/components/base/PageTitle";
 import { useParams, useRouter } from "next/navigation";
 import { checkIsAdminUserWithUsers } from "@/lib/auth";
 import { useEffect, useState } from "react";
-import { useEventContext } from "../../../layout";
+import { useEventContext } from "../../../EventContext";
 
 /**
  * オペレーションメニューページ
@@ -66,16 +66,16 @@ const OperationPage: React.FC = (): React.JSX.Element => {
         },
         ...(isAdminUser
             ? [
-                  {
-                      title: "GMツール",
-                      description: "GM用の管理機能",
-                      icon: <Construction sx={{ width: "50%", height: "50%" }} />,
-                      color: "#2196F3",
-                      onClick: () => {
-                          router.push(`/events/v03/${eventCode}/operation/tools`);
-                      },
-                  },
-              ]
+                {
+                    title: "GMツール",
+                    description: "GM用の管理機能",
+                    icon: <Construction sx={{ width: "50%", height: "50%" }} />,
+                    color: "#2196F3",
+                    onClick: () => {
+                        router.push(`/events/v03/${eventCode}/operation/tools`);
+                    },
+                },
+            ]
             : []),
     ];
 

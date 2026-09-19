@@ -1,6 +1,6 @@
 import { AttendancesWithRelations } from "../attendances/AttendancesRepository";
 import { BaseRepository } from "../base/BaseRepository";
-import { Role, Users } from "@/generated/prisma";
+import { Users } from "@/generated/prisma";
 
 // includeありのUsersの型定義
 export type UsersWithRelations = Users & {
@@ -56,15 +56,16 @@ export class UsersRepository extends BaseRepository {
      * @param {string} userData.email - ユーザーのメールアドレス
      * @param {string} [userData.nickname] - ユーザーのニックネーム
      * @param {string} [userData.iconUrl] - ユーザーのアイコンURL
-     * @param {Role} [userData.role] - ユーザーのロール
      * @return {Promise<Users>} 登録されたユーザー情報
+     * @description masterRole は指定できない。Prisma のフィールド名は masterRole であり、
+     *              かつ新規登録は認証前の公開エンドポイントから呼ばれるため、
+     *              ロールをリクエスト経由で設定させない。
      */
     async create(userData: {
         uuid: string;
         email: string;
         nickname?: string;
         iconUrl?: string;
-        role?: Role;
     }): Promise<Users> {
         try {
             return await this.prisma.users.create({

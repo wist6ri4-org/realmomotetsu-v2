@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
+import { assertEventAccess } from "@/app/api/utils/auth";
 import { Handlers } from "@/app/api/utils/types";
 import { PointsServiceImpl } from "@/features/points/service";
 import {
@@ -51,6 +52,8 @@ class PointsApiHandler extends BaseApiHandler {
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
             const queryParams = Object.fromEntries(searchParams.entries());
             const validatedParams = GetPointsRequestSchema.parse(queryParams);
+
+            await assertEventAccess(this.getAuthUser(), validatedParams.eventCode, "view");
 
             this.logDebug("Request parameters", validatedParams);
 
@@ -107,6 +110,8 @@ class PointsApiHandler extends BaseApiHandler {
             // Zodでバリデーション
             const validatedBody = PostPointsRequestSchema.parse(body);
 
+            await assertEventAccess(this.getAuthUser(), validatedBody.eventCode, "operate");
+
             this.logDebug("Request body", validatedBody);
 
             // サービスからデータを取得
@@ -140,6 +145,8 @@ class PointsApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション
             const validatedBody = PutPointsRequestSchema.parse(body);
+
+            await assertEventAccess(this.getAuthUser(), validatedBody.eventCode, "operate");
 
             this.logDebug("Request body", validatedBody);
 

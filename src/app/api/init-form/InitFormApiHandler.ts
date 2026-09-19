@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
+import { assertEventAccess } from "@/app/api/utils/auth";
 import { Handlers } from "@/app/api/utils/types";
 import { InitFormServiceImpl } from "@/features/init-form/service";
 import { InitFormRequestSchema, InitFormResponseSchema } from "@/features/init-form/validator";
@@ -43,6 +44,8 @@ class InitFormApiHandler extends BaseApiHandler {
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
             const queryParams = Object.fromEntries(searchParams.entries());
             const validatedParams = InitFormRequestSchema.parse(queryParams);
+
+            await assertEventAccess(this.getAuthUser(), validatedParams.eventCode, "view");
 
             this.logDebug("Request parameters", validatedParams);
 

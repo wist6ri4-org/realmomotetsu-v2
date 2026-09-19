@@ -1,5 +1,6 @@
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
 import RouletteForm from "@/components/composite/form/RouletteForm";
@@ -10,7 +11,7 @@ import { ArrowDropDown, Casino, Help } from "@mui/icons-material";
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, CircularProgress, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useEventContext } from "../../../layout";
+import { useEventContext } from "../../../EventContext";
 import { InitRouletteResponse } from "@/features/init-roulette/types";
 import LocationUtils from "@/utils/locationUtils";
 import { ApplicationErrorFactory } from "@/error/applicationError";
@@ -52,9 +53,9 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
                 console.warn("Could not get current location:", locationError);
             }
 
-            const response = await fetch("/api/init-roulette?" + params.toString());
+            const response = await apiFetch("/api/init-roulette?" + params.toString());
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
 
             const data: InitRouletteResponse = (await response.json()).data;

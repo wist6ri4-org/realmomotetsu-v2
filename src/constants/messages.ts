@@ -44,6 +44,7 @@ export const Messages = {
     MINUS_STATION_ARRIVAL: "{teamName}は　マイナス駅に　止まった！\nマイナス　{points}円！",
     CARD_STATION_ARRIVAL: "カード売り場駅！\n{stationName}（{stationNameKana}）！\nカードを　購入できます！",
     TREASURE_STATION_ARRIVAL: "宝くじ駅！\n{stationName}（{stationNameKana}）！\n宝くじを　１枚差し上げます！",
+    REGISTER_BOMBII_FAILED_FOR_NO_GOAL_STATIONS : "ボンビーを登録できませんでした。\n目的駅が設定されていません。",
 } as const;
 
 export type Messages = typeof Messages;

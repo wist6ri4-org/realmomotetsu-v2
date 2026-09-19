@@ -3,6 +3,7 @@
  */
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import AlertDialog from "@/components/base/AlertDialog";
 import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
@@ -108,7 +109,7 @@ const RegisterPointsFormV3: React.FC<RegisterPointsFormV3Props> = ({
             setIsLoading(true);
 
             // ポイントの登録
-            const response = await fetch("/api/points", {
+            const response = await apiFetch("/api/points", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -122,7 +123,7 @@ const RegisterPointsFormV3: React.FC<RegisterPointsFormV3Props> = ({
             });
 
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
 
             teamCodeInput.reset();

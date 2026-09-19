@@ -1,6 +1,6 @@
 "use client";
 
-import { useEventContext } from "@/app/events/layout";
+import { useEventContext } from "@/app/events/EventContext";
 import { CommonConstants } from "@/constants/commonConstants";
 import { Assignment, Casino, Home, Settings } from "@mui/icons-material";
 import { BottomNavigation, BottomNavigationAction, Box } from "@mui/material";

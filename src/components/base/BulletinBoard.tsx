@@ -6,12 +6,12 @@ import { keyframes } from "@mui/system";
 
 /**
  * BulletinBoardコンポーネントのプロパティ型定義
- * @param {string} nextStation - 次の駅名
- * @param {string} nextStationEng - 次の駅名（英語表記、駅コード）
+ * @param {string | undefined} nextStation - 次の駅名
+ * @param {string | undefined} nextStationEng - 次の駅名（英語表記、駅コード）
  */
 interface BulletinBoardProps {
-    nextStation: string;
-    nextStationEng: string;
+    nextStation?: string;
+    nextStationEng?: string;
 }
 
 // 無限スクロールアニメーションの定義（電光掲示板風）
@@ -91,7 +91,9 @@ const BulletinBoard: React.FC<BulletinBoardProps> = ({
     const space = "　";
 
     // 表示するテキストコンテンツ
-    const displayText = `次は ${nextStation + space.repeat(7)} Next ${nextStationEng}`;
+    const displayText = (nextStation || nextStationEng)
+        ? `次は ${nextStation + space.repeat(7)} Next ${nextStationEng}`
+        : "ゲームの開始まで いましばらくお待ちください";
 
     return (
         <Box

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import apiFetch from "@/lib/apiClient";
 
 /**
  * Discord通知の送信オプション
@@ -59,7 +60,7 @@ export function useDiscordNotification(): {
         setError(null);
 
         try {
-            const response = await fetch("/api/discord/notify", {
+            const response = await apiFetch("/api/discord/notify", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

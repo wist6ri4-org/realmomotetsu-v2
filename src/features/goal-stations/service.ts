@@ -7,6 +7,7 @@ import {
     PostGoalStationsResponse,
 } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
+import { notifyEventDataChanged } from "@/lib/realtimeNotifier";
 
 export const GoalStationsServiceImpl: GoalStationsService = {
     /**
@@ -54,6 +55,9 @@ export const GoalStationsServiceImpl: GoalStationsService = {
             const res: PostGoalStationsResponse = {
                 goalStation: goalStation,
             };
+
+            await notifyEventDataChanged(req.eventCode);
+
             return res;
         } catch (error) {
             if (error instanceof ApiError) {
