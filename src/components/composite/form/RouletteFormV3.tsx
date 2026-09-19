@@ -57,8 +57,8 @@ const RouletteFormV3: React.FC<RouletteFormV3Props> = ({
     longitude,
 }: RouletteFormV3Props): React.JSX.Element => {
     const [rouletteMode, setRouletteMode] = useState<"weighted" | "random">("weighted");
-    const [targetStations, setTargetStations] = useState<Stations[]>(filterTargetStations(stations, rouletteMode));
-    const [closestStation, setClosestStation] = useState<ClosestStation>(findClosestStation(stations, rouletteMode, latitude, longitude));
+    const [targetStations, setTargetStations] = useState<Stations[]>(() => filterTargetStations(stations, rouletteMode));
+    const [closestStation, setClosestStation] = useState<ClosestStation>(() =>findClosestStation(stations, rouletteMode, latitude, longitude));
     const startStationCodeInput = useSelectInput(closestStation.stationCode || "");
     const spinIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const [isRolling, setIsRolling] = useState<boolean>(false);

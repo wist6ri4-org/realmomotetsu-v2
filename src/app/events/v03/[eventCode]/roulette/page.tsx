@@ -44,10 +44,8 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
 
             try {
                 const { latitude, longitude } = await CurrentLocationUtils.getCurrentLocation();
-                if (latitude && longitude) {
-                    setLatitude(latitude);
-                    setLongitude(longitude);
-                }
+                setLatitude(latitude);
+                setLongitude(longitude);
             } catch (locationError) {
                 console.warn("Could not get current location:", locationError);
             }
