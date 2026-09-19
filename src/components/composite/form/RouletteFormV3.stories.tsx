@@ -18,7 +18,8 @@ const meta = {
         nearbyStations,
         latestTransitStations: [],
         goalStations: [],
-        closestStations: [{ stationCode: "STATION_A", distance: 0 }],
+        latitude: 35.0,
+        longitude: 135.0,
     },
 } satisfies Meta<typeof RouletteFormV3>;
 
