@@ -1,0 +1,1883 @@
+{
+    "svgOverall": {
+        "viewBox": "0 0 5600 4000",
+        "transform": "translate(200, 100)"
+    },
+    "stationBoxStyle": {
+        "stroke": "rgb(0, 0, 0)",
+        "fill": "rgb(255, 255, 255)",
+        "strokeWidth": "5",
+        "strokeLineJoin": "round"
+    },
+    "routes": [
+        {
+            "name": "denentoshi",
+            "visibility": "visible",
+            "paths": [
+                {
+                    "d": "M 5300 450 L 4050 450",
+                    "stroke": "rgba(0, 135, 81, 1)",
+                    "strokeWidth": "50"
+                },
+                {
+                    "d": "M 3450 450 L 0 450",
+                    "stroke": "rgba(0, 135, 81, 1)",
+                    "strokeWidth": "50"
+                },
+                {
+                    "d": "M 3450 437.5 L 4050 437.5",
+                    "stroke": "rgba(0, 135, 81, 1)",
+                    "strokeWidth": "25"
+                },
+                {
+                    "d": "M 3450 462.5 L 4050 462.5",
+                    "stroke": "rgba(255, 163, 0, 1)",
+                    "strokeWidth": "25"
+                }
+            ]
+        },
+        {
+            "name": "oimachi",
+            "visibility": "visible",
+            "paths": [
+                {
+                    "d": "M 4050 450 L 4050 3250",
+                    "stroke": "rgba(255, 163, 0, 1)",
+                    "strokeWidth": "50"
+                }
+            ]
+        },
+        {
+            "name": "toyoko",
+            "visibility": "visible",
+            "paths": [
+                {
+                    "d": "M 3650 1450 L 5250 1450 L 5250 450",
+                    "stroke": "rgba(219, 28, 1, 1)",
+                    "strokeWidth": "50"
+                },
+                {
+                    "d": "M 2650 1450 L 1050 3050",
+                    "stroke": "rgba(219, 28, 1, 1)",
+                    "strokeWidth": "50"
+                },
+                {
+                    "d": "M 2650 1437.5 L 3650 1437.5",
+                    "stroke": "rgba(219, 28, 1, 1)",
+                    "strokeWidth": "25"
+                }
+            ]
+        },
+        {
+            "name": "meguro",
+            "visibility": "visible",
+            "paths": [
+                {
+                    "d": "M 2650 1462.5 L 3650 1462.5",
+                    "stroke": "rgba(41, 173, 255, 1)",
+                    "strokeWidth": "25"
+                },
+                {
+                    "d": "M 3650 1450 L 4050 1850 L 5050 1850",
+                    "stroke": "rgba(41, 173, 255, 1)",
+                    "strokeWidth": "50"
+                }
+            ]
+        },
+        {
+            "name": "ikegami",
+            "visibility": "visible",
+            "paths": [
+                {
+                    "d": "M 2650 1450 L 2250 1450",
+                    "stroke": "rgba(126, 37, 83, 1)",
+                    "strokeWidth": "50"
+                }
+            ]
+        },
+        {
+            "name": "shinyokohama",
+            "visibility": "visible",
+            "paths": [
+                {
+                    "d": "M 4850 2250 L 3050 2250 L 3050 2450 L 2850 2450 L 2850 2650 L 2650 2650 L 2250 2650",
+                    "stroke": "rgba(255, 119, 168, 1)",
+                    "strokeWidth": "50"
+                }
+            ]
+        },
+        {
+            "name": "minatomirai",
+            "visibility": "visible",
+            "paths": [
+                {
+                    "d": "M 1050 3050 L 1050 3450 L 450 3450",
+                    "stroke": "rgba(29, 43, 83, 1)",
+                    "strokeWidth": "50"
+                }
+            ]
+        },
+        {
+            "name": "tamagawa",
+            "visibility": "visible",
+            "paths": [
+                {
+                    "d": "M 3450 1450 L 2250 2650",
+                    "stroke": "rgba(255, 0, 77, 1)",
+                    "strokeWidth": "50"
+                }
+            ]
+        }
+    ],
+    "stations": [
+        {
+            "name": "中央林間",
+            "code": "CHUORINKAN",
+            "box": {
+                "x": "0",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "-75",
+                "y": "173",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-213.394 493.956) matrix(0.707107 0.707107 -0.707107 0.707107 301.256 -325.752)"
+            }
+        },
+        {
+            "name": "つきみ野",
+            "code": "TSUKIMINO",
+            "box": {
+                "x": "200",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "275",
+                "y": "135.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-287.397 272.985) matrix(0.707107 0.707107 -0.707107 0.707107 301.256 -325.752)"
+            }
+        },
+        {
+            "name": "南町田グランベリーパーク",
+            "code": "MINAMIMACHIDAGRANBERRYPARK",
+            "box": {
+                "x": "400",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "87.5",
+                "y": "210.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(200 7.00152e-06) matrix(0.707107 0.707107 -0.707107 0.707107 61.9741 -185.718)",
+                "multiline": true
+            }
+        },
+        {
+            "name": "すずかけ台",
+            "code": "SUZUKAKEDAI",
+            "box": {
+                "x": "600",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "325",
+                "y": "310.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(163.491 76.3858) matrix(0.707107 0.707107 -0.707107 0.707107 301.256 -325.752)"
+            }
+        },
+        {
+            "name": "つくし野",
+            "code": "TSUKUSHINO",
+            "box": {
+                "x": "800",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "600",
+                "y": "123",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(73.954 52.0139) matrix(0.707107 0.707107 -0.707107 0.707107 301.256 -325.752)"
+            }
+        },
+        {
+            "name": "長津田",
+            "code": "NAGATSUTA",
+            "box": {
+                "x": "1000",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "712.5",
+                "y": "198",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(284.938 -43.0686) matrix(0.707107 0.707107 -0.707107 0.707107 301.256 -325.752)"
+            }
+        },
+        {
+            "name": "田奈",
+            "code": "TANA",
+            "box": {
+                "x": "1200",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "912.5",
+                "y": "248",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(8.8995e-06 12.5) matrix(0.707107 0.707107 -0.707107 0.707107 717.628 -520.597)"
+            }
+        },
+        {
+            "name": "青葉台",
+            "code": "AOBADAI",
+            "box": {
+                "x": "1400",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "1012.5",
+                "y": "135.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(428.611 -211.006) matrix(0.707107 0.707107 -0.707107 0.707107 301.256 -325.752)"
+            }
+        },
+        {
+            "name": "藤が丘",
+            "code": "FUJIGAOKA",
+            "box": {
+                "x": "1600",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "1575",
+                "y": "335.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(7.68249e-06 12.5) matrix(0.707107 0.707107 -0.707107 0.707107 673.541 -1088.43)"
+            }
+        },
+        {
+            "name": "市が尾",
+            "code": "ICHIGAO",
+            "box": {
+                "x": "1800",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "1812.5",
+                "y": "310.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-347.194 798.192) matrix(0.707107 0.707107 -0.707107 0.707107 1035.12 -2024.38)"
+            }
+        },
+        {
+            "name": "江田",
+            "code": "EDA",
+            "box": {
+                "x": "2000",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2037.5",
+                "y": "335.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(1.87688e-06 12.5) matrix(0.707107 0.707107 -0.707107 0.707107 784.004 -1377.96)"
+            }
+        },
+        {
+            "name": "あざみ野",
+            "code": "AZAMINO",
+            "box": {
+                "x": "2200",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2225",
+                "y": "310.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(0 12.5) matrix(0.707107 0.707107 -0.707107 0.707107 758.744 -1555.37)"
+            }
+        },
+        {
+            "name": "たまプラーザ",
+            "code": "TAMAPLAZA",
+            "box": {
+                "x": "2400",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2362.5",
+                "y": "173",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(0 12.5) matrix(0.707107 0.707107 -0.707107 0.707107 689.29 -1630.37)"
+            }
+        },
+        {
+            "name": "鷺沼",
+            "code": "SAGINUMA",
+            "box": {
+                "x": "2600",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2637.5",
+                "y": "323",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(0 12.5) matrix(0.707107 0.707107 -0.707107 0.707107 950.901 -1793.39)"
+            }
+        },
+        {
+            "name": "宮前平",
+            "code": "MIYAMAEDAIRA",
+            "box": {
+                "x": "2800",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2825",
+                "y": "310.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(0 12.5) matrix(0.707107 0.707107 -0.707107 0.707107 971.98 -1942.13)"
+            }
+        },
+        {
+            "name": "宮崎台",
+            "code": "MIYAZAKIDAI",
+            "box": {
+                "x": "3000",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2975",
+                "y": "210.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(0 0) matrix(0.707107 0.707107 -0.707107 0.707107 995.203 -1977.49)"
+            }
+        },
+        {
+            "name": "梶が谷",
+            "code": "KAJIGAYA",
+            "box": {
+                "x": "3200",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3175",
+                "y": "285.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-2.45036e-07 12.5) matrix(0.707107 0.707107 -0.707107 0.707107 1106.81 -2184.44)"
+            }
+        },
+        {
+            "name": "溝の口",
+            "code": "MIZONOKUCHI",
+            "box": {
+                "x": "3400",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3412.5",
+                "y": "335.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-2.18626e-06 12.5) matrix(0.707107 0.707107 -0.707107 0.707107 1174.23 -2387.74)"
+            }
+        },
+        {
+            "name": "高津",
+            "code": "TAKATSU",
+            "box": {
+                "x": "3600",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3600",
+                "y": "248",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-6.05065e-06 12.5) matrix(0.707107 0.707107 -0.707107 0.707107 1217.28 -2420.95)"
+            }
+        },
+        {
+            "name": "二子新地",
+            "code": "FUTAKOSHINCHI",
+            "box": {
+                "x": "3800",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3737.5",
+                "y": "323",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(3.4748e-06 -1.28175e-05) matrix(0.707107 0.707107 -0.707107 0.707107 1298.08 -2633.71)"
+            }
+        },
+        {
+            "name": "二子玉川",
+            "code": "FUTAKOTAMAGAWA",
+            "box": {
+                "x": "4000",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4000",
+                "y": "310.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(1.48692e-05 2.52843e-05) matrix(0.707107 0.707107 -0.707107 0.707107 1303.63 -2810.48)"
+            }
+        },
+        {
+            "name": "用賀",
+            "code": "YOGA",
+            "box": {
+                "x": "4200",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4250",
+                "y": "335.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(0 12.5) matrix(0.707107 0.707107 -0.707107 0.707107 1419.53 -2942.44)"
+            }
+        },
+        {
+            "name": "桜新町",
+            "code": "SAKURASHINMACHI",
+            "box": {
+                "x": "4400",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4450",
+                "y": "310.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-117.266 299.067) matrix(0.707107 0.707107 -0.707107 0.707107 1540.2 -3390.25)"
+            }
+        },
+        {
+            "name": "駒沢大学",
+            "code": "KOMAZAWADAIGAKU",
+            "box": {
+                "x": "4600",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4650",
+                "y": "285.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-113.865 137.824) matrix(0.707107 0.707107 -0.707107 0.707107 1540.2 -3390.25)"
+            }
+        },
+        {
+            "name": "三軒茶屋",
+            "code": "SANGENJAYA",
+            "box": {
+                "x": "4800",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4837.5",
+                "y": "173",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-125.997 84.7905) matrix(0.707107 0.707107 -0.707107 0.707107 1540.2 -3390.25)"
+            }
+        },
+        {
+            "name": "池尻大橋",
+            "code": "IKEJIRIOHASHI",
+            "box": {
+                "x": "5000",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "5075",
+                "y": "298",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-5.54623 -171.536) matrix(0.707107 0.707107 -0.707107 0.707107 1540.2 -3390.25)"
+            }
+        },
+        {
+            "name": "渋谷",
+            "code": "SHIBUYA",
+            "box": {
+                "x": "5200",
+                "y": "400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "5087.5",
+                "y": "48",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(83.8382 71.4022) matrix(0.707107 0.707107 -0.707107 0.707107 1540.2 -3390.25)"
+            }
+        },
+        {
+            "name": "上野毛",
+            "code": "KAMINOGE",
+            "box": {
+                "x": "4000",
+                "y": "600",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4150",
+                "y": "673",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "等々力",
+            "code": "TODOROKI",
+            "box": {
+                "x": "4000",
+                "y": "800",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4150",
+                "y": "873",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "尾山台",
+            "code": "OYAMADAI",
+            "box": {
+                "x": "4000",
+                "y": "1000",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4150",
+                "y": "1073",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "九品仏",
+            "code": "KUHONBUTSU",
+            "box": {
+                "x": "4000",
+                "y": "1200",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4150",
+                "y": "1273",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "自由が丘",
+            "code": "JIYUGAOKA",
+            "box": {
+                "x": "4000",
+                "y": "1400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3700",
+                "y": "1198",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(87.5 202)"
+            }
+        },
+        {
+            "name": "都立大学",
+            "code": "TORITSUDAIGAKU",
+            "box": {
+                "x": "4200",
+                "y": "1400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4250",
+                "y": "1573",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-179.677 306.436) matrix(0.707107 0.707107 -0.707107 0.707107 2511.75 -2873.92)"
+            }
+        },
+        {
+            "name": "学芸大学",
+            "code": "GAKUGEIDAIGAKU",
+            "box": {
+                "x": "4400",
+                "y": "1400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4500",
+                "y": "1610.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-129.937 103.143) matrix(0.707107 0.707107 -0.707107 0.707107 2511.75 -2873.92)"
+            }
+        },
+        {
+            "name": "祐天寺",
+            "code": "YUTENJI",
+            "box": {
+                "x": "4600",
+                "y": "1400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4787.5",
+                "y": "1585.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-150.908 -82.4724) matrix(0.707107 0.707107 -0.707107 0.707107 2511.75 -2873.92)"
+            }
+        },
+        {
+            "name": "中目黒",
+            "code": "NAKAMEGURO",
+            "box": {
+                "x": "4800",
+                "y": "1400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "5037.5",
+                "y": "1660.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-74.6518 -312.282) matrix(0.707107 0.707107 -0.707107 0.707107 2511.75 -2873.92)"
+            }
+        },
+        {
+            "name": "代官山",
+            "code": "DAIKANYAMA",
+            "box": {
+                "x": "5000",
+                "y": "1400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "5050",
+                "y": "1560.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(45.7987 -250.41) matrix(0.707107 0.707107 -0.707107 0.707107 2511.75 -2873.92)"
+            }
+        },
+        {
+            "name": "緑が丘",
+            "code": "MIDORIGAOKA",
+            "box": {
+                "x": "4000",
+                "y": "1600",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4150",
+                "y": "1673",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-25 27)"
+            }
+        },
+        {
+            "name": "田園調布",
+            "code": "DENENCHOFU",
+            "box": {
+                "x": "3600",
+                "y": "1400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3637.5",
+                "y": "1298",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(46.8624 -481.199) matrix(0.707107 0.707107 -0.707107 0.707107 1811.36 -1771.23)"
+            }
+        },
+        {
+            "name": "多摩川",
+            "code": "TAMAGAWA",
+            "box": {
+                "x": "3400",
+                "y": "1400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3437.5",
+                "y": "1360.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(69.978 -346.472) matrix(0.707107 0.707107 -0.707107 0.707107 1811.36 -1771.23)"
+            }
+        },
+        {
+            "name": "新丸子",
+            "code": "SHINMARUKO",
+            "box": {
+                "x": "3200",
+                "y": "1400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3237.5",
+                "y": "1273",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-50.4725 -143.178) matrix(0.707107 0.707107 -0.707107 0.707107 1811.36 -1771.23)"
+            }
+        },
+        {
+            "name": "武蔵小杉",
+            "code": "MUSASHIKOSUGI",
+            "box": {
+                "x": "3000",
+                "y": "1400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3050",
+                "y": "1348",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-102.357 -101.129) matrix(0.707107 0.707107 -0.707107 0.707107 1811.36 -1771.23)"
+            }
+        },
+        {
+            "name": "元住吉",
+            "code": "MOTOSUMIYOSHI",
+            "box": {
+                "x": "2800",
+                "y": "1400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2812.5",
+                "y": "1335.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-105.758 113.148) matrix(0.707107 0.707107 -0.707107 0.707107 1811.36 -1771.23)"
+            }
+        },
+        {
+            "name": "日吉",
+            "code": "HIYOSHI",
+            "box": {
+                "x": "2600",
+                "y": "1400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2637.5",
+                "y": "1323",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-153.353 283.23) matrix(0.707107 0.707107 -0.707107 0.707107 1811.36 -1771.23)"
+            }
+        },
+        {
+            "name": "綱島",
+            "code": "TSUNASHIMA",
+            "box": {
+                "x": "2400",
+                "y": "1600",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2550",
+                "y": "1673",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(0, 0, 0, 0)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "新綱島",
+            "code": "SHINTSUNASHIMA",
+            "box": {
+                "x": "2400",
+                "y": "1400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2450",
+                "y": "1335.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-249.432 369.474) matrix(0.707107 0.707107 -0.707107 0.707107 1811.36 -1771.23)"
+            }
+        },
+        {
+            "name": "新横浜",
+            "code": "SHINYOKOHAMA",
+            "box": {
+                "x": "2200",
+                "y": "1400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2250",
+                "y": "1348",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-1.64571e-06 -3.32049e-06) matrix(0.707107 0.707107 -0.707107 0.707107 1512.19 -1269.17)"
+            }
+        },
+        {
+            "name": "奥沢",
+            "code": "OKUSAWA",
+            "box": {
+                "x": "3800",
+                "y": "1600",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3675",
+                "y": "1673",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(0, 0)"
+            }
+        },
+        {
+            "name": "大岡山",
+            "code": "OOKAYAMA",
+            "box": {
+                "x": "4000",
+                "y": "1800",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3825",
+                "y": "1873",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(0, 0)"
+            }
+        },
+        {
+            "name": "洗足",
+            "code": "SENZOKU",
+            "box": {
+                "x": "4200",
+                "y": "1800",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4262.5",
+                "y": "1960.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-203.491 283.181) matrix(0.707107 0.707107 -0.707107 0.707107 2800.73 -2733.51)"
+            }
+        },
+        {
+            "name": "西小山",
+            "code": "NISHIKOYAMA",
+            "box": {
+                "x": "4400",
+                "y": "1800",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4462.5",
+                "y": "1948",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-153.751 150.599) matrix(0.707107 0.707107 -0.707107 0.707107 2800.73 -2733.51)"
+            }
+        },
+        {
+            "name": "武蔵小山",
+            "code": "MUSASHIKOYAMA",
+            "box": {
+                "x": "4600",
+                "y": "1800",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4625",
+                "y": "2048",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(2.0547 -35.0169) matrix(0.707107 0.707107 -0.707107 0.707107 2800.73 -2733.51)"
+            }
+        },
+        {
+            "name": "不動前",
+            "code": "FUDOMAE",
+            "box": {
+                "x": "4800",
+                "y": "1800",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4937.5",
+                "y": "2023",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(12.5 -6.78386e-06) matrix(0.707107 0.707107 -0.707107 0.707107 2751.64 -2971.82)"
+            }
+        },
+        {
+            "name": "目黒",
+            "code": "MEGURO",
+            "box": {
+                "x": "5000",
+                "y": "1800",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "5037.5",
+                "y": "2110.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(154.567 -370.893) matrix(0.707107 0.707107 -0.707107 0.707107 2800.73 -2733.51)"
+            }
+        },
+        {
+            "name": "北千束",
+            "code": "KITASENZOKU",
+            "box": {
+                "x": "4000",
+                "y": "2000",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4150",
+                "y": "2073",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-25 27)"
+            }
+        },
+        {
+            "name": "旗の台",
+            "code": "HATANODAI",
+            "box": {
+                "x": "4000",
+                "y": "2200",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3650",
+                "y": "2473",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(75 -10.5)"
+            }
+        },
+        {
+            "name": "荏原町",
+            "code": "EBARAMACHI",
+            "box": {
+                "x": "4000",
+                "y": "2400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4150",
+                "y": "2473",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-25 27)"
+            }
+        },
+        {
+            "name": "中延",
+            "code": "NAKANOBU",
+            "box": {
+                "x": "4000",
+                "y": "2600",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4150",
+                "y": "2673",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "戸越公園",
+            "code": "TOGOSHIKOEN",
+            "box": {
+                "x": "4000",
+                "y": "2800",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4150",
+                "y": "2873",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "下神明",
+            "code": "SHIMOSHINMEI",
+            "box": {
+                "x": "4000",
+                "y": "3000",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4150",
+                "y": "3073",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "大井町",
+            "code": "OIMACHI",
+            "box": {
+                "x": "4000",
+                "y": "3200",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4150",
+                "y": "3273",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "荏原中延",
+            "code": "EBARANAKANOBU",
+            "box": {
+                "x": "4200",
+                "y": "2200",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4250",
+                "y": "2373",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-43.2051 52.2987) matrix(0.707107 0.707107 -0.707107 0.707107 2940.97 -2385.47)"
+            }
+        },
+        {
+            "name": "戸越銀座",
+            "code": "TOGOSHIGINZA",
+            "box": {
+                "x": "4400",
+                "y": "2200",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4450",
+                "y": "2373",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-115.567 126.031) matrix(0.707107 0.707107 -0.707107 0.707107 3071.91 -2600.62)"
+            }
+        },
+        {
+            "name": "大崎広小路",
+            "code": "OSAKIHIROKOJI",
+            "box": {
+                "x": "4600",
+                "y": "2200",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4650",
+                "y": "2373",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-56.9882 -15.3908) matrix(0.707107 0.707107 -0.707107 0.707107 3071.91 -2600.62)"
+            }
+        },
+        {
+            "name": "五反田",
+            "code": "GOTANDA",
+            "box": {
+                "x": "4800",
+                "y": "2200",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "4637.5",
+                "y": "2473",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(222.561 -77.2627) matrix(0.707107 0.707107 -0.707107 0.707107 3071.91 -2600.62)"
+            }
+        },
+        {
+            "name": "大倉山",
+            "code": "OKURAYAMA",
+            "box": {
+                "x": "2200",
+                "y": "1800",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2350",
+                "y": "1873",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(0, 0, 0, 0)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "菊名",
+            "code": "KIKUNA",
+            "box": {
+                "x": "2000",
+                "y": "2000",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2150",
+                "y": "2073",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(0, 0, 0, 0)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "妙蓮寺",
+            "code": "MYORENJI",
+            "box": {
+                "x": "1800",
+                "y": "2200",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "1950",
+                "y": "2273",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(0, 0, 0, 0)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "白楽",
+            "code": "HAKURAKU",
+            "box": {
+                "x": "1600",
+                "y": "2400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "1750",
+                "y": "2473",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(0, 0, 0, 0)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "東白楽",
+            "code": "HIGASHIHAKURAKU",
+            "box": {
+                "x": "1400",
+                "y": "2600",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "1550",
+                "y": "2673",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(0, 0, 0, 0)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "反町",
+            "code": "TANMACHI",
+            "box": {
+                "x": "1200",
+                "y": "2800",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "1350",
+                "y": "2873",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(0, 0, 0, 0)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "横浜",
+            "code": "YOKOHAMA",
+            "box": {
+                "x": "1000",
+                "y": "3000",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "1150",
+                "y": "3073",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(0, 0, 0, 0)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "新高島",
+            "code": "SHINTAKASHIMA",
+            "box": {
+                "x": "1000",
+                "y": "3200",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "1150",
+                "y": "3273",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(0, 0, 0, 0)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "みなとみらい",
+            "code": "MINATOMIRAI",
+            "box": {
+                "x": "1000",
+                "y": "3400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "1150",
+                "y": "3473",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(0, 0, 0, 0)",
+                "transform": "translate(-25 2)"
+            }
+        },
+        {
+            "name": "馬車道",
+            "code": "BASHAMICHI",
+            "box": {
+                "x": "800",
+                "y": "3400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "737.5",
+                "y": "3160.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(34.3986 -57.5759) matrix(0.707107 0.707107 -0.707107 0.707107 2428.92 576.274)"
+            }
+        },
+        {
+            "name": "日本大通り",
+            "code": "NIHONODORI",
+            "box": {
+                "x": "600",
+                "y": "3400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "437.5",
+                "y": "3310.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(77.5967 -26.5099) matrix(0.707107 0.707107 -0.707107 0.707107 2428.92 576.274)"
+            }
+        },
+        {
+            "name": "元町・中華街",
+            "code": "MOTOMACHICHUKAGAI",
+            "box": {
+                "x": "400",
+                "y": "3400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "150",
+                "y": "3223",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-18.482 201.155) matrix(0.707107 0.707107 -0.707107 0.707107 2428.92 576.274)"
+            }
+        },
+        {
+            "name": "沼部",
+            "code": "NUMABE",
+            "box": {
+                "x": "3200",
+                "y": "1600",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3050",
+                "y": "1673",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(25 2)"
+            }
+        },
+        {
+            "name": "鵜の木",
+            "code": "UNOKI",
+            "box": {
+                "x": "3000",
+                "y": "1800",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2800",
+                "y": "1873",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(25 2)"
+            }
+        },
+        {
+            "name": "下丸子",
+            "code": "SHIMOMARUKO",
+            "box": {
+                "x": "2800",
+                "y": "2000",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2600",
+                "y": "2073",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(25 2)"
+            }
+        },
+        {
+            "name": "武蔵新田",
+            "code": "MUSASHINITTA",
+            "box": {
+                "x": "2600",
+                "y": "2200",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2350",
+                "y": "2273",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(12.5 0) matrix(1 0 0 1 12.5 2)"
+            }
+        },
+        {
+            "name": "矢口渡",
+            "code": "YAGUCHINOWATASHI",
+            "box": {
+                "x": "2400",
+                "y": "2400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2200",
+                "y": "2473",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(25 2)"
+            }
+        },
+        {
+            "name": "蒲田",
+            "code": "KAMATA",
+            "box": {
+                "x": "2200",
+                "y": "2600",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2050",
+                "y": "2673",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(25 2)"
+            }
+        },
+        {
+            "name": "長原",
+            "code": "NAGAHARA",
+            "box": {
+                "x": "3800",
+                "y": "2200",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3800",
+                "y": "2148",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(59.0736 -207.788) matrix(0.707107 0.707107 -0.707107 0.707107 2547.79 -1885.58)"
+            }
+        },
+        {
+            "name": "洗足池",
+            "code": "SENZOKUIKE",
+            "box": {
+                "x": "3600",
+                "y": "2200",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3602.130381935045",
+                "y": "2148",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-26.0115 -105.373) matrix(0.707107 0.707107 -0.707107 0.707107 2547.79 -1885.58)"
+            }
+        },
+        {
+            "name": "石川台",
+            "code": "ISHIKAWADAI",
+            "box": {
+                "x": "3400",
+                "y": "2200",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3400",
+                "y": "2148",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-83.0837 37.5543) matrix(0.707107 0.707107 -0.707107 0.707107 2547.79 -1885.58)"
+            }
+        },
+        {
+            "name": "雪が谷大塚",
+            "code": "YUKIGAYAOTSUKA",
+            "box": {
+                "x": "3200",
+                "y": "2200",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3200",
+                "y": "2148",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-216.662 103.976) matrix(0.707107 0.707107 -0.707107 0.707107 2547.79 -1885.58)"
+            }
+        },
+        {
+            "name": "御嶽山",
+            "code": "ONTAKESAN",
+            "box": {
+                "x": "3000",
+                "y": "2200",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2825",
+                "y": "2273",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": null
+            }
+        },
+        {
+            "name": "久が原",
+            "code": "KUGAHARA",
+            "box": {
+                "x": "3000",
+                "y": "2400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "3125",
+                "y": "2473",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": null
+            }
+        },
+        {
+            "name": "千鳥町",
+            "code": "CHIDORICHO",
+            "box": {
+                "x": "2800",
+                "y": "2400",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2625",
+                "y": "2473",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": null
+            }
+        },
+        {
+            "name": "池上",
+            "code": "IKEGAMI",
+            "box": {
+                "x": "2800",
+                "y": "2600",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2925",
+                "y": "2673",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": null
+            }
+        },
+        {
+            "name": "蓮沼",
+            "code": "HASUNUMA",
+            "box": {
+                "x": "2600",
+                "y": "2600",
+                "width": "100",
+                "height": "100"
+            },
+            "text": {
+                "x": "2650",
+                "y": "2785.5",
+                "fontSize": "50px",
+                "fontWeight": "normal",
+                "fill": "rgba(0, 0, 0, 1)",
+                "stroke": "rgba(255, 255, 255, 1)",
+                "transform": "translate(-28.8202 4.3394) matrix(0.707107 0.707107 -0.707107 0.707107 2749.63 -1097.82)"
+            }
+        }
+    ]
+}

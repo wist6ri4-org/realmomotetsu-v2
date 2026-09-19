@@ -1,10 +1,20 @@
 import { AccessLog, ErrorLog, LogContext } from "./types";
 
 export class LogService {
+    /**
+     * リクエストIDを生成する
+     * @returns {string} - 生成されたリクエストID
+     */
     private static generateRequestId(): string {
         return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     }
 
+    /**
+     * リクエストからログコンテキストを生成する
+     * すべてのログで共通して使用される
+     * @param req - リクエストオブジェクト
+     * @return {LogContext} - 生成されたログコンテキスト
+     */
     static createLogContext(req: Request): LogContext {
         return {
             method: req.method,
@@ -15,6 +25,12 @@ export class LogService {
         };
     }
 
+    /**
+     * アクセスログを記録する
+     * @param context - ログコンテキスト
+     * @param statusCode - レスポンスステータスコード
+     * @param responseTime - レスポンス時間（ミリ秒）
+     */
     static logAccess(context: LogContext, statusCode: number, responseTime: number): void {
         const accessLog: AccessLog = {
             ...context,
@@ -22,8 +38,9 @@ export class LogService {
             responseTime,
         };
 
+        const now = new Date().toISOString();
         console.log(
-            `[ACCESS] ${accessLog.requestId} ${accessLog.method} ${accessLog.url} - ${statusCode} (${responseTime}ms)`
+            `[ACCESS] ${now} ${accessLog.requestId} ${accessLog.method} ${accessLog.url} - ${statusCode} (${responseTime}ms)`
         );
 
         // 本番環境では外部ログサービスに送信
@@ -32,6 +49,11 @@ export class LogService {
         }
     }
 
+    /**
+     * エラーログを記録する
+     * @param context - ログコンテキスト
+     * @param error - エラーオブジェクト
+     */
     static logError(context: LogContext, error: Error | unknown): void {
         const errorLog: ErrorLog = {
             ...context,
@@ -39,7 +61,8 @@ export class LogService {
             stackTrace: error instanceof Error ? error.stack : undefined,
         };
 
-        console.error(`[ERROR] ${errorLog.requestId} ${errorLog.method} ${errorLog.url}:`, {
+        const now = new Date().toISOString();
+        console.error(`[ERROR] ${now} ${errorLog.requestId} ${errorLog.method} ${errorLog.url}:`, {
             error: error instanceof Error ? error.message : String(error),
             stack: errorLog.stackTrace,
         });
@@ -50,19 +73,27 @@ export class LogService {
         }
     }
 
+    /**
+     * 情報ログを記録する
+     * @param context - ログコンテキスト
+     * @param message - ログメッセージ
+     * @param data - 追加データ（オプション）
+     */
     static logInfo(context: LogContext, message: string, data?: unknown): void {
-        console.log(
-            `[INFO] ${context.requestId} ${context.method} ${context.url}: ${message}`,
-            data
-        );
+        const now = new Date().toISOString();
+        console.log(`[INFO] ${now} ${context.requestId} ${context.method} ${context.url}: ${message}`, data);
     }
 
+    /**
+     * デバッグログを記録する
+     * @param context - ログコンテキスト
+     * @param message - ログメッセージ
+     * @param data - 追加データ（オプション）
+     */
     static logDebug(context: LogContext, message: string, data?: unknown): void {
+        const now = new Date().toISOString();
         if (process.env.NODE_ENV === "development") {
-            console.debug(
-                `[DEBUG] ${context.requestId} ${context.method} ${context.url}: ${message}`,
-                data
-            );
+            console.debug(`[DEBUG] ${now} ${context.requestId} ${context.method} ${context.url}: ${message}`, data);
         }
     }
 }

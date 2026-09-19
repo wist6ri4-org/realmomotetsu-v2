@@ -1,0 +1,2 @@
+event_code,event_name,event_type_code,visibility_level,operation_level,discord_webhook_url,isNotificationEnabled,start_date,created_at,updated_at
+DUMMY_20250725,ダミーイベント20250725,DUMMY,admin,admin,https://discord.com/api/webhooks/1399778937579769856/RGfpm4VZ9GUqPh0c7dZRJ_8giWctEHt3EdGXoP4NcLUFqOJCKzJnwLfrm4u3uxuFpsLt,TRUE,2025-07-25 00:00:00.000,2025-07-25 00:00:00.000,2025-07-25 00:00:00.000
