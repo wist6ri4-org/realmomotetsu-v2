@@ -16,6 +16,7 @@ npm run lint           # ESLint の実行（next lint）
 npm run format:fix    # Prettier + Prisma フォーマット
 npm run seed           # dotenv -e .env.local -- node prisma/seed.mjs（既存データを削除するので注意）
 npm run check:rls      # dotenv -e .env.local -- node scripts/check-rls.mjs（RLS設定の検証）
+npm run apply:manual-sql  # dotenv -e .env.local -- node scripts/apply-manual-sql.mjs（Storage/Realtimeポリシーの一括適用）
 ```
 
 テストは Jest を使用しているが `npm test` スクリプトは無いため、npx で直接実行する。
@@ -89,7 +90,7 @@ API 側の `ApiError` とは別物として、フロントエンドでは `Appli
 Prisma は `postgres` ロール（テーブル所有者かつ BYPASSRLS）で接続しているため、`public` スキーマに RLS を張ってもアプリのクエリには一切効かない。したがって RLS の役割は「PostgREST / GraphQL（ブラウザに露出している `NEXT_PUBLIC_SUPABASE_PUBLISHED_KEY` で誰でも叩ける経路）を閉じること」に限定している。認可の実体は上記の「認証・認可」節（アプリ層）にある。
 
 - `public` スキーマ: 全テーブルで RLS を有効化し、ポリシーを一切作らない deny-all（`prisma/migrations/20260916221221_tsk_67_rls_lockdown/migration.sql`）。あわせて `anon`/`authenticated` からテーブル・シーケンス・関数の権限を `REVOKE`（`ALTER DEFAULT PRIVILEGES` で新規テーブルにも自動適用されないようにしている）。`current_app_user_id()` / `is_master_admin()` / `is_event_attendee(eventCode)` / `is_event_admin(eventCode)` の認可ヘルパー関数（`SECURITY DEFINER`）もここで作成し、Realtime のポリシーから利用する。
-- `storage.objects`（Storage）・`realtime.messages`（Realtime）は所有者が `supabase_storage_admin`/`supabase_realtime_admin` で Prisma migration には含められないため、`supabase/sql/create_storage_policies.sql` / `supabase/sql/create_realtime_policies.sql` を Supabase ダッシュボードの SQL Editor で手動実行する。Storage はユーザーが自分の `user-icons/{uuid}.*` のみ書き込み可能、Realtime は `event-{eventCode}` の private channel をそのイベントの参加者のみ購読可能にしている（サーバー側の送信は `SUPABASE_SECRET_KEY` を使う `src/lib/realtimeNotifier.ts` が RLS を迂回する）。
+- `storage.objects`（Storage）・`realtime.messages`（Realtime）は所有者が `supabase_storage_admin`/`supabase_realtime_admin` で Prisma migration には含められないため、`supabase/sql/create_storage_policies.sql` / `supabase/sql/create_realtime_policies.sql` を別途適用する。`npm run apply:manual-sql`（`scripts/apply-manual-sql.mjs`）で一括適用できる（`DIRECT_URL` 経由で `CREATE POLICY`/`DROP POLICY` のみ実行し、所有者限定の `ALTER TABLE ... ENABLE ROW LEVEL SECURITY` は `must be owner of table ...` を想定内として無視する。再実行しても安全）。Supabase ダッシュボードの SQL Editor に直接貼り付けて実行することもできる。Storage はユーザーが自分の `user-icons/{uuid}.*` のみ書き込み可能、Realtime は `event-{eventCode}` の private channel をそのイベントの参加者のみ購読可能にしている（サーバー側の送信は `SUPABASE_SECRET_KEY` を使う `src/lib/realtimeNotifier.ts` が RLS を迂回する）。
 - `npm run check:rls`（`scripts/check-rls.mjs`）で RLS 無効テーブル・`anon`/`authenticated` への残存権限・`security_invoker` の無いビュー・`FORCE ROW LEVEL SECURITY` の誤設定・認可ヘルパー関数の有無を検査できる。Supabase では `postgres` ロールでイベントトリガーを作れず新規テーブルの RLS 有効化を DB 側で強制できないため、新しい `public` テーブルを追加したら実行すること。
 
 ### イベント画面のバージョン管理（`src/app/events/`）

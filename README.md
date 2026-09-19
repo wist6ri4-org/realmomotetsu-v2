@@ -345,7 +345,25 @@ npx tsx tools/openapi-generator/generate.ts
    npx dotenv -e .env.local -- npx prisma migrate dev --name init
    ```
 
-   これにより、データベースが初期化され、必要なテーブルが作成される。
+   これにより、データベースが初期化され、必要なテーブルが作成される。`public` スキーマ全テーブルの
+   RLS 有効化（deny-all）もこのマイグレーションに含まれている（詳細は
+   [CLAUDE.md](CLAUDE.md) の「DB セキュリティ（RLS）」節を参照）。
+
+   ### Storage / Realtime のポリシー適用
+
+   `storage.objects`（Storage）・`realtime.messages`（Realtime）は Supabase の管理スキーマで
+   所有者が異なるため、上記の Prisma マイグレーションには含まれていない。以下のコマンドで
+   `supabase/sql/create_storage_policies.sql` と `supabase/sql/create_realtime_policies.sql`
+   の内容を一括適用する。
+
+   ```bash
+   npm run apply:manual-sql
+   ```
+
+   何度実行しても安全（`DROP POLICY IF EXISTS` → `CREATE POLICY` の順で書かれている）。
+   途中で `must be owner of table objects` という表示が出るが、これは想定内のもの
+   （既に RLS が有効な行に対して所有者限定の `ALTER TABLE` を試みて弾かれているだけ）なので無視してよい。
+   本番環境に対して実行する場合は `npx dotenv -e .env.production -- node scripts/apply-manual-sql.mjs` を使う。
 
 4. **シードスクリプトの実行**: 初期データを挿入するためにシードスクリプトを実行。
 
@@ -377,6 +395,8 @@ npx tsx tools/openapi-generator/generate.ts
 | `npm run lint`          | ESLint の実行（`next lint`）                                         |
 | `npm run format:fix`    | Prettier + Prisma フォーマットの実行                                 |
 | `npm run seed`          | シードスクリプトの実行（.env.local を使用）                          |
+| `npm run check:rls`     | RLS 設定の検証（.env.local を使用。詳細は [CLAUDE.md](CLAUDE.md)）   |
+| `npm run apply:manual-sql` | Storage / Realtime のポリシーを一括適用（.env.local を使用）      |
 | `npm test`              | Jest によるユニットテストの実行                                      |
 | `npm run test:watch`    | ユニットテストのウォッチ実行                                         |
 | `npm run test:coverage` | カバレッジ付きでユニットテストを実行（`coverage/` に出力）           |
@@ -487,6 +507,10 @@ npx supabase status
 2. プロジェクトの設定から API キーを取得する。
 3. `.env.production` に接続情報を設定する。`SUPABASE_SECRET_KEY` も忘れずに設定し、
    Vercel の環境変数（本番/プレビュー）にも同じ値を登録する。
+4. `npx dotenv -e .env.production -- node scripts/apply-manual-sql.mjs` を実行し、
+   Storage / Realtime のポリシーを適用する（Prisma migration には含まれないため、
+   本番プロジェクトごとに一度実行する必要がある。develop/release/\* のプレビュー環境と
+   本番が同じ Supabase プロジェクトを参照している場合は1回で両方に反映される）。
 
 ## デプロイ
 
