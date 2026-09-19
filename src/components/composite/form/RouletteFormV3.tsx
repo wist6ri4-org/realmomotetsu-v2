@@ -118,7 +118,9 @@ const RouletteFormV3: React.FC<RouletteFormV3Props> = ({
         console.log("選択されたルーレットモード:", newValue);
 
         setTargetStations(filterTargetStations(stations, newValue));
-        setClosestStation(findClosestStation(stations, newValue, latitude, longitude));
+        const newClosestStation = findClosestStation(stations, newValue, latitude, longitude);
+        setClosestStation(newClosestStation);
+        startStationCodeInput.setValue(newClosestStation?.stationCode || "");
         handleStop();
     };
 
@@ -241,21 +243,21 @@ export default RouletteFormV3;
  * @param {string} rouletteMode - ルーレットのモード
  * @return {Stations[]} - ミッション駅のみの配列
  */
-function filterTargetStations(stations: Stations[], rouletteMode: string): Stations[] {
+function filterTargetStations(stations: Stations[], rouletteMode: ("weighted" | "random")): Stations[] {
     return rouletteMode === "weighted" ? stations.filter((station) => station.stationType === StationType.mission) : stations;
 }
 
 /**
  * 指定された駅の中から最も近い駅を見つける関数
  * @param {Stations[]} stations - 駅の配列
- * @param {string} rouletteMode - ルーレットのモード
+ * @param {("weighted" | "random")} rouletteMode - ルーレットのモード
  * @param {number} latitude - 現在の緯度
  * @param {number} longitude - 現在の経度
  * @return {ClosestStation} - 最も近い駅
  */
 function findClosestStation(
     stations: Stations[],
-    rouletteMode: string,
+    rouletteMode: ("weighted" | "random"),
     latitude: number,
     longitude: number
 ): ClosestStation {

@@ -3,7 +3,7 @@
 import apiFetch from "@/lib/apiClient";
 import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
-import { GoalStations, LatestTransitStations, StationType } from "@/generated/prisma";
+import { GoalStations, LatestTransitStations } from "@/generated/prisma";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
 import { ArrowDropDown, Casino, Help } from "@mui/icons-material";
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, CircularProgress, Typography } from "@mui/material";
