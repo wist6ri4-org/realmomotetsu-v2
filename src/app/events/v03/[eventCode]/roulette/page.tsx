@@ -3,8 +3,7 @@
 import apiFetch from "@/lib/apiClient";
 import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
-import { GoalStations, LatestTransitStations, StationType } from "@/generated/prisma";
-import { ClosestStation } from "@/types/ClosestStation";
+import { GoalStations, LatestTransitStations } from "@/generated/prisma";
 import { CurrentLocationUtils } from "@/utils/currentLocationUtils";
 import { ArrowDropDown, Casino, Help } from "@mui/icons-material";
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, CircularProgress, Typography } from "@mui/material";
@@ -12,7 +11,6 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useEventContext } from "../../../EventContext";
 import { InitRouletteResponse } from "@/features/init-roulette/types";
-import LocationUtils from "@/utils/locationUtils";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
 import RouletteFormV3 from "@/components/composite/form/RouletteFormV3";
@@ -27,7 +25,8 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
 
     const [latestTransitStations, setLatestTransitStations] = useState<LatestTransitStations[]>([]);
     const [goalStations, setGoalStations] = useState<GoalStations[]>([]);
-    const [closestStations, setClosestStations] = useState<ClosestStation[]>([]);
+    const [latitude, setLatitude] = useState<number>(0);
+    const [longitude, setLongitude] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +35,6 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
      * @return {Promise<void>} データ取得のPromise
      */
     const fetchData = async (): Promise<void> => {
-        let closestStations: ClosestStation[] = [{ stationCode: stations[0].stationCode || "", distance: 0 }];
         try {
             setIsLoading(true);
             setError(null);
@@ -46,9 +44,8 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
 
             try {
                 const { latitude, longitude } = await CurrentLocationUtils.getCurrentLocation();
-                if (latitude && longitude) {
-                    closestStations = LocationUtils.calculate(stations, latitude, longitude);
-                }
+                setLatitude(latitude);
+                setLongitude(longitude);
             } catch (locationError) {
                 console.warn("Could not get current location:", locationError);
             }
@@ -64,13 +61,11 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
 
             setLatestTransitStations(latestTransitStations as LatestTransitStations[]);
             setGoalStations(goalStations as GoalStations[]);
-            setClosestStations(closestStations as ClosestStation[]);
         } catch (error) {
             const appError = ApplicationErrorFactory.normalize(error);
             ApplicationErrorHandler.logError(appError);
 
             setError(appError.message);
-            setClosestStations([]);
         } finally {
             setIsLoading(false);
         }
@@ -132,11 +127,12 @@ const RoulettePage: React.FC = (): React.JSX.Element => {
                     <>
                         <Box sx={{ marginX: 2 }}>
                             <RouletteFormV3
-                                stations={stations.filter((station) => station.stationType === StationType.mission)}
+                                stations={stations}
                                 nearbyStations={nearbyStations}
                                 latestTransitStations={latestTransitStations}
                                 goalStations={goalStations}
-                                closestStations={closestStations}
+                                latitude={latitude}
+                                longitude={longitude}
                             />
                         </Box>
                     </>
