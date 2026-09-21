@@ -195,13 +195,14 @@
 
 イベントごとの目的駅を管理する。
 
-| カラム名       | 型               | デフォルト    | NOT NULL | UNIQUE | FK                    | 説明     |
-| -------------- | ---------------- | ------------- | :------: | :----: | --------------------- | -------- |
-| `id`           | `integer`        | autoincrement |    ✓     |   —    | —                     | PK       |
-| `event_code`   | `text`           | —             |    ✓     |   —    | events.event_code     |          |
-| `station_code` | `text`           | —             |    ✓     |   —    | stations.station_code |          |
-| `created_at`   | `timestamptz(3)` | now()         |    ✓     |   —    | —                     | 作成日時 |
-| `updated_at`   | `timestamptz(3)` | now()         |    ✓     |   —    | —                     | 更新日時 |
+| カラム名            | 型               | デフォルト     | NOT NULL  | UNIQUE | FK                    | 説明           |
+| ------------------ | ---------------- | ------------- | :-------: | :----: | --------------------- | -------------- |
+| `id`               | `integer`        | autoincrement |    ✓     |   —    | —                     | PK             |
+| `event_code`       | `text`           | —             |    ✓     |   —    | events.event_code     |                |
+| `station_code`     | `text`           | —             |    ✓     |   —    | stations.station_code |                |
+| `is_start_station` | `boolean`        | —             |    —      |   —    | —                     | スタート駅フラグ |
+| `created_at`       | `timestamptz(3)` | now()         |    ✓     |   —    | —                     | 作成日時        |
+| `updated_at`       | `timestamptz(3)` | now()         |    ✓     |   —    | —                     | 更新日時        |
 
 ---
 

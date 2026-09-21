@@ -20,6 +20,7 @@ export class GoalStationsRepository extends BaseRepository {
             return await this.prisma.goalStations.findFirst({
                 where: {
                     eventCode: eventCode,
+                    isStartStation: { not: true }, // スタート駅を除く
                 },
                 include: {
                     station: true, // Stations情報も含める
@@ -67,6 +68,7 @@ export class GoalStationsRepository extends BaseRepository {
             return await this.prisma.goalStations.findMany({
                 where: {
                     eventCode: eventCode,
+                    isStartStation: { not: true }, // スタート駅を除く
                 },
                 include: {
                     station: true,
@@ -86,13 +88,27 @@ export class GoalStationsRepository extends BaseRepository {
      * @param stationCode - 駅コード
      * @returns {Promise<GoalStations>} 作成された目的駅
      */
-    async create(goalStationData: {
-        eventCode: string;
-        stationCode: string;
-    }): Promise<GoalStations> {
+    async create(goalStationData: { eventCode: string; stationCode: string }): Promise<GoalStations> {
         try {
             return await this.prisma.goalStations.create({
                 data: goalStationData,
+            });
+        } catch (error) {
+            this.handleDatabaseError(error, "create");
+        }
+    }
+
+    /**
+     * 新しい目的駅を追加（V3）
+     * @description 目的駅を追加する際に、スタート駅ではないことを明示的に設定する
+     * @param eventCode - イベントコード
+     * @param stationCode - 駅コード
+     * @returns {Promise<GoalStations>} 作成された目的駅
+     */
+    async createV3(goalStationData: { eventCode: string; stationCode: string }): Promise<GoalStations> {
+        try {
+            return await this.prisma.goalStations.create({
+                data: { ...goalStationData, isStartStation: false },
             });
         } catch (error) {
             this.handleDatabaseError(error, "create");
