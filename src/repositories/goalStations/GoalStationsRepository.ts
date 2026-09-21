@@ -20,7 +20,7 @@ export class GoalStationsRepository extends BaseRepository {
             return await this.prisma.goalStations.findFirst({
                 where: {
                     eventCode: eventCode,
-                    isStartStation: { not: true }, // スタート駅を除く
+                    OR: [{ isStartStation: false }, { isStartStation: null }], // スタート駅ではない、または未設定の目的駅を対象とする
                 },
                 include: {
                     station: true, // Stations情報も含める
@@ -30,7 +30,7 @@ export class GoalStationsRepository extends BaseRepository {
                 },
             });
         } catch (error) {
-            this.handleDatabaseError(error, "findNextGoalStation");
+            this.handleDatabaseError(error, "findLatestGoalStation");
         }
     }
 
@@ -68,7 +68,7 @@ export class GoalStationsRepository extends BaseRepository {
             return await this.prisma.goalStations.findMany({
                 where: {
                     eventCode: eventCode,
-                    isStartStation: { not: true }, // スタート駅を除く
+                    OR: [{ isStartStation: false }, { isStartStation: null }], // スタート駅ではない、または未設定の目的駅を対象とする
                 },
                 include: {
                     station: true,
@@ -111,7 +111,7 @@ export class GoalStationsRepository extends BaseRepository {
                 data: { ...goalStationData, isStartStation: false },
             });
         } catch (error) {
-            this.handleDatabaseError(error, "create");
+            this.handleDatabaseError(error, "createv3");
         }
     }
 
