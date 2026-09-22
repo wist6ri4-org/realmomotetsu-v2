@@ -101,6 +101,21 @@ describe("GoalStationsRepository", () => {
         });
     });
 
+    describe("createV3", () => {
+        it("渡されたデータにisStartStation: falseを付与して目的駅を新規作成する", async () => {
+            const goalStationData = { eventCode: TEST_EVENT_CODE, stationCode: "STATION_A" };
+            const created = buildGoalStation(goalStationData);
+            prisma.goalStations.create.mockResolvedValue(created);
+
+            const result = await repository.createV3(goalStationData);
+
+            expect(prisma.goalStations.create).toHaveBeenCalledWith({
+                data: { ...goalStationData, isStartStation: false },
+            });
+            expect(result).toBe(created);
+        });
+    });
+
     describe("delete", () => {
         it("指定したIDの目的駅を削除する", async () => {
             const deleted = buildGoalStation({ id: 9 });
