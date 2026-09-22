@@ -111,7 +111,7 @@ export class GoalStationsRepository extends BaseRepository {
                 data: { ...goalStationData, isStartStation: false },
             });
         } catch (error) {
-            this.handleDatabaseError(error, "createv3");
+            this.handleDatabaseError(error, "createV3");
         }
     }
 

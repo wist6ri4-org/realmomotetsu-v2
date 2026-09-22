@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, userEvent, within } from "storybook/test";
 import RegisterGoalStationsFormV3 from "./RegisterGoalStationsFormV3";
 import { buildEvent, buildStations } from "@/stories/mocks/fixtures";
-import { goalStationsHandlers } from "@/stories/mocks/handlers";
+import { goalStationsHandlersV3 } from "@/stories/mocks/handlers";
 
 const stations = buildStations(["STATION_A", "STATION_B"]);
 
@@ -17,7 +17,7 @@ const meta = {
     },
     parameters: {
         msw: {
-            handlers: { registerGoalStations: goalStationsHandlers.success({}) },
+            handlers: { registerGoalStations: goalStationsHandlersV3.success({}) },
         },
     },
 } satisfies Meta<typeof RegisterGoalStationsFormV3>;
