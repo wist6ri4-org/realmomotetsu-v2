@@ -9,7 +9,7 @@ import { ArrowDropDown, Assignment, Help } from "@mui/icons-material";
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, CircularProgress, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useEventContext } from "../../../layout";
+import { useEventContext } from "../../../EventContext";
 import { AttendancesWithRelations } from "@/repositories/attendances/AttendancesRepository";
 import LocationUtils from "@/utils/locationUtils";
 import { checkIsOperatingUser } from "@/lib/auth";

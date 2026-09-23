@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
+import { assertEventAccess } from "@/app/api/utils/auth";
 import { Handlers } from "@/app/api/utils/types";
 import { GoalStationsServiceImpl } from "@/features/goal-stations/service";
 import {
@@ -49,6 +50,8 @@ class GoalStationsApiHandler extends BaseApiHandler {
             const queryParams = Object.fromEntries(searchParams.entries());
             const validatedParams = GetGoalStationsRequestSchema.parse(queryParams);
 
+            await assertEventAccess(this.getAuthUser(), validatedParams.eventCode, "view");
+
             this.logDebug("Request parameters", validatedParams);
 
             // サービスからデータを取得
@@ -84,6 +87,8 @@ class GoalStationsApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション
             const validatedBody = PostGoalStationsRequestSchema.parse(body);
+
+            await assertEventAccess(this.getAuthUser(), validatedBody.eventCode, "operate");
 
             this.logDebug("Request body", validatedBody);
 

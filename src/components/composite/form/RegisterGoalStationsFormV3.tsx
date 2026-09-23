@@ -3,11 +3,11 @@
  */
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import AlertDialog from "@/components/base/AlertDialog";
 import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomAutoComplete from "@/components/base/CustomAutoComplete";
 import CustomButton from "@/components/base/CustomButton";
-import CustomSelect from "@/components/base/CustomSelect";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
 import { DialogConstants } from "@/constants/dialogConstants";
@@ -101,7 +101,7 @@ const RegisterGoalStationsFormV3: React.FC<RegisterGoalStationsFormV3Props> = ({
             setIsLoading(true);
 
             // 目的駅の登録
-            const response = await fetch("/api/goal-stations", {
+            const response = await apiFetch("/api/goal-stations-v3", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -113,7 +113,7 @@ const RegisterGoalStationsFormV3: React.FC<RegisterGoalStationsFormV3Props> = ({
             });
 
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
 
             stationCodeInput.reset();

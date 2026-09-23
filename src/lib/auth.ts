@@ -1,10 +1,21 @@
 import { GetUsersByUuidResponse } from "@/features/users/[uuid]/types";
-import { Events, OperationLevel, Role, VisibilityLevel } from "@/generated/prisma";
+import { Role } from "@/generated/prisma";
+import apiFetch from "@/lib/apiClient";
 import supabase from "@/lib/supabase";
-import { AttendancesWithRelations } from "@/repositories/attendances/AttendancesRepository";
-import { UsersWithRelations } from "@/repositories/users/UsersRepository";
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@supabase/supabase-js";
+
+/**
+ * 認可判定の純粋関数は `src/lib/authorization.ts` に移設した。
+ * このファイルはブラウザ用の Supabase クライアントを import しているため、
+ * サーバー側から import できるよう分離している。既存の import を壊さないよう再エクスポートする。
+ */
+export {
+    checkIsAdminUserWithUsers,
+    checkIsOperatingUser,
+    checkIsVisibleUser,
+    checkIsVisibleUserForEvent,
+} from "@/lib/authorization";
 
 /**
  * サインアップ
@@ -115,7 +126,7 @@ export const signOut = async (): Promise<Error | null> => {
  * Server Component用のSupabaseクライアントを作成
  */
 const createServerSupabaseClient = () => {
-    return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+    return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHED_KEY!, {
         auth: {
             flowType: "pkce",
             autoRefreshToken: false,
@@ -233,7 +244,7 @@ export const checkIsAdminUser = async (userId: string, eventCode: string): Promi
     }
 
     try {
-        const response = await fetch(`/api/users/${userId}`);
+        const response = await apiFetch(`/api/users/${userId}`);
         if (!response.ok) {
             console.error("Failed to fetch user profile for admin check");
             return false;
@@ -253,62 +264,3 @@ export const checkIsAdminUser = async (userId: string, eventCode: string): Promi
     }
 };
 
-/**
- * 管理者ユーザーかどうかを確認（UsersWithRelations使用）
- * @param {UsersWithRelations} user - ユーザーオブジェクト
- * @param {string} eventCode - イベントコード
- */
-export const checkIsAdminUserWithUsers = (user: UsersWithRelations, eventCode: string): boolean => {
-    const attendance = user.attendances?.find((att) => att.eventCode === eventCode);
-
-    if (user.masterRole !== Role.admin && attendance?.eventRole !== Role.admin) {
-        return false;
-    }
-
-    return true;
-};
-
-/**
- * 操作権限があるか確認
- * @param {UsersWithRelations} user - ユーザー
- * @param {Events} event - イベント
- * @return {boolean} - 操作権限があればtrue、なければfalse
- */
-export const checkIsOperatingUser = (user: UsersWithRelations, event: Events): boolean => {
-    const attendance = user.attendances?.find((att) => att.eventCode === event.eventCode);
-    if (user.masterRole === Role.admin) {
-        return new Set<OperationLevel>([
-            OperationLevel.admin,
-            OperationLevel.organizer,
-            OperationLevel.participant,
-        ]).has(event.operationLevel);
-    } else if (attendance?.eventRole === Role.admin) {
-        return new Set<OperationLevel>([OperationLevel.organizer, OperationLevel.participant]).has(
-            event.operationLevel
-        );
-    } else {
-        return new Set<OperationLevel>([OperationLevel.participant]).has(event.operationLevel);
-    }
-};
-
-/**
- * 閲覧権限があるか確認
- * @param {UsersWithRelations} user - ユーザー
- * @param {AttendancesWithRelations} attendance - 参加情報（関連するイベント情報を含む）
- * @return {boolean} - 閲覧権限があればtrue、なければfalse
- */
-export const checkIsVisibleUser = (user: UsersWithRelations, attendance: AttendancesWithRelations): boolean => {
-    if (user.masterRole === Role.admin) {
-        return new Set<VisibilityLevel>([
-            VisibilityLevel.admin,
-            VisibilityLevel.organizer,
-            VisibilityLevel.participant,
-        ]).has(attendance.event.visibilityLevel);
-    } else if (attendance.eventRole === Role.admin) {
-        return new Set<VisibilityLevel>([VisibilityLevel.organizer, VisibilityLevel.participant]).has(
-            attendance.event.visibilityLevel
-        );
-    } else {
-        return new Set<VisibilityLevel>([VisibilityLevel.participant]).has(attendance.event.visibilityLevel);
-    }
-};

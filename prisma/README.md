@@ -18,6 +18,8 @@ npm run seed
 npx prisma migrate dev --name init
 # .env.localの環境変数を使用してマイグレーションを実行する場合
 npx dotenv -e .env.local -- npx prisma migrate dev --name init
+# 本番環境へのマイグレーション
+npx dotenv -e .env.production -- prisma migrate deploy
 
 # マイグレーションファイルを作成するだけの場合
 npx prisma migrate dev --create-only

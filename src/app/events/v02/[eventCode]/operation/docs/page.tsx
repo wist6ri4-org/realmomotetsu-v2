@@ -1,6 +1,6 @@
 "use client";
 
-import { useEventContext } from "@/app/events/layout";
+import { useEventContext } from "@/app/events/EventContext";
 import PageTitle from "@/components/base/PageTitle";
 import { Description } from "@mui/icons-material";
 import { Alert, Box, CircularProgress, Link, Paper, Stack, Typography } from "@mui/material";

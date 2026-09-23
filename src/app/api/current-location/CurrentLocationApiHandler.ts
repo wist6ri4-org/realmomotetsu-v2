@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
+import { assertEventAccess } from "@/app/api/utils/auth";
 import { Handlers } from "@/app/api/utils/types";
 import { CurrentLocationServiceImpl } from "@/features/current-location/service";
 import {
@@ -44,6 +45,8 @@ class CurrentLocationApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション
             const validatedBody = PostCurrentLocationRequestSchema.parse(body);
+
+            await assertEventAccess(this.getAuthUser(), validatedBody.eventCode, "operate");
 
             this.logDebug("Request body", validatedBody);
 

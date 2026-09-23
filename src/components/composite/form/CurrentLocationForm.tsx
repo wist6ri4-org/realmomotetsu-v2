@@ -3,6 +3,7 @@
  */
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import AlertDialog from "@/components/base/AlertDialog";
 import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
@@ -95,9 +96,9 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
      */
     const fetchNextGoalStationCode = async (): Promise<string> => {
         try {
-            const response = await fetch(`/api/goal-stations/latest?eventCode=${eventCode}`);
+            const response = await apiFetch(`/api/goal-stations/latest?eventCode=${eventCode}`);
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
             const data: GetLatestGoalStationsResponse = (await response.json()).data;
             const nextGoalStation = data.goalStation;
@@ -139,9 +140,9 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
             // 二重登録チェック
             const params = new URLSearchParams();
             params.append("eventCode", eventCode as string);
-            const responseForCheck = await fetch("/api/transit-stations/latest?" + params.toString());
+            const responseForCheck = await apiFetch("/api/transit-stations/latest?" + params.toString());
             if (!responseForCheck.ok) {
-                throw ApplicationErrorFactory.createFromResponse(responseForCheck);
+                throw ApplicationErrorFactory.createFromErrorBody(responseForCheck.status, await responseForCheck.json());
             }
             const data: GetLatestTransitStationsResponse = (await responseForCheck.json()).data;
             const latestTransitStations: LatestTransitStations[] = data.latestTransitStations || [];
@@ -160,7 +161,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
             }
 
             // 経由駅と移動ポイントの登録
-            const response = await fetch("/api/current-location", {
+            const response = await apiFetch("/api/current-location", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -175,7 +176,7 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
             });
 
             if (!response.ok) {
-                throw ApplicationErrorFactory.createFromResponse(response);
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
             }
 
             // 最新の目的駅の駅コードを取得

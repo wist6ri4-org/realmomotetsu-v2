@@ -1,5 +1,6 @@
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Container, Paper, Typography, Button, Box, Avatar, Alert, CircularProgress } from "@mui/material";
@@ -8,7 +9,7 @@ import { UserUtils } from "@/utils/userUtils";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { useUserIcon } from "@/contexts/UserIconContext";
 import supabase from "@/lib/supabase";
-import { useEventContext } from "@/app/events/layout";
+import { useEventContext } from "@/app/events/EventContext";
 
 /**
  * ユーザーアイコン編集ページコンポーネント
@@ -123,7 +124,7 @@ const UserIconEditPage = (): React.JSX.Element => {
                 }
 
                 // データベースのユーザー情報を更新（アイコンURLを更新）
-                const response = await fetch(`/api/users/${user.uuid}`, {
+                const response = await apiFetch(`/api/users/${user.uuid}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",

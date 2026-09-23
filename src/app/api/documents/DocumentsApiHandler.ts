@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
+import { assertEventAccess } from "@/app/api/utils/auth";
 import { Handlers } from "@/app/api/utils/types";
 import { DocumentsServiceImpl } from "@/features/documents/service";
 import { GetDocumentsRequestSchema, GetDocumentsResponseSchema } from "@/features/documents/validator";
@@ -42,6 +43,8 @@ class DocumentsApiHandler extends BaseApiHandler {
             // Zodでバリデーション（Object.fromEntriesを使用してURLSearchParamsをオブジェクトに変換）
             const queryParams = Object.fromEntries(searchParams.entries());
             const validatedParams = GetDocumentsRequestSchema.parse(queryParams);
+
+            await assertEventAccess(this.getAuthUser(), validatedParams.eventCode, "view");
 
             this.logDebug("Request parameters", validatedParams);
 

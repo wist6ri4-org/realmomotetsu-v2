@@ -3,6 +3,7 @@ import { PointsBulkService } from "./interface";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { Points } from "@/generated/prisma";
 import { ApiError, InternalServerError } from "@/error";
+import { notifyEventDataChanged } from "@/lib/realtimeNotifier";
 
 export const PointsBulkServiceImpl: PointsBulkService = {
     /**
@@ -30,6 +31,8 @@ export const PointsBulkServiceImpl: PointsBulkService = {
                 );
                 return [from, to];
             });
+            await notifyEventDataChanged(req.eventCode);
+
             return { fromPoint: fromPoint as Points, toPoint: toPoint as Points };
         } catch (error) {
             if (error instanceof ApiError) {

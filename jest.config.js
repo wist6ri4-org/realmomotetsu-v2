@@ -18,7 +18,15 @@ const config = {
     moduleNameMapper: {
         "^@/(.*)$": "<rootDir>/src/$1",
     },
-    testPathIgnorePatterns: ["<rootDir>/node_modules/"],
+    setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
+    testPathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/.next/"],
+    collectCoverageFrom: [
+        "src/utils/**/*.ts",
+        "src/features/**/service.ts",
+        "src/repositories/**/*.ts",
+        "src/app/api/**/*ApiHandler.ts",
+        "src/error/**/*.ts",
+    ],
 };
 
 module.exports = config;

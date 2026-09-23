@@ -3,6 +3,7 @@
  */
 "use client";
 
+import apiFetch from "@/lib/apiClient";
 import AlertDialog from "@/components/base/AlertDialog";
 import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
@@ -115,7 +116,7 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
             }
 
             const [responseOfFrom, responseOfTo] = await Promise.all([
-                fetch("/api/points", {
+                apiFetch("/api/points", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -127,7 +128,7 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
                         status: pointStatus,
                     }),
                 }),
-                fetch("/api/points", {
+                apiFetch("/api/points", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -142,11 +143,11 @@ const PointsTransferForm: React.FC<PointsTransferFormProps> = ({
             ]);
 
             if (!responseOfFrom.ok) {
-                throw ApplicationErrorFactory.createFromResponse(responseOfFrom);
+                throw ApplicationErrorFactory.createFromErrorBody(responseOfFrom.status, await responseOfFrom.json());
             }
 
             if (!responseOfTo.ok) {
-                throw ApplicationErrorFactory.createFromResponse(responseOfTo);
+                throw ApplicationErrorFactory.createFromErrorBody(responseOfTo.status, await responseOfTo.json());
             }
 
             fromTeamCodeInput.reset();

@@ -28,6 +28,22 @@ class UsersApiHandler extends BaseApiHandler {
     }
 
     /**
+     * 認証を必須としない。
+     *
+     * このエンドポイントは `signUp()` が Supabase Auth にユーザーを作成した直後に
+     * public.users のレコードを作るために呼ばれる。その時点ではまだセッションが
+     * 確立していないため、認証を要求すると新規登録自体が成立しない。
+     *
+     * その代わり、リクエストで任意のロールを指定できないよう
+     * `PostUsersRequestSchema` から role を除外している。
+     *
+     * @return {boolean} - 常にfalse
+     */
+    protected requireAuth(): boolean {
+        return false;
+    }
+
+    /**
      * POSTリクエストを処理するメソッド
      * @param req - Next.jsのリクエストオブジェクト
      * @return {Promise<NextResponse>} - レスポンスオブジェクト

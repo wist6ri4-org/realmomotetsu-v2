@@ -3,6 +3,7 @@ import { CurrentLocationService } from "./interface";
 import { PostCurrentLocationRequest, PostCurrentLocationResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { ApiError, InternalServerError } from "@/error";
+import { notifyEventDataChanged } from "@/lib/realtimeNotifier";
 
 export const CurrentLocationServiceImpl: CurrentLocationService = {
     /**
@@ -34,6 +35,9 @@ export const CurrentLocationServiceImpl: CurrentLocationService = {
                 transitStation: transitStation,
                 point: point,
             };
+
+            await notifyEventDataChanged(req.eventCode);
+
             return res;
         } catch (error) {
             if (error instanceof ApiError) {

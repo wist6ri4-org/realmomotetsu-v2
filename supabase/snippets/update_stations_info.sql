@@ -60,7 +60,7 @@ UPDATE stations SET (station_type, station_grade) = ('plus', 'b') WHERE station_
 UPDATE stations SET (station_type, station_grade) = ('treasure', 'b') WHERE station_code = 'METRO_V1_KIYOSUMI-SHIRAKAWA';
 UPDATE stations SET (station_type, station_grade) = ('mission', 'a') WHERE station_code = 'METRO_V1_GINZA';
 UPDATE stations SET (station_type, station_grade) = ('minus', 'b') WHERE station_code = 'METRO_V1_GINZA-ITCHOME';
-UPDATE stations SET (station_type, station_grade) = ('minus', 'a') WHERE station_code = 'METRO_V1_KINSHICHO';
+UPDATE stations SET (station_type, station_grade) = ('plus', 'a') WHERE station_code = 'METRO_V1_KINSHICHO';
 UPDATE stations SET (station_type, station_grade) = ('mission', 'a') WHERE station_code = 'METRO_V1_KUDANSHITA';
 UPDATE stations SET (station_type, station_grade) = ('card', 'b') WHERE station_code = 'METRO_V1_KURAMAE';
 UPDATE stations SET (station_type, station_grade) = ('plus', 'b') WHERE station_code = 'METRO_V1_KOJIMACHI';
@@ -75,7 +75,7 @@ UPDATE stations SET (station_type, station_grade) = ('plus', 'b') WHERE station_
 UPDATE stations SET (station_type, station_grade) = ('mission', 'c') WHERE station_code = 'METRO_V1_SAKURADAMON';
 UPDATE stations SET (station_type, station_grade) = ('plus', 'b') WHERE station_code = 'METRO_V1_SHIODOME';
 UPDATE stations SET (station_type, station_grade) = ('plus', 'b') WHERE station_code = 'METRO_V1_SHINOZAKI';
-UPDATE stations SET (station_type, station_grade) = ('plus', 'c') WHERE station_code = 'METRO_V1_SHIBAKOEN';
+UPDATE stations SET (station_type, station_grade) = ('minus', 'c') WHERE station_code = 'METRO_V1_SHIBAKOEN';
 UPDATE stations SET (station_type, station_grade) = ('mission', 'a') WHERE station_code = 'METRO_V1_SHIBUYA';
 UPDATE stations SET (station_type, station_grade) = ('minus', 'b') WHERE station_code = 'METRO_V1_SHIMURA-SAKAUE';
 UPDATE stations SET (station_type, station_grade) = ('minus', 'b') WHERE station_code = 'METRO_V1_SHIMURA-SANCHOME';
@@ -128,7 +128,7 @@ UPDATE stations SET (station_type, station_grade) = ('plus', 'a') WHERE station_
 UPDATE stations SET (station_type, station_grade) = ('plus', 'c') WHERE station_code = 'METRO_V1_TOGOSHI';
 UPDATE stations SET (station_type, station_grade) = ('plus', 'c') WHERE station_code = 'METRO_V1_TOSHIMAEN';
 UPDATE stations SET (station_type, station_grade) = ('mission', 'b') WHERE station_code = 'METRO_V1_TOCHOMAE';
-UPDATE stations SET (station_type, station_grade) = ('minus', 'a') WHERE station_code = 'METRO_V1_TOYOSU';
+UPDATE stations SET (station_type, station_grade) = ('plus', 'a') WHERE station_code = 'METRO_V1_TOYOSU';
 UPDATE stations SET (station_type, station_grade) = ('treasure', 'a') WHERE station_code = 'METRO_V1_TORANOMON';
 UPDATE stations SET (station_type, station_grade) = ('minus', 'b') WHERE station_code = 'METRO_V1_TORANOMON-HILLS';
 UPDATE stations SET (station_type, station_grade) = ('mission', 'c') WHERE station_code = 'METRO_V1_NAKAI';
@@ -140,7 +140,7 @@ UPDATE stations SET (station_type, station_grade) = ('minus', 'c') WHERE station
 UPDATE stations SET (station_type, station_grade) = ('treasure', 'c') WHERE station_code = 'METRO_V1_NAKANOBU';
 UPDATE stations SET (station_type, station_grade) = ('plus', 'c') WHERE station_code = 'METRO_V1_NAKANO-FUJIMICHO';
 UPDATE stations SET (station_type, station_grade) = ('mission', 'a') WHERE station_code = 'METRO_V1_NAKA-MEGURO';
-UPDATE stations SET (station_type, station_grade) = ('plus', 'c') WHERE station_code = 'METRO_V1_NISHI-OJIMA';
+UPDATE stations SET (station_type, station_grade) = ('minus', 'c') WHERE station_code = 'METRO_V1_NISHI-OJIMA';
 UPDATE stations SET (station_type, station_grade) = ('plus', 'b') WHERE station_code = 'METRO_V1_NISHI-KASAI';
 UPDATE stations SET (station_type, station_grade) = ('minus', 'c') WHERE station_code = 'METRO_V1_NISHIGAHARA';
 UPDATE stations SET (station_type, station_grade) = ('minus', 'b') WHERE station_code = 'METRO_V1_NISHI-SHINJUKU';
@@ -171,7 +171,7 @@ UPDATE stations SET (station_type, station_grade) = ('minus', 'b') WHERE station
 UPDATE stations SET (station_type, station_grade) = ('minus', 'b') WHERE station_code = 'METRO_V1_HIGASHI-GINZA';
 UPDATE stations SET (station_type, station_grade) = ('plus', 'b') WHERE station_code = 'METRO_V1_HIGASHI-KOENJI';
 UPDATE stations SET (station_type, station_grade) = ('plus', 'b') WHERE station_code = 'METRO_V1_HIGASHI-SHINJUKU';
-UPDATE stations SET (station_type, station_grade) = ('plus', 'c') WHERE station_code = 'METRO_V1_HIGASHI-NAKANO';
+UPDATE stations SET (station_type, station_grade) = ('minus', 'c') WHERE station_code = 'METRO_V1_HIGASHI-NAKANO';
 UPDATE stations SET (station_type, station_grade) = ('minus', 'b') WHERE station_code = 'METRO_V1_HIGASHI-NIHOMBASHI';
 UPDATE stations SET (station_type, station_grade) = ('mission', 'b') WHERE station_code = 'METRO_V1_HIKARIGAOKA';
 UPDATE stations SET (station_type, station_grade) = ('plus', 'b') WHERE station_code = 'METRO_V1_HIKAWADAI';
@@ -201,7 +201,7 @@ UPDATE stations SET (station_type, station_grade) = ('minus', 'c') WHERE station
 UPDATE stations SET (station_type, station_grade) = ('mission', 'b') WHERE station_code = 'METRO_V1_MOTOYAWATA';
 UPDATE stations SET (station_type, station_grade) = ('mission', 'b') WHERE station_code = 'METRO_V1_MORISHITA';
 UPDATE stations SET (station_type, station_grade) = ('mission', 'a') WHERE station_code = 'METRO_V1_MONZEN-NAKACHO';
-UPDATE stations SET (station_type, station_grade) = ('minus', 'a') WHERE station_code = 'METRO_V1_YURAKUCHO';
+UPDATE stations SET (station_type, station_grade) = ('plus', 'a') WHERE station_code = 'METRO_V1_YURAKUCHO';
 UPDATE stations SET (station_type, station_grade) = ('plus', 'b') WHERE station_code = 'METRO_V1_YUSHIMA';
 UPDATE stations SET (station_type, station_grade) = ('minus', 'a') WHERE station_code = 'METRO_V1_YOTSUYA';
 UPDATE stations SET (station_type, station_grade) = ('mission', 'b') WHERE station_code = 'METRO_V1_YOTSUYA-SANCHOME';

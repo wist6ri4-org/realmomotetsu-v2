@@ -1,16 +1,14 @@
-import { Role, Users } from "@/generated/prisma";
+import { Users } from "@/generated/prisma";
 /**
  * ユーザーの登録リクエスト
  * @property { string } uuid - ユーザーのUUID
  * @property { string } email - ユーザーのメールアドレス
  * @property { string } [nickname] - ユーザーのニックネーム（オプション）
- * @property { Role } [role] - ユーザーの役割（オプション）
  */
 export type PostUsersRequest = {
     uuid: string;
     email: string;
     nickname?: string;
-    role?: Role;
 };
 
 /**

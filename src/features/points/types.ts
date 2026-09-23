@@ -41,9 +41,11 @@ export type PostPointsResponse = {
 
 /**
  * ポイントの更新リクエスト
+ * @property { string } eventCode - イベントコード
  * @property { string } teamCode - チームコード
  */
 export type PutPointsRequest = {
+    eventCode: string;
     teamCode: string;
 };
 

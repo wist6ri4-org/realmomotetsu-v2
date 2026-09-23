@@ -7,7 +7,7 @@ import CustomSelect from "@/components/base/CustomSelect";
 import { GoalStations, LatestTransitStations, Stations } from "@/generated/prisma";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box } from "@mui/material";
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 import { RouletteUtils } from "@/utils/rouletteUtils";
 import CustomButton from "@/components/base/CustomButton";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
@@ -54,7 +54,7 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
 }: RouletteFormProps): React.JSX.Element => {
     const startStationCodeInput = useSelectInput(closestStations?.[0]?.stationCode || "");
     const [rouletteMode, setRouletteMode] = useState<"weighted" | "random">("weighted");
-    const [spinInterval, setSpinInterval] = useState<NodeJS.Timeout | null>(null);
+    const spinIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const [isRolling, setIsRolling] = useState<boolean>(false);
 
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
@@ -109,6 +109,35 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
         const newValue = event.target.value as "weighted" | "random";
         setRouletteMode(newValue);
         console.log("選択されたルーレットモード:", newValue);
+
+        handleStop();
+    };
+
+    /**
+     * ルーレットの開始ボタンが押されたときのハンドラー
+     */
+    const handleStart = () => {
+        if (startStationCodeInput.value === "") {
+            showAlertDialog({
+                message: "今いる駅を選択してください。",
+            });
+            return;
+        }
+        setIsRolling(true);
+        console.log(
+            "Starting roulette with mode:",
+            rouletteMode,
+            "and start station:",
+            startStationCodeInput.value
+        );
+    }
+
+    /**
+     * ルーレットの停止ボタンが押されたときのハンドラー
+     */
+    const handleStop = () => {
+        setIsRolling(false);
+        console.log("Stopping roulette（v3）, displaying next station:", displayedStation);
     };
 
     /**
@@ -116,33 +145,22 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
      */
     useEffect(() => {
         if (!isRolling) {
-            if (spinInterval) {
-                clearInterval(spinInterval);
-                console.log("Stopping roulette, displaying next station:", displayedStation);
+            if (spinIntervalRef.current) {
+                clearInterval(spinIntervalRef.current);
             }
+            return;
         } else {
-            if (startStationCodeInput.value === "") {
-                setIsRolling(false);
-                showAlertDialog({
-                    message: "今いる駅を選択してください。",
-                });
-                return;
-            }
-            console.log(
-                "Starting roulette with mode:",
-                rouletteMode,
-                "and start station:",
-                startStationCodeInput.value
-            );
-            if (spinInterval) {
-                clearInterval(spinInterval);
-            }
-            const interval = setInterval(() => {
+            spinIntervalRef.current = setInterval(() => {
                 dispatch({ type: rouletteMode });
             }, 100);
-            setSpinInterval(interval);
+
+            return () => {
+                if (spinIntervalRef.current) {
+                    clearInterval(spinIntervalRef.current);
+                }
+            }
         }
-    }, [isRolling]);
+    }, [isRolling, rouletteMode]);
 
     return (
         <>
@@ -174,7 +192,7 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
                             variant="contained"
                             color="success"
                             onClick={() => {
-                                setIsRolling(true);
+                                handleStart();
                             }}
                             fullWidth
                         >
@@ -185,7 +203,7 @@ const RouletteForm: React.FC<RouletteFormProps> = ({
                             variant="contained"
                             color="error"
                             onClick={() => {
-                                setIsRolling(false);
+                                handleStop();
                             }}
                             fullWidth
                         >

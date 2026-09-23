@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BaseApiHandler } from "@/app/api/utils/BaseApiHandler";
+import { assertEventAccess } from "@/app/api/utils/auth";
 import { Handlers } from "@/app/api/utils/types";
 import { VerifyArrivalGoalStationV3Service } from "@/features/verify/verify-arrival-goal-station-v3/interface";
 import { getVerifyArrivalGoalStationV3Service } from "@/features/verify/verify-arrival-goal-station-v3/provider";
@@ -48,6 +49,8 @@ class VerifyArrivalGoalStationV3ApiHandler extends BaseApiHandler {
 
             // Zodでバリデーション
             const validatedBody = PostVerifyArrivalGoalStationV3RequestSchema.parse(body);
+
+            await assertEventAccess(this.getAuthUser(), validatedBody.eventCode, "operate");
 
             this.logDebug("Request body", validatedBody);
 

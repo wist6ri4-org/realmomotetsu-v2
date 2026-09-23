@@ -2,6 +2,7 @@ import { ApiError, InternalServerError } from "@/error";
 import { BombiiHistoriesService } from "./interface";
 import { PostBombiiHistoriesRequest, PostBombiiHistoriesResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
+import { notifyEventDataChanged } from "@/lib/realtimeNotifier";
 
 export const BombiiHistoriesServiceImpl: BombiiHistoriesService = {
     /**
@@ -20,6 +21,9 @@ export const BombiiHistoriesServiceImpl: BombiiHistoriesService = {
             const res: PostBombiiHistoriesResponse = {
                 bombiiHistory: bombiiHistory,
             };
+
+            await notifyEventDataChanged(req.eventCode);
+
             return res;
         } catch (error) {
             if (error instanceof ApiError) {
