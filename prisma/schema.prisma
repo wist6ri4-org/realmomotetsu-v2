@@ -202,13 +202,14 @@ model Teams {
  * 目的駅
  */
 model GoalStations {
-  id          Int      @id @default(autoincrement()) @map("id")
-  eventCode   String   @map("event_code")
-  stationCode String   @map("station_code")
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-  event       Events   @relation(fields: [eventCode], references: [eventCode])
-  station     Stations @relation(fields: [stationCode], references: [stationCode])
+  id             Int      @id @default(autoincrement()) @map("id")
+  eventCode      String   @map("event_code")
+  stationCode    String   @map("station_code")
+  isStartStation Boolean? @map("is_start_station")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  event          Events   @relation(fields: [eventCode], references: [eventCode])
+  station        Stations @relation(fields: [stationCode], references: [stationCode])
 
   @@map("goal_stations")
 }

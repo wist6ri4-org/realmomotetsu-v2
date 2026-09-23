@@ -170,10 +170,12 @@ export const buildGoalStation = (
     stationOverrides: Partial<Stations> = {},
 ): GoalStationsWithRelations => {
     const stationCode = overrides.stationCode ?? "STATION_A";
+    const isStartStation = overrides.isStartStation ?? false;
     return {
         id: 1,
         eventCode: TEST_EVENT_CODE,
         stationCode,
+        isStartStation,
         createdAt: FIXED_DATE,
         updatedAt: FIXED_DATE,
         ...overrides,

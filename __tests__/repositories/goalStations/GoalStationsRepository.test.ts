@@ -28,7 +28,7 @@ describe("GoalStationsRepository", () => {
             const result = await repository.findLatestGoalStation(TEST_EVENT_CODE);
 
             expect(prisma.goalStations.findFirst).toHaveBeenCalledWith({
-                where: { eventCode: TEST_EVENT_CODE },
+                where: { eventCode: TEST_EVENT_CODE, OR: [{ isStartStation: false }, { isStartStation: null }] },
                 include: { station: true },
                 orderBy: { id: "desc" },
             });
@@ -39,7 +39,7 @@ describe("GoalStationsRepository", () => {
             prisma.goalStations.findFirst.mockRejectedValue(new Error("timeout"));
 
             await expect(repository.findLatestGoalStation(TEST_EVENT_CODE)).rejects.toThrow(
-                "Database operation failed: findNextGoalStation",
+                "Database operation failed: findLatestGoalStation",
             );
         });
     });
@@ -80,7 +80,7 @@ describe("GoalStationsRepository", () => {
             const result = await repository.findByEventCode(TEST_EVENT_CODE);
 
             expect(prisma.goalStations.findMany).toHaveBeenCalledWith({
-                where: { eventCode: TEST_EVENT_CODE },
+                where: { eventCode: TEST_EVENT_CODE, OR: [{ isStartStation: false }, { isStartStation: null }] },
                 include: { station: true },
                 orderBy: { id: "asc" },
             });
@@ -97,6 +97,21 @@ describe("GoalStationsRepository", () => {
             const result = await repository.create(goalStationData);
 
             expect(prisma.goalStations.create).toHaveBeenCalledWith({ data: goalStationData });
+            expect(result).toBe(created);
+        });
+    });
+
+    describe("createV3", () => {
+        it("渡されたデータにisStartStation: falseを付与して目的駅を新規作成する", async () => {
+            const goalStationData = { eventCode: TEST_EVENT_CODE, stationCode: "STATION_A" };
+            const created = buildGoalStation(goalStationData);
+            prisma.goalStations.create.mockResolvedValue(created);
+
+            const result = await repository.createV3(goalStationData);
+
+            expect(prisma.goalStations.create).toHaveBeenCalledWith({
+                data: { ...goalStationData, isStartStation: false },
+            });
             expect(result).toBe(created);
         });
     });

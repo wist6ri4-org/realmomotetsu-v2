@@ -368,7 +368,7 @@ async function main() {
             const eventCode = row.event_code?.trim();
             const createdAt = new Date(row.created_at?.trim());
             const updatedAt = new Date(row.updated_at?.trim());
-            const discordWebhookUrl = row.discord_webhook_url?.trim() || null
+            const discordWebhookUrl = row.discord_webhook_url?.trim() || null;
 
             await prisma.teams.create({
                 data: {
@@ -438,6 +438,12 @@ async function main() {
         for (const row of goalStationsData) {
             const stationCode = row.station_code?.trim();
             const eventCode = row.event_code?.trim();
+            const isStartStation =
+                row.is_start_station?.trim() === "true"
+                    ? true
+                    : row.is_start_station?.trim() === "false"
+                      ? false
+                      : null;
             const createdAt = new Date(row.created_at?.trim());
             const updatedAt = new Date(row.updated_at?.trim());
 
@@ -445,6 +451,7 @@ async function main() {
                 data: {
                     stationCode,
                     eventCode,
+                    isStartStation,
                     createdAt,
                     updatedAt,
                 },

@@ -500,7 +500,8 @@
                               "type": "string"
                             },
                             "isGoal": {
-                              "type": "boolean"
+                              "type": "boolean",
+                              "nullable": true
                             },
                             "createdAt": {
                               "type": "string"
@@ -708,7 +709,8 @@
                               "type": "string"
                             },
                             "isGoal": {
-                              "type": "boolean"
+                              "type": "boolean",
+                              "nullable": true
                             },
                             "createdAt": {
                               "type": "string"
@@ -1371,6 +1373,10 @@
                             "stationCode": {
                               "type": "string"
                             },
+                            "isStartStation": {
+                              "type": "boolean",
+                              "nullable": true
+                            },
                             "createdAt": {
                               "type": "string"
                             },
@@ -1460,6 +1466,7 @@
                             "id",
                             "eventCode",
                             "stationCode",
+                            "isStartStation",
                             "createdAt",
                             "updatedAt",
                             "station"
@@ -1593,6 +1600,10 @@
                               "stationCode": {
                                 "type": "string"
                               },
+                              "isStartStation": {
+                                "type": "boolean",
+                                "nullable": true
+                              },
                               "createdAt": {
                                 "type": "string"
                               },
@@ -1682,6 +1693,7 @@
                               "id",
                               "eventCode",
                               "stationCode",
+                              "isStartStation",
                               "createdAt",
                               "updatedAt",
                               "station"
@@ -1824,6 +1836,10 @@
                             "stationCode": {
                               "type": "string"
                             },
+                            "isStartStation": {
+                              "type": "boolean",
+                              "nullable": true
+                            },
                             "createdAt": {
                               "type": "string"
                             },
@@ -1835,6 +1851,165 @@
                             "id",
                             "eventCode",
                             "stationCode",
+                            "isStartStation",
+                            "createdAt",
+                            "updatedAt"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "goalStation"
+                      ]
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_1234567890_abc123"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "example": "2026-08-04T10:30:00.000Z"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "requestId",
+                    "timestamp"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request（Zodバリデーションエラー、または ApiError のサブクラス）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "errorCode": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "details": {},
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "timestamp": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error",
+                    "requestId",
+                    "timestamp"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "errorCode": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "details": {},
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "timestamp": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error",
+                    "requestId",
+                    "timestamp"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/goal-stations-v3": {
+      "post": {
+        "summary": "POST /api/goal-stations-v3",
+        "description": "目的駅のPOSTレスポンススキーマ",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "eventCode": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "stationCode": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "eventCode",
+                  "stationCode"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "goalStation": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "eventCode": {
+                              "type": "string"
+                            },
+                            "stationCode": {
+                              "type": "string"
+                            },
+                            "isStartStation": {
+                              "type": "boolean",
+                              "nullable": true
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "eventCode",
+                            "stationCode",
+                            "isStartStation",
                             "createdAt",
                             "updatedAt"
                           ]
@@ -2697,6 +2872,10 @@
                                   "stationCode": {
                                     "type": "string"
                                   },
+                                  "isStartStation": {
+                                    "type": "boolean",
+                                    "nullable": true
+                                  },
                                   "createdAt": {
                                     "type": "string"
                                   },
@@ -2786,6 +2965,7 @@
                                   "id",
                                   "eventCode",
                                   "stationCode",
+                                  "isStartStation",
                                   "createdAt",
                                   "updatedAt",
                                   "station"
@@ -2810,7 +2990,8 @@
                                     "type": "string"
                                   },
                                   "isGoal": {
-                                    "type": "boolean"
+                                    "type": "boolean",
+                                    "nullable": true
                                   },
                                   "createdAt": {
                                     "type": "string"
@@ -3281,7 +3462,8 @@
                                       "type": "string"
                                     },
                                     "isGoal": {
-                                      "type": "boolean"
+                                      "type": "boolean",
+                                      "nullable": true
                                     },
                                     "createdAt": {
                                       "type": "string"
@@ -3381,7 +3563,8 @@
                                 }
                               },
                               "remainingStationsNumber": {
-                                "type": "number"
+                                "type": "number",
+                                "nullable": true
                               },
                               "points": {
                                 "type": "number"
@@ -3426,6 +3609,10 @@
                             },
                             "stationCode": {
                               "type": "string"
+                            },
+                            "isStartStation": {
+                              "type": "boolean",
+                              "nullable": true
                             },
                             "createdAt": {
                               "type": "string"
@@ -3516,6 +3703,7 @@
                             "id",
                             "eventCode",
                             "stationCode",
+                            "isStartStation",
                             "createdAt",
                             "updatedAt",
                             "station"
@@ -3714,7 +3902,8 @@
                                       "type": "string"
                                     },
                                     "isGoal": {
-                                      "type": "boolean"
+                                      "type": "boolean",
+                                      "nullable": true
                                     },
                                     "createdAt": {
                                       "type": "string"
@@ -3814,7 +4003,8 @@
                                 }
                               },
                               "remainingStationsNumber": {
-                                "type": "number"
+                                "type": "number",
+                                "nullable": true
                               },
                               "points": {
                                 "type": "number"
@@ -4009,6 +4199,10 @@
                               "stationCode": {
                                 "type": "string"
                               },
+                              "isStartStation": {
+                                "type": "boolean",
+                                "nullable": true
+                              },
                               "createdAt": {
                                 "type": "string"
                               },
@@ -4020,6 +4214,7 @@
                               "id",
                               "eventCode",
                               "stationCode",
+                              "isStartStation",
                               "createdAt",
                               "updatedAt"
                             ]
@@ -4175,7 +4370,8 @@
                                       "type": "string"
                                     },
                                     "isGoal": {
-                                      "type": "boolean"
+                                      "type": "boolean",
+                                      "nullable": true
                                     },
                                     "createdAt": {
                                       "type": "string"
@@ -4275,7 +4471,8 @@
                                 }
                               },
                               "remainingStationsNumber": {
-                                "type": "number"
+                                "type": "number",
+                                "nullable": true
                               },
                               "bombiiCounts": {
                                 "type": "number"
@@ -4305,6 +4502,10 @@
                             "stationCode": {
                               "type": "string"
                             },
+                            "isStartStation": {
+                              "type": "boolean",
+                              "nullable": true
+                            },
                             "createdAt": {
                               "type": "string"
                             },
@@ -4316,6 +4517,7 @@
                             "id",
                             "eventCode",
                             "stationCode",
+                            "isStartStation",
                             "createdAt",
                             "updatedAt"
                           ]
@@ -5201,12 +5403,17 @@
               "schema": {
                 "type": "object",
                 "properties": {
+                  "eventCode": {
+                    "type": "string",
+                    "minLength": 1
+                  },
                   "teamCode": {
                     "type": "string",
                     "minLength": 1
                   }
                 },
                 "required": [
+                  "eventCode",
                   "teamCode"
                 ]
               }
@@ -6001,7 +6208,8 @@
                                   "type": "string"
                                 },
                                 "isGoal": {
-                                  "type": "boolean"
+                                  "type": "boolean",
+                                  "nullable": true
                                 },
                                 "createdAt": {
                                   "type": "string"
@@ -6246,7 +6454,8 @@
                               "type": "string"
                             },
                             "isGoal": {
-                              "type": "boolean"
+                              "type": "boolean",
+                              "nullable": true
                             },
                             "createdAt": {
                               "type": "string"
@@ -6356,7 +6565,7 @@
     "/api/users": {
       "post": {
         "summary": "POST /api/users",
-        "description": "ユーザーの登録リクエストスキーマ",
+        "description": "のため、role は意図的に受け付けない。masterRole の変更は DB 側で直接行う。",
         "requestBody": {
           "content": {
             "application/json": {
@@ -6374,13 +6583,6 @@
                   },
                   "nickname": {
                     "type": "string"
-                  },
-                  "role": {
-                    "type": "string",
-                    "enum": [
-                      "user",
-                      "admin"
-                    ]
                   }
                 },
                 "required": [

@@ -54,6 +54,7 @@ export const goalStationsLatestHandlers = createHandlerFactory("get", "/api/goal
 export const transitStationsLatestHandlers = createHandlerFactory("get", "/api/transit-stations/latest");
 
 export const goalStationsHandlers = createHandlerFactory("post", "/api/goal-stations");
+export const goalStationsHandlersV3 = createHandlerFactory("post", "/api/goal-stations-v3");
 export const pointsHandlers = createHandlerFactory("post", "/api/points");
 export const pointsUpdateHandlers = createHandlerFactory("put", "/api/points");
 export const pointsBulkHandlers = createHandlerFactory("post", "/api/points/bulk");
