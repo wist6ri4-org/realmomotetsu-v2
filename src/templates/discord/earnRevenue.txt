@@ -1,0 +1,2 @@
+@everyone
+**{{stationName}}** の収益として **{{revenueYen}}** を獲得しました！
