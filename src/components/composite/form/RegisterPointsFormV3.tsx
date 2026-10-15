@@ -42,7 +42,7 @@ interface RegisterPointsFormV3Props {
 
 // ポイント状態のオプション
 const pointStatusOptions: RadioOption[] = [
-    { value: GameConstants.POINT_STATUS.SCORED, label: "総資産" },
+    { value: GameConstants.POINT_STATUS.SCORED, label: "持ち金" },
     { value: GameConstants.POINT_STATUS.PROPERTY, label: "物件" },
     { value: GameConstants.POINT_STATUS.REVENUE, label: "収益" },
 ];
@@ -94,7 +94,7 @@ const RegisterPointsFormV3: React.FC<RegisterPointsFormV3Props> = ({
             `チーム: ${teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"}\n` +
             `ポイント: ${pointsInput.value}\n` +
             `ステータス: ${pointStatus === GameConstants.POINT_STATUS.SCORED
-                ? "総資産" : pointStatus === GameConstants.POINT_STATUS.PROPERTY
+                ? "持ち金" : pointStatus === GameConstants.POINT_STATUS.PROPERTY
                 ? "物件" : "収益"}`;
         const isConfirmed = await showConfirmDialog({
             message: confirmMessage,
@@ -171,9 +171,9 @@ const RegisterPointsFormV3: React.FC<RegisterPointsFormV3Props> = ({
                 <FormDescription>
                     チームを選択し、ポイントを登録する。
                     <br />
-                    総資産、物件購入分、収益として登録することができる。
+                    持ち金、物件購入分、収益として登録することができる。
                     <br />
-                    物件と収益はトラブル用なので基本総資産でよい。
+                    物件と収益はトラブル用なので基本持ち金でよい。
                 </FormDescription>
                 <Box
                     component="form"
@@ -217,7 +217,7 @@ const RegisterPointsFormV3: React.FC<RegisterPointsFormV3Props> = ({
                             value={pointStatus}
                             onChange={handlePointStatusChange}
                             size="small"
-                            label="ステータス（基本総資産でよい）"
+                            label="ステータス（基本持ち金でよい）"
                             row={true}
                         />
                     </Box>
