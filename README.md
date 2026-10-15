@@ -24,6 +24,7 @@
 | [src/features/discord/README.md](src/features/discord/README.md)         | Discord 通知機能                                           |
 | [supabase/sql/setup_user_storage.md](supabase/sql/setup_user_storage.md) | Supabase ストレージ（ユーザーアイコン）の設定              |
 | [tools/routemap-checker/README.md](tools/routemap-checker/README.md)     | 路線図整合性チェックツール                                 |
+| [docs/DATABASE_BACKUP.md](docs/DATABASE_BACKUP.md)                       | データベースのバックアップ手順                               |
 
 ### ディレクトリ構成
 
@@ -35,10 +36,14 @@
 │  ├─helpers        テスト用ヘルパー（ファクトリ、モック）
 │  ├─repositories   データアクセス層のテスト
 │  └─utils          ユーティリティのテスト
+├─.claude            Claudeの設定
+├─.storybook         Storybookの設定
+├─backups           【Git管理外】バックアップファイルの保存先
 ├─coverage          【Git管理外】カバレッジレポートの出力先
 ├─data              DB用初期投入データ、SQLファイル
 ├─docs              ドキュメント
 ├─node_modules      【Git管理外】node.jsのモジュール
+├─patches           Storybookのパッチファイル
 ├─prisma            Prisma関連
 |  ├─csv            シード用CSVファイル
 │  └─migrations     データベースマイグレーション
@@ -48,6 +53,7 @@
 ├─src               アプリケーションのソースコード
 │  ├─app            Next.jsのアプリケーションディレクトリ、page.tsxによってルーティングされる
 │  │  ├─api         APIエンドポイント、route.tsによってルーティングされる
+|  |  ├─api-docs    OpenAPI仕様書（openapi.json）
 │  │  ├─events      イベント画面（v02/、v03/ のバージョン別ルーティング）
 │  │  └─user        ユーザー認証関連ページ（サインイン、サインアップ、パスワード変更など）
 │  ├─components     再利用可能なUIコンポーネント
@@ -63,6 +69,7 @@
 │  ├─hooks          カスタムReactフック
 │  ├─lib            ライブラリ設定（Prismaクライアント、Supabaseクライアントなど）
 │  ├─repositories   データアクセス層
+|  ├─stories        Storybookのストーリーファイル
 │  ├─styles         スタイル、テーマ設定（CSS、MUIテーマなど）
 |  ├─templates      通知用テンプレート、通知メッセージのテンプレートを定義する
 │  │  ├─discord     Discord通知テンプレート
@@ -209,6 +216,7 @@ API エンドポイントは `BaseApiHandler` を継承したハンドラーク�
 | `/api/transit-stations/latest`               | GET              | チームごとの最新経由駅の取得   |
 | `/api/goal-stations`                         | GET / POST       | 目的駅の取得・登録             |
 | `/api/goal-stations/latest`                  | GET              | 最新の目的駅の取得             |
+| `/api/goal-stations-v3`                      | POST             | 目的駅の登録                   |
 | `/api/arrival-goal-station-v3`               | POST             | 目的駅到着処理（V3）           |
 | `/api/verify/verify-arrival-goal-station-v3` | POST             | 目的駅到着処理の事前検証（V3） |
 | `/api/current-location`                      | POST             | 現在地の更新                   |
