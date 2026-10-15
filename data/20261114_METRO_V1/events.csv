@@ -1,0 +1,2 @@
+event_code,event_name,event_type_code,visibility_level,operation_level,discord_webhook_url,is_notification_enabled,start_date
+METRO_V1_20261114,第３回リアル桃鉄～東京メトロ・都営地下鉄編～,METRO_V1,participant,participant,,TRUE,2026-10-14 08:30:00.000+09
