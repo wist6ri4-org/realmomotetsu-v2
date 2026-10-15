@@ -43,7 +43,7 @@ interface PointsTransferFormV3Props {
 
 // ポイント状態のオプション
 const pointStatusOptions: RadioOption[] = [
-    { value: GameConstants.POINT_STATUS.SCORED, label: "総資産" },
+    { value: GameConstants.POINT_STATUS.SCORED, label: "持ち金" },
     { value: GameConstants.POINT_STATUS.PROPERTY, label: "物件" },
     { value: GameConstants.POINT_STATUS.REVENUE, label: "収益" },
 ];
@@ -97,7 +97,7 @@ const PointsTransferFormV3: React.FC<PointsTransferFormV3Props> = ({
             `移動先チーム: ${teams.find((team) => team.teamCode === toTeamCodeInput.value)?.teamName || "不明"}\n` +
             `ポイント: ${pointsInput.value}\n` +
             `ステータス: ${pointStatus === GameConstants.POINT_STATUS.SCORED
-                ? "総資産" : pointStatus === GameConstants.POINT_STATUS.PROPERTY
+                ? "持ち金" : pointStatus === GameConstants.POINT_STATUS.PROPERTY
                     ? "物件" : "収益"}`;
         const isConfirmed = await showConfirmDialog({
             message: confirmMessage,
@@ -183,9 +183,9 @@ const PointsTransferFormV3: React.FC<PointsTransferFormV3Props> = ({
                 <FormDescription>
                     ２チームを選択し、移動元から移動先へポイントを移動する。
                     <br />
-                    総資産、物件購入分、収益として移動することができる。
+                    持ち金、物件購入分、収益として移動することができる。
                     <br />
-                    物件と収益はトラブル用なので基本総資産でよい。
+                    物件と収益はトラブル用なので基本持ち金でよい。
                 </FormDescription>
                 <Box
                     component="form"
@@ -243,7 +243,7 @@ const PointsTransferFormV3: React.FC<PointsTransferFormV3Props> = ({
                             value={pointStatus}
                             onChange={handlePointStatusChange}
                             size="small"
-                            label="ステータス（基本総資産でよい）"
+                            label="ステータス（基本持ち金でよい）"
                             row={true}
                         />
                     </Box>
