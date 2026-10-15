@@ -61,6 +61,10 @@
                 background: #9c27b0;
                 color: #fff;
             }
+            #btn-save-pdf {
+                background: #ff9800;
+                color: #fff;
+            }
             #btn-reset {
                 background: #f44336;
                 color: #fff;
@@ -344,6 +348,7 @@
             <button id="btn-export">📤 エクスポート</button>
             <button id="btn-import">📥 インポート</button>
             <button id="btn-save-png">🖼 PNG保存</button>
+            <button id="btn-save-pdf">📄 PDF保存</button>
             <button id="btn-reset">🗑 リセット</button>
         </header>
 
@@ -841,7 +846,7 @@
                                 strokeWidth: "25",
                             },
                             {
-                                d: "M1950,3050L2611.111,3050L2611.111,3650L3225,3650",
+                                d: "M1950,3050L2650,3050L2650,3650L3225,3650",
                                 stroke: "rgba(0, 152, 66, 1)",
                                 strokeWidth: "25",
                             },
@@ -5204,6 +5209,104 @@
                 img.src = url;
             }
 
+            // PDFとして保存する処理（A4横固定・外部ライブラリ不要）
+            function downloadPDF() {
+                showToast("PDFを生成中...");
+                const svgElement = document.getElementById("routemap");
+                const svgString =
+                    '<?xml version="1.0" standalone="no"?>\r\n' + new XMLSerializer().serializeToString(svgElement);
+
+                const imgWidth = 3500;
+                const imgHeight = Math.round(imgWidth * (4950 / 7000));
+                const canvas = document.createElement("canvas");
+                canvas.width = imgWidth;
+                canvas.height = imgHeight;
+                const ctx = canvas.getContext("2d");
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, imgWidth, imgHeight);
+
+                const img = new Image();
+                const url = URL.createObjectURL(new Blob([svgString], { type: "image/svg+xml;charset=utf-8" }));
+
+                img.onload = () => {
+                    ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+                    URL.revokeObjectURL(url);
+
+                    // JPEGのバイト列を取り出す
+                    const jpegBin = atob(canvas.toDataURL("image/jpeg", 0.92).split(",")[1]);
+                    const jpegBytes = new Uint8Array(jpegBin.length);
+                    for (let i = 0; i < jpegBin.length; i++) jpegBytes[i] = jpegBin.charCodeAt(i);
+
+                    // A4横 (pt)。画像はアスペクト比を保って余白付きで中央配置
+                    const pageW = 841.89;
+                    const pageH = 595.28;
+                    const margin = 15;
+                    const scale = Math.min((pageW - margin * 2) / imgWidth, (pageH - margin * 2) / imgHeight);
+                    const drawW = imgWidth * scale;
+                    const drawH = imgHeight * scale;
+                    const drawX = (pageW - drawW) / 2;
+                    const drawY = (pageH - drawH) / 2;
+                    const content = `q ${drawW.toFixed(2)} 0 0 ${drawH.toFixed(2)} ${drawX.toFixed(2)} ${drawY.toFixed(2)} cm /Im0 Do Q`;
+
+                    const enc = new TextEncoder();
+                    const chunks = [];
+                    const offsets = [];
+                    let length = 0;
+                    const push = (data) => {
+                        const bytes = typeof data === "string" ? enc.encode(data) : data;
+                        chunks.push(bytes);
+                        length += bytes.length;
+                    };
+                    const startObj = (n) => {
+                        offsets[n] = length;
+                        push(`${n} 0 obj\n`);
+                    };
+
+                    push("%PDF-1.4\n");
+                    startObj(1);
+                    push("<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+                    startObj(2);
+                    push("<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n");
+                    startObj(3);
+                    push(
+                        `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] ` +
+                            "/Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>\nendobj\n",
+                    );
+                    startObj(4);
+                    push(
+                        `<< /Type /XObject /Subtype /Image /Width ${imgWidth} /Height ${imgHeight} ` +
+                            `/ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`,
+                    );
+                    push(jpegBytes);
+                    push("\nendstream\nendobj\n");
+                    startObj(5);
+                    push(`<< /Length ${content.length} >>\nstream\n${content}\nendstream\nendobj\n`);
+
+                    const xrefPos = length;
+                    let xref = "xref\n0 6\n0000000000 65535 f \n";
+                    for (let n = 1; n <= 5; n++) xref += `${String(offsets[n]).padStart(10, "0")} 00000 n \n`;
+                    push(xref);
+                    push(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF\n`);
+
+                    const pdfUrl = URL.createObjectURL(new Blob(chunks, { type: "application/pdf" }));
+                    const a = document.createElement("a");
+                    a.href = pdfUrl;
+                    a.download = "routemap.pdf";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(() => URL.revokeObjectURL(pdfUrl), 10000);
+                    showToast("✅ PDFとして保存しました");
+                };
+
+                img.onerror = () => {
+                    URL.revokeObjectURL(url);
+                    showToast("❌ PDFの保存に失敗しました");
+                };
+
+                img.src = url;
+            }
+
             // モーダルを閉じる処理
             document.getElementById("btn-close-image").addEventListener("click", () => {
                 document.getElementById("image-modal").classList.remove("show");
@@ -5247,6 +5350,7 @@
             });
 
             document.getElementById("btn-save-png").addEventListener("click", downloadPNG);
+            document.getElementById("btn-save-pdf").addEventListener("click", downloadPDF);
 
             document.getElementById("btn-reset").addEventListener("click", () => {
                 if (!confirm("全駅の色をリセットしますか？")) return;
