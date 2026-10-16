@@ -15,6 +15,7 @@ const meta = {
     component: GoalDialog,
     tags: ["autodocs"],
     render: (args) => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         const [isOpen, setIsOpen] = useState(false);
         return (
             <>
