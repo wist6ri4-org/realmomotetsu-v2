@@ -1,0 +1,2 @@
+event_code,user_id,event_role,team_code,created_at,updated_at
+DUMMY_20250725,1,user,DUMMY_TEAM,2025-07-25 00:00:00,2025-07-25 00:00:00

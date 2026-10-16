@@ -1,0 +1,5 @@
+id,event_type_code,description,created_at,updated_at,routemap_config,version
+1,TOKYU,東急線リアル桃鉄,2025-05-16 15:00:00.000+00,2025-05-16 15:00:00.000+00,routemap-config,201
+2,DUMMY,ダミーイベント,2025-07-24 15:00:00.000+00,2025-07-24 15:00:00.000+00,routemap-config,201
+4,TOKYU_V2,東急線リアル桃鉄 ver.2,2025-09-17 15:00:00.000+00,2025-09-17 15:00:00.000+00,tokyu-v2-routemap-config,202
+5,METRO_V1,リアル桃鉄～東京メトロ・都営地下鉄編～,2026-03-11 23:00:00.000+00,2026-03-11 23:00:00.000+00,metro-v1-routemap-config,301

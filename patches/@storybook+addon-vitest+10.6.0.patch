@@ -1,0 +1,35 @@
+diff --git a/node_modules/@storybook/addon-vitest/dist/vitest-plugin/index.js b/node_modules/@storybook/addon-vitest/dist/vitest-plugin/index.js
+index 74e2460..9038e84 100644
+--- a/node_modules/@storybook/addon-vitest/dist/vitest-plugin/index.js
++++ b/node_modules/@storybook/addon-vitest/dist/vitest-plugin/index.js
+@@ -2619,7 +2619,7 @@ var WORKING_DIR = process.cwd(), defaultOptions = {
+       let includeStories = stories.map((story) => {
+         let storyPath;
+         return typeof story == "string" ? storyPath = story : storyPath = `${story.directory}/${story.files ?? DEFAULT_FILES_PATTERN}`, join(finalOptions.configDir, storyPath);
+-      }).map((story) => relative(finalOptions.vitestRoot, story));
++      }).map((story) => relative(finalOptions.vitestRoot, story).split("\\").join("/"));
+       finalOptions.includeStories = includeStories;
+       let projectId = oneWayHash(finalOptions.configDir), internalSetupFiles = [
+         "@storybook/addon-vitest/internal/setup-file",
+@@ -2768,7 +2768,7 @@ var WORKING_DIR = process.cwd(), defaultOptions = {
+           }
+     },
+     async transform(code, id) {
+-      let relativeId = relative(finalOptions.vitestRoot, id);
++      let relativeId = relative(finalOptions.vitestRoot, id).split("\\").join("/");
+       if ((0, import_micromatch.match)([relativeId], finalOptions.includeStories).length > 0)
+         return vitestTransform({
+           code,
+diff --git a/node_modules/@storybook/addon-vitest/dist/vitest-plugin/test-utils.js b/node_modules/@storybook/addon-vitest/dist/vitest-plugin/test-utils.js
+index 9048740..b09e5cc 100644
+--- a/node_modules/@storybook/addon-vitest/dist/vitest-plugin/test-utils.js
++++ b/node_modules/@storybook/addon-vitest/dist/vitest-plugin/test-utils.js
+@@ -72,7 +72,7 @@ var DEFAULT_VIEWPORT_DIMENSIONS = {
+ };
+ 
+ // src/vitest-plugin/test-utils.ts
+-var convertToFilePath = (url) => url.replace(/^file:\/\//, "").replace(/^\/+([a-zA-Z]:)/, "$1").replace(/%20/g, " "), testStory = ({
++var convertToFilePath = (url) => decodeURIComponent(url.replace(/^file:\/\//, "")).replace(/^\/+([a-zA-Z]:)/, "$1"), testStory = ({
+   exportName,
+   story,
+   meta,

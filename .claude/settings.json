@@ -1,0 +1,18 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "agent",
+            "if": "Bash(git commit*)",
+            "timeout": 120,
+            "statusMessage": "コミット差分に対してドキュメント更新の必要性を確認中...",
+            "prompt": "直前に `git commit` が実行されました。作成されたコミットの内容を調べ（`git show --stat HEAD` や `git diff HEAD~1 HEAD` 等を使う。マージコミットの場合は `git show --stat -m HEAD` などで実質的な変更内容を確認する）、以下のドキュメントの更新が必要かどうかを判断してください。\n\n対象ドキュメント:\n- README.md（環境構築手順、npm scripts 一覧、デプロイ手順など）\n- CLAUDE.md（アーキテクチャ、コマンド一覧、DB セキュリティ節など）\n- docs/ 配下の各ガイド（TESTING_GUIDE.md, ERROR_HANDLING_GUIDE.md, DATABASE_BACKUP.md, USER_SETTINGS.md, STORYBOOK_GUIDE.md 等）\n\n判断基準の例:\n- 新しい npm script / 環境変数の追加・変更\n- セットアップ・マイグレーション・デプロイ手順に影響する変更\n- アーキテクチャや主要な設計方針の変更（認証/認可、DB構造、APIパターン等）\n- 既存ドキュメントの記述と矛盾する挙動変更\n- prisma/csv, supabase/snippets など明らかにドキュメント対象外の変更のみの場合は「不要」と判断してよい\n\n重要: あなたはドキュメントを編集しない。判断結果を報告するだけ。\n\n出力は必ず最後に次のJSON1行だけを出力すること（他の文言・コードフェンス等は一切含めない）:\n- 更新が不要と判断した場合: {\"systemMessage\": \"\", \"continue\": true}\n- 更新が必要と判断した場合: {\"systemMessage\": \"<対象ファイルと具体的にどう直すべきかの簡潔な提案>\", \"continue\": true}\n\nツール呼び出し情報: $ARGUMENTS"
+          }
+        ]
+      }
+    ]
+  }
+}

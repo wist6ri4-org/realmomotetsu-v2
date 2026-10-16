@@ -1,0 +1,158 @@
+@baseUrl = http://localhost:3001
+@supabaseUrl = http://127.0.0.1:54321
+@supabaseAnonKey = {{$dotenv NEXT_PUBLIC_SUPABASE_PUBLISHED_KEY}}
+
+### 認証: ログインしてアクセストークンを取得（他のリクエストの Authorization ヘッダーから参照する）
+# @name login
+POST {{supabaseUrl}}/auth/v1/token?grant_type=password
+apikey: {{supabaseAnonKey}}
+Content-Type: application/json
+
+{
+    "email": "admin@mail.com",
+    "password": "password"
+}
+
+### GET init（認証あり：通るパターン）
+# uuid は npm run seed で毎回再生成されるため、ログインレスポンスの user.id を使う
+GET {{baseUrl}}/api/init
+    ?eventCode=TOKYU_20250517
+    &uuid={{login.response.body.$.user.id}}
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+### GET init（認証なし：401 AUTH_TOKEN_MISSING で弾かれるパターン）
+GET {{baseUrl}}/api/init
+    ?eventCode=TOKYU_20250517
+    &uuid={{login.response.body.$.user.id}}
+
+### GET init（不正なトークン：401 AUTH_TOKEN_INVALID で弾かれるパターン）
+GET {{baseUrl}}/api/init
+    ?eventCode=TOKYU_20250517
+    &uuid={{login.response.body.$.user.id}}
+Authorization: Bearer invalid-token
+
+### GET init-home
+GET {{baseUrl}}/api/init-home
+    ?eventCode=TOKYU_20250517
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+### GET init-form
+# latitude, longitudeあり
+GET {{baseUrl}}/api/init-form
+    ?eventCode=TOKYU_20250517
+    &latitude=35.4615296
+    &longitude=139.5982336
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+### GET init-form
+# latitude, longitudeなし
+GET {{baseUrl}}/api/init-form
+    ?eventCode=TOKYU_20250517
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+### GET init-roulette
+# latitude, longitudeなし
+GET {{baseUrl}}/api/init-roulette
+    ?eventCode=TOKYU_20250517
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+### GET init-routemap
+GET {{baseUrl}}/api/init-routemap
+    ?eventCode=TOKYU_20250517
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+### GET goal-stations
+GET {{baseUrl}}/api/goal-stations
+    ?eventCode=TOKYU_20250517
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+### POST goal-stations
+POST {{baseUrl}}/api/goal-stations
+Authorization: Bearer {{login.response.body.$.access_token}}
+Content-Type: application/json
+
+{
+    "eventCode": "TOKYU_20250517",
+    "stationCode": "YOKOHAMA"
+}
+
+### GET points
+GET {{baseUrl}}/api/points
+    ?eventCode=TOKYU_20250517
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+### POST points
+POST {{baseUrl}}/api/points
+Authorization: Bearer {{login.response.body.$.access_token}}
+Content-Type: application/json
+
+{
+    "eventCode": "TOKYU_20250517",
+    "teamCode": "TEAM_A",
+    "points": 10,
+    "status": "points"
+}
+
+### GET transit-stations
+GET {{baseUrl}}/api/transit-stations
+    ?eventCode=TOKYU_20250517
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+### POST transit-stations
+POST {{baseUrl}}/api/transit-stations
+Authorization: Bearer {{login.response.body.$.access_token}}
+Content-Type: application/json
+
+{
+    "eventCode": "TOKYU_20250517",
+    "stationCode": "YOKOHAMA",
+    "teamCode": "TEAM_A"
+}
+
+### Get transit-stations/latest
+GET {{baseUrl}}/api/transit-stations/latest
+    ?eventCode=TOKYU_20250517
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+### GET documents
+GET {{baseUrl}}/api/documents
+    ?eventCode=TOKYU_20250517
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+### GET users/[uuid]
+# uuid は npm run seed で毎回再生成されるため、ログインレスポンスの user.id を使う
+GET {{baseUrl}}/api/users/{{login.response.body.$.user.id}}
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+### GET events/[eventCode]
+GET {{baseUrl}}/api/events/TOKYU_20250517
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+### POST current-location
+POST {{baseUrl}}/api/current-location
+Authorization: Bearer {{login.response.body.$.access_token}}
+Content-Type: application/json
+
+{
+    "eventCode": "TOKYU_20250517",
+    "teamCode": "TEAM_A",
+    "stationCode": "YOKOHAMA",
+    "points": 10,
+    "status": "points"
+}
+
+### GET property-purchases
+GET {{baseUrl}}/api/property-purchases
+    ?eventCode=METRO_V1_TESTPLAY_20261010
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+### POST property-purchases
+POST {{baseUrl}}/api/property-purchases
+Authorization: Bearer {{login.response.body.$.access_token}}
+Content-Type: application/json
+
+{
+    "eventCode": "METRO_V1_TESTPLAY_20261010",
+    "teamCode": "METRO_V1_TESTPLAY_20261010_TEAM_A",
+    "stationCode": "METRO_V1_WASEDA"
+}
