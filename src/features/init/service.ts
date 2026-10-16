@@ -17,6 +17,7 @@ export const InitServiceImpl: InitService = {
         const nearbyStationsRepository = RepositoryFactory.getNearbyStationsRepository();
         const documentsRepository = RepositoryFactory.getDocumentsRepository();
         const usersRepository = RepositoryFactory.getUsersRepository();
+        const attendancesRepository = RepositoryFactory.getAttendancesRepository();
 
         try {
             // イベント種別の取得
@@ -24,13 +25,14 @@ export const InitServiceImpl: InitService = {
             const eventTypeCode = events?.eventTypeCode || "";
 
             // レスポンスの作成
-            const [eventType, teams, stations, nearbyStations, documents, user] = await Promise.all([
+            const [eventType, teams, stations, nearbyStations, documents, user, attendances] = await Promise.all([
                 eventTypesRepository.findByEventTypeCode(eventTypeCode),
                 teamsRepository.findByEventCode(req.eventCode),
                 stationsRepository.findByEventTypeCode(eventTypeCode),
                 nearbyStationsRepository.findByEventTypeCode(eventTypeCode),
                 documentsRepository.findByEventCode(req.eventCode),
                 usersRepository.findByUuid(req.uuid),
+                attendancesRepository.findByEventCode(req.eventCode),
             ]);
             const res: InitResponse = {
                 eventType: eventType,
@@ -40,6 +42,12 @@ export const InitServiceImpl: InitService = {
                 documents: documents,
                 user: user,
                 event: events,
+                members: attendances.map((attendance) => ({
+                    id: attendance.id,
+                    nickname: attendance.user.nickname,
+                    iconUrl: attendance.user.iconUrl,
+                    teamCode: attendance.teamCode,
+                })),
             };
 
             return res;

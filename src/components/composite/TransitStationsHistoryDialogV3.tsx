@@ -1,6 +1,9 @@
 "use client";
 import { TeamData } from "@/types/TeamData";
 import {
+    Avatar,
+    Box,
+    Chip,
     Dialog,
     DialogActions,
     DialogContent,
@@ -18,18 +21,21 @@ import {
 import { Timeline } from "@mui/icons-material";
 import CustomButton from "../base/CustomButton";
 import { Teams } from "@/generated/prisma";
-import OutlinedFlagIcon from '@mui/icons-material/OutlinedFlag';
+import OutlinedFlagIcon from "@mui/icons-material/OutlinedFlag";
+import { Member } from "@/features/init/types";
 
 /**
  * TransitStationsHistoryDialogV3コンポーネントのプロパティ型定義
  * @param {TeamData} teamData - チームデータ
  * @param {Teams} team - チーム
+ * @param {Member[]} members - 参加者の配列
  * @param {boolean} isOpen - ダイアログの開閉状態
  * @param {() => void} onClose - ダイアログを閉じるハンドラー
  */
 interface TransitStationsHistoryDialogV3Props {
     teamData: TeamData;
     team: Teams;
+    members: Member[];
     isOpen: boolean;
     onClose: () => void;
 }
@@ -42,6 +48,7 @@ interface TransitStationsHistoryDialogV3Props {
 const TransitStationsHistoryDialogV3: React.FC<TransitStationsHistoryDialogV3Props> = ({
     teamData,
     team,
+    members,
     isOpen,
     onClose,
 }: TransitStationsHistoryDialogV3Props): React.JSX.Element => {
@@ -67,6 +74,22 @@ const TransitStationsHistoryDialogV3: React.FC<TransitStationsHistoryDialogV3Pro
                 <DialogContentText align="right" sx={{ marginRight: 2 }}>
                     {goalStationsCount}回ゴール / {teamData.transitStations.length}駅通過
                 </DialogContentText>
+                {members.length > 0 && (
+                    <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "flex-end", gap: 1, mx: 2, mt: 1 }}>
+                        {members.map((member) => (
+                            <Chip
+                                key={`${member.nickname ?? "member"}-${member.id}`}
+                                avatar={<Avatar src={member.iconUrl ?? undefined} alt={member.nickname ?? ""} />}
+                                label={member.nickname ?? "名無し"}
+                                size="medium"
+                                variant="outlined"
+                                sx={{
+                                    fontSize: "1.3rem",
+                                }}
+                            />
+                        ))}
+                    </Box>
+                )}
                 <DialogContent>
                     <TableContainer>
                         <Table size="small">

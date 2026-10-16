@@ -23,6 +23,7 @@ export const buildDefaultEventContextValue = (): EventContextType => ({
     documents: [],
     user: buildUsersWithRelations(),
     event: buildEventWithRelations(),
+    members: [],
     versionPath: GameConstants.VERSION.V03.path,
     isInitDataLoading: false,
     contextError: null,

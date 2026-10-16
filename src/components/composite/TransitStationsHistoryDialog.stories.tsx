@@ -28,6 +28,7 @@ const meta = {
     tags: ["autodocs"],
     // NOTE: 開閉状態をローカルstateで持つ理由はAlertDialog.stories.tsxのコメントを参照。
     render: (args) => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         const [isOpen, setIsOpen] = useState(false);
         return (
             <>
