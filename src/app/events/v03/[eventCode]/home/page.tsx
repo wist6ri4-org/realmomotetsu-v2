@@ -25,7 +25,7 @@ import { useRealtimeRefresh } from "@/hooks/useRealtimeRefresh";
 const HomePage: React.FC = (): React.JSX.Element => {
     const { eventCode } = useParams();
 
-    const { teams, isInitDataLoading, contextError } = useEventContext();
+    const { teams, members, isInitDataLoading, contextError } = useEventContext();
 
     const [teamData, setTeamData] = useState<TeamData[]>([]);
     const [nextGoalStationData, setNextGoalStationData] = useState<GoalStationsWithRelations>(
@@ -190,6 +190,7 @@ const HomePage: React.FC = (): React.JSX.Element => {
                 <TransitStationsHistoryDialogV3
                     teamData={selectedTeamData}
                     team={teams.find((team) => team.id === selectedTeamData.id) as Teams}
+                    members={members.filter((member) => member.teamCode === selectedTeamData.teamCode)}
                     isOpen={isTransitStationsHistoryDialogOpen}
                     onClose={handleTransitStationsHistoryDialogClose}
                 />

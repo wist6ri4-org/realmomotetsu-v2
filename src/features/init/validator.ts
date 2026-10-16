@@ -13,6 +13,14 @@ import {
 } from "@/generated/zod";
 import { z } from "zod";
 
+// 参加者のスキーマ定義
+const MemberSchema = z.object({
+    id: z.number(),
+    nickname: z.string().nullable(),
+    iconUrl: z.string().nullable(),
+    teamCode: z.string(),
+});
+
 // 初期化データのリクエストスキーマ
 export const InitRequestSchema = z.object({
     eventCode: z.string().min(1, "Event code is required"),
@@ -41,4 +49,5 @@ export const InitResponseSchema = z.object({
         transitStations: z.array(TransitStationsSchema.extend({ station: StationsSchema })).optional(),
         bombiiHistories: z.array(BombiiHistoriesSchema.extend({ team: TeamsSchema })).optional(),
     }),
+    members: z.array(MemberSchema),
 });

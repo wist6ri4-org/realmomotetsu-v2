@@ -10,6 +10,7 @@ import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { prisma } from "@/lib/prisma";
 import { TeamsRepository } from "@/repositories/teams/TeamsRepository";
 import { PointsRepository } from "@/repositories/points/PointsRepository";
+import { AttendancesRepository } from "@/repositories/attendances/AttendancesRepository";
 
 describe("RepositoryFactory", () => {
     afterEach(() => {
@@ -23,6 +24,14 @@ describe("RepositoryFactory", () => {
             const second = RepositoryFactory.getTeamsRepository();
 
             expect(first).toBeInstanceOf(TeamsRepository);
+            expect(first).toBe(second);
+        });
+
+        it("AttendancesRepositoryをシングルトンで返す", () => {
+            const first = RepositoryFactory.getAttendancesRepository();
+            const second = RepositoryFactory.getAttendancesRepository();
+
+            expect(first).toBeInstanceOf(AttendancesRepository);
             expect(first).toBe(second);
         });
 

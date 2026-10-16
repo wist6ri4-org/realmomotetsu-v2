@@ -7,6 +7,7 @@
 
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { PrismaTransactionClient } from "@/repositories/base/BaseRepository";
+import { AttendancesRepository } from "@/repositories/attendances/AttendancesRepository";
 import { BombiiHistoriesRepository } from "@/repositories/bombiiHistories/BombiiHistoriesRepository";
 import { DocumentsRepository } from "@/repositories/documents/DocumentsRepository";
 import { EventsRepository } from "@/repositories/events/EventsRepository";
@@ -28,6 +29,7 @@ type RepositoryMock<T> = Partial<Record<keyof T, jest.Mock>>;
  * @description 指定したRepositoryのみが差し替えられる。未指定のものは実装のまま。
  */
 export type RepositoryMocks = {
+    attendances?: RepositoryMock<AttendancesRepository>;
     bombiiHistories?: RepositoryMock<BombiiHistoriesRepository>;
     documents?: RepositoryMock<DocumentsRepository>;
     events?: RepositoryMock<EventsRepository>;
@@ -44,6 +46,7 @@ export type RepositoryMocks = {
 
 /** RepositoryFactoryのgetterと、モック定義のキーの対応表 */
 const FACTORY_GETTERS = {
+    attendances: "getAttendancesRepository",
     bombiiHistories: "getBombiiHistoriesRepository",
     documents: "getDocumentsRepository",
     events: "getEventsRepository",

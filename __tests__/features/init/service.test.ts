@@ -7,6 +7,7 @@ import { InitServiceImpl } from "@/features/init/service";
 import {
     TEST_EVENT_CODE,
     TEST_EVENT_TYPE_CODE,
+    buildAttendance,
     buildDocument,
     buildEvent,
     buildEventType,
@@ -29,6 +30,7 @@ describe("InitServiceImpl.getDataForInit", () => {
     let findNearbyStationsByEventTypeCode: jest.Mock;
     let findDocumentsByEventCode: jest.Mock;
     let findByUuid: jest.Mock;
+    let findAttendancesByEventCode: jest.Mock;
 
     /** イベント取得の既定値（イベント種別コードの伝播元） */
     const event = { ...buildEvent(), eventType: buildEventType() };
@@ -41,6 +43,7 @@ describe("InitServiceImpl.getDataForInit", () => {
         findNearbyStationsByEventTypeCode = jest.fn().mockResolvedValue([]);
         findDocumentsByEventCode = jest.fn().mockResolvedValue([]);
         findByUuid = jest.fn().mockResolvedValue({ ...buildUser(), attendances: [] });
+        findAttendancesByEventCode = jest.fn().mockResolvedValue([]);
 
         mockRepositories({
             events: { findByEventCodeWithRelations },
@@ -50,6 +53,7 @@ describe("InitServiceImpl.getDataForInit", () => {
             nearbyStations: { findByEventTypeCode: findNearbyStationsByEventTypeCode },
             documents: { findByEventCode: findDocumentsByEventCode },
             users: { findByUuid },
+            attendances: { findByEventCode: findAttendancesByEventCode },
         });
     });
 
@@ -81,6 +85,7 @@ describe("InitServiceImpl.getDataForInit", () => {
         expect(findNearbyStationsByEventTypeCode).toHaveBeenCalledWith(TEST_EVENT_TYPE_CODE);
         expect(findDocumentsByEventCode).toHaveBeenCalledWith(TEST_EVENT_CODE);
         expect(findByUuid).toHaveBeenCalledWith(TEST_UUID);
+        expect(findAttendancesByEventCode).toHaveBeenCalledWith(TEST_EVENT_CODE);
 
         expect(res).toEqual({
             eventType,
@@ -90,7 +95,36 @@ describe("InitServiceImpl.getDataForInit", () => {
             documents,
             user,
             event,
+            members: [],
         });
+    });
+
+    it("参加者はニックネーム・アイコンURL・チームコードのみをmembersとして返す", async () => {
+        findAttendancesByEventCode.mockResolvedValue([
+            {
+                ...buildAttendance({ id: 1, userId: 1, teamCode: "TEAM_A" }),
+                user: { nickname: "たろう", iconUrl: "https://example.com/a.png" },
+            },
+            {
+                ...buildAttendance({ id: 2, userId: 2, teamCode: "TEAM_B" }),
+                user: { nickname: null, iconUrl: null },
+            },
+        ]);
+
+        const res = await InitServiceImpl.getDataForInit({ eventCode: TEST_EVENT_CODE, uuid: TEST_UUID });
+
+        expect(res.members).toEqual([
+            { id: 1, nickname: "たろう", iconUrl: "https://example.com/a.png", teamCode: "TEAM_A" },
+            { id: 2, nickname: null, iconUrl: null, teamCode: "TEAM_B" },
+        ]);
+    });
+
+    it("参加者の取得に失敗した場合はInternalServerErrorに変換される", async () => {
+        findAttendancesByEventCode.mockRejectedValue(new Error("DB connection lost"));
+
+        await expect(
+            InitServiceImpl.getDataForInit({ eventCode: TEST_EVENT_CODE, uuid: TEST_UUID }),
+        ).rejects.toThrow(InternalServerError);
     });
 
     it("イベントが見つからない場合は空文字のイベント種別コードで各Repositoryを呼び出す", async () => {
