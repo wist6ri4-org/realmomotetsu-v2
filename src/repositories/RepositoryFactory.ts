@@ -12,6 +12,7 @@ import { DocumentsRepository } from "./documents/DocumentsRepository";
 import { UsersRepository } from "./users/UsersRepository";
 import { PropertyPurchasesRepository } from "./propertyPurchases/PropertyPurchasesRepository";
 import { PrismaTransactionClient } from "./base/BaseRepository";
+import { AttendancesRepository } from "./attendances/AttendancesRepository";
 
 /**
  * Repositoryのファクトリークラス
@@ -30,6 +31,7 @@ export class RepositoryFactory {
     private static documentsRepository: DocumentsRepository | null = null;
     private static usersRepository: UsersRepository | null = null;
     private static propertyPurchasesRepository: PropertyPurchasesRepository | null = null;
+    private static attendancesRepository: AttendancesRepository | null = null;
 
     /**
      * トランザクション内で複数のRepositoryを使用するためのユーティリティメソッド
@@ -172,6 +174,17 @@ export class RepositoryFactory {
             this.propertyPurchasesRepository = new PropertyPurchasesRepository(prisma);
         }
         return this.propertyPurchasesRepository;
+    }
+
+    /**
+     * AttendancesRepositoryのインスタンスを取得（シングルトン）
+     * @returns {AttendancesRepository} AttendancesRepositoryのインスタンス
+     */
+    static getAttendancesRepository(): AttendancesRepository {
+        if (!this.attendancesRepository) {
+            this.attendancesRepository = new AttendancesRepository(prisma);
+        }
+        return this.attendancesRepository;
     }
 
     /**

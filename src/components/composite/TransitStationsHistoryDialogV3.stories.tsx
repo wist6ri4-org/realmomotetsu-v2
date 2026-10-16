@@ -28,6 +28,7 @@ const meta = {
     tags: ["autodocs"],
     // NOTE: 開閉状態をローカルstateで持つ理由はAlertDialog.stories.tsxのコメントを参照。
     render: (args) => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         const [isOpen, setIsOpen] = useState(false);
         return (
             <>
@@ -49,6 +50,13 @@ const meta = {
     args: {
         teamData,
         team,
+        members: [
+            { id: 1, nickname: "たろうたろう", iconUrl: null, teamCode: "TEAM_A" },
+            { id: 2, nickname: "はなこ", iconUrl: null, teamCode: "TEAM_A" },
+            { id: 3, nickname: "じろう", iconUrl: null, teamCode: "TEAM_A" },
+            { id: 4, nickname: "さぶろう", iconUrl: null, teamCode: "TEAM_A" },
+            { id: 5, nickname: "しろう", iconUrl: null, teamCode: "TEAM_A" },
+        ],
         isOpen: false,
         onClose: fn(),
     },
@@ -63,6 +71,11 @@ export const Default: Story = {
         const canvas = within(canvasElement);
         await userEvent.click(canvas.getByRole("button", { name: "ダイアログを開く" }));
         await expect(within(document.body).getByText("渋谷")).toBeInTheDocument();
+        await expect(within(document.body).getByText("たろうたろう")).toBeInTheDocument();
+        await expect(within(document.body).getByText("はなこ")).toBeInTheDocument();
+        await expect(within(document.body).getByText("じろう")).toBeInTheDocument();
+        await expect(within(document.body).getByText("さぶろう")).toBeInTheDocument();
+        await expect(within(document.body).getByText("しろう")).toBeInTheDocument();
     },
 };
 

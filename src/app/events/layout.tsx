@@ -10,7 +10,7 @@ import { NavigationBar } from "@/components/composite/NavigationBar";
 import Footer from "@/components/composite/Footer";
 import RoutemapDialog from "@/components/composite/RoutemapDialog";
 import { useParams } from "next/navigation";
-import { InitResponse } from "@/features/init/types";
+import { InitResponse, Member } from "@/features/init/types";
 import { Documents, Stations, Teams } from "@/generated/prisma";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 import { UsersWithRelations } from "@/repositories/users/UsersRepository";
@@ -46,6 +46,7 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
     const [documents, setDocuments] = useState<Documents[]>([]);
     const [user, setUser] = useState<UsersWithRelations | null>(null);
     const [event, setEvent] = useState<EventWithRelations>({} as EventWithRelations);
+    const [members, setMembers] = useState<Member[]>([]);
     const [versionPath, setVersionPath] = useState<string>(GameConstants.VERSION.V02.path);
     const [rawInitData, setRawInitData] = useState<InitResponse | null>(null);
     const [isInitDataLoading, setIsInitDataLoading] = useState(true);
@@ -75,6 +76,7 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
                 setDocuments(initData.documents || []);
                 setUser(initData.user || null);
                 setEvent(initData.event);
+                setMembers(initData.members || []);
                 setVersionPath(Converter.convertEventVersionToVersionPath(initData.event?.eventType?.version || GameConstants.VERSION.V02.number));
 
                 setRawInitData(initData);
@@ -121,6 +123,7 @@ const EventsLayout: React.FC<EventsLayoutProps> = ({ children }: EventsLayoutPro
         documents,
         user,
         event,
+        members,
         versionPath,
         rawInitData,
         isInitDataLoading,

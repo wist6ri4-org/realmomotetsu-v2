@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { InitResponse } from "@/features/init/types";
+import { InitResponse, Member } from "@/features/init/types";
 import { Documents, Stations, Teams } from "@/generated/prisma";
 import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 import { UsersWithRelations } from "@/repositories/users/UsersRepository";
@@ -13,6 +13,7 @@ import { EventWithRelations } from "@/repositories/events/EventsRepository";
  * @property {Documents[]} documents - ドキュメントの配列
  * @property {UsersWithRelations | null} user - ユーザー情報
  * @property {EventWithRelations} event - イベント情報
+ * @property {Member[]} members - 参加者の配列
  * @property {string} versionPath - イベントのバージョンに対応するパス
  * @property {boolean} isInitDataLoading - 初期データのロード状態
  * @property {string | null} contextError - コンテキストのエラー情報
@@ -26,6 +27,7 @@ export interface EventContextType {
     documents: Documents[];
     user: UsersWithRelations | null;
     event: EventWithRelations;
+    members: Member[];
 
     versionPath: string;
 

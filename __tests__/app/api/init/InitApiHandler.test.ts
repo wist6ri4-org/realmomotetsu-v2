@@ -60,6 +60,7 @@ const buildValidInitResponse = (): InitResponse => ({
         ],
     },
     event: { ...buildEvent(), eventType: buildEventType() },
+    members: [{ id: 1, nickname: "テストユーザー", iconUrl: null, teamCode: "TEAM_A" }],
 });
 
 describe("InitApiHandler", () => {
@@ -134,6 +135,30 @@ describe("InitApiHandler", () => {
 
             expect(status).toBe(StatusCode.BAD_REQUEST);
             expect(body.error).toBe("Validation failed");
+        });
+
+        it("membersを欠いたレスポンスは400を返す", async () => {
+            const { members: _members, ...invalidData } = buildValidInitResponse();
+            InitServiceImpl.getDataForInit.mockResolvedValue(invalidData as never);
+
+            const req = buildGetRequest({ eventCode: TEST_EVENT_CODE, uuid: TEST_USER_UUID });
+            const { status, body } = await readResponse(await new InitApiHandler(req).handle());
+
+            expect(status).toBe(StatusCode.BAD_REQUEST);
+            expect(body.error).toBe("Validation failed");
+        });
+
+        it("membersのチームコードが文字列でない場合は400を返す", async () => {
+            const data = buildValidInitResponse();
+            InitServiceImpl.getDataForInit.mockResolvedValue({
+                ...data,
+                members: [{ id: 1, nickname: "a", iconUrl: null, teamCode: 1 }],
+            } as never);
+
+            const req = buildGetRequest({ eventCode: TEST_EVENT_CODE, uuid: TEST_USER_UUID });
+            const { status } = await readResponse(await new InitApiHandler(req).handle());
+
+            expect(status).toBe(StatusCode.BAD_REQUEST);
         });
 
         it("Serviceが投げたInternalServerErrorのステータスコードを引き継ぐ", async () => {

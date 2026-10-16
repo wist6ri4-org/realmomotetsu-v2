@@ -22,6 +22,7 @@ export type InitRequest = {
  * @property {Documents[]} documents - ドキュメントの配列
  * @property {UsersWithRelations} user - ユーザー情報
  * @property {EventWithRelations} event - イベント情報
+ * @property {Member[]} members - 参加者の配列
  */
 export type InitResponse = {
     eventType: EventTypes | null;
@@ -31,4 +32,19 @@ export type InitResponse = {
     documents: Documents[];
     user: UsersWithRelations;
     event: EventWithRelations;
+    members: Member[];
+};
+
+/**
+ * 参加者
+ * @property {string} id - 参加情報ID
+ * @property {string | null} nickname - ニックネーム
+ * @property {string | null} iconUrl - アイコンURL
+ * @property {string} teamCode - チームコード
+ */
+export type Member = {
+    id: number;
+    nickname: string | null;
+    iconUrl: string | null;
+    teamCode: string;
 };
