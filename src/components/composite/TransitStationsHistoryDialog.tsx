@@ -99,7 +99,7 @@ const TransitStationsHistoryDialog: React.FC<TransitStationsHistoryDialogProps> 
                     </TableContainer>
                 </DialogContent>
                 <DialogActions>
-                    <CustomButton onClick={onClose} color="warning">
+                    <CustomButton onClick={onClose}>
                         閉じる
                     </CustomButton>
                 </DialogActions>

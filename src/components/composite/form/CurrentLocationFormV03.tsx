@@ -215,7 +215,6 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
             await showAlertDialog({
                 title: DialogConstants.TITLE.REGISTERED,
                 message: getMessage("REGISTER_SUCCESS", { data: "現在地" }),
-                buttonColor: "primary",
             });
 
             switch (responseData.stationType) {
@@ -233,7 +232,6 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
                             "MISSION_STATION_ARRIVAL",
                             { stationName: station.name, stationNameKana: station.kana }
                         ),
-                        buttonColor: "primary",
                     });
                     break;
                 }
@@ -248,7 +246,6 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
                             "PLUS_STATION_ARRIVAL",
                             { teamName: team.teamName, points: Converter.convertPointsToYenV3(plusPoints) }
                         ),
-                        buttonColor: "primary",
                     });
                     break;
                 }
@@ -263,7 +260,6 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
                             "MINUS_STATION_ARRIVAL",
                             { teamName: team.teamName, points: Converter.convertPointsToYenV3(-1 * minusPoints) }
                         ),
-                        buttonColor: "primary",
                     });
                     break;
                 }
@@ -277,7 +273,6 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
                             "CARD_STATION_ARRIVAL",
                             { stationName: station.name, stationNameKana: station.kana }
                         ),
-                        buttonColor: "primary",
                     });
                     break;
                 }
@@ -291,7 +286,6 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
                             "TREASURE_STATION_ARRIVAL",
                             { stationName: station.name, stationNameKana: station.kana }
                         ),
-                        buttonColor: "primary",
                     });
                     break;
                 }
@@ -390,9 +384,8 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
                 isConfirmOpen={isConfirmOpen}
                 title={dialogOptions.title}
                 message={dialogOptions.message}
-                confirmButtonColor={dialogOptions.confirmButtonColor}
+                severity={dialogOptions.severity}
                 onConfirm={handleConfirm}
-                cancelButtonColor={dialogOptions.cancelButtonColor}
                 onCancel={handleCancel}
                 confirmText={dialogOptions.confirmText}
             />
@@ -400,7 +393,6 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
                 isAlertOpen={isAlertOpen}
                 title={alertOptions.title}
                 message={alertOptions.message}
-                buttonColor={alertOptions.buttonColor}
                 onOk={handleAlertOk}
                 okText={alertOptions.okText}
             />
