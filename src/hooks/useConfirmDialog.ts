@@ -1,20 +1,17 @@
-import { ColorNames } from "@/theme/colors";
 import { useState, useCallback } from "react";
 
 /**
  * 確認ダイアログのオプション型定義
  * @property {string} title - ダイアログのタイトル（オプション）
  * @property {string} message - ダイアログのメッセージ
- * @property {ColorNames} confirmButtonColor - 確認ボタンの色（オプション）
- * @property {ColorNames} cancelButtonColor - キャンセルボタンの色（オプション）
+ * @property {"default" | "warning"} severity - 確認ボタンの重要度（オプション）
  * @property {string} confirmText - 確認ボタンのテキスト（オプション）
  * @property {string} cancelText - キャンセルボタンのテキスト（オプション）
  */
 interface ConfirmDialogOptions {
     title?: string;
     message: string;
-    confirmButtonColor?: ColorNames;
-    cancelButtonColor?: ColorNames;
+    severity?: "default" | "warning";
     confirmText?: string;
     cancelText?: string;
 }

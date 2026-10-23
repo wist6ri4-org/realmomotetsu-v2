@@ -83,7 +83,7 @@ const InformationDialogV3: React.FC<InformationDialogV3Props> = ({
                     />
                 </DialogContent>
                 <DialogActions>
-                    <CustomButton onClick={handleClose} color="warning">
+                    <CustomButton onClick={handleClose}>
                         閉じる
                     </CustomButton>
                 </DialogActions>

@@ -271,8 +271,7 @@ const PointsTransferFormV3: React.FC<PointsTransferFormV3Props> = ({
                 isConfirmOpen={isConfirmOpen}
                 title={dialogOptions.title}
                 message={dialogOptions.message}
-                confirmButtonColor={dialogOptions.confirmButtonColor}
-                cancelButtonColor={dialogOptions.cancelButtonColor}
+                severity={dialogOptions.severity}
                 onConfirm={handleConfirm}
                 onCancel={handleCancel}
             />
@@ -280,7 +279,6 @@ const PointsTransferFormV3: React.FC<PointsTransferFormV3Props> = ({
                 isAlertOpen={isAlertOpen}
                 title={alertOptions.title}
                 message={alertOptions.message}
-                buttonColor={alertOptions.buttonColor}
                 onOk={handleAlertOk}
                 okText={alertOptions.okText}
             />

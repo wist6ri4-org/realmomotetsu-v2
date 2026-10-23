@@ -2,13 +2,13 @@ import React from "react";
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Stack } from "@mui/material";
 import { DialogConstants } from "@/constants/dialogConstants";
 import CustomButton from "./CustomButton";
-import { ColorNames } from "@/theme/colors";
 
 /**
  * ConfirmDialogコンポーネントのプロパティ型定義
  * @param {boolean} isConfirmOpen - ダイアログの開閉状態
  * @param {string} title - ダイアログのタイトル（オプション）
  * @param {string} message - ダイアログのメッセージ
+ * @param {"default" | "warning"} severity - 確認ボタンの重要度。warningは強制実行など注意を要する操作用（オプション）
  * @param {() => void} onConfirm - 確認ボタンがクリックされたときのハンドラー
  * @param {() => void} onCancel - キャンセルボタンがクリックされたときのハンドラー
  * @param {string} confirmText - 確認ボタンのテキスト（オプション）
@@ -18,8 +18,7 @@ interface ConfirmDialogProps {
     isConfirmOpen: boolean;
     title?: string;
     message: string;
-    confirmButtonColor?: ColorNames;
-    cancelButtonColor?: ColorNames;
+    severity?: "default" | "warning";
     onConfirm: () => void;
     onCancel: () => void;
     confirmText?: string;
@@ -35,8 +34,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     isConfirmOpen,
     title,
     message,
-    confirmButtonColor = "warning",
-    cancelButtonColor = "primary",
+    severity = "default",
     onConfirm,
     onCancel,
     confirmText = DialogConstants.TEXT.OK,
@@ -80,7 +78,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 >
                     <CustomButton
                         onClick={handleCancel}
-                        color={cancelButtonColor}
+                        color="primary"
                         variant="outlined"
                         fullWidth
                     >
@@ -88,7 +86,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                     </CustomButton>
                     <CustomButton
                         onClick={handleConfirm}
-                        color={confirmButtonColor}
+                        color={severity === "warning" ? "warning" : "primary"}
                         variant="contained"
                         fullWidth
                     >

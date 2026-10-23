@@ -69,13 +69,11 @@ const CalculateDistanceToolForm: React.FC<CalculateDistanceToolFormProps> = (
             await showAlertDialog({
                 title: "計算結果",
                 message: alertMessage,
-                buttonColor: "primary",
             });
         } catch (error) {
             await showAlertDialog({
                 title: DialogConstants.TITLE.ERROR,
                 message: "マス数の計算に失敗しました。",
-                buttonColor: "error",
             });
         } finally {
             setIsLoading(false);
@@ -153,7 +151,6 @@ const CalculateDistanceToolForm: React.FC<CalculateDistanceToolFormProps> = (
                 message={alertOptions.message}
                 onOk={handleAlertOk}
                 okText={alertOptions.okText}
-                buttonColor={alertOptions.buttonColor}
             />
         </>
     );

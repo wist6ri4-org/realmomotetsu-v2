@@ -3,6 +3,7 @@ import Confetti from "react-canvas-confetti";
 import React, { useRef, useCallback, useEffect } from "react";
 import CustomButton from "../base/CustomButton";
 import Image from "next/image";
+import { DialogConstants } from "@/constants/dialogConstants";
 
 
 /**
@@ -223,10 +224,9 @@ const GoalDialog: React.FC<GoalDialogProps> = ({ goalStationName, isOpen, handle
                     <CustomButton
                         onClick={handleClose}
                         color="primary"
-                        variant="outlined"
                         fullWidth
                     >
-                        OK
+                        {DialogConstants.TEXT.OK}
                     </CustomButton>
                 </Stack>
 

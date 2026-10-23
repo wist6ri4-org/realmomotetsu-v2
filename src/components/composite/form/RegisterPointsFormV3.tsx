@@ -98,7 +98,6 @@ const RegisterPointsFormV3: React.FC<RegisterPointsFormV3Props> = ({
                 ? "物件" : "収益"}`;
         const isConfirmed = await showConfirmDialog({
             message: confirmMessage,
-            confirmButtonColor: "primary"
         });
 
         if (!isConfirmed) {
@@ -133,7 +132,6 @@ const RegisterPointsFormV3: React.FC<RegisterPointsFormV3Props> = ({
             await showAlertDialog({
                 title: DialogConstants.TITLE.REGISTERED,
                 message: getMessage("REGISTER_SUCCESS", { data: "ポイント" }),
-                buttonColor: "primary",
             });
 
             onSubmit?.();
@@ -146,7 +144,6 @@ const RegisterPointsFormV3: React.FC<RegisterPointsFormV3Props> = ({
             await showAlertDialog({
                 title: DialogConstants.TITLE.ERROR,
                 message: `${getMessage("REGISTER_FAILED", { data: "ポイント" })}\n${appError.message}`,
-                buttonColor: "error"
             });
             return;
         } finally {
@@ -245,8 +242,7 @@ const RegisterPointsFormV3: React.FC<RegisterPointsFormV3Props> = ({
                 isConfirmOpen={isConfirmOpen}
                 title={dialogOptions.title}
                 message={dialogOptions.message}
-                confirmButtonColor={dialogOptions.confirmButtonColor}
-                cancelButtonColor={dialogOptions.cancelButtonColor}
+                severity={dialogOptions.severity}
                 onConfirm={handleConfirm}
                 onCancel={handleCancel}
             />
@@ -254,7 +250,6 @@ const RegisterPointsFormV3: React.FC<RegisterPointsFormV3Props> = ({
                 isAlertOpen={isAlertOpen}
                 title={alertOptions.title}
                 message={alertOptions.message}
-                buttonColor={alertOptions.buttonColor}
                 onOk={handleAlertOk}
                 okText={alertOptions.okText}
             />

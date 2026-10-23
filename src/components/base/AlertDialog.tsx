@@ -2,7 +2,6 @@ import React from "react";
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
 import { DialogConstants } from "@/constants/dialogConstants";
 import CustomButton from "./CustomButton";
-import { ColorNames } from "@/theme/colors";
 
 /**
  * AlertDialogコンポーネントのプロパティ型定義
@@ -16,7 +15,6 @@ interface AlertDialogProps {
     isAlertOpen: boolean;
     title?: string;
     message: string;
-    buttonColor?: ColorNames;
     onOk: () => void;
     okText?: string;
 }
@@ -30,7 +28,6 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
     isAlertOpen,
     title,
     message,
-    buttonColor = "error",
     onOk,
     okText = DialogConstants.TEXT.CLOSE,
 }: AlertDialogProps): React.JSX.Element => {
@@ -57,7 +54,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
             <DialogActions>
                 <CustomButton
                     onClick={handleOk}
-                    color={buttonColor}
+                    color="primary"
                     variant="contained"
                     fullWidth
                 >

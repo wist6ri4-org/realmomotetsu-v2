@@ -64,7 +64,6 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
             `駅: ${stations.find((station) => station.stationCode === stationCodeInput.value)?.name || "不明"}`;
         const isConfirmed = await showConfirmDialog({
             message: confirmMessage,
-            confirmButtonColor: "primary",
         });
         if (!isConfirmed) {
             return;
@@ -104,7 +103,6 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
             await showAlertDialog({
                 title: DialogConstants.TITLE.REGISTERED,
                 message: getMessage("REGISTER_SUCCESS", { data: "物件駅購入情報" }),
-                buttonColor: "primary",
             });
 
             onSubmit?.();
@@ -116,7 +114,6 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
             await showAlertDialog({
                 title: DialogConstants.TITLE.ERROR,
                 message: `${getMessage("REGISTER_FAILED", { data: "物件駅購入情報" })}\n${appError.message}`,
-                buttonColor: "error",
             });
             return;
         } finally {
@@ -203,8 +200,7 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
                 isConfirmOpen={isConfirmOpen}
                 title={dialogOptions.title}
                 message={dialogOptions.message}
-                confirmButtonColor={dialogOptions.confirmButtonColor}
-                cancelButtonColor={dialogOptions.cancelButtonColor}
+                severity={dialogOptions.severity}
                 onConfirm={handleConfirm}
                 onCancel={handleCancel}
             />
@@ -212,7 +208,6 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
                 isAlertOpen={isAlertOpen}
                 title={alertOptions.title}
                 message={alertOptions.message}
-                buttonColor={alertOptions.buttonColor}
                 onOk={handleAlertOk}
                 okText={alertOptions.okText}
             />
