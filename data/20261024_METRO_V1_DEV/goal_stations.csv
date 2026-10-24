@@ -1,0 +1,2 @@
+station_code,event_code,is_start_station,created_at,updated_at
+METRO_V1_OTEMACHI,METRO_V1_20261024_DEV,true,2026-10-24 01:00:00+09,2026-10-24 01:00:00+09
