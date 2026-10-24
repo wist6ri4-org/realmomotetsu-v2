@@ -186,6 +186,23 @@ export const Data: Story = {
   `getByText` より `getByRole("heading", { name })` の方が確実にマッチする
   （MUI の `DialogTitle` を挟んだ text ノードの分割で `getByText` が失敗することがある）。
 
+## Discord通知移行後のフォーム試験
+
+Discord通知は登録APIのサーバー側で実行するため、フォームのstoryでは通知専用APIのMSWハンドラーを追加しない。
+登録APIはMSWでモックされるので、Storybook上の操作から実際のDiscord通知は送られない。
+サーバー側の通知条件・送信処理は[Jestの通知テスト](TESTING_GUIDE.md)で検証する。
+
+現在地登録フォームのv02は、通知判定用の最新目的駅取得を行わない。
+v03はゴール演出に必要なため`GET /api/goal-stations/latest`のモックを残す。
+[CurrentLocationFormV03.stories.tsx](../src/components/composite/form/CurrentLocationFormV03.stories.tsx)の
+`SubmitSuccessGoalStation`は、通知設定が有効な状態で「登録完了 → 目的地到着 → ミッション案内」を検証し、
+`fetch`の記録からDiscord関連の追加通信がないことも確認する。
+
+```bash
+npx vitest run src/components/composite/form/CurrentLocationForm.stories.tsx src/components/composite/form/CurrentLocationFormV03.stories.tsx
+npx vitest run src/components/composite/form/RegisterGoalStationsForm.stories.tsx src/components/composite/form/RegisterGoalStationsFormV3.stories.tsx src/components/composite/form/RegisterBombiiAutoForm.stories.tsx src/components/composite/form/RegisterBombiiManualForm.stories.tsx
+```
+
 ## 既知の注意点
 
 - `@storybook/addon-vitest`（v10.6.0時点）には、Windowsでのパス区切り文字の扱いおよび

@@ -9,7 +9,6 @@ import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
 import CustomSelect from "@/components/base/CustomSelect";
 import { DialogConstants } from "@/constants/dialogConstants";
-import { DiscordNotificationTemplates } from "@/constants/discordNotificationTemplates";
 import { getMessage } from "@/constants/messages";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
@@ -19,7 +18,6 @@ import { Events, LatestTransitStations, Stations, StationType, Teams } from "@/g
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useGoalDialog } from "@/hooks/useGoalDialog";
-import { useDiscordNotification } from "@/hooks/useDiscordNotification";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { ClosestStation } from "@/types/ClosestStation";
 import { TypeConverter } from "@/utils/typeConverter";
@@ -57,7 +55,6 @@ interface CurrentLocationFormV3Props {
 const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
     teams,
     stations,
-    event,
     closestStations,
     initialTeamCode,
     isOperating,
@@ -75,41 +72,6 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
     const { isGoalDialogOpen, showGoalDialog, handleClose } = useGoalDialog();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-
-    const { sendNotification, clearError } = useDiscordNotification();
-
-    /**
-     * Discord通知を送信する
-     * @returns {Promise<void>} - 通知送信の完了を示すPromise
-     * @description
-     * 目的駅到着時
-     */
-    const notifyToDiscord = async (): Promise<void> => {
-        await sendNotification({
-            discordWebhookUrl: event.discordWebhookUrl,
-            templateName: DiscordNotificationTemplates.ARRIVAL_GOAL_STATION,
-            variables: {
-                teamName: teams.find((team) => team.teamCode === selectedTeamCodeInput.value)?.teamName || "不明",
-                stationName:
-                    stations.find((station) => station.stationCode === selectedStationCodeInput.value)?.name || "不明",
-            },
-        });
-    };
-
-    /**
-     * 収益獲得通知を送信する
-     * @returns {Promise<void>} - 通知送信の完了を示すPromise
-     */
-    const notifyToTeamDiscord = async (discordWebhookUrl: string, revenue: number): Promise<void> => {
-        await sendNotification({
-            discordWebhookUrl: discordWebhookUrl,
-            templateName: DiscordNotificationTemplates.EARN_REVENUE,
-            variables: {
-                stationName: stations.find((station) => station.stationCode === selectedStationCodeInput.value)?.name || "不明",
-                revenueYen: Converter.convertPointsToYenV3(revenue),
-            }
-        })
-    }
 
     /**
      * 最新の目的駅の駅コードを取得
@@ -138,7 +100,6 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
      */
     const registerTransitStation = async (e: React.SubmitEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
-        clearError();
 
         const team = teams.find((team) => team.teamCode === selectedTeamCodeInput.value) as Teams;
         const station = stations.find((station) => station.stationCode === selectedStationCodeInput.value) as Stations;
@@ -200,18 +161,8 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
             }
             const responseData: PostCurrentLocationV3Response = (await response.json()).data;
 
-            // 収益獲得通知を送信
-            if (responseData.point && event.isNotificationEnabled && responseData.teamDiscordWebhookUrl) {
-                notifyToTeamDiscord(responseData.teamDiscordWebhookUrl, responseData.point.points);
-            }
-
             // 最新の目的駅の駅コードを取得
             const nextGoalStationCode = await fetchNextGoalStationCode();
-            if (event.isNotificationEnabled && event.discordWebhookUrl && selectedStationCodeInput.value === nextGoalStationCode) {
-                // 目的駅に到着した場合、Discord通知を送信
-                notifyToDiscord();
-            }
-
             await showAlertDialog({
                 title: DialogConstants.TITLE.REGISTERED,
                 message: getMessage("REGISTER_SUCCESS", { data: "現在地" }),

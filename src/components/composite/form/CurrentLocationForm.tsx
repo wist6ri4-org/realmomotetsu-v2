@@ -9,17 +9,14 @@ import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomButton from "@/components/base/CustomButton";
 import CustomSelect from "@/components/base/CustomSelect";
 import { DialogConstants } from "@/constants/dialogConstants";
-import { DiscordNotificationTemplates } from "@/constants/discordNotificationTemplates";
 import { GameConstants } from "@/constants/gameConstants";
 import { getMessage } from "@/constants/messages";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
-import { GetLatestGoalStationsResponse } from "@/features/goal-stations/latest/types";
 import { GetLatestTransitStationsResponse } from "@/features/transit-stations/latest/types";
 import { Events, LatestTransitStations, Stations, Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
-import { useDiscordNotification } from "@/hooks/useDiscordNotification";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { ClosestStation } from "@/types/ClosestStation";
 import { TypeConverter } from "@/utils/typeConverter";
@@ -53,7 +50,6 @@ interface CurrentLocationFormProps {
 const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
     teams,
     stations,
-    event,
     closestStations,
     initialTeamCode,
     isOperating,
@@ -70,46 +66,6 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const { sendNotification, clearError } = useDiscordNotification();
-
-    /**
-     * Discord通知を送信する
-     * @returns {Promise<void>} - 通知送信の完了を示すPromise
-     * @description
-     * 目的駅到着時
-     */
-    const notifyToDiscord = async (): Promise<void> => {
-        await sendNotification({
-            discordWebhookUrl: event.discordWebhookUrl,
-            templateName: DiscordNotificationTemplates.ARRIVAL_GOAL_STATION,
-            variables: {
-                teamName: teams.find((team) => team.teamCode === selectedTeamCodeInput.value)?.teamName || "不明",
-                stationName:
-                    stations.find((station) => station.stationCode === selectedStationCodeInput.value)?.name || "不明",
-            },
-        });
-    };
-
-    /**
-     * 最新の目的駅の駅コードを取得
-     * @returns {Promise<string>} - 次の目的駅の駅コード
-     */
-    const fetchNextGoalStationCode = async (): Promise<string> => {
-        try {
-            const response = await apiFetch(`/api/goal-stations/latest?eventCode=${eventCode}`);
-            if (!response.ok) {
-                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
-            }
-            const data: GetLatestGoalStationsResponse = (await response.json()).data;
-            const nextGoalStation = data.goalStation;
-            return nextGoalStation.station.stationCode;
-        } catch (error) {
-            const appError = ApplicationErrorFactory.normalize(error);
-            ApplicationErrorHandler.logError(appError, "WARN");
-            return "";
-        }
-    };
-
     /**
      * データの登録
      * @param {React.FormEvent<HTMLFormElement>} e - フォームの送信イベント
@@ -117,7 +73,6 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
      */
     const registerTransitStation = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
-        clearError();
 
         const team = teams.find((team) => team.teamCode === selectedTeamCodeInput.value) as Teams;
         const station = stations.find((station) => station.stationCode === selectedStationCodeInput.value) as Stations;
@@ -177,13 +132,6 @@ const CurrentLocationForm: React.FC<CurrentLocationFormProps> = ({
 
             if (!response.ok) {
                 throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
-            }
-
-            // 最新の目的駅の駅コードを取得
-            const nextGoalStationCode = await fetchNextGoalStationCode();
-            if (event.isNotificationEnabled && event.discordWebhookUrl && selectedStationCodeInput.value === nextGoalStationCode) {
-                // 目的駅に到着した場合、Discord通知を送信
-                notifyToDiscord();
             }
 
             selectedTeamCodeInput.reset();

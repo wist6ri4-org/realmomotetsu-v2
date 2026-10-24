@@ -1,15 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, userEvent, within } from "storybook/test";
 import CurrentLocationForm from "./CurrentLocationForm";
-import { buildEvent, buildGoalStation, buildStations, buildTeam } from "@/stories/mocks/fixtures";
-import { currentLocationHandlers, goalStationsLatestHandlers, transitStationsLatestHandlers } from "@/stories/mocks/handlers";
+import { buildEvent, buildStations, buildTeam } from "@/stories/mocks/fixtures";
+import { currentLocationHandlers, transitStationsLatestHandlers } from "@/stories/mocks/handlers";
 
 const teams = [buildTeam({ teamCode: "TEAM_A", teamName: "チームA" })];
 const stations = buildStations(["STATION_A", "STATION_B"]);
 
 /**
- * 二重登録チェック（`GET /api/transit-stations/latest`）→ 現在地登録（`POST /api/current-location`）→
- * 次の目的駅取得（`GET /api/goal-stations/latest`、Discord通知の要否判定用）の順にAPIを呼ぶ。
+ * 二重登録チェック（`GET /api/transit-stations/latest`）→ 現在地登録（`POST /api/current-location`）の順にAPIを呼ぶ。
  */
 const meta = {
     title: "Composite/Form/CurrentLocationForm",
@@ -26,7 +25,6 @@ const meta = {
             handlers: {
                 transitStationsLatest: transitStationsLatestHandlers.success({ latestTransitStations: [] }),
                 currentLocation: currentLocationHandlers.success({}),
-                goalStationsLatest: goalStationsLatestHandlers.success({ goalStation: buildGoalStation() }),
             },
         },
     },

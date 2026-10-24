@@ -151,6 +151,16 @@ if (!team) {
 
 本番環境では `LogService` 内の TODO 箇所に CloudWatch / Datadog 等への送信処理を追加できる。
 
+## 登録後のDiscord通知
+
+通知は登録APIのサービス層で行う。DB書き込み・トランザクションのコミット完了後に
+`src/features/discord/notifications.ts`の予約関数を呼び、Next.jsの`after()`で応答後に送信する。
+予約はRealtime通知・レスポンス生成より先に行い、クライアントの受信成否を通知条件にしない。
+通知の準備・予約・送信のエラーは通知処理内で記録し、確定済みの登録をAPIエラーに変えない。
+
+通知専用の`POST /api/discord/notify`は廃止済み。Webhook URLやテンプレート名をクライアントから受け取るAPIは追加しない。
+対象サービスと通知条件は[Discord通知ガイド](../../features/discord/README.md)を参照。
+
 ## 注意事項
 
 - ハンドラーメソッド内で `throw` した例外は `BaseApiHandler.handle()` が自動でキャッチする

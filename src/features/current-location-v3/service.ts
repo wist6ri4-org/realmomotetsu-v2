@@ -5,6 +5,7 @@ import { ApiError, DataIntegrityError, InternalServerError } from "@/error";
 import { GameConstants } from "@/constants/gameConstants";
 import { StationGrade, StationType } from "@/generated/prisma";
 import { notifyEventDataChanged } from "@/lib/realtimeNotifier";
+import { scheduleCurrentLocationNotifications } from "@/features/discord/notifications";
 
 export const CurrentLocationV3ServiceImpl: CurrentLocationV3Service = {
     /**
@@ -107,10 +108,20 @@ export const CurrentLocationV3ServiceImpl: CurrentLocationV3Service = {
                 }
             });
 
+            await scheduleCurrentLocationNotifications(
+                transitStation,
+                createdPoints && propertyPurchase?.team.discordWebhookUrl
+                    ? {
+                          discordWebhookUrl: propertyPurchase.team.discordWebhookUrl,
+                          points: createdPoints.points,
+                          stationName: station.name,
+                      }
+                    : undefined,
+            );
+
             const res: PostCurrentLocationV3Response = {
                 transitStation: transitStation,
                 point: createdPoints,
-                teamDiscordWebhookUrl: propertyPurchase?.team.discordWebhookUrl ?? undefined,
                 stationType: station.stationType ?? undefined,
             };
 

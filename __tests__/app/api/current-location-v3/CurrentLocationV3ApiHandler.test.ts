@@ -21,7 +21,6 @@ jest.mock("@/features/current-location-v3/service", () => ({
     },
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { CurrentLocationV3ServiceImpl } = jest.requireMock("@/features/current-location-v3/service") as {
     CurrentLocationV3ServiceImpl: {
         postCurrentLocationV3: jest.Mock;
@@ -61,7 +60,7 @@ describe("CurrentLocationV3ApiHandler", () => {
             expect(body).toHaveProperty("data");
         });
 
-        it("point・stationType・teamDiscordWebhookUrlを含む戻り値もそのままレスポンスに乗る", async () => {
+        it("point・stationTypeを返し、通知用Webhookはレスポンスに含めない", async () => {
             const transitStation = buildTransitStation({ stationCode: "STATION_A" });
             const point = buildPoints({ points: 5 });
             CurrentLocationV3ServiceImpl.postCurrentLocationV3.mockResolvedValue({
@@ -77,7 +76,7 @@ describe("CurrentLocationV3ApiHandler", () => {
             expect(status).toBe(StatusCode.OK);
             const data = body.data as Record<string, unknown>;
             expect(data.stationType).toBe(StationType.plus);
-            expect(data.teamDiscordWebhookUrl).toBe("https://discord.com/api/webhooks/sample");
+            expect(data).not.toHaveProperty("teamDiscordWebhookUrl");
         });
 
         it.each([

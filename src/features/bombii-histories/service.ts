@@ -3,6 +3,7 @@ import { BombiiHistoriesService } from "./interface";
 import { PostBombiiHistoriesRequest, PostBombiiHistoriesResponse } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { notifyEventDataChanged } from "@/lib/realtimeNotifier";
+import { scheduleBombiiNotification } from "@/features/discord/notifications";
 
 export const BombiiHistoriesServiceImpl: BombiiHistoriesService = {
     /**
@@ -18,6 +19,7 @@ export const BombiiHistoriesServiceImpl: BombiiHistoriesService = {
                 eventCode: req.eventCode,
                 teamCode: req.teamCode,
             });
+            await scheduleBombiiNotification(bombiiHistory);
             const res: PostBombiiHistoriesResponse = {
                 bombiiHistory: bombiiHistory,
             };

@@ -11,14 +11,12 @@ import CustomSelect from "@/components/base/CustomSelect";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
 import { DialogConstants } from "@/constants/dialogConstants";
-import { DiscordNotificationTemplates } from "@/constants/discordNotificationTemplates";
 import { getMessage } from "@/constants/messages";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { Events, Stations } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
-import { useDiscordNotification } from "@/hooks/useDiscordNotification";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box, CircularProgress } from "@mui/material";
@@ -46,7 +44,6 @@ interface RegisterGoalStationsFormProps {
  */
 const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
     stations,
-    event,
     onSubmit,
     isOperating,
 }: RegisterGoalStationsFormProps): React.JSX.Element => {
@@ -59,23 +56,6 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const { sendNotification, clearError } = useDiscordNotification();
-
-    /**
-     * Discord通知を送信する
-     * @description
-     * 目的駅登録時
-     */
-    const notifyToDiscord = async (): Promise<void> => {
-        await sendNotification({
-            discordWebhookUrl: event.discordWebhookUrl,
-            templateName: DiscordNotificationTemplates.REGISTER_GOAL_STATION,
-            variables: {
-                stationName: stations.find((station) => station.stationCode === stationCodeInput.value)?.name || "不明",
-            },
-        });
-    };
-
     /**
      * データの登録
      * @param {React.FormEvent<HTMLFormElement>} e - フォームの送信イベント
@@ -83,7 +63,6 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
      */
     const registerGoalStation = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
-        clearError();
 
         const confirmMessage =
             "以下の内容で登録しますか？\n\n" +
@@ -117,10 +96,6 @@ const RegisterGoalStationsForm: React.FC<RegisterGoalStationsFormProps> = ({
             }
 
             stationCodeInput.reset();
-
-            if (event.isNotificationEnabled && event.discordWebhookUrl) {
-                notifyToDiscord();
-            }
 
             await showAlertDialog({
                 title: DialogConstants.TITLE.REGISTERED,

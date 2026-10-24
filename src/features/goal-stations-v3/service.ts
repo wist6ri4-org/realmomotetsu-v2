@@ -3,6 +3,7 @@ import { GoalStationsServiceV3 } from "./interface";
 import { PostGoalStationsV3Request, PostGoalStationsV3Response } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { notifyEventDataChanged } from "@/lib/realtimeNotifier";
+import { scheduleGoalStationNotification } from "@/features/discord/notifications";
 
 export const GoalStationsServiceV3Impl: GoalStationsServiceV3 = {
     /**
@@ -18,6 +19,7 @@ export const GoalStationsServiceV3Impl: GoalStationsServiceV3 = {
                 eventCode: req.eventCode,
                 stationCode: req.stationCode,
             });
+            await scheduleGoalStationNotification(goalStation);
             const res: PostGoalStationsV3Response = {
                 goalStation: goalStation,
             };
