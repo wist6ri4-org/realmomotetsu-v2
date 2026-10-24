@@ -44,7 +44,7 @@ export const SubmitSuccess: Story = {
         await userEvent.click(canvas.getByLabelText("チーム"));
         await userEvent.click(await within(document.body).findByRole("option", { name: "チームA" }));
 
-        await userEvent.click(canvas.getByLabelText("今いる駅"));
+        await userEvent.click(canvas.getByLabelText("購入する駅"));
         await userEvent.click(await within(document.body).findByRole("option", { name: "STATION_A" }));
 
         await userEvent.click(canvas.getByRole("button", { name: "送信" }));
@@ -72,7 +72,7 @@ export const DuplicateEntry: Story = {
         await userEvent.click(canvas.getByLabelText("チーム"));
         await userEvent.click(await within(document.body).findByRole("option", { name: "チームA" }));
 
-        await userEvent.click(canvas.getByLabelText("今いる駅"));
+        await userEvent.click(canvas.getByLabelText("購入する駅"));
         await userEvent.click(await within(document.body).findByRole("option", { name: "STATION_A" }));
 
         await userEvent.click(canvas.getByRole("button", { name: "送信" }));

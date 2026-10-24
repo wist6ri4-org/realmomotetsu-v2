@@ -170,7 +170,7 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
                             onChange={stationCodeInput.handleChange}
                             size="small"
                             variant="outlined"
-                            label="今いる駅"
+                            label="購入する駅"
                             required
                             disabled={isLoading}
                             sx={{ minWidth: 200 }}
