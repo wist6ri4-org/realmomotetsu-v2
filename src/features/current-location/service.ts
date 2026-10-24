@@ -4,6 +4,7 @@ import { PostCurrentLocationRequest, PostCurrentLocationResponse } from "./types
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { ApiError, InternalServerError } from "@/error";
 import { notifyEventDataChanged } from "@/lib/realtimeNotifier";
+import { scheduleCurrentLocationNotifications } from "@/features/discord/notifications";
 
 export const CurrentLocationServiceImpl: CurrentLocationService = {
     /**
@@ -31,6 +32,7 @@ export const CurrentLocationServiceImpl: CurrentLocationService = {
                 transitStationsData,
                 pointsData,
             );
+            await scheduleCurrentLocationNotifications(transitStation);
             const res: PostCurrentLocationResponse = {
                 transitStation: transitStation,
                 point: point,

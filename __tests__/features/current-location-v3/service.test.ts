@@ -2,6 +2,14 @@
  * @jest-environment node
  */
 
+jest.mock("@/lib/realtimeNotifier", () => ({ notifyEventDataChanged: jest.fn().mockResolvedValue(undefined) }));
+
+jest.mock("@/features/discord/notifications", () => ({
+    scheduleCurrentLocationNotifications: jest.fn().mockResolvedValue(undefined),
+    scheduleGoalStationNotification: jest.fn().mockResolvedValue(undefined),
+    scheduleBombiiNotification: jest.fn().mockResolvedValue(undefined),
+}));
+
 import { GameConstants } from "@/constants/gameConstants";
 import { InternalServerError, DataIntegrityError } from "@/error";
 import { CurrentLocationV3ServiceImpl } from "@/features/current-location-v3/service";
@@ -199,7 +207,7 @@ describe("CurrentLocationV3ServiceImpl.postCurrentLocationV3", () => {
             expect(res.point).toBeUndefined();
         });
 
-        it("収益通知用に所有チームのWebhook URLを返す", async () => {
+        it("所有チームのWebhook URLをレスポンスに含めない", async () => {
             const webhookUrl = "https://discord.com/api/webhooks/other-team";
             propertyPurchasesFindByEventCodeAndStationCode.mockResolvedValue(
                 buildPropertyPurchaseWithRelations(
@@ -210,7 +218,7 @@ describe("CurrentLocationV3ServiceImpl.postCurrentLocationV3", () => {
 
             const res = await CurrentLocationV3ServiceImpl.postCurrentLocationV3(buildRequest());
 
-            expect(res.teamDiscordWebhookUrl).toBe(webhookUrl);
+            expect(res).not.toHaveProperty("teamDiscordWebhookUrl");
         });
 
         it("物件が購入されていない場合はWebhook URLを返さない", async () => {
@@ -218,7 +226,7 @@ describe("CurrentLocationV3ServiceImpl.postCurrentLocationV3", () => {
 
             const res = await CurrentLocationV3ServiceImpl.postCurrentLocationV3(buildRequest());
 
-            expect(res.teamDiscordWebhookUrl).toBeUndefined();
+            expect(res).not.toHaveProperty("teamDiscordWebhookUrl");
         });
     });
 

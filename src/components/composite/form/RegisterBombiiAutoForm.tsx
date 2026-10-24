@@ -10,14 +10,12 @@ import CustomButton from "@/components/base/CustomButton";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
 import { DialogConstants } from "@/constants/dialogConstants";
-import { DiscordNotificationTemplates } from "@/constants/discordNotificationTemplates";
 import { getMessage } from "@/constants/messages";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { Events } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
-import { useDiscordNotification } from "@/hooks/useDiscordNotification";
 import { TeamData } from "@/types/TeamData";
 import { GameLogicUtils } from "@/utils/gameLogicUtils";
 import { Box, CircularProgress } from "@mui/material";
@@ -45,7 +43,6 @@ interface RegisterBombiiAutoFormProps {
  */
 const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
     teamData,
-    event,
     onSubmit,
     isOperating,
 }: RegisterBombiiAutoFormProps): React.JSX.Element => {
@@ -56,23 +53,6 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const { sendNotification, clearError } = useDiscordNotification();
-
-    /**
-     * Discord通知を送信する
-     * @description
-     * ボンビー登録時
-     */
-    const notifyToDiscord = async (teamName: string): Promise<void> => {
-        await sendNotification({
-            discordWebhookUrl: event.discordWebhookUrl,
-            templateName: DiscordNotificationTemplates.REGISTER_BOMBII,
-            variables: {
-                teamName: teamName,
-            },
-        });
-    };
-
     /**
      * データの確認と登録
      * @param {React.FormEvent<HTMLFormElement>} e - フォームの送信イベント
@@ -80,7 +60,6 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
      */
     const confirmAndRegisterBombii = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
-        clearError();
 
         // ボンビーのチームを条件に基づき決定
         const bombiiTeam = GameLogicUtils.confirmBombii(teamData);
@@ -123,10 +102,6 @@ const RegisterBombiiAutoForm: React.FC<RegisterBombiiAutoFormProps> = ({
 
             if (!response.ok) {
                 throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
-            }
-
-            if (event.isNotificationEnabled && event.discordWebhookUrl) {
-                notifyToDiscord(bombiiTeam.teamName);
             }
 
             await showAlertDialog({

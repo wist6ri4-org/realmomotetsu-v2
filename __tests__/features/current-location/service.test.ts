@@ -2,6 +2,14 @@
  * @jest-environment node
  */
 
+jest.mock("@/lib/realtimeNotifier", () => ({ notifyEventDataChanged: jest.fn().mockResolvedValue(undefined) }));
+
+jest.mock("@/features/discord/notifications", () => ({
+    scheduleCurrentLocationNotifications: jest.fn().mockResolvedValue(undefined),
+    scheduleGoalStationNotification: jest.fn().mockResolvedValue(undefined),
+    scheduleBombiiNotification: jest.fn().mockResolvedValue(undefined),
+}));
+
 import { ConflictError, InternalServerError } from "@/error";
 import { CurrentLocationServiceImpl } from "@/features/current-location/service";
 import { PointStatus } from "@/generated/prisma";
