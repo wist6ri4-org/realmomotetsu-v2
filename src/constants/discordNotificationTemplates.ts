@@ -10,6 +10,8 @@ export const DiscordNotificationTemplates = {
     REGISTER_GOAL_STATION: "registerGoalStation.txt",
     // 収益獲得通知
     EARN_REVENUE: "earnRevenue.txt",
+    // 収益支払い通知
+    PAY_REVENUE: "payRevenue.txt",
 } as const;
 
 export type DiscordNotificationTemplates = typeof DiscordNotificationTemplates;

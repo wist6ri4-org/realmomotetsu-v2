@@ -79,6 +79,25 @@ describe("CurrentLocationV3ApiHandler", () => {
             expect(data).not.toHaveProperty("teamDiscordWebhookUrl");
         });
 
+        it("物件駅の場合は収益と支払いのポイントを両方返す", async () => {
+            const point = buildPoints({ teamCode: "TEAM_B", points: 5_000 });
+            const paymentPoint = buildPoints({ teamCode: "TEAM_A", points: -5_000 });
+            CurrentLocationV3ServiceImpl.postCurrentLocationV3.mockResolvedValue({
+                transitStation: buildTransitStation({ stationCode: "STATION_A" }),
+                point,
+                paymentPoint,
+                stationType: StationType.mission,
+            });
+
+            const req = buildPostRequest(validBody);
+            const { status, body } = await readResponse(await new CurrentLocationV3ApiHandler(req).handle());
+
+            expect(status).toBe(StatusCode.OK);
+            const data = body.data as Record<string, { teamCode: string; points: number }>;
+            expect(data.point).toMatchObject({ teamCode: "TEAM_B", points: 5_000 });
+            expect(data.paymentPoint).toMatchObject({ teamCode: "TEAM_A", points: -5_000 });
+        });
+
         it.each([
             ["eventCodeがない", { teamCode: "TEAM_A", stationCode: "STATION_A" }],
             ["teamCodeが空文字", { ...validBody, teamCode: "" }],

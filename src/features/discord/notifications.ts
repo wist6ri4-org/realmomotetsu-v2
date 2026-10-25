@@ -75,20 +75,40 @@ export async function scheduleBombiiNotification(data: { eventCode: string; team
     ]);
 }
 
-/** 現在地と関連ポイントのコミット完了後に呼ぶ。収益は登録時の所有者・金額を使用する。 */
+/** 現在地と関連ポイントのコミット完了後に呼ぶ。収益・支払いは登録時の所有者・金額を使用する。 */
 export async function scheduleCurrentLocationNotifications(
     data: { eventCode: string; teamCode: string; stationCode: string },
-    revenue?: { discordWebhookUrl: string; points: number; stationName: string },
+    revenue?: {
+        ownerDiscordWebhookUrl?: string | null;
+        ownerTeamName: string;
+        payerTeamCode: string;
+        points: number;
+        stationName: string;
+    },
 ): Promise<void> {
     await scheduleEventNotifications(data.eventCode, [
         async () => {
-            if (!revenue) return;
+            if (!revenue?.ownerDiscordWebhookUrl) return;
             return {
-                discordWebhookUrl: revenue.discordWebhookUrl,
+                discordWebhookUrl: revenue.ownerDiscordWebhookUrl,
                 templateName: DiscordNotificationTemplates.EARN_REVENUE,
                 variables: {
                     stationName: revenue.stationName || "不明",
                     revenueYen: Converter.convertPointsToYenV3(revenue.points),
+                },
+            };
+        },
+        async () => {
+            if (!revenue) return;
+            const payer = await RepositoryFactory.getTeamsRepository().findByTeamCode(revenue.payerTeamCode);
+            if (!payer?.discordWebhookUrl) return;
+            return {
+                discordWebhookUrl: payer.discordWebhookUrl,
+                templateName: DiscordNotificationTemplates.PAY_REVENUE,
+                variables: {
+                    stationName: revenue.stationName || "不明",
+                    ownerTeamName: revenue.ownerTeamName || "不明",
+                    paymentYen: Converter.convertPointsToYenV3(revenue.points),
                 },
             };
         },

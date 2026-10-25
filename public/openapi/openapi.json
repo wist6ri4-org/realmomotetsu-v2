@@ -770,6 +770,47 @@
                             "updatedAt"
                           ]
                         },
+                        "paymentPoint": {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "points",
+                                "scored",
+                                "property",
+                                "revenue"
+                              ]
+                            },
+                            "id": {
+                              "type": "integer"
+                            },
+                            "teamCode": {
+                              "type": "string"
+                            },
+                            "eventCode": {
+                              "type": "string"
+                            },
+                            "points": {
+                              "type": "integer"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "id",
+                            "teamCode",
+                            "eventCode",
+                            "points",
+                            "createdAt",
+                            "updatedAt"
+                          ]
+                        },
                         "stationType": {
                           "type": "string",
                           "enum": [
@@ -3040,6 +3081,34 @@
                             "updatedAt",
                             "eventType"
                           ]
+                        },
+                        "members": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "number"
+                              },
+                              "nickname": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "iconUrl": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "teamCode": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "nickname",
+                              "iconUrl",
+                              "teamCode"
+                            ]
+                          }
                         }
                       },
                       "required": [
@@ -3049,7 +3118,8 @@
                         "nearbyStations",
                         "documents",
                         "user",
-                        "event"
+                        "event",
+                        "members"
                       ]
                     },
                     "requestId": {

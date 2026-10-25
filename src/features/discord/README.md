@@ -21,8 +21,9 @@
 | ボンビー設定（手動・自動） | 履歴登録確定後、Events.discordWebhookUrlへ | registerBombii.txt |
 | 現在地登録（v02・v03） | 登録確定後に取得した最新目的駅と登録駅が一致した場合、Events.discordWebhookUrlへ | arrivalGoalStation.txt |
 | 現在地登録（v03）の収益 | 登録ポイントと物件所有チームのWebhookが存在する場合、そのチームへ | earnRevenue.txt |
+| 現在地登録（v03）の収益支払い | 登録ポイントと到着したチームのWebhookが存在する場合、そのチームへ | payRevenue.txt |
 
-宛先Webhookが未設定の場合、その通知は送らない。収益通知はイベントWebhookの有無とは独立している。収益額は登録されたポイントをConverter.convertPointsToYenV3で変換する。
+宛先Webhookが未設定の場合、その通知は送らない。収益・支払い通知はイベントWebhookの有無とは独立しており、互いの宛先の有無にも依存しない。金額は所有チームに登録された収益ポイントをConverter.convertPointsToYenV3で変換する（支払い側も同額）。到着したチームのWebhookは通知準備時にTeamsから取得する。
 
 目的駅到着通知は現在地登録の時点で発生する。到着報酬の確定処理には移動しない。同じ駅の再登録時も既存条件どおり判定し、新たな重複抑制は加えない。
 
