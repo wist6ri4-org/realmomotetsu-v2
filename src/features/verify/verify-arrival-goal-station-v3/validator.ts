@@ -16,4 +16,9 @@ export const PostVerifyArrivalGoalStationV3RequestSchema = z.object({
  */
 export const PostVerifyArrivalGoalStationV3ResponseSchema = z.object({
     result: z.nativeEnum(VerifyArrivalGoalStationV3Result),
+    stationName: z.string(),
+    price: z.number(),
+    currentPoints: z.number(),
+    arrivalPoints: z.number(),
+    consecutiveGoalBonus: z.number(),
 });

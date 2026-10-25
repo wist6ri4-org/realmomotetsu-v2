@@ -134,7 +134,7 @@ const TransitStationsHistoryDialogV3: React.FC<TransitStationsHistoryDialogV3Pro
                     </TableContainer>
                 </DialogContent>
                 <DialogActions>
-                    <CustomButton onClick={onClose} color="warning">
+                    <CustomButton onClick={onClose}>
                         閉じる
                     </CustomButton>
                 </DialogActions>

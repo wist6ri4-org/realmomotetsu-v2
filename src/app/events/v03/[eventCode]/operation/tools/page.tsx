@@ -25,6 +25,7 @@ import { Alert, Box, CircularProgress, Divider } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useRealtimeRefresh } from "@/hooks/useRealtimeRefresh";
+import MissionFormTakebashi from "@/components/composite/form/MissionFormTakebashi";
 
 /**
  * GMツールページ
@@ -160,6 +161,7 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                         <RegisterPropertyPurchasesFormV3
                             teams={teams}
                             stations={stations.filter((station) => station.stationType === StationType.mission)}
+                            teamData={teamData}
                             onSubmit={handleUpdate}
                             isOperating={isOperating}
                         />
@@ -170,6 +172,8 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                             stations={stations}
                             nearbyStations={nearbyStations}
                         />
+                        <Divider />
+                        <MissionFormTakebashi />
                         <Divider />
                         <InformationDialogV3 teamData={teamData} />
                     </>

@@ -1,2 +1,2 @@
 @everyone
-**{{stationName}}** の収益として **{{revenueYen}}** を獲得しました！
+**{{stationName}}** 駅の収益として **{{revenueYen}}** 円を獲得しました！

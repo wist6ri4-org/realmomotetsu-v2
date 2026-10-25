@@ -770,9 +770,46 @@
                             "updatedAt"
                           ]
                         },
-                        "teamDiscordWebhookUrl": {
-                          "type": "string",
-                          "format": "uri"
+                        "paymentPoint": {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "points",
+                                "scored",
+                                "property",
+                                "revenue"
+                              ]
+                            },
+                            "id": {
+                              "type": "integer"
+                            },
+                            "teamCode": {
+                              "type": "string"
+                            },
+                            "eventCode": {
+                              "type": "string"
+                            },
+                            "points": {
+                              "type": "integer"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "id",
+                            "teamCode",
+                            "eventCode",
+                            "points",
+                            "createdAt",
+                            "updatedAt"
+                          ]
                         },
                         "stationType": {
                           "type": "string",
@@ -787,139 +824,6 @@
                       },
                       "required": [
                         "transitStation"
-                      ]
-                    },
-                    "requestId": {
-                      "type": "string",
-                      "example": "req_1234567890_abc123"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "example": "2026-08-04T10:30:00.000Z"
-                    }
-                  },
-                  "required": [
-                    "data",
-                    "requestId",
-                    "timestamp"
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request（Zodバリデーションエラー、または ApiError のサブクラス）",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string"
-                    },
-                    "errorCode": {
-                      "type": "string",
-                      "nullable": true
-                    },
-                    "details": {},
-                    "requestId": {
-                      "type": "string"
-                    },
-                    "timestamp": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "error",
-                    "requestId",
-                    "timestamp"
-                  ]
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string"
-                    },
-                    "errorCode": {
-                      "type": "string",
-                      "nullable": true
-                    },
-                    "details": {},
-                    "requestId": {
-                      "type": "string"
-                    },
-                    "timestamp": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "error",
-                    "requestId",
-                    "timestamp"
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/discord/notify": {
-      "post": {
-        "summary": "POST /api/discord/notify",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "discordWebhookUrl": {
-                    "type": "string",
-                    "format": "uri"
-                  },
-                  "templateName": {
-                    "type": "string"
-                  },
-                  "variables": {
-                    "type": "object",
-                    "additionalProperties": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "required": [
-                  "discordWebhookUrl",
-                  "templateName"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "success": {
-                          "type": "boolean"
-                        }
-                      },
-                      "required": [
-                        "success"
                       ]
                     },
                     "requestId": {
@@ -3177,6 +3081,34 @@
                             "updatedAt",
                             "eventType"
                           ]
+                        },
+                        "members": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "number"
+                              },
+                              "nickname": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "iconUrl": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "teamCode": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "nickname",
+                              "iconUrl",
+                              "teamCode"
+                            ]
+                          }
                         }
                       },
                       "required": [
@@ -3186,7 +3118,8 @@
                         "nearbyStations",
                         "documents",
                         "user",
-                        "event"
+                        "event",
+                        "members"
                       ]
                     },
                     "requestId": {

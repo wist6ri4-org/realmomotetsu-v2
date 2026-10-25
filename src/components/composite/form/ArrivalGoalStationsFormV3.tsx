@@ -98,18 +98,7 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
     const registerArrivalData = async (e: React.SubmitEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
 
-        const confirmMessage =
-            "以下の内容で到着処理を行いますか？\n\n" +
-            `チーム: ${teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"}\n` +
-            `物件駅購入: ${willBuyStationInput === WillBuyStation.YES ? "する" : "しない"}`;
-        const isConfirmed = await showConfirmDialog({
-            message: confirmMessage,
-            confirmButtonColor: "primary",
-        });
-
-        if (!isConfirmed) {
-            return;
-        }
+        const willPurchase = willBuyStationInput === WillBuyStation.YES;
 
         try {
             setIsLoading(true);
@@ -150,11 +139,36 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
                     default:
                         throw ApplicationErrorFactory.createFromErrorBody(responseValidation.status, responseValidationJson);
                 }
-            } else if (responseValidationData.result === VerifyArrivalGoalStationV3Result.W01_STATION_MISMATCH) {
+            }
+
+            // 金額入りの確認ダイアログ（処理可否チェック後に、サーバーで計算した金額を表示する）
+            const { stationName: goalStationName, price, currentPoints, arrivalPoints, consecutiveGoalBonus } =
+                responseValidationData;
+            const afterPoints = currentPoints + arrivalPoints + consecutiveGoalBonus - price;
+            const purchaseMessage = willPurchase
+                ? `物件駅購入: する（${goalStationName}駅）\n` +
+                  `購入金額: ${Converter.convertPointsToYenV3(price)}\n` +
+                  `現在の持ち金: ${Converter.convertPointsToYenV3(currentPoints)}\n` +
+                  `到着賞金: ${Converter.convertPointsToYenV3(arrivalPoints)}\n` +
+                  `連続ゴールボーナス: ${Converter.convertPointsToYenV3(consecutiveGoalBonus)}\n` +
+                  `支払後の持ち金: ${Converter.convertPointsToYenV3(afterPoints)}`
+                : `物件駅購入: しない`;
+            const confirmMessage =
+                "以下の内容で到着処理を行いますか？\n\n" +
+                `チーム: ${teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"}\n` +
+                purchaseMessage;
+            const isConfirmed = await showConfirmDialog({
+                message: confirmMessage,
+            });
+            if (!isConfirmed) {
+                return;
+            }
+
+            if (responseValidationData.result === VerifyArrivalGoalStationV3Result.W01_STATION_MISMATCH) {
                 const isForceConfirmed = await showConfirmDialog({
                     title: DialogConstants.TITLE.WARNING,
                     message: getMessage("STATION_MISMATCH"),
-                    confirmButtonColor: "warning",
+                    severity: "warning",
                 });
                 if (!isForceConfirmed) {
                     return;
@@ -197,7 +211,6 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
             await showAlertDialog({
                 title: DialogConstants.TITLE.REGISTERED,
                 message: completionMessage,
-                buttonColor: "success",
             });
 
             onSubmit?.();
@@ -294,8 +307,7 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
                 isConfirmOpen={isConfirmOpen}
                 title={dialogOptions.title}
                 message={dialogOptions.message}
-                confirmButtonColor={dialogOptions.confirmButtonColor}
-                cancelButtonColor={dialogOptions.cancelButtonColor}
+                severity={dialogOptions.severity}
                 onConfirm={handleConfirm}
                 onCancel={handleCancel}
             />
@@ -303,7 +315,6 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
                 isAlertOpen={isAlertOpen}
                 title={alertOptions.title}
                 message={alertOptions.message}
-                buttonColor={alertOptions.buttonColor}
                 onOk={handleAlertOk}
                 okText={alertOptions.okText}
             />

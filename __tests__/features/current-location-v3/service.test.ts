@@ -2,6 +2,14 @@
  * @jest-environment node
  */
 
+jest.mock("@/lib/realtimeNotifier", () => ({ notifyEventDataChanged: jest.fn().mockResolvedValue(undefined) }));
+
+jest.mock("@/features/discord/notifications", () => ({
+    scheduleCurrentLocationNotifications: jest.fn().mockResolvedValue(undefined),
+    scheduleGoalStationNotification: jest.fn().mockResolvedValue(undefined),
+    scheduleBombiiNotification: jest.fn().mockResolvedValue(undefined),
+}));
+
 import { GameConstants } from "@/constants/gameConstants";
 import { InternalServerError, DataIntegrityError } from "@/error";
 import { CurrentLocationV3ServiceImpl } from "@/features/current-location-v3/service";
@@ -153,7 +161,7 @@ describe("CurrentLocationV3ServiceImpl.postCurrentLocationV3", () => {
             );
         });
 
-        it("他チームが所有する物件駅に到着すると所有チームに収益が入る", async () => {
+        it("他チームが所有する物件駅に到着すると、到着したチームから所有チームへ収益が移動する", async () => {
             propertyPurchasesFindByEventCodeAndStationCode.mockResolvedValue(
                 buildPropertyPurchaseWithRelations(
                     { teamCode: OTHER_TEAM, stationCode: "STATION_A" },
@@ -172,7 +180,18 @@ describe("CurrentLocationV3ServiceImpl.postCurrentLocationV3", () => {
                 GameConstants.POINT_STATUS.REVENUE,
                 expect.anything(),
             );
+            // 到着したチームからは同額を差し引く
+            expect(pointsCreate).toHaveBeenCalledWith(
+                TEST_EVENT_CODE,
+                OWN_TEAM,
+                -expectedRevenue,
+                GameConstants.POINT_STATUS.REVENUE,
+                expect.anything(),
+            );
+            expect(pointsCreate).toHaveBeenCalledTimes(2);
             expect(res.point?.points).toBe(expectedRevenue);
+            expect(res.paymentPoint?.teamCode).toBe(OWN_TEAM);
+            expect(res.paymentPoint?.points).toBe(-expectedRevenue);
         });
 
         // TSK-79の回帰テスト: 自チーム所有の物件駅で収益が発生していた不具合の再発防止
@@ -199,7 +218,7 @@ describe("CurrentLocationV3ServiceImpl.postCurrentLocationV3", () => {
             expect(res.point).toBeUndefined();
         });
 
-        it("収益通知用に所有チームのWebhook URLを返す", async () => {
+        it("所有チームのWebhook URLをレスポンスに含めない", async () => {
             const webhookUrl = "https://discord.com/api/webhooks/other-team";
             propertyPurchasesFindByEventCodeAndStationCode.mockResolvedValue(
                 buildPropertyPurchaseWithRelations(
@@ -210,7 +229,7 @@ describe("CurrentLocationV3ServiceImpl.postCurrentLocationV3", () => {
 
             const res = await CurrentLocationV3ServiceImpl.postCurrentLocationV3(buildRequest());
 
-            expect(res.teamDiscordWebhookUrl).toBe(webhookUrl);
+            expect(res).not.toHaveProperty("teamDiscordWebhookUrl");
         });
 
         it("物件が購入されていない場合はWebhook URLを返さない", async () => {
@@ -218,7 +237,7 @@ describe("CurrentLocationV3ServiceImpl.postCurrentLocationV3", () => {
 
             const res = await CurrentLocationV3ServiceImpl.postCurrentLocationV3(buildRequest());
 
-            expect(res.teamDiscordWebhookUrl).toBeUndefined();
+            expect(res).not.toHaveProperty("teamDiscordWebhookUrl");
         });
     });
 

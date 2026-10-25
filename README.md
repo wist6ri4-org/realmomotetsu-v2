@@ -138,7 +138,7 @@ graph TB
     H --> I
     I --> J
     F --> K
-    F --> L
+    F --DBコミット後に予約・応答後に送信--> L
 
     classDef frontend fill:#e1f5fe
     classDef api fill:#f3e5f5
@@ -184,8 +184,19 @@ graph TB
 | ポイント管理     | チーム別の収益・支出の記録                                                       |
 | 物件購入         | 駅での物件購入の記録                                                             |
 | 路線図表示       | SVG ベースのインタラクティブな路線図表示（ズーム・パン対応）                     |
-| Discord 通知     | ゲームイベント発生時の Discord Webhook 通知                                      |
+| Discord 通知     | DB登録確定後、サーバーからバックグラウンドで Discord Webhook 通知                 |
 | ドキュメント管理 | イベント関連ドキュメントの管理                                                   |
+
+### Discord 通知の実行方式
+
+目的駅登録（v02・v03）、現在地登録（v02・v03）、ボンビー設定の各サービスが、
+DB登録・トランザクションのコミット完了後に通知内容を確定し、Next.jsの`after()`で送信する。
+クライアントは通知の送信完了を待たず、レスポンスを正常に受け取れなかった場合も予約済みの通知は実行される。
+通知の準備・予約・送信に失敗しても、確定済みの登録結果は変更しない。
+
+通知設定とWebhook URLはDBで管理する。クライアントから呼ぶ通知専用APIはなく、
+`/api/current-location-v3`のレスポンスにも通知用の`teamDiscordWebhookUrl`を含めない。
+通知条件・宛先・テンプレート・実行上の制約は[Discord通知ガイド](src/features/discord/README.md)を参照。
 
 ### API 設計パターン
 
@@ -227,7 +238,6 @@ API エンドポイントは `BaseApiHandler` を継承したハンドラーク�
 | `/api/property-purchases`                    | GET / POST       | 物件購入の取得・登録           |
 | `/api/events/[eventCode]`                    | GET              | イベント情報の取得             |
 | `/api/documents`                             | GET              | ドキュメントの取得             |
-| `/api/discord/notify`                        | POST             | Discord 通知の送信             |
 | `/api/users`                                 | POST             | ユーザーの登録                 |
 | `/api/users/[uuid]`                          | GET / PUT        | ユーザー情報の取得・更新       |
 

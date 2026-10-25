@@ -326,7 +326,7 @@ const RoutemapDialog: React.FC = React.memo((): React.JSX.Element => {
                                 </Grid>
                             </Paper>
                             <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%", paddingBottom: 4 }}>
-                                <CustomButton onClick={handleClose} color="warning">
+                                <CustomButton onClick={handleClose}>
                                     閉じる
                                 </CustomButton>
                             </Box>

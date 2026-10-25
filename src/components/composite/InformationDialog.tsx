@@ -78,7 +78,7 @@ const InformationDialog: React.FC<InformationDialogProps> = ({
                     />
                 </DialogContent>
                 <DialogActions>
-                    <CustomButton onClick={handleClose} color="warning">
+                    <CustomButton onClick={handleClose}>
                         閉じる
                     </CustomButton>
                 </DialogActions>

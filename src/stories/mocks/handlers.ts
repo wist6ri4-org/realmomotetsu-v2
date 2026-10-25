@@ -67,7 +67,6 @@ export const verifyArrivalGoalStationV3Handlers = createHandlerFactory(
     "post",
     "/api/verify/verify-arrival-goal-station-v3"
 );
-export const discordNotifyHandlers = createHandlerFactory("post", "/api/discord/notify");
 
 /**
  * どの画面試験でも実質的に無害な「常に成功・データなし」を返すデフォルトハンドラー群。
@@ -76,5 +75,4 @@ export const discordNotifyHandlers = createHandlerFactory("post", "/api/discord/
  */
 export const passthroughDefaultHandlers: HttpHandler[] = [
     initRoutemapHandlers.success({ teamData: [], nextGoalStation: null, bombiiTeam: null, propertyPurchases: [] }),
-    discordNotifyHandlers.success({}),
 ];

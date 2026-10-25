@@ -12,6 +12,6 @@ export const PostCurrentLocationV3RequestSchema = z.object({
 export const PostCurrentLocationV3ResponseSchema = z.object({
     transitStation: TransitStationsSchema,
     point: PointsSchema.optional(),
-    teamDiscordWebhookUrl: z.string().url().optional(),
+    paymentPoint: PointsSchema.optional(),
     stationType: StationTypeSchema.optional(),
 });

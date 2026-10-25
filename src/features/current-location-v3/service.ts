@@ -5,6 +5,7 @@ import { ApiError, DataIntegrityError, InternalServerError } from "@/error";
 import { GameConstants } from "@/constants/gameConstants";
 import { StationGrade, StationType } from "@/generated/prisma";
 import { notifyEventDataChanged } from "@/lib/realtimeNotifier";
+import { scheduleCurrentLocationNotifications } from "@/features/discord/notifications";
 
 export const CurrentLocationV3ServiceImpl: CurrentLocationV3Service = {
     /**
@@ -43,7 +44,7 @@ export const CurrentLocationV3ServiceImpl: CurrentLocationV3Service = {
                 stationCode: req.stationCode,
             };
 
-            const { transitStation, createdPoints } = await RepositoryFactory.withTransaction(async (tx) => {
+            const { transitStation, createdPoints, paymentPoints } = await RepositoryFactory.withTransaction(async (tx) => {
                 // 経由駅情報を登録
                 const transitStation = await transitStationsRepository.create(transitStationsData, tx);
 
@@ -84,11 +85,12 @@ export const CurrentLocationV3ServiceImpl: CurrentLocationV3Service = {
                     case StationType.mission: {
                         // 購入済みの物件駅の場合
                         if (propertyPurchase && propertyPurchase.teamCode != req.teamCode) {
-                            // ポイント登録
+                            // 収益額
                             const revenue =
                                 GameConstants.STATION_GRADE[propertyPurchase.station.stationGrade ?? StationGrade.none]
                                     .price * GameConstants.REVENUE_RATE;
 
+                            // 所有チームの収益を登録
                             const createdPoints = await pointsRepository.create(
                                 req.eventCode,
                                 propertyPurchase.teamCode,
@@ -96,7 +98,15 @@ export const CurrentLocationV3ServiceImpl: CurrentLocationV3Service = {
                                 GameConstants.POINT_STATUS.REVENUE,
                                 tx,
                             );
-                            return { transitStation, createdPoints };
+                            // 到着したチームの支払いを登録
+                            const paymentPoints = await pointsRepository.create(
+                                req.eventCode,
+                                req.teamCode,
+                                -revenue,
+                                GameConstants.POINT_STATUS.REVENUE,
+                                tx,
+                            );
+                            return { transitStation, createdPoints, paymentPoints };
                         } else {
                             return { transitStation };
                         }
@@ -107,10 +117,23 @@ export const CurrentLocationV3ServiceImpl: CurrentLocationV3Service = {
                 }
             });
 
+            await scheduleCurrentLocationNotifications(
+                transitStation,
+                createdPoints && propertyPurchase
+                    ? {
+                          ownerDiscordWebhookUrl: propertyPurchase.team.discordWebhookUrl,
+                          ownerTeamName: propertyPurchase.team.teamName,
+                          payerTeamCode: req.teamCode,
+                          points: createdPoints.points,
+                          stationName: station.name,
+                      }
+                    : undefined,
+            );
+
             const res: PostCurrentLocationV3Response = {
                 transitStation: transitStation,
                 point: createdPoints,
-                teamDiscordWebhookUrl: propertyPurchase?.team.discordWebhookUrl ?? undefined,
+                paymentPoint: paymentPoints,
                 stationType: station.stationType ?? undefined,
             };
 

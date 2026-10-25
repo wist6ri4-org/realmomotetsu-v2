@@ -110,6 +110,21 @@ describe("VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3",
             expect(res.result).toBe(VerifyArrivalGoalStationV3Result.VERIFIED);
         });
 
+        it("確認ダイアログ表示用に駅名・購入価格・現在の持ち金・到着ポイント・連続ゴールボーナスを返す", async () => {
+            const res = await VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3(
+                buildRequest(),
+            );
+
+            expect(res).toEqual({
+                result: VerifyArrivalGoalStationV3Result.VERIFIED,
+                stationName: expect.any(String),
+                price: expect.any(Number),
+                currentPoints: expect.any(Number),
+                arrivalPoints: expect.any(Number),
+                consecutiveGoalBonus: expect.any(Number),
+            });
+        });
+
         it("最新の経由駅が目的駅と一致しない場合はW01_STATION_MISMATCHを返す", async () => {
             findLatestByTeamCode.mockResolvedValue(
                 buildLatestTransitStation({ teamCode: OWN_TEAM, stationCode: "STATION_M" }),

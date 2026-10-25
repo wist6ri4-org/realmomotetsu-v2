@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, userEvent, within } from "storybook/test";
 import RegisterPropertyPurchasesFormV3 from "./RegisterPropertyPurchasesFormV3";
-import { buildStations, buildTeam } from "@/stories/mocks/fixtures";
+import { buildStations, buildTeam, buildTeamData } from "@/stories/mocks/fixtures";
 import { propertyPurchasesHandlers } from "@/stories/mocks/handlers";
 
 const teams = [buildTeam({ teamCode: "TEAM_A", teamName: "チームA" })];
@@ -14,6 +14,7 @@ const meta = {
     args: {
         teams,
         stations,
+        teamData: [buildTeamData({ teamCode: "TEAM_A", teamName: "チームA", scoredPoints: 10_000 })],
         isOperating: true,
     },
     parameters: {

@@ -6,6 +6,13 @@ import type { NextConfig } from "next";
  * @see https://nextjs.org/docs/api-reference/next.config.js/introduction
  */
 const nextConfig: NextConfig = {
+    outputFileTracingIncludes: {
+        "/api/current-location": ["./src/templates/discord/*.txt"],
+        "/api/current-location-v3": ["./src/templates/discord/*.txt"],
+        "/api/goal-stations": ["./src/templates/discord/*.txt"],
+        "/api/goal-stations-v3": ["./src/templates/discord/*.txt"],
+        "/api/bombii-histories": ["./src/templates/discord/*.txt"],
+    },
     compiler: {
         emotion: true,
     },

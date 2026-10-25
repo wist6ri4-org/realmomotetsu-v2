@@ -28,6 +28,14 @@ describe("DiscordNotifyServiceImpl", () => {
     });
 
     describe("postDiscordNotify", () => {
+        it("notifierの初期化失敗もsuccess:falseとして返す", async () => {
+            getDiscordNotifier.mockImplementationOnce(() => { throw new Error("invalid webhook"); });
+            await expect(DiscordNotifyServiceImpl.postDiscordNotify({
+                discordWebhookUrl: "",
+                templateName: "registerGoalStation.txt",
+            })).resolves.toEqual({ success: false });
+        });
+
         it("通知の送信に成功した場合はsuccess:trueを返す", async () => {
             const res = await DiscordNotifyServiceImpl.postDiscordNotify({
                 discordWebhookUrl: "https://discord.com/api/webhooks/sample",

@@ -107,6 +107,30 @@ afterEach(() => {
 - 想定外のエラーが `InternalServerError` に変換され、`ApiError` はそのまま再スローされること
 - 書き込みが同一トランザクション（`mockWithTransaction()` の戻り値）で実行されていること
 
+### Discord通知（コミット後のバックグラウンド処理）
+
+通知処理はサーバー専用の`src/features/discord/notifications.ts`に集約している。
+[notifications.test.ts](../__tests__/features/discord/notifications.test.ts)では5つの登録サービスと
+実際の通知判定処理を接続し、Repository・送信サービス・Realtime通知・Next.jsの`after()`をモックする。
+`server-only`も仮想モジュールとしてモックするため、Next.jsサーバーやDiscordへの実接続は不要。
+
+- `after()`のモックはコールバックを保存するだけにし、登録処理の完了後に別途実行する。
+- トランザクション内の処理完了とコミット完了を分けて待機させ、コミット前には通知を予約しないことを確認する。
+- 登録失敗・ポイント書き込み失敗・コミット失敗では通知しないことを確認する。
+- 通知設定、目的駅との一致、宛先、文面変数、収益額を検証する。収益通知と到着通知は個別に失敗を扱う。
+- 通知の準備・予約・送信の失敗が登録成功を変えず、コミット後の応答経路でエラーが起きても予約済み通知が実行されることを確認する。
+
+各登録サービス単体のテストでは、通知予約関数と`notifyEventDataChanged`をモジュールごとモックする。
+送信サービス単体のテストは`__tests__/features/discord/notify/service.test.ts`に置く。
+廃止した通知専用APIのハンドラーテストは使用しない。
+
+```bash
+npm test -- --runInBand __tests__/features/discord
+```
+
+クライアントの通知通信がなく、登録後のゴール演出が維持されることは、
+[Storybookのフォーム試験](STORYBOOK_GUIDE.md#discord通知移行後のフォーム試験)で検証する。
+
 ### Repository（高優先）
 
 Repository は `BaseRepository` のサブクラスとして `PrismaClient` を注入されるため、

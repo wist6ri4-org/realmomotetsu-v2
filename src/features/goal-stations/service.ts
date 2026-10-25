@@ -8,6 +8,7 @@ import {
 } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
 import { notifyEventDataChanged } from "@/lib/realtimeNotifier";
+import { scheduleGoalStationNotification } from "@/features/discord/notifications";
 
 export const GoalStationsServiceImpl: GoalStationsService = {
     /**
@@ -52,6 +53,7 @@ export const GoalStationsServiceImpl: GoalStationsService = {
                 eventCode: req.eventCode,
                 stationCode: req.stationCode,
             });
+            await scheduleGoalStationNotification(goalStation);
             const res: PostGoalStationsResponse = {
                 goalStation: goalStation,
             };

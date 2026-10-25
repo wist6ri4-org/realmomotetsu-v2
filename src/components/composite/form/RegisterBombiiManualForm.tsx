@@ -11,14 +11,12 @@ import CustomSelect from "@/components/base/CustomSelect";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
 import { DialogConstants } from "@/constants/dialogConstants";
-import { DiscordNotificationTemplates } from "@/constants/discordNotificationTemplates";
 import { getMessage } from "@/constants/messages";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { Events, Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
-import { useDiscordNotification } from "@/hooks/useDiscordNotification";
 import { useSelectInput } from "@/hooks/useSelectInput";
 import { TypeConverter } from "@/utils/typeConverter";
 import { Box, CircularProgress } from "@mui/material";
@@ -46,7 +44,6 @@ interface RegisterBombiiManualFormProps {
  */
 const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
     teams,
-    event,
     onSubmit,
     isOperating,
 }: RegisterBombiiManualFormProps): React.JSX.Element => {
@@ -59,23 +56,6 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const { sendNotification, clearError } = useDiscordNotification();
-
-    /**
-     * Discord通知を送信する
-     * @description
-     * ボンビー登録時
-     */
-    const notifyToDiscord = async (): Promise<void> => {
-        await sendNotification({
-            discordWebhookUrl: event.discordWebhookUrl,
-            templateName: DiscordNotificationTemplates.REGISTER_BOMBII,
-            variables: {
-                teamName: teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明",
-            },
-        });
-    };
-
     /**
      * データの登録
      * @param {React.FormEvent<HTMLFormElement>} e - フォームの送信イベント
@@ -83,7 +63,6 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
      */
     const registerBombiiData = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
-        clearError();
 
         const confirmMessage =
             "以下の内容でボンビーを登録しますか？\n\n" +
@@ -117,10 +96,6 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
 
             teamCodeInput.reset();
 
-            if (event.isNotificationEnabled && event.discordWebhookUrl) {
-                notifyToDiscord();
-            }
-
             await showAlertDialog({
                 title: DialogConstants.TITLE.REGISTERED,
                 message: getMessage("REGISTER_SUCCESS", { data: "ボンビー" }),
@@ -149,7 +124,6 @@ const RegisterBombiiManualForm: React.FC<RegisterBombiiManualFormProps> = ({
      */
     const resetForm = (): void => {
         teamCodeInput.reset();
-        clearError();
         setIsLoading(false);
     };
 
