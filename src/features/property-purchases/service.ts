@@ -6,7 +6,10 @@ import {
     PostPropertyPurchasesRequest,
     PostPropertyPurchasesResponse,
 } from "./types";
-import { ApiError, InternalServerError, ConflictError } from "@/error";
+import { ApiError, BadRequestError, InternalServerError, NotFoundError } from "@/error";
+import { GameConstants } from "@/constants/gameConstants";
+import { getMessage } from "@/constants/messages";
+import { StationGrade } from "@/generated/prisma";
 import { notifyEventDataChanged } from "@/lib/realtimeNotifier";
 
 export const PropertyPurchasesServiceImpl: PropertyPurchasesService = {
@@ -45,12 +48,51 @@ export const PropertyPurchasesServiceImpl: PropertyPurchasesService = {
      */
     async postPropertyPurchases(req: PostPropertyPurchasesRequest): Promise<PostPropertyPurchasesResponse> {
         const propertyPurchasesRepository = RepositoryFactory.getPropertyPurchasesRepository();
+        const pointsRepository = RepositoryFactory.getPointsRepository();
+        const stationsRepository = RepositoryFactory.getStationsRepository();
 
         try {
-            const propertyPurchase = await propertyPurchasesRepository.create({
-                eventCode: req.eventCode,
-                teamCode: req.teamCode,
-                stationCode: req.stationCode,
+            const station = await stationsRepository.findByStationCode(req.stationCode);
+            if (!station) {
+                throw new NotFoundError({ message: `Station not found: ${req.stationCode}` });
+            }
+            const price = GameConstants.STATION_GRADE[station.stationGrade ?? StationGrade.none].price;
+
+            const propertyPurchase = await RepositoryFactory.withTransaction(async (tx) => {
+                // 支払いありの場合は所持金不足をチェック
+                if (req.withPayment) {
+                    const currentPoints = await pointsRepository.sumScoredPointsByTeamCode(
+                        req.teamCode,
+                        req.eventCode,
+                        tx,
+                    );
+                    if (currentPoints - price < 0) {
+                        throw new BadRequestError({
+                            message: getMessage("INSUFFICIENT_POINTS"),
+                            errorCode: "INSUFFICIENT_POINTS",
+                        });
+                    }
+                }
+
+                const created = await propertyPurchasesRepository.create(
+                    {
+                        eventCode: req.eventCode,
+                        teamCode: req.teamCode,
+                        stationCode: req.stationCode,
+                    },
+                    tx,
+                );
+
+                if (req.withPayment) {
+                    await pointsRepository.create(
+                        req.eventCode,
+                        req.teamCode,
+                        -1 * price,
+                        GameConstants.POINT_STATUS.PROPERTY,
+                        tx,
+                    );
+                }
+                return created;
             });
             const res: PostPropertyPurchasesResponse = {
                 propertyPurchase,
