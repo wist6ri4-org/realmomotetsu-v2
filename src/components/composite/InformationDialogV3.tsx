@@ -47,7 +47,7 @@ const InformationDialogV3: React.FC<InformationDialogV3Props> = ({
     // チームデータのフィールドとヘッダー名
     const fields: GridColDef[] = [
         { field: "teamName", headerName: "チーム名", minWidth: 120 },
-        { field: "scoredPoints", headerName: "総資産", minWidth: 80 },
+        { field: "scoredPoints", headerName: "持ち金", minWidth: 80 },
         { field: "propertyPurchasePoints", headerName: "物件", minWidth: 80 },
         { field: "remainingStationsNumber", headerName: "あと", minWidth: 80, valueFormatter: (value) => (value !== null ? value : "-") },
         { field: "goalCounts", headerName: "ゴール回数回数", minWidth: 80 },

@@ -4,7 +4,7 @@
 
 import { MissionToolUtils } from "@/utils/missionToolUtils";
 
-const { MissionSenzokuike } = MissionToolUtils;
+const { MissionSenzokuike, MissionTakebashi } = MissionToolUtils;
 
 describe("MissionToolUtils.MissionSenzokuike", () => {
     describe("round（二捨三入）", () => {
@@ -65,6 +65,72 @@ describe("MissionToolUtils.MissionSenzokuike", () => {
             const nearlyJust = MissionSenzokuike.calculate(MissionSenzokuike.SENZOKUIKE_AREA + 1);
 
             expect(just - nearlyJust).toBe(MissionSenzokuike.JUST_BONUS);
+        });
+    });
+});
+
+describe("MissionToolUtils.MissionTakebashi", () => {
+    describe("round（100単位の二捨三入）", () => {
+        it.each([
+            [0, 0],
+            [20, 0],
+            [21, 100],
+            [99, 100],
+            [100, 100],
+            [120, 100],
+            [121, 200],
+            [2_500, 2_500],
+            [2_520, 2_500],
+            [2_521, 2_600],
+        ])("%iは%iに丸められる", (score, expected) => {
+            expect(MissionTakebashi.round(score)).toBe(expected);
+        });
+    });
+
+    describe("calculate", () => {
+        it("正解と完全に一致した場合は最大得点+基礎点+ジャストボーナスになる", () => {
+            // 7500（最大得点）+ 2500（基礎点）+ 5000（ジャストボーナス）= 15000
+            expect(MissionTakebashi.calculate(MissionTakebashi.TAKEBASHI_LENGTH)).toBe(15_000);
+        });
+
+        it("正解から離れるほど得点が下がる", () => {
+            const scores = [51.05, 52, 54, 57, 60, 70].map((answer) =>
+                MissionTakebashi.calculate(answer),
+            );
+
+            scores.forEach((score, index) => {
+                if (index > 0) {
+                    expect(score).toBeLessThanOrEqual(scores[index - 1]);
+                }
+            });
+        });
+
+        it("正解から大きく外れても基礎点は保証される", () => {
+            expect(MissionTakebashi.calculate(0)).toBe(MissionTakebashi.BASE_POINT);
+            expect(MissionTakebashi.calculate(1_000)).toBe(MissionTakebashi.BASE_POINT);
+        });
+
+        it("正解からの差が同じであれば大小どちらにずれても同じ得点になる", () => {
+            const diff = 3;
+
+            expect(MissionTakebashi.calculate(MissionTakebashi.TAKEBASHI_LENGTH + diff)).toBe(
+                MissionTakebashi.calculate(MissionTakebashi.TAKEBASHI_LENGTH - diff),
+            );
+        });
+
+        it("得点は必ず100点刻みになる", () => {
+            const answers = [30, 40, 45, 49, 50, 52, 55, 60, 80];
+
+            answers.forEach((answer) => {
+                expect(MissionTakebashi.calculate(answer) % 100).toBe(0);
+            });
+        });
+
+        it("ジャストボーナスは完全一致のときのみ加算される", () => {
+            const just = MissionTakebashi.calculate(MissionTakebashi.TAKEBASHI_LENGTH);
+            const nearlyJust = MissionTakebashi.calculate(MissionTakebashi.TAKEBASHI_LENGTH + 0.01);
+
+            expect(just - nearlyJust).toBe(MissionTakebashi.JUST_BONUS);
         });
     });
 });
