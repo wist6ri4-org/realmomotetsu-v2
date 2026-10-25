@@ -27,6 +27,15 @@ describe("VerifyArrivalGoalStationV3ApiHandler", () => {
         willPurchase: false,
     };
 
+    /** 確認ダイアログ表示用の金額情報 */
+    const amounts = {
+        stationName: "駅A",
+        price: 10_000,
+        currentPoints: 30_000,
+        arrivalPoints: 1_000,
+        consecutiveGoalBonus: 0,
+    };
+
     beforeEach(() => {
         silenceApiLogs();
         mockApiAuth();
@@ -43,6 +52,7 @@ describe("VerifyArrivalGoalStationV3ApiHandler", () => {
         it("リクエストボディをServiceに渡し、検証結果を返す", async () => {
             service.postVerifyArrivalGoalStationV3.mockResolvedValue({
                 result: VerifyArrivalGoalStationV3Result.VERIFIED,
+                ...amounts,
             });
 
             const req = buildPostRequest(validBody);
@@ -60,7 +70,7 @@ describe("VerifyArrivalGoalStationV3ApiHandler", () => {
             VerifyArrivalGoalStationV3Result.E02_INSUFFICIENT_POINTS,
             VerifyArrivalGoalStationV3Result.W01_STATION_MISMATCH,
         ])("Serviceが%sを返した場合もそのままレスポンスに乗る", async (result) => {
-            service.postVerifyArrivalGoalStationV3.mockResolvedValue({ result });
+            service.postVerifyArrivalGoalStationV3.mockResolvedValue({ result, ...amounts });
 
             const req = buildPostRequest(validBody);
             const { status, body } = await readResponse(

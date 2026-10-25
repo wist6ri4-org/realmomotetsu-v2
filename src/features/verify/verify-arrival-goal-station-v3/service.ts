@@ -35,12 +35,14 @@ export const VerifyArrivalGoalStationV3ServiceImpl: VerifyArrivalGoalStationV3Se
 
         try {
             let latestGoalStationGrade: StationGrade | null = null;
+            let latestGoalStationName = "";
             /* 購入可否チェック処理 */
             // 最新の目的駅コード
             const latestGoalStationCode = (await goalStationsRepository
                 .findLatestGoalStation(req.eventCode)
                 .then((goalStation) => {
                     latestGoalStationGrade = goalStation?.station.stationGrade ?? null;
+                    latestGoalStationName = goalStation?.station.name ?? "";
                     return goalStation?.stationCode;
                 })) as string;
 
@@ -108,16 +110,28 @@ export const VerifyArrivalGoalStationV3ServiceImpl: VerifyArrivalGoalStationV3Se
                 });
             }
 
+            // 確認ダイアログ表示用の金額情報
+            const amounts = {
+                stationName: latestGoalStationName,
+                price,
+                currentPoints: points,
+                arrivalPoints,
+                consecutiveGoalBonus,
+            };
+
             // 強制登録確認
             if (latestTransitStationCode !== latestGoalStationCode) {
-                return {
+                const warning: PostVerifyArrivalGoalStationV3Response = {
                     result: VerifyArrivalGoalStationV3Result.W01_STATION_MISMATCH,
+                    ...amounts,
                 };
+                return warning;
             }
 
             // 処理可
             const res: PostVerifyArrivalGoalStationV3Response = {
                 result: VerifyArrivalGoalStationV3Result.VERIFIED,
+                ...amounts,
             };
             return res;
         } catch (error) {

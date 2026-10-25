@@ -22,11 +22,13 @@ export type GetPropertyPurchasesResponse = {
  * @property { string } eventCode - イベントコード
  * @property { string } teamCode - チームコード
  * @property { string } stationCode - 駅コード
+ * @property { boolean } withPayment - 支払い処理を行うかどうか
  */
 export type PostPropertyPurchasesRequest = {
     eventCode: string;
     teamCode: string;
     stationCode: string;
+    withPayment: boolean;
 };
 
 /**

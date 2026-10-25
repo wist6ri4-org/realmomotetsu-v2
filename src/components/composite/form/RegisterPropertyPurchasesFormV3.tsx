@@ -11,24 +11,28 @@ import CustomButton from "@/components/base/CustomButton";
 import CustomSelect from "@/components/base/CustomSelect";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
+import { GameConstants } from "@/constants/gameConstants";
 import { DialogConstants } from "@/constants/dialogConstants";
 import { ErrorCodes } from "@/constants/errorCodes";
 import { getMessage } from "@/constants/messages";
 import { ApplicationErrorFactory } from "@/error/applicationError";
 import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { PostPropertyPurchasesRequest } from "@/features/property-purchases/types";
-import { Stations, Teams } from "@/generated/prisma";
+import { StationGrade, Stations, Teams } from "@/generated/prisma";
 import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useSelectInput } from "@/hooks/useSelectInput";
+import { TeamData } from "@/types/TeamData";
+import { Converter } from "@/utils/converter";
 import { TypeConverter } from "@/utils/typeConverter";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, FormControlLabel, Switch } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
 interface RegisterPropertyPurchasesFormV3Props {
     teams: Teams[];
     stations: Stations[];
+    teamData: TeamData[];
     onSubmit?: () => void;
     isOperating: boolean;
 };
@@ -41,6 +45,7 @@ interface RegisterPropertyPurchasesFormV3Props {
 const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3Props> = ({
     teams,
     stations,
+    teamData,
     onSubmit,
     isOperating,
 }: RegisterPropertyPurchasesFormV3Props): React.JSX.Element => {
@@ -54,14 +59,36 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [withPayment, setWithPayment] = useState<boolean>(true);
 
     const registerPropertyPurchase = async (e: React.SubmitEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
 
+        const team = teams.find((t) => t.teamCode === teamCodeInput.value);
+        const station = stations.find((s) => s.stationCode === stationCodeInput.value);
+        const price = GameConstants.STATION_GRADE[station?.stationGrade ?? StationGrade.none].price;
+        const currentPoints = teamData.find((t) => t.teamCode === teamCodeInput.value)?.scoredPoints ?? 0;
+
+        // 支払いありの場合は所持金不足をチェック（最終判定はサーバー側）
+        if (withPayment && currentPoints - price < 0) {
+            await showAlertDialog({
+                title: DialogConstants.TITLE.ERROR,
+                message: getMessage("INSUFFICIENT_POINTS"),
+            });
+            return;
+        }
+
+        const paymentMessage = withPayment
+            ? `支払い: あり\n` +
+              `購入金額: ${Converter.convertPointsToYenV3(price)}\n` +
+              `現在の持ち金: ${Converter.convertPointsToYenV3(currentPoints)}\n` +
+              `支払後の持ち金: ${Converter.convertPointsToYenV3(currentPoints - price)}`
+            : `支払い: なし`;
         const confirmMessage =
             `以下の内容で物件駅の購入情報を登録します。よろしいですか？\n\n` +
-            `チーム: ${teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"}\n` +
-            `駅: ${stations.find((station) => station.stationCode === stationCodeInput.value)?.name || "不明"}`;
+            `チーム: ${team?.teamName || "不明"}\n` +
+            `駅: ${station?.name || "不明"}\n` +
+            paymentMessage;
         const isConfirmed = await showConfirmDialog({
             message: confirmMessage,
         });
@@ -82,6 +109,7 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
                     eventCode: eventCode,
                     teamCode: teamCodeInput.value,
                     stationCode: stationCodeInput.value,
+                    withPayment: withPayment,
                 } satisfies PostPropertyPurchasesRequest),
             });
 
@@ -94,11 +122,12 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
                     throw ApplicationErrorFactory.create(ErrorCodes.DUPLICATE_ENTRY, getMessage("DUPLICATE_PROPERTY_PURCHASE"));
                 }
 
-                throw ApplicationErrorFactory.createFromErrorBody(response.status, await response.json());
+                throw ApplicationErrorFactory.createFromErrorBody(response.status, errorBody);
             }
 
             teamCodeInput.reset();
             stationCodeInput.reset();
+            setWithPayment(true);
 
             await showAlertDialog({
                 title: DialogConstants.TITLE.REGISTERED,
@@ -128,6 +157,7 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
     const resetForm = (): void => {
         teamCodeInput.reset();
         stationCodeInput.reset();
+        setWithPayment(true);
     }
 
     return (
@@ -174,6 +204,18 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
                             required
                             disabled={isLoading}
                             sx={{ minWidth: 200 }}
+                        />
+                    </Box>
+                    <Box sx={{ marginBottom: 2 }}>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={withPayment}
+                                    onChange={(e) => setWithPayment(e.target.checked)}
+                                    disabled={isLoading}
+                                />
+                            }
+                            label={withPayment ? "支払いあり" : "支払いなし"}
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>

@@ -161,6 +161,7 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                         <RegisterPropertyPurchasesFormV3
                             teams={teams}
                             stations={stations.filter((station) => station.stationType === StationType.mission)}
+                            teamData={teamData}
                             onSubmit={handleUpdate}
                             isOperating={isOperating}
                         />

@@ -2,25 +2,42 @@
  * @jest-environment node
  */
 
-import { ConflictError, InternalServerError } from "@/error";
+import { BadRequestError, ConflictError, InternalServerError, NotFoundError } from "@/error";
+import { GameConstants } from "@/constants/gameConstants";
+import { StationGrade } from "@/generated/prisma";
 import { PropertyPurchasesServiceImpl } from "@/features/property-purchases/service";
 import {
     TEST_EVENT_CODE,
     buildPropertyPurchase,
     buildPropertyPurchaseWithRelations,
+    buildStation,
 } from "../../helpers/factories";
-import { mockRepositories } from "../../helpers/repositoryMocks";
+import { mockRepositories, mockWithTransaction } from "../../helpers/repositoryMocks";
 
 describe("PropertyPurchasesServiceImpl", () => {
     /** 各テストで参照するRepositoryのモックメソッド */
     let findByEventCode: jest.Mock;
     let create: jest.Mock;
+    let pointsCreate: jest.Mock;
+    let sumScoredPointsByTeamCode: jest.Mock;
+    let findByStationCode: jest.Mock;
 
     beforeEach(() => {
         findByEventCode = jest.fn().mockResolvedValue([]);
         create = jest.fn().mockImplementation(async (data) => buildPropertyPurchase(data));
 
-        mockRepositories({ propertyPurchases: { findByEventCode, create } });
+        pointsCreate = jest.fn().mockResolvedValue({});
+        sumScoredPointsByTeamCode = jest.fn().mockResolvedValue(10_000);
+        findByStationCode = jest
+            .fn()
+            .mockResolvedValue(buildStation({ stationCode: "STATION_A", stationGrade: StationGrade.a }));
+        mockWithTransaction();
+
+        mockRepositories({
+            propertyPurchases: { findByEventCode, create },
+            points: { create: pointsCreate, sumScoredPointsByTeamCode },
+            stations: { findByStationCode },
+        });
     });
 
     afterEach(() => {
@@ -75,12 +92,76 @@ describe("PropertyPurchasesServiceImpl", () => {
                 eventCode: TEST_EVENT_CODE,
                 teamCode: "TEAM_A",
                 stationCode: "STATION_A",
+                withPayment: true,
             };
 
             const res = await PropertyPurchasesServiceImpl.postPropertyPurchases(req);
 
-            expect(create).toHaveBeenCalledWith(req);
-            expect(res.propertyPurchase).toMatchObject(req);
+            expect(create).toHaveBeenCalledWith(
+                { eventCode: TEST_EVENT_CODE, teamCode: "TEAM_A", stationCode: "STATION_A" },
+                expect.anything(),
+            );
+            expect(res.propertyPurchase).toMatchObject({ teamCode: "TEAM_A", stationCode: "STATION_A" });
+        });
+
+        it("支払いありの場合、駅の価格分のポイントをマイナスで記録する", async () => {
+            await PropertyPurchasesServiceImpl.postPropertyPurchases({
+                eventCode: TEST_EVENT_CODE,
+                teamCode: "TEAM_A",
+                stationCode: "STATION_A",
+                withPayment: true,
+            });
+
+            expect(pointsCreate).toHaveBeenCalledWith(
+                TEST_EVENT_CODE,
+                "TEAM_A",
+                -1 * GameConstants.STATION_GRADE[StationGrade.a].price,
+                GameConstants.POINT_STATUS.PROPERTY,
+                expect.anything(),
+            );
+        });
+
+        it("支払いありで所持金が不足する場合はBadRequestErrorとなり、購入もポイント記録も行わない", async () => {
+            sumScoredPointsByTeamCode.mockResolvedValue(GameConstants.STATION_GRADE[StationGrade.a].price - 1);
+
+            await expect(
+                PropertyPurchasesServiceImpl.postPropertyPurchases({
+                    eventCode: TEST_EVENT_CODE,
+                    teamCode: "TEAM_A",
+                    stationCode: "STATION_A",
+                    withPayment: true,
+                }),
+            ).rejects.toThrow(BadRequestError);
+            expect(create).not.toHaveBeenCalled();
+            expect(pointsCreate).not.toHaveBeenCalled();
+        });
+
+        it("支払いなしの場合は残高確認もポイント記録も行わず購入のみ登録する", async () => {
+            sumScoredPointsByTeamCode.mockResolvedValue(0);
+
+            await PropertyPurchasesServiceImpl.postPropertyPurchases({
+                eventCode: TEST_EVENT_CODE,
+                teamCode: "TEAM_A",
+                stationCode: "STATION_A",
+                withPayment: false,
+            });
+
+            expect(sumScoredPointsByTeamCode).not.toHaveBeenCalled();
+            expect(pointsCreate).not.toHaveBeenCalled();
+            expect(create).toHaveBeenCalledTimes(1);
+        });
+
+        it("駅が存在しない場合はNotFoundErrorとなる", async () => {
+            findByStationCode.mockResolvedValue(null);
+
+            await expect(
+                PropertyPurchasesServiceImpl.postPropertyPurchases({
+                    eventCode: TEST_EVENT_CODE,
+                    teamCode: "TEAM_A",
+                    stationCode: "UNKNOWN",
+                    withPayment: true,
+                }),
+            ).rejects.toThrow(NotFoundError);
         });
 
         it("想定外のエラーはInternalServerErrorに変換される", async () => {
@@ -91,6 +172,7 @@ describe("PropertyPurchasesServiceImpl", () => {
                     eventCode: TEST_EVENT_CODE,
                     teamCode: "TEAM_A",
                     stationCode: "STATION_A",
+                    withPayment: true,
                 }),
             ).rejects.toThrow(InternalServerError);
         });
@@ -104,6 +186,7 @@ describe("PropertyPurchasesServiceImpl", () => {
                     eventCode: TEST_EVENT_CODE,
                     teamCode: "TEAM_A",
                     stationCode: "STATION_A",
+                    withPayment: true,
                 }),
             ).rejects.toBe(apiError);
         });

@@ -24,7 +24,14 @@ const meta = {
     parameters: {
         msw: {
             handlers: {
-                verify: verifyArrivalGoalStationV3Handlers.success({ result: "VERIFIED" }),
+                verify: verifyArrivalGoalStationV3Handlers.success({
+                    result: "VERIFIED",
+                    stationName: "駅A",
+                    price: 10_000,
+                    currentPoints: 30_000,
+                    arrivalPoints: 1_000,
+                    consecutiveGoalBonus: 500,
+                }),
                 arrival: arrivalGoalStationV3Handlers.success({
                     points: 1000,
                     propertyPurchases: null,
@@ -68,6 +75,23 @@ export const SubmitSuccess: Story = {
     },
 };
 
+/** 購入する場合、確認ダイアログに購入金額・持ち金・支払後の持ち金が表示される。 */
+export const ConfirmShowsAmounts: Story = {
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await userEvent.click(canvas.getByLabelText("チーム"));
+        await userEvent.click(await within(document.body).findByRole("option", { name: "チームA" }));
+
+        await userEvent.click(canvas.getByRole("button", { name: "送信" }));
+
+        const body = within(document.body);
+        await expect(await body.findByText(/購入金額:/)).toBeInTheDocument();
+        await expect(body.getByText(/現在の持ち金:/)).toBeInTheDocument();
+        await expect(body.getByText(/支払後の持ち金:/)).toBeInTheDocument();
+    },
+};
+
 /** 処理可否チェックがエラーを返した場合、エラーダイアログが表示される。 */
 export const VerifyFailure: Story = {
     parameters: {
@@ -86,8 +110,6 @@ export const VerifyFailure: Story = {
         await userEvent.click(canvas.getByRole("button", { name: "送信" }));
 
         const body = within(document.body);
-        await userEvent.click(await body.findByRole("button", { name: "ＯＫ" }));
-
         await expect(await body.findByText("エラー")).toBeInTheDocument();
     },
 };

@@ -141,9 +141,20 @@ describe("PropertyPurchasesApiHandler", () => {
                 await new PropertyPurchasesApiHandler(req, service).handle(),
             );
 
-            expect(service.postPropertyPurchases).toHaveBeenCalledWith(validBody);
+            expect(service.postPropertyPurchases).toHaveBeenCalledWith({ ...validBody, withPayment: true });
             expect(status).toBe(StatusCode.OK);
             expect(body).toHaveProperty("data");
+        });
+
+        it("withPaymentにfalseを指定した場合はそのままServiceに渡す", async () => {
+            service.postPropertyPurchases.mockResolvedValue({
+                propertyPurchase: buildPropertyPurchase(validBody),
+            });
+
+            const req = buildPostRequest({ ...validBody, withPayment: false });
+            await new PropertyPurchasesApiHandler(req, service).handle();
+
+            expect(service.postPropertyPurchases).toHaveBeenCalledWith({ ...validBody, withPayment: false });
         });
 
         it.each([
