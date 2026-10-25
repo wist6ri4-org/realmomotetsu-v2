@@ -15,11 +15,13 @@ export type PostCurrentLocationV3Request = {
 /**
  * 現在地登録のレスポンス
  * @property { TransitStations } transitStation - 登録された経由駅
- * @property { Points } point - 登録されたポイント
+ * @property { Points } point - 登録されたポイント（物件駅の場合は所有チームの収益）
+ * @property { Points } paymentPoint - 物件駅で到着したチームが支払ったポイント
  * @property { StationType } stationType - 登録された駅のタイプ
  */
 export type PostCurrentLocationV3Response = {
     transitStation: TransitStations;
     point?: Points;
+    paymentPoint?: Points;
     stationType?: StationType;
 };

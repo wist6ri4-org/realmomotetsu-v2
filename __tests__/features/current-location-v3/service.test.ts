@@ -161,7 +161,7 @@ describe("CurrentLocationV3ServiceImpl.postCurrentLocationV3", () => {
             );
         });
 
-        it("他チームが所有する物件駅に到着すると所有チームに収益が入る", async () => {
+        it("他チームが所有する物件駅に到着すると、到着したチームから所有チームへ収益が移動する", async () => {
             propertyPurchasesFindByEventCodeAndStationCode.mockResolvedValue(
                 buildPropertyPurchaseWithRelations(
                     { teamCode: OTHER_TEAM, stationCode: "STATION_A" },
@@ -180,7 +180,18 @@ describe("CurrentLocationV3ServiceImpl.postCurrentLocationV3", () => {
                 GameConstants.POINT_STATUS.REVENUE,
                 expect.anything(),
             );
+            // 到着したチームからは同額を差し引く
+            expect(pointsCreate).toHaveBeenCalledWith(
+                TEST_EVENT_CODE,
+                OWN_TEAM,
+                -expectedRevenue,
+                GameConstants.POINT_STATUS.REVENUE,
+                expect.anything(),
+            );
+            expect(pointsCreate).toHaveBeenCalledTimes(2);
             expect(res.point?.points).toBe(expectedRevenue);
+            expect(res.paymentPoint?.teamCode).toBe(OWN_TEAM);
+            expect(res.paymentPoint?.points).toBe(-expectedRevenue);
         });
 
         // TSK-79の回帰テスト: 自チーム所有の物件駅で収益が発生していた不具合の再発防止

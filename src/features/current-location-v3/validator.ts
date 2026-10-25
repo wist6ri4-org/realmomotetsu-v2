@@ -12,5 +12,6 @@ export const PostCurrentLocationV3RequestSchema = z.object({
 export const PostCurrentLocationV3ResponseSchema = z.object({
     transitStation: TransitStationsSchema,
     point: PointsSchema.optional(),
+    paymentPoint: PointsSchema.optional(),
     stationType: StationTypeSchema.optional(),
 });

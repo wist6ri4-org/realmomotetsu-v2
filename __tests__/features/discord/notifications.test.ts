@@ -30,6 +30,7 @@ import { mockRepositories, mockWithTransaction } from "../../helpers/repositoryM
 const request = { eventCode: TEST_EVENT_CODE, teamCode: "TEAM_A", stationCode: "STATION_A" };
 const eventUrl = "https://discord.com/api/webhooks/event";
 const ownerUrl = "https://discord.com/api/webhooks/owner";
+const payerUrl = "https://discord.com/api/webhooks/payer";
 const send = jest.mocked(DiscordNotifyServiceImpl.postDiscordNotify);
 const schedule = jest.mocked(after);
 const realtime = jest.mocked(notifyEventDataChanged);
@@ -46,6 +47,7 @@ describe("登録完了後のDiscord通知", () => {
     let bombiiCreate: jest.Mock;
     let currentCreate: jest.Mock;
     let pointCreate: jest.Mock;
+    let teamLookup: jest.Mock;
 
     const runBackground = async () => {
         for (const callback of callbacks) await callback();
@@ -71,10 +73,11 @@ describe("登録完了後のDiscord通知", () => {
         currentCreate = jest.fn().mockResolvedValue({ transitStation: buildTransitStation(), point: buildPoints() });
         pointCreate = jest.fn().mockImplementation(async (eventCode, teamCode, points, status) =>
             buildPoints({ eventCode, teamCode, points, status }));
+        teamLookup = jest.fn().mockResolvedValue(buildTeam({ teamName: "チームA" }));
         mockRepositories({
             events: { findByEventCode: eventLookup },
             stations: { findByStationCode: stationLookup },
-            teams: { findByTeamCode: jest.fn().mockResolvedValue(buildTeam({ teamName: "チームA" })) },
+            teams: { findByTeamCode: teamLookup },
             goalStations: { findLatestGoalStation: latestGoal, create: goalCreate, createV3: goalCreateV3 },
             bombiiHistories: { create: bombiiCreate },
             transitStations: { createWithPoints: currentCreate, create: jest.fn().mockResolvedValue(buildTransitStation()) },
@@ -173,10 +176,13 @@ describe("登録完了後のDiscord通知", () => {
         expect(schedule).not.toHaveBeenCalled();
     });
 
-    const setOtherOwner = () => property.mockResolvedValue(buildPropertyPurchaseWithRelations(
-        { teamCode: "TEAM_B" },
-        { station: { stationGrade: StationGrade.a }, team: { discordWebhookUrl: ownerUrl } },
-    ));
+    const setOtherOwner = (ownerWebhookUrl: string | null = ownerUrl) => {
+        property.mockResolvedValue(buildPropertyPurchaseWithRelations(
+            { teamCode: "TEAM_B" },
+            { station: { stationGrade: StationGrade.a }, team: { teamName: "チームB", discordWebhookUrl: ownerWebhookUrl } },
+        ));
+        teamLookup.mockResolvedValue(buildTeam({ teamName: "チームA", discordWebhookUrl: payerUrl }));
+    };
 
     it("収益ポイント登録失敗時は、経由駅作成後でも通知しない", async () => {
         setOtherOwner();
@@ -186,32 +192,73 @@ describe("登録完了後のDiscord通知", () => {
         expect(send).not.toHaveBeenCalled();
     });
 
-    it("収益は登録された金額を所有チームへ通知し、到着通知と両立する", async () => {
+    it("収益は登録された金額を所有チームと到着したチームへ通知し、到着通知と両立する", async () => {
         setOtherOwner();
         const result = await CurrentLocationV3ServiceImpl.postCurrentLocationV3(request);
         expect(result).not.toHaveProperty("teamDiscordWebhookUrl");
         expect(result.point?.teamCode).toBe("TEAM_B");
         expect(result.point?.points).toBe(GameConstants.STATION_GRADE.a.price * GameConstants.REVENUE_RATE);
+        expect(result.paymentPoint?.teamCode).toBe(request.teamCode);
+        expect(result.paymentPoint?.points).toBe(-result.point!.points);
         // 予約後のイベント設定変更や最新目的駅変更で、通知内容をすり替えない。
         event.discordWebhookUrl = "https://discord.com/api/webhooks/changed";
         latestGoal.mockResolvedValue(buildGoalStation({ stationCode: "OTHER" }));
         await runBackground();
-        expect(send).toHaveBeenCalledTimes(2);
+        expect(send).toHaveBeenCalledTimes(3);
         expect(send).toHaveBeenCalledWith({
             discordWebhookUrl: ownerUrl,
             templateName: Templates.EARN_REVENUE,
             variables: { stationName: "東京", revenueYen: Converter.convertPointsToYenV3(result.point!.points) },
         });
+        expect(send).toHaveBeenCalledWith({
+            discordWebhookUrl: payerUrl,
+            templateName: Templates.PAY_REVENUE,
+            variables: {
+                stationName: "東京",
+                ownerTeamName: "チームB",
+                paymentYen: Converter.convertPointsToYenV3(result.point!.points),
+            },
+        });
         expect(send).toHaveBeenCalledWith(expect.objectContaining({ discordWebhookUrl: eventUrl, templateName: Templates.ARRIVAL_GOAL_STATION }));
     });
 
-    it("イベントWebhook未設定でも、所有チームの収益通知は送る", async () => {
+    it("イベントWebhook未設定でも、収益・支払い通知は送る", async () => {
         event.discordWebhookUrl = "";
         setOtherOwner();
         await CurrentLocationV3ServiceImpl.postCurrentLocationV3(request);
         await runBackground();
+        expect(send).toHaveBeenCalledTimes(2);
+        expect(send).toHaveBeenCalledWith(expect.objectContaining({ discordWebhookUrl: ownerUrl, templateName: Templates.EARN_REVENUE }));
+        expect(send).toHaveBeenCalledWith(expect.objectContaining({ discordWebhookUrl: payerUrl, templateName: Templates.PAY_REVENUE }));
+    });
+
+    it("所有チームのWebhook未設定でも、到着したチームへの支払い通知は送る", async () => {
+        latestGoal.mockResolvedValue(null);
+        setOtherOwner(null);
+        await CurrentLocationV3ServiceImpl.postCurrentLocationV3(request);
+        await runBackground();
+        expect(send).toHaveBeenCalledTimes(1);
+        expect(send).toHaveBeenCalledWith(expect.objectContaining({ discordWebhookUrl: payerUrl, templateName: Templates.PAY_REVENUE }));
+    });
+
+    it("到着したチームのWebhook未設定なら支払い通知は送らず、収益通知は送る", async () => {
+        latestGoal.mockResolvedValue(null);
+        setOtherOwner();
+        teamLookup.mockResolvedValue(buildTeam({ discordWebhookUrl: null }));
+        await CurrentLocationV3ServiceImpl.postCurrentLocationV3(request);
+        await runBackground();
         expect(send).toHaveBeenCalledTimes(1);
         expect(send).toHaveBeenCalledWith(expect.objectContaining({ discordWebhookUrl: ownerUrl, templateName: Templates.EARN_REVENUE }));
+    });
+
+    it("到着したチームの取得失敗でも、収益通知は送る", async () => {
+        latestGoal.mockResolvedValue(null);
+        setOtherOwner();
+        teamLookup.mockRejectedValue(new Error("team unavailable"));
+        await expect(CurrentLocationV3ServiceImpl.postCurrentLocationV3(request)).resolves.toHaveProperty("transitStation");
+        await runBackground();
+        expect(send).toHaveBeenCalledTimes(1);
+        expect(send).toHaveBeenCalledWith(expect.objectContaining({ templateName: Templates.EARN_REVENUE }));
     });
 
     it.each(["disabled", "own", "no-webhook", "unowned"])("収益通知を送らない条件: %s", async (condition) => {
@@ -238,13 +285,14 @@ describe("登録完了後のDiscord通知", () => {
         expect(schedule).not.toHaveBeenCalled();
     });
 
-    it("到着通知の準備失敗でも収益通知は送る", async () => {
+    it("到着通知の準備失敗でも収益・支払い通知は送る", async () => {
         setOtherOwner();
         latestGoal.mockRejectedValue(new Error("goal unavailable"));
         await expect(CurrentLocationV3ServiceImpl.postCurrentLocationV3(request)).resolves.toHaveProperty("transitStation");
         await runBackground();
-        expect(send).toHaveBeenCalledTimes(1);
+        expect(send).toHaveBeenCalledTimes(2);
         expect(send).toHaveBeenCalledWith(expect.objectContaining({ templateName: Templates.EARN_REVENUE }));
+        expect(send).toHaveBeenCalledWith(expect.objectContaining({ templateName: Templates.PAY_REVENUE }));
     });
 
     it("予約失敗でも登録結果は成功する", async () => {
@@ -258,7 +306,7 @@ describe("登録完了後のDiscord通知", () => {
         if (failure === "result") send.mockResolvedValueOnce({ success: false });
         else send.mockRejectedValueOnce(new Error("Discord unavailable"));
         await expect(runBackground()).resolves.toBeUndefined();
-        expect(send).toHaveBeenCalledTimes(2);
+        expect(send).toHaveBeenCalledTimes(3);
         expect(console.error).toHaveBeenCalled();
     });
 
@@ -271,7 +319,9 @@ describe("登録完了後のDiscord通知", () => {
 
     it("登録額が0でも、ポイントレコードが存在すれば現行条件どおり通知する", async () => {
         latestGoal.mockResolvedValue(null);
-        await scheduleCurrentLocationNotifications(request, { discordWebhookUrl: ownerUrl, points: 0, stationName: "東京" });
+        await scheduleCurrentLocationNotifications(request, {
+            ownerDiscordWebhookUrl: ownerUrl, ownerTeamName: "チームB", payerTeamCode: request.teamCode, points: 0, stationName: "東京",
+        });
         await runBackground();
         expect(send).toHaveBeenCalledWith(expect.objectContaining({ variables: { stationName: "東京", revenueYen: "0 万" } }));
     });

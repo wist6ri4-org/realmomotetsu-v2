@@ -1,0 +1,2 @@
+@everyone
+**{{stationName}}** 駅に止まったため、**{{ownerTeamName}}** に **{{paymentYen}}** 円を支払いました⋯
