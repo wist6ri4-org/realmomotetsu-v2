@@ -60,7 +60,7 @@ export const Close: Story = {
         await userEvent.click(canvas.getByRole("button", { name: "ダイアログを開く" }));
 
         const body = within(document.body);
-        await userEvent.click(body.getByRole("button", { name: "OK" }));
+        await userEvent.click(body.getByRole("button", { name: "ＯＫ" }));
         await expect(args.handleClose).toHaveBeenCalledTimes(1);
         await waitFor(() => expect(body.queryByText("目的地到着！！")).not.toBeInTheDocument());
     },

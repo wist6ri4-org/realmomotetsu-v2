@@ -31,7 +31,7 @@ export const SignupHeader: React.FC = (): React.JSX.Element => {
                     }}
                 >
                     <Image
-                        src="/realmomotetsu_signup_header.png"
+                        src="/realmomotetsu_signup_header_v3.0.png"
                         alt="東急線リアル桃鉄"
                         width={0}
                         height={0}
