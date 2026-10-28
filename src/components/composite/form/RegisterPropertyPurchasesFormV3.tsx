@@ -25,7 +25,7 @@ import { useSelectInput } from "@/hooks/useSelectInput";
 import { TeamData } from "@/types/TeamData";
 import { Converter } from "@/utils/converter";
 import { TypeConverter } from "@/utils/typeConverter";
-import { Box, CircularProgress, FormControlLabel, Switch } from "@mui/material";
+import { Box, CircularProgress, FormControlLabel, Switch, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
@@ -61,13 +61,14 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [withPayment, setWithPayment] = useState<boolean>(true);
 
+    // 選択中のチーム・駅と、購入金額・現在の持ち金
+    const team = teams.find((t) => t.teamCode === teamCodeInput.value);
+    const station = stations.find((s) => s.stationCode === stationCodeInput.value);
+    const price = GameConstants.STATION_GRADE[station?.stationGrade ?? StationGrade.none].price;
+    const currentPoints = teamData.find((t) => t.teamCode === teamCodeInput.value)?.scoredPoints ?? 0;
+
     const registerPropertyPurchase = async (e: React.SubmitEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
-
-        const team = teams.find((t) => t.teamCode === teamCodeInput.value);
-        const station = stations.find((s) => s.stationCode === stationCodeInput.value);
-        const price = GameConstants.STATION_GRADE[station?.stationGrade ?? StationGrade.none].price;
-        const currentPoints = teamData.find((t) => t.teamCode === teamCodeInput.value)?.scoredPoints ?? 0;
 
         // 支払いありの場合は所持金不足をチェック（最終判定はサーバー側）
         if (withPayment && currentPoints - price < 0) {
@@ -205,6 +206,12 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
                             disabled={isLoading}
                             sx={{ minWidth: 200 }}
                         />
+                        {station && (
+                            <Typography variant="body2" sx={{ marginTop: 1 }}>
+                                購入金額: {Converter.convertPointsToYenV3(price)}
+                                {team && ` ／ 現在の持ち金: ${Converter.convertPointsToYenV3(currentPoints)}`}
+                            </Typography>
+                        )}
                     </Box>
                     <Box sx={{ marginBottom: 2 }}>
                         <FormControlLabel

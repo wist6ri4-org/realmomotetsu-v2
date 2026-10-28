@@ -232,6 +232,24 @@ describe("CurrentLocationV3ServiceImpl.postCurrentLocationV3", () => {
             expect(res).not.toHaveProperty("teamDiscordWebhookUrl");
         });
 
+        it("購入済みの駅の場合はisPurchasedがtrueになる", async () => {
+            propertyPurchasesFindByEventCodeAndStationCode.mockResolvedValue(
+                buildPropertyPurchaseWithRelations({ teamCode: OTHER_TEAM, stationCode: "STATION_A" }),
+            );
+
+            const res = await CurrentLocationV3ServiceImpl.postCurrentLocationV3(buildRequest());
+
+            expect(res.isPurchased).toBe(true);
+        });
+
+        it("未購入の駅の場合はisPurchasedがfalseになる", async () => {
+            propertyPurchasesFindByEventCodeAndStationCode.mockResolvedValue(null);
+
+            const res = await CurrentLocationV3ServiceImpl.postCurrentLocationV3(buildRequest());
+
+            expect(res.isPurchased).toBe(false);
+        });
+
         it("物件が購入されていない場合はWebhook URLを返さない", async () => {
             propertyPurchasesFindByEventCodeAndStationCode.mockResolvedValue(null);
 
