@@ -27,15 +27,12 @@ const meta = {
                 verify: verifyArrivalGoalStationV3Handlers.success({
                     result: "VERIFIED",
                     stationName: "駅A",
-                    price: 10_000,
                     currentPoints: 30_000,
                     arrivalPoints: 1_000,
                     consecutiveGoalBonus: 500,
                 }),
                 arrival: arrivalGoalStationV3Handlers.success({
                     points: 1000,
-                    propertyPurchases: null,
-                    purchasePoints: null,
                     consecutiveGoalCount: 1,
                     consecutiveGoalBonus: null,
                 }),
@@ -75,7 +72,7 @@ export const SubmitSuccess: Story = {
     },
 };
 
-/** 購入する場合、確認ダイアログに購入金額・持ち金・支払後の持ち金が表示される。 */
+/** 確認ダイアログに持ち金・到着賞金・到着後の持ち金が表示され、購入金額は表示されない。 */
 export const ConfirmShowsAmounts: Story = {
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
@@ -86,9 +83,10 @@ export const ConfirmShowsAmounts: Story = {
         await userEvent.click(canvas.getByRole("button", { name: "送信" }));
 
         const body = within(document.body);
-        await expect(await body.findByText(/購入金額:/)).toBeInTheDocument();
-        await expect(body.getByText(/現在の持ち金:/)).toBeInTheDocument();
-        await expect(body.getByText(/支払後の持ち金:/)).toBeInTheDocument();
+        await expect(await body.findByText(/現在の持ち金:/)).toBeInTheDocument();
+        await expect(body.getByText(/到着賞金:/)).toBeInTheDocument();
+        await expect(body.getByText(/到着後の持ち金:/)).toBeInTheDocument();
+        await expect(body.queryByText(/購入金額:/)).not.toBeInTheDocument();
     },
 };
 

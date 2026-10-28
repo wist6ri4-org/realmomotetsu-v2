@@ -3,7 +3,7 @@
  */
 
 import { GameConstants } from "@/constants/gameConstants";
-import { BadRequestError, ConflictError, DataIntegrityError, InternalServerError } from "@/error";
+import { DataIntegrityError, InternalServerError } from "@/error";
 import { VerifyArrivalGoalStationV3ServiceImpl } from "@/features/verify/verify-arrival-goal-station-v3/service";
 import {
     PostVerifyArrivalGoalStationV3Request,
@@ -16,10 +16,9 @@ import {
     buildBidirectionalNearbyStations,
     buildGoalStation,
     buildLatestTransitStation,
-    buildPropertyPurchaseWithRelations,
     buildTransitStation,
 } from "../../../helpers/factories";
-import { captureError, mockRepositories } from "../../../helpers/repositoryMocks";
+import { mockRepositories } from "../../../helpers/repositoryMocks";
 
 /** 検証対象のチーム */
 const OWN_TEAM = "TEAM_A";
@@ -41,9 +40,6 @@ const NEARBY_STATIONS = buildBidirectionalNearbyStations([
 const ARRIVAL_POINTS =
     GameConstants.ARRIVAL_PRIZE_V3.BASIC_PRIZE + 2 * GameConstants.ARRIVAL_PRIZE_V3.INCREMENT_PER_STATION_NUMBER;
 
-/** 最新の目的駅の購入価格（グレードA） */
-const PRICE = GameConstants.STATION_GRADE.a.price;
-
 /**
  * リクエストを組み立てる
  * @param {Partial<PostVerifyArrivalGoalStationV3Request>} overrides - 上書きする項目
@@ -55,7 +51,6 @@ const buildRequest = (
     eventTypeCode: TEST_EVENT_TYPE_CODE,
     eventCode: TEST_EVENT_CODE,
     teamCode: OWN_TEAM,
-    willPurchase: false,
     ...overrides,
 });
 
@@ -66,7 +61,6 @@ describe("VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3",
     let findByEventTypeCode: jest.Mock;
     let findGoalStationsByEventCode: jest.Mock;
     let findLatestByTeamCode: jest.Mock;
-    let findByEventCodeAndStationCode: jest.Mock;
     let sumScoredPointsByTeamCode: jest.Mock;
 
     beforeEach(() => {
@@ -85,14 +79,12 @@ describe("VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3",
         findLatestByTeamCode = jest
             .fn()
             .mockResolvedValue(buildLatestTransitStation({ teamCode: OWN_TEAM, stationCode: LATEST_GOAL }));
-        findByEventCodeAndStationCode = jest.fn().mockResolvedValue(null);
         sumScoredPointsByTeamCode = jest.fn().mockResolvedValue(100_000);
 
         mockRepositories({
             goalStations: { findLatestGoalStation, findPreviousGoalStation },
             nearbyStations: { findByEventTypeCode },
             transitStations: { findGoalStationsByEventCode, findLatestByTeamCode },
-            propertyPurchases: { findByEventCodeAndStationCode },
             points: { sumScoredPointsByTeamCode },
         });
     });
@@ -110,7 +102,7 @@ describe("VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3",
             expect(res.result).toBe(VerifyArrivalGoalStationV3Result.VERIFIED);
         });
 
-        it("確認ダイアログ表示用に駅名・購入価格・現在の持ち金・到着ポイント・連続ゴールボーナスを返す", async () => {
+        it("確認ダイアログ表示用に駅名・現在の持ち金・到着ポイント・連続ゴールボーナスを返す", async () => {
             const res = await VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3(
                 buildRequest(),
             );
@@ -118,11 +110,21 @@ describe("VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3",
             expect(res).toEqual({
                 result: VerifyArrivalGoalStationV3Result.VERIFIED,
                 stationName: expect.any(String),
-                price: expect.any(Number),
-                currentPoints: expect.any(Number),
-                arrivalPoints: expect.any(Number),
-                consecutiveGoalBonus: expect.any(Number),
+                currentPoints: 100_000,
+                arrivalPoints: ARRIVAL_POINTS,
+                consecutiveGoalBonus: 0,
             });
+        });
+
+        // 物件駅の購入は駅ミッション成功時に行うため、所持金が0でも到着処理は行える
+        it("所持金が0でもエラーにならない", async () => {
+            sumScoredPointsByTeamCode.mockResolvedValue(0);
+
+            const res = await VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3(
+                buildRequest(),
+            );
+
+            expect(res.result).toBe(VerifyArrivalGoalStationV3Result.VERIFIED);
         });
 
         it("最新の経由駅が目的駅と一致しない場合はW01_STATION_MISMATCHを返す", async () => {
@@ -148,115 +150,9 @@ describe("VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3",
         });
     });
 
-    describe("E01: 購入済みチェック", () => {
-        it("購入希望かつ購入済みの場合はConflictErrorになる", async () => {
-            findByEventCodeAndStationCode.mockResolvedValue(
-                buildPropertyPurchaseWithRelations({ teamCode: OTHER_TEAM, stationCode: LATEST_GOAL }),
-            );
-
-            const error = await captureError(
-                VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3(
-                    buildRequest({ willPurchase: true }),
-                ),
-            );
-
-            expect(error).toBeInstanceOf(ConflictError);
-            expect(error).toHaveProperty(
-                "errorCode",
-                VerifyArrivalGoalStationV3Result.E01_ALREADY_PURCHASED,
-            );
-        });
-
-        it("購入を希望しない場合は購入済みでもエラーにならない", async () => {
-            findByEventCodeAndStationCode.mockResolvedValue(
-                buildPropertyPurchaseWithRelations({ teamCode: OTHER_TEAM, stationCode: LATEST_GOAL }),
-            );
-
-            const res = await VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3(
-                buildRequest({ willPurchase: false }),
-            );
-
-            expect(res.result).toBe(VerifyArrivalGoalStationV3Result.VERIFIED);
-        });
-    });
-
-    describe("E02: ポイント不足チェック", () => {
-        it("到着ポイントを加えても購入価格に届かない場合はBadRequestErrorになる", async () => {
-            // 所持ポイント + 到着ポイント - 購入価格 が1円分だけ不足する状態
-            sumScoredPointsByTeamCode.mockResolvedValue(PRICE - ARRIVAL_POINTS - 1);
-
-            const error = await captureError(
-                VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3(
-                    buildRequest({ willPurchase: true }),
-                ),
-            );
-
-            expect(error).toBeInstanceOf(BadRequestError);
-            expect(error).toHaveProperty(
-                "errorCode",
-                VerifyArrivalGoalStationV3Result.E02_INSUFFICIENT_POINTS,
-            );
-        });
-
-        it("購入後の残高がちょうど0になる場合は購入できる", async () => {
-            sumScoredPointsByTeamCode.mockResolvedValue(PRICE - ARRIVAL_POINTS);
-
-            const res = await VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3(
-                buildRequest({ willPurchase: true }),
-            );
-
-            expect(res.result).toBe(VerifyArrivalGoalStationV3Result.VERIFIED);
-        });
-
-        // TSK-86の回帰テスト: 事前チェックに連続ゴールボーナスが含まれていなかった不具合の再発防止
-        it("連続ゴールボーナスを加味して購入可否を判定する", async () => {
-            // 直前のゴールも自チーム（＝連続ゴール2回目）
-            findGoalStationsByEventCode.mockResolvedValue([
-                buildTransitStation({ id: 2, teamCode: OWN_TEAM, isGoal: true }),
-                buildTransitStation({ id: 1, teamCode: OTHER_TEAM, isGoal: true }),
-            ]);
-            const bonus = GameConstants.CONSECUTIVE_GOAL_BONUS_PER_STATION_NUMBER * 3; // 連続2回 → (2+1)×単価
-
-            // ボーナスを加味しなければ不足するが、加味すればちょうど購入できる所持ポイント
-            sumScoredPointsByTeamCode.mockResolvedValue(PRICE - ARRIVAL_POINTS - bonus);
-
-            const res = await VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3(
-                buildRequest({ willPurchase: true }),
-            );
-
-            expect(res.result).toBe(VerifyArrivalGoalStationV3Result.VERIFIED);
-        });
-
-        it("購入を希望しない場合はポイントが足りなくてもエラーにならない", async () => {
-            sumScoredPointsByTeamCode.mockResolvedValue(0);
-
-            const res = await VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3(
-                buildRequest({ willPurchase: false }),
-            );
-
-            expect(res.result).toBe(VerifyArrivalGoalStationV3Result.VERIFIED);
-        });
-
-        it("目的駅のグレードが未設定の場合は購入価格0として扱われる", async () => {
-            findLatestGoalStation.mockResolvedValue(
-                buildGoalStation({ stationCode: LATEST_GOAL }, { stationGrade: null }),
-            );
-            sumScoredPointsByTeamCode.mockResolvedValue(0);
-
-            const res = await VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3(
-                buildRequest({ willPurchase: true }),
-            );
-
-            expect(res.result).toBe(VerifyArrivalGoalStationV3Result.VERIFIED);
-        });
-    });
-
     describe("連続ゴール数の数え方", () => {
         /**
-         * ゴール履歴から算出される連続ゴールボーナス額を、購入可否の境界から逆算して検証する
-         * @description ボーナスはレスポンスに含まれないため、購入価格ちょうど／1ポイント不足の2点を
-         *              突き合わせることでボーナス額を一意に特定する。
-         *              片側だけの検証ではボーナスが過大に計算されていても通ってしまうため、必ず両側を確認する。
+         * ゴール履歴から算出される連続ゴールボーナス額を検証する
          * @param {string[]} goalTeamCodes - ゴール履歴のチームコード（新しい順）
          * @param {number} expectedBonus - 期待する連続ゴールボーナス額
          */
@@ -270,24 +166,10 @@ describe("VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3",
                 ),
             );
 
-            // ボーナスがちょうど不足分を埋めるため購入できる
-            sumScoredPointsByTeamCode.mockResolvedValue(PRICE - ARRIVAL_POINTS - expectedBonus);
-            const verified = await VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3(
-                buildRequest({ willPurchase: true }),
+            const res = await VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3(
+                buildRequest(),
             );
-            expect(verified.result).toBe(VerifyArrivalGoalStationV3Result.VERIFIED);
-
-            // 1ポイント不足するとエラーになる（＝ボーナスがこれ以上大きく計算されていないことの確認）
-            sumScoredPointsByTeamCode.mockResolvedValue(PRICE - ARRIVAL_POINTS - expectedBonus - 1);
-            const error = await captureError(
-                VerifyArrivalGoalStationV3ServiceImpl.postVerifyArrivalGoalStationV3(
-                    buildRequest({ willPurchase: true }),
-                ),
-            );
-            expect(error).toHaveProperty(
-                "errorCode",
-                VerifyArrivalGoalStationV3Result.E02_INSUFFICIENT_POINTS,
-            );
+            expect(res.consecutiveGoalBonus).toBe(expectedBonus);
         };
 
         /** 連続ゴールn回分のボーナス額 */

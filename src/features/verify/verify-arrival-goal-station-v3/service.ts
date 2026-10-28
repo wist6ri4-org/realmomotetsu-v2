@@ -5,10 +5,8 @@ import {
     VerifyArrivalGoalStationV3Result,
 } from "./types";
 import { RepositoryFactory } from "@/repositories/RepositoryFactory";
-import { ApiError, BadRequestError, ConflictError, DataIntegrityError, InternalServerError } from "@/error";
+import { ApiError, DataIntegrityError, InternalServerError } from "@/error";
 import { GameLogicUtils } from "@/utils/gameLogicUtils";
-import { StationGrade } from "@/generated/prisma";
-import { GameConstants } from "@/constants/gameConstants";
 
 export const VerifyArrivalGoalStationV3ServiceImpl: VerifyArrivalGoalStationV3Service = {
     /**
@@ -19,29 +17,20 @@ export const VerifyArrivalGoalStationV3ServiceImpl: VerifyArrivalGoalStationV3Se
     async postVerifyArrivalGoalStationV3(
         req: PostVerifyArrivalGoalStationV3Request,
     ): Promise<PostVerifyArrivalGoalStationV3Response> {
-        const [
-            nearbyStationsRepository,
-            transitStationsRepository,
-            propertyPurchasesRepository,
-            goalStationsRepository,
-            pointsRepository,
-        ] = await Promise.all([
-            RepositoryFactory.getNearbyStationsRepository(),
-            RepositoryFactory.getTransitStationsRepository(),
-            RepositoryFactory.getPropertyPurchasesRepository(),
-            RepositoryFactory.getGoalStationsRepository(),
-            RepositoryFactory.getPointsRepository(),
-        ]);
+        const [nearbyStationsRepository, transitStationsRepository, goalStationsRepository, pointsRepository] =
+            await Promise.all([
+                RepositoryFactory.getNearbyStationsRepository(),
+                RepositoryFactory.getTransitStationsRepository(),
+                RepositoryFactory.getGoalStationsRepository(),
+                RepositoryFactory.getPointsRepository(),
+            ]);
 
         try {
-            let latestGoalStationGrade: StationGrade | null = null;
             let latestGoalStationName = "";
-            /* 購入可否チェック処理 */
             // 最新の目的駅コード
             const latestGoalStationCode = (await goalStationsRepository
                 .findLatestGoalStation(req.eventCode)
                 .then((goalStation) => {
-                    latestGoalStationGrade = goalStation?.station.stationGrade ?? null;
                     latestGoalStationName = goalStation?.station.name ?? "";
                     return goalStation?.stationCode;
                 })) as string;
@@ -83,37 +72,12 @@ export const VerifyArrivalGoalStationV3ServiceImpl: VerifyArrivalGoalStationV3Se
                 .findLatestByTeamCode(req.teamCode)
                 .then((latestTransitStation) => latestTransitStation?.stationCode);
 
-            // 目的駅購入状態
-            const isPurchased = await propertyPurchasesRepository
-                .findByEventCodeAndStationCode(req.eventCode, latestGoalStationCode ?? "")
-                .then((propertyPurchases) => propertyPurchases != null);
-
             // 現在のポイント合計
             const points = await pointsRepository.sumScoredPointsByTeamCode(req.teamCode, req.eventCode);
-
-            // 購入対象駅の価格
-            const price = GameConstants.STATION_GRADE[latestGoalStationGrade ?? StationGrade.none].price;
-
-            /* エラーチェック */
-            // 購入済みエラー
-            if (req.willPurchase && isPurchased) {
-                throw new ConflictError({
-                    errorCode: VerifyArrivalGoalStationV3Result.E01_ALREADY_PURCHASED,
-                });
-            }
-
-            // ポイント不足エラー
-            const isInsufficientPoints = req.willPurchase && points + arrivalPoints + consecutiveGoalBonus - price < 0;
-            if (isInsufficientPoints) {
-                throw new BadRequestError({
-                    errorCode: VerifyArrivalGoalStationV3Result.E02_INSUFFICIENT_POINTS,
-                });
-            }
 
             // 確認ダイアログ表示用の金額情報
             const amounts = {
                 stationName: latestGoalStationName,
-                price,
                 currentPoints: points,
                 arrivalPoints,
                 consecutiveGoalBonus,

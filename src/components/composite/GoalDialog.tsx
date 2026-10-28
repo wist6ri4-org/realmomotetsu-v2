@@ -211,8 +211,6 @@ const GoalDialog: React.FC<GoalDialogProps> = ({ goalStationName, isOpen, handle
                         {goalStationName}
                     </Typography>
                     に一番乗りで～～～～～す！
-                    <br />
-                    {goalStationName}駅を購入できます！
                 </DialogContentText>
             </DialogContent>
             <DialogActions>

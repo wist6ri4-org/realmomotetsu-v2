@@ -55,6 +55,7 @@ const meta = {
                         updatedAt: new Date().toISOString(),
                     },
                     stationType: "mission",
+                    isPurchased: false,
                 }),
             },
         },

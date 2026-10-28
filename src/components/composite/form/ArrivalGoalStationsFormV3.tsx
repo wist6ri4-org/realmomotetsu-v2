@@ -22,9 +22,7 @@ import { ApplicationErrorHandler } from "@/error/errorHandler";
 import { Box, CircularProgress } from "@mui/material";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
-import CustomRadio, { RadioOption } from "@/components/base/CustomRadio";
 import { PostVerifyArrivalGoalStationV3Response, VerifyArrivalGoalStationV3Result } from "@/features/verify/verify-arrival-goal-station-v3/types";
-import { NearbyStationsWithRelations } from "@/repositories/nearbyStations/NearbyStationsRepository";
 import { PostArrivalGoalStationV3Request, PostArrivalGoalStationV3Response } from "@/features/arrival-goal-station-v3/types";
 import { Converter } from "@/utils/converter";
 
@@ -45,18 +43,6 @@ interface ArrivalGoalStationsFormV3Props {
     isOperating: boolean;
 }
 
-// 物件駅購入の選択肢
-enum WillBuyStation {
-    YES = 1,
-    NO = 0,
-}
-
-// 物件駅購入のオプション
-const willBuyStationOptions: RadioOption[] = [
-    { value: WillBuyStation.YES, label: "する" },
-    { value: WillBuyStation.NO, label: "しない" },
-];
-
 /**
  * 目的駅到着処理フォームコンポーネント
  * @param {ArrivalGoalStationsFormV3Props} props - ArrivalGoalStationsFormV3のプロパティ
@@ -73,22 +59,11 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
     const eventCode = typeof params.eventCode === "string" ? params.eventCode : "";
 
     const teamCodeInput = useSelectInput("");
-    const [willBuyStationInput, setWillBuyStationInput] = useState<number>(WillBuyStation.YES);
 
     const { isConfirmOpen, dialogOptions, showConfirmDialog, handleConfirm, handleCancel } = useConfirmDialog();
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-
-    /**
-     * 物件駅購入の選択肢の変更ハンドラー
-     * @param {React.ChangeEvent<HTMLInputElement>} event - イベントオブジェクト
-     */
-    const handleWillBuyStationChange = (event: React.ChangeEvent<HTMLInputElement> | (Event & { target: { value: unknown; name: string } })): void => {
-        const newValue = Number(event.target.value) as WillBuyStation;
-        setWillBuyStationInput(newValue);
-        console.log("選択された物件駅購入の値:", newValue);
-    };
 
     /**
      * データの登録
@@ -97,8 +72,6 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
      */
     const registerArrivalData = async (e: React.SubmitEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
-
-        const willPurchase = willBuyStationInput === WillBuyStation.YES;
 
         try {
             setIsLoading(true);
@@ -113,50 +86,26 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
                     eventTypeCode: event.eventTypeCode,
                     eventCode: eventCode,
                     teamCode: teamCodeInput.value,
-                    willPurchase: willBuyStationInput === WillBuyStation.YES,
                 }),
             });
             const responseValidationJson = await responseValidation.json();
             const responseValidationData: PostVerifyArrivalGoalStationV3Response = (responseValidationJson).data;
             if (!responseValidation.ok) {
-                switch (responseValidationJson.errorCode) {
-                    case VerifyArrivalGoalStationV3Result.E01_ALREADY_PURCHASED:
-                        await showAlertDialog(
-                            {
-                                title: DialogConstants.TITLE.ERROR,
-                                message: getMessage("ALREADY_PURCHASED"),
-                            }
-                        );
-                        return;
-                    case VerifyArrivalGoalStationV3Result.E02_INSUFFICIENT_POINTS:
-                        await showAlertDialog(
-                            {
-                                title: DialogConstants.TITLE.WARNING,
-                                message: getMessage("INSUFFICIENT_POINTS"),
-                            }
-                        );
-                        return;
-                    default:
-                        throw ApplicationErrorFactory.createFromErrorBody(responseValidation.status, responseValidationJson);
-                }
+                throw ApplicationErrorFactory.createFromErrorBody(responseValidation.status, responseValidationJson);
             }
 
             // 金額入りの確認ダイアログ（処理可否チェック後に、サーバーで計算した金額を表示する）
-            const { stationName: goalStationName, price, currentPoints, arrivalPoints, consecutiveGoalBonus } =
+            const { stationName: goalStationName, currentPoints, arrivalPoints, consecutiveGoalBonus } =
                 responseValidationData;
-            const afterPoints = currentPoints + arrivalPoints + consecutiveGoalBonus - price;
-            const purchaseMessage = willPurchase
-                ? `物件駅購入: する（${goalStationName}駅）\n` +
-                  `購入金額: ${Converter.convertPointsToYenV3(price)}\n` +
-                  `現在の持ち金: ${Converter.convertPointsToYenV3(currentPoints)}\n` +
-                  `到着賞金: ${Converter.convertPointsToYenV3(arrivalPoints)}\n` +
-                  `連続ゴールボーナス: ${Converter.convertPointsToYenV3(consecutiveGoalBonus)}\n` +
-                  `支払後の持ち金: ${Converter.convertPointsToYenV3(afterPoints)}`
-                : `物件駅購入: しない`;
+            const afterPoints = currentPoints + arrivalPoints + consecutiveGoalBonus;
             const confirmMessage =
                 "以下の内容で到着処理を行いますか？\n\n" +
                 `チーム: ${teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"}\n` +
-                purchaseMessage;
+                `目的駅: ${goalStationName}駅\n` +
+                `現在の持ち金: ${Converter.convertPointsToYenV3(currentPoints)}\n` +
+                `到着賞金: ${Converter.convertPointsToYenV3(arrivalPoints)}\n` +
+                `連続ゴールボーナス: ${Converter.convertPointsToYenV3(consecutiveGoalBonus)}\n` +
+                `到着後の持ち金: ${Converter.convertPointsToYenV3(afterPoints)}`;
             const isConfirmed = await showConfirmDialog({
                 message: confirmMessage,
             });
@@ -186,7 +135,6 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
                     eventCode: eventCode,
                     teamCode: teamCodeInput.value,
                     stations: stations,
-                    willPurchase: willBuyStationInput === WillBuyStation.YES,
                 } satisfies PostArrivalGoalStationV3Request),
             });
 
@@ -196,16 +144,11 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
             const responseArrivalData: PostArrivalGoalStationV3Response = (await responseArrival.json()).data;
 
             teamCodeInput.reset();
-            setWillBuyStationInput(WillBuyStation.YES);
 
-            const stationName = stations.find((station) => station.stationCode === responseArrivalData?.propertyPurchases?.stationCode)?.name ?? "不明";
             const completionMessage =
                 "目的駅到着処理が完了しました。\n\n" +
                 `チーム: ${teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"}\n` +
                 `賞金: ${Converter.convertPointsToYenV3(responseArrivalData.points)}\n` +
-                `物件駅購入: ${willBuyStationInput === WillBuyStation.YES
-                    ? stationName + "駅 : " + Converter.convertPointsToYenV3(responseArrivalData.purchasePoints ?? 0) + "円"
-                    : "しない"}\n` +
                 `連続ゴール数: ${responseArrivalData.consecutiveGoalCount}回\n` +
                 `連続ゴールボーナス: ${Converter.convertPointsToYenV3(responseArrivalData.consecutiveGoalBonus ?? 0)}` + "円";
             await showAlertDialog({
@@ -236,7 +179,6 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
      */
     const resetForm = (): void => {
         teamCodeInput.reset();
-        setWillBuyStationInput(WillBuyStation.YES);
         setIsLoading(false);
     };
 
@@ -245,7 +187,7 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
             <Box>
                 <FormTitle title="目的駅到着処理" />
                 <FormDescription>
-                    目的駅に到着した場合、チームと購入希望を選択し、到着処理を行なう。
+                    目的駅に到着した場合、チームを選択し、到着処理を行なう。
                 </FormDescription>
                 <Box
                     component="form"
@@ -271,16 +213,6 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
                             required
                             disabled={isLoading}
                             sx={{ minWidth: 200 }}
-                        />
-                    </Box>
-                    <Box sx={{ marginBottom: 2 }}>
-                        <CustomRadio
-                            options={willBuyStationOptions}
-                            value={willBuyStationInput}
-                            onChange={handleWillBuyStationChange}
-                            size="small"
-                            label="物件駅を購入"
-                            row={true}
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>

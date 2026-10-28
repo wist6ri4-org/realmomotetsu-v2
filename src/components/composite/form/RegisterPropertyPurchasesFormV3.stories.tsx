@@ -58,6 +58,25 @@ export const SubmitSuccess: Story = {
     },
 };
 
+/** 駅を選択すると、送信前にその駅の購入金額（チーム選択済みなら現在の持ち金も）が表示される。 */
+export const ShowsPriceOnStationSelect: Story = {
+    args: { stations: buildStations(["STATION_A"], { stationGrade: "a" }) },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await expect(canvas.queryByText(/購入金額:/)).not.toBeInTheDocument();
+
+        await userEvent.click(canvas.getByLabelText("購入する駅"));
+        await userEvent.click(await within(document.body).findByRole("option", { name: "STATION_A" }));
+        await expect(await canvas.findByText(/購入金額:/)).toBeInTheDocument();
+        await expect(canvas.queryByText(/現在の持ち金:/)).not.toBeInTheDocument();
+
+        await userEvent.click(canvas.getByLabelText("チーム"));
+        await userEvent.click(await within(document.body).findByRole("option", { name: "チームA" }));
+        await expect(await canvas.findByText(/現在の持ち金:/)).toBeInTheDocument();
+    },
+};
+
 /** 同じチーム・駅で購入済みの場合、重複エラーダイアログが表示される。 */
 export const DuplicateEntry: Story = {
     parameters: {

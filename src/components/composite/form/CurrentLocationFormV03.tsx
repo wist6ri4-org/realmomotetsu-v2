@@ -176,13 +176,16 @@ const CurrentLocationFormV3: React.FC<CurrentLocationFormV3Props> = ({
                         await showGoalDialog();
                     }
 
-                    // ミッション駅到着のダイアログを表示
+                    // ミッション駅到着のダイアログを表示（未購入の物件駅の場合は購入できる旨も表示）
+                    const missionMessage = getMessage(
+                        "MISSION_STATION_ARRIVAL",
+                        { stationName: station.name, stationNameKana: station.kana }
+                    );
                     await showAlertDialog({
                         title: DialogConstants.TITLE.MISSION_STATION,
-                        message: getMessage(
-                            "MISSION_STATION_ARRIVAL",
-                            { stationName: station.name, stationNameKana: station.kana }
-                        ),
+                        message: responseData.isPurchased
+                            ? missionMessage
+                            : `${missionMessage}\n${getMessage("MISSION_STATION_PURCHASABLE", { stationName: station.name })}`,
                     });
                     break;
                 }

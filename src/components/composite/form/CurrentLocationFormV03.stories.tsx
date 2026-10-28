@@ -36,6 +36,7 @@ const meta = {
                         updatedAt: new Date().toISOString(),
                     },
                     stationType: "mission",
+                    isPurchased: false,
                 }),
                 goalStationsLatest: goalStationsLatestHandlers.success({
                     goalStation: buildGoalStation({ stationCode: "STATION_B" }),
@@ -58,7 +59,7 @@ export const NotOperating: Story = {
     },
 };
 
-/** ミッション駅（目的駅ではない）に到着した場合、登録完了 → ミッション駅到着のダイアログが順に表示される。 */
+/** ミッション駅（目的駅ではない・未購入）に到着した場合、登録完了 → ミッション駅到着のダイアログ（購入できる旨つき）が順に表示される。 */
 export const SubmitSuccessMissionStation: Story = {
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
@@ -79,6 +80,51 @@ export const SubmitSuccessMissionStation: Story = {
         await waitFor(() => expect(body.getByRole("heading", { name: "ミッション駅　到着！" })).toBeInTheDocument(), {
             timeout: 3000,
         });
+        await expect(body.getByText(/STATION_A駅を\s*購入できます！/)).toBeInTheDocument();
+    },
+};
+
+/** 購入済みのミッション駅に到着した場合、ミッション駅到着のダイアログに購入できる旨は表示されない。 */
+export const SubmitSuccessPurchasedMissionStation: Story = {
+    parameters: {
+        msw: {
+            handlers: {
+                currentLocation: currentLocationV3Handlers.success({
+                    transitStation: {
+                        id: 1,
+                        stationCode: "STATION_A",
+                        teamCode: "TEAM_A",
+                        eventCode: "TEST_EVENT",
+                        isGoal: false,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                    },
+                    stationType: "mission",
+                    isPurchased: true,
+                }),
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await userEvent.click(canvas.getByLabelText("チーム名"));
+        await userEvent.click(await within(document.body).findByRole("option", { name: "チームA" }));
+
+        await userEvent.click(canvas.getByLabelText("今いる駅"));
+        await userEvent.click(await within(document.body).findByRole("option", { name: "STATION_A" }));
+
+        await userEvent.click(canvas.getByRole("button", { name: "送信" }));
+
+        const body = within(document.body);
+        await userEvent.click(await body.findByRole("button", { name: "ＯＫ" }));
+        await expect(await body.findByText("登録完了")).toBeInTheDocument();
+        await userEvent.click(body.getByRole("button", { name: "閉じる" }));
+
+        await waitFor(() => expect(body.getByRole("heading", { name: "ミッション駅　到着！" })).toBeInTheDocument(), {
+            timeout: 3000,
+        });
+        await expect(body.queryByText(/購入できます！/)).not.toBeInTheDocument();
     },
 };
 
