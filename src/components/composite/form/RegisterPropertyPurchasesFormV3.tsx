@@ -8,6 +8,7 @@ import AlertDialog from "@/components/base/AlertDialog";
 import ConfirmDialog from "@/components/base/ConfirmDialog";
 import CustomAutoComplete from "@/components/base/CustomAutoComplete";
 import CustomButton from "@/components/base/CustomButton";
+import CustomRadio, { RadioOption } from "@/components/base/CustomRadio";
 import CustomSelect from "@/components/base/CustomSelect";
 import FormDescription from "@/components/base/FormDescription";
 import FormTitle from "@/components/base/FormTitle";
@@ -25,7 +26,7 @@ import { useSelectInput } from "@/hooks/useSelectInput";
 import { TeamData } from "@/types/TeamData";
 import { Converter } from "@/utils/converter";
 import { TypeConverter } from "@/utils/typeConverter";
-import { Box, CircularProgress, FormControlLabel, Switch, Typography } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
@@ -36,6 +37,12 @@ interface RegisterPropertyPurchasesFormV3Props {
     onSubmit?: () => void;
     isOperating: boolean;
 };
+
+// 支払い有無のオプション（RadioGroupの値は文字列で扱う）
+const paymentOptions: RadioOption[] = [
+    { value: "true", label: "支払いあり" },
+    { value: "false", label: "支払いなし" },
+];
 
 /**
  * 物件駅登録フォームコンポーネント
@@ -206,7 +213,7 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
                             disabled={isLoading}
                             sx={{ minWidth: 200 }}
                         />
-                        {station && (
+                        {station && withPayment && (
                             <Typography variant="body2" sx={{ marginTop: 1 }}>
                                 購入金額: {Converter.convertPointsToYenV3(price)}
                                 {team && ` ／ 現在の持ち金: ${Converter.convertPointsToYenV3(currentPoints)}`}
@@ -214,15 +221,14 @@ const RegisterPropertyPurchasesFormV3: React.FC<RegisterPropertyPurchasesFormV3P
                         )}
                     </Box>
                     <Box sx={{ marginBottom: 2 }}>
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={withPayment}
-                                    onChange={(e) => setWithPayment(e.target.checked)}
-                                    disabled={isLoading}
-                                />
-                            }
-                            label={withPayment ? "支払いあり" : "支払いなし"}
+                        <CustomRadio
+                            options={paymentOptions}
+                            value={String(withPayment)}
+                            onChange={(e) => setWithPayment(e.target.value === "true")}
+                            size="small"
+                            label="支払い"
+                            row={true}
+                            disabled={isLoading}
                         />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
