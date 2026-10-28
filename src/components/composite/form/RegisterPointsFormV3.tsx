@@ -23,19 +23,24 @@ import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useNumberInput } from "@/hooks/useNumberInput";
 import { useSelectInput } from "@/hooks/useSelectInput";
+import { TeamData } from "@/types/TeamData";
+import { Converter } from "@/utils/converter";
+import { PointsUtils } from "@/utils/pointsUtils";
 import { TypeConverter } from "@/utils/typeConverter";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 
 /**
  * RegisterPointsFormV3コンポーネントのプロパティ型定義
  * @property {Teams[]} teams - チームのリスト
+ * @property {TeamData[]} teamData - チームデータのリスト（現在の持ち金・資産の表示に使用）
  * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
  * @property {boolean} isOperating - 操作権限があるかどうか
  */
 interface RegisterPointsFormV3Props {
     teams: Teams[];
+    teamData: TeamData[];
     onSubmit?: () => void;
     isOperating: boolean;
 }
@@ -54,6 +59,7 @@ const pointStatusOptions: RadioOption[] = [
  */
 const RegisterPointsFormV3: React.FC<RegisterPointsFormV3Props> = ({
     teams,
+    teamData,
     onSubmit,
     isOperating,
 }: RegisterPointsFormV3Props): React.JSX.Element => {
@@ -68,6 +74,9 @@ const RegisterPointsFormV3: React.FC<RegisterPointsFormV3Props> = ({
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    // 選択中のチームの現在の持ち金・資産
+    const currentBalance = PointsUtils.calculateTeamBalance(teamData, teamCodeInput.value);
 
     /**
      * ポイント状態の変更ハンドラー
@@ -89,13 +98,18 @@ const RegisterPointsFormV3: React.FC<RegisterPointsFormV3Props> = ({
     const registerPointsData = async (e: React.SubmitEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
 
+        const afterBalance = PointsUtils.calculateTeamBalanceAfter(currentBalance, pointsInput.value, pointStatus);
         const confirmMessage =
             "以下の内容でポイントを登録しますか？\n\n" +
             `チーム: ${teams.find((team) => team.teamCode === teamCodeInput.value)?.teamName || "不明"}\n` +
-            `ポイント: ${pointsInput.value}\n` +
+            `金額: ${Converter.convertPointsToYenV3(pointsInput.value)}\n` +
             `ステータス: ${pointStatus === GameConstants.POINT_STATUS.SCORED
                 ? "持ち金" : pointStatus === GameConstants.POINT_STATUS.PROPERTY
-                ? "物件" : "収益"}`;
+                ? "物件" : "収益"}\n\n` +
+            `現在の持ち金: ${Converter.convertPointsToYenV3(currentBalance.money)}\n` +
+            `現在の資産: ${Converter.convertPointsToYenV3(currentBalance.asset)}\n` +
+            `登録後の持ち金: ${Converter.convertPointsToYenV3(afterBalance.money)}\n` +
+            `登録後の資産: ${Converter.convertPointsToYenV3(afterBalance.asset)}`;
         const isConfirmed = await showConfirmDialog({
             message: confirmMessage,
         });
@@ -197,6 +211,12 @@ const RegisterPointsFormV3: React.FC<RegisterPointsFormV3Props> = ({
                             disabled={isLoading}
                             sx={{ minWidth: 200 }}
                         />
+                        {teamCodeInput.value && (
+                            <Typography variant="body2" sx={{ marginTop: 1 }}>
+                                現在の持ち金: {Converter.convertPointsToYenV3(currentBalance.money)}
+                                {` ／ 資産: ${Converter.convertPointsToYenV3(currentBalance.asset)}`}
+                            </Typography>
+                        )}
                     </Box>
                     <Box sx={{ marginBottom: 2 }}>
                         <CustomNumberInput

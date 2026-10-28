@@ -94,6 +94,18 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
                 throw ApplicationErrorFactory.createFromErrorBody(responseValidation.status, responseValidationJson);
             }
 
+            // 現在いる駅と目的駅が一致しない場合は、最初に警告を表示する
+            if (responseValidationData.result === VerifyArrivalGoalStationV3Result.W01_STATION_MISMATCH) {
+                const isForceConfirmed = await showConfirmDialog({
+                    title: DialogConstants.TITLE.WARNING,
+                    message: getMessage("STATION_MISMATCH"),
+                    severity: "warning",
+                });
+                if (!isForceConfirmed) {
+                    return;
+                }
+            }
+
             // 金額入りの確認ダイアログ（処理可否チェック後に、サーバーで計算した金額を表示する）
             const { stationName: goalStationName, currentPoints, arrivalPoints, consecutiveGoalBonus } =
                 responseValidationData;
@@ -111,17 +123,6 @@ const ArrivalGoalStationsFormV3: React.FC<ArrivalGoalStationsFormV3Props> = ({
             });
             if (!isConfirmed) {
                 return;
-            }
-
-            if (responseValidationData.result === VerifyArrivalGoalStationV3Result.W01_STATION_MISMATCH) {
-                const isForceConfirmed = await showConfirmDialog({
-                    title: DialogConstants.TITLE.WARNING,
-                    message: getMessage("STATION_MISMATCH"),
-                    severity: "warning",
-                });
-                if (!isForceConfirmed) {
-                    return;
-                }
             }
 
             // 到着処理
