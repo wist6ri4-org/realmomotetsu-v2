@@ -58,7 +58,6 @@ export const GameConstants = {
     ELIMINATION_TIME_RANGE_MINUTES: 15,
 
     // ========== V3 ==========
-    // TODO 所要時間で昇順ソートしたときの上位%と、そのバケットに入る駅の数は暫定。ゲームバランスを見ながら調整する。
     /**
      * 目的駅選択のバケット設定（所要時間で昇順ソートしたときの上位%と、そのバケットに入る駅の数）
      * @property {number} percentile 所要時間で昇順ソートしたときの上位%
@@ -109,7 +108,6 @@ export const GameConstants = {
         "METRO_V1_WAKOSHI",
     ] as const,
 
-    // TODO 駅グレードの価格設定は暫定。ゲームバランスを見ながら調整する。
     /**
      * 駅グレード（キーはStationGrade値）
      * @property {string} none グレードなし
@@ -144,20 +142,17 @@ export const GameConstants = {
         },
     } as const,
 
-    // TODO 物件駅の価格設定は暫定。ゲームバランスを見ながら調整する。
     /** 購入済み物件駅到着時の収益率（到着したチームから所有チームへ移動する、購入金額に対する割合） */
     REVENUE_RATE: 0.5,
 
-    // TODO 到着ポイントの計算に使用する定数は暫定。ゲームバランスを見ながら調整する。
     /** 到着ポイントの計算に使用する定数 */
     ARRIVAL_PRIZE_V3: {
         /** 基本賞金(万円) */
         BASIC_PRIZE: 5_000,
         /** 駅数ごとの増加額(万円) */
-        INCREMENT_PER_STATION_NUMBER: 1_000,
+        INCREMENT_PER_STATION_NUMBER: 1_500,
     } as const,
 
-    // TODO 連続ゴールボーナスに使用する定数は暫定。ゲームバランスを見ながら調整する。
     /** 連続ゴールボーナスに使用する定数 */
     CONSECUTIVE_GOAL_BONUS_PER_STATION_NUMBER: 1_000,
 } as const;
