@@ -9,7 +9,7 @@ begin
       where event_code = target_event_code
       order by id asc
       offset 1
-  )
+  );
   delete from points where event_code = target_event_code;
   delete from transit_stations where id in (
     select id from transit_stations
