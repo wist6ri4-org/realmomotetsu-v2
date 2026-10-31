@@ -24,13 +24,11 @@ describe("VerifyArrivalGoalStationV3ApiHandler", () => {
         eventTypeCode: TEST_EVENT_TYPE_CODE,
         eventCode: TEST_EVENT_CODE,
         teamCode: "TEAM_A",
-        willPurchase: false,
     };
 
     /** 確認ダイアログ表示用の金額情報 */
     const amounts = {
         stationName: "駅A",
-        price: 10_000,
         currentPoints: 30_000,
         arrivalPoints: 1_000,
         consecutiveGoalBonus: 0,
@@ -65,11 +63,7 @@ describe("VerifyArrivalGoalStationV3ApiHandler", () => {
             expect((body.data as { result: string }).result).toBe(VerifyArrivalGoalStationV3Result.VERIFIED);
         });
 
-        it.each([
-            VerifyArrivalGoalStationV3Result.E01_ALREADY_PURCHASED,
-            VerifyArrivalGoalStationV3Result.E02_INSUFFICIENT_POINTS,
-            VerifyArrivalGoalStationV3Result.W01_STATION_MISMATCH,
-        ])("Serviceが%sを返した場合もそのままレスポンスに乗る", async (result) => {
+        it.each([VerifyArrivalGoalStationV3Result.W01_STATION_MISMATCH])("Serviceが%sを返した場合もそのままレスポンスに乗る", async (result) => {
             service.postVerifyArrivalGoalStationV3.mockResolvedValue({ result, ...amounts });
 
             const req = buildPostRequest(validBody);
@@ -82,9 +76,8 @@ describe("VerifyArrivalGoalStationV3ApiHandler", () => {
         });
 
         it.each([
-            ["eventTypeCodeがない", { eventCode: TEST_EVENT_CODE, teamCode: "TEAM_A", willPurchase: false }],
+            ["eventTypeCodeがない", { eventCode: TEST_EVENT_CODE, teamCode: "TEAM_A" }],
             ["teamCodeが空文字", { ...validBody, teamCode: "" }],
-            ["willPurchaseが真偽値でない", { ...validBody, willPurchase: "yes" }],
         ])("ボディが不正な場合（%s）は400を返す", async (_label, body) => {
             const req = buildPostRequest(body);
             const { status } = await readResponse(

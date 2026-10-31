@@ -1,10 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, userEvent, within } from "storybook/test";
 import RegisterPointsFormV3 from "./RegisterPointsFormV3";
-import { buildTeam } from "@/stories/mocks/fixtures";
+import { buildTeam, buildTeamData } from "@/stories/mocks/fixtures";
 import { pointsHandlers } from "@/stories/mocks/handlers";
 
 const teams = [buildTeam({ teamCode: "TEAM_A", teamName: "チームA" })];
+const teamData = [
+    buildTeamData({ teamCode: "TEAM_A", teamName: "チームA", scoredPoints: 10_000, propertyPurchasePoints: -3_000 }),
+];
 
 const meta = {
     title: "Composite/Form/RegisterPointsFormV3",
@@ -12,6 +15,7 @@ const meta = {
     tags: ["autodocs"],
     args: {
         teams,
+        teamData,
         isOperating: true,
     },
     parameters: {
@@ -49,5 +53,29 @@ export const SubmitSuccess: Story = {
         await userEvent.click(body.getByRole("button", { name: "ＯＫ" }));
 
         await expect(await body.findByText("登録完了")).toBeInTheDocument();
+    },
+};
+
+/** チームを選択すると現在の持ち金・資産が表示され、確認ダイアログに登録前後の持ち金・資産が表示される。 */
+export const ShowsBalanceOnTeamSelect: Story = {
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await expect(canvas.queryByText(/現在の持ち金:/)).not.toBeInTheDocument();
+
+        await userEvent.click(canvas.getByLabelText("チーム"));
+        await userEvent.click(await within(document.body).findByRole("option", { name: "チームA" }));
+        await expect(await canvas.findByText(/現在の持ち金: 1 億 0 万 ／ 資産: 3000 万/)).toBeInTheDocument();
+
+        const pointsInput = canvas.getByLabelText("ポイント（単位：万円）");
+        await userEvent.clear(pointsInput);
+        await userEvent.type(pointsInput, "500");
+
+        await userEvent.click(canvas.getByRole("button", { name: "送信" }));
+
+        const body = within(document.body);
+        await expect(await body.findByText(/金額: 500 万/)).toBeInTheDocument();
+        await expect(body.getByText(/登録後の持ち金: 1 億 500 万/)).toBeInTheDocument();
+        await expect(body.getByText(/登録後の資産: 3000 万/)).toBeInTheDocument();
     },
 };

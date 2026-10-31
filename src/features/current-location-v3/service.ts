@@ -135,6 +135,7 @@ export const CurrentLocationV3ServiceImpl: CurrentLocationV3Service = {
                 point: createdPoints,
                 paymentPoint: paymentPoints,
                 stationType: station.stationType ?? undefined,
+                isPurchased: propertyPurchase != null,
             };
 
             await notifyEventDataChanged(req.eventCode);

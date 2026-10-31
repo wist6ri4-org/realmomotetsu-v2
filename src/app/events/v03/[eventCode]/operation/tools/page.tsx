@@ -154,9 +154,9 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                         <Divider />
                         <RegisterBombiiAutoForm teamData={teamData} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <RegisterPointsFormV3 teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
+                        <RegisterPointsFormV3 teams={teams} teamData={teamData} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
-                        <PointsTransferFormV3 teams={teams} onSubmit={handleUpdate} isOperating={isOperating} />
+                        <PointsTransferFormV3 teams={teams} teamData={teamData} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
                         <RegisterPropertyPurchasesFormV3
                             teams={teams}
