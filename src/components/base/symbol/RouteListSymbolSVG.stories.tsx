@@ -22,3 +22,12 @@ export const Default: Story = {
         </svg>
     ),
 };
+
+export const Metro: Story = {
+    render: () => (
+        <svg viewBox="0 0 4640 1480" width={300} height={96}>
+            <RouteListSymbolSVG variant="metro" />
+            <use href="#route-list-symbol" width="4640" height="1480" />
+        </svg>
+    ),
+};

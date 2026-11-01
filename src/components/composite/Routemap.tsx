@@ -5,7 +5,7 @@ import StationSymbolSVG from "../base/symbol/StationSymbolSVG";
 import { TeamData } from "@/types/TeamData";
 import { GoalStationsWithRelations } from "@/repositories/goalStations/GoalStationsRepository";
 import { Stations, StationType, Teams } from "@/generated/prisma";
-import RouteListSymbolSVG from "../base/symbol/RouteListSymbolSVG";
+import RouteListSymbolSVG, { RouteListVariant } from "../base/symbol/RouteListSymbolSVG";
 import styles from "../../styles/Routemap.module.css";
 import { PropertyPurchasesForRoutemap } from "@/repositories/propertyPurchases/PropertyPurchasesRepository";
 
@@ -133,6 +133,12 @@ interface RoutemapConfig {
 // ミッション設定駅マスの色
 const MISSION_SET_COLOR = "orange";
 
+// 路線一覧（凡例）の配置。メトロは路線図と重ならない左下の空きスペースに置く（metro_lines.png: 4640x1480）
+const ROUTE_LIST_LAYOUT = {
+    tokyu: { x: 150, y: 450 },
+    metro: { x: 100, y: 3400, width: 2100, height: 670 },
+} as const;
+
 /**
  * BoxConfig型定義
  * @param {string} rectFillColor - 駅マスの塗りつぶし色
@@ -199,6 +205,13 @@ const Routemap: React.FC<RoutemapProps> = ({
     const [config, setConfig] = useState<RoutemapConfig | null>(null);
     const [goalStationMapping, setGoalStationMapping] = useState<Station | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    // 路線一覧（凡例）を表示する路線図の種類
+    const routeListVariant: RouteListVariant | null = configFileName?.includes("tokyu")
+        ? "tokyu"
+        : configFileName?.includes("metro")
+          ? "metro"
+          : null;
 
     /**
      * 初期表示
@@ -305,7 +318,7 @@ const Routemap: React.FC<RoutemapProps> = ({
                             <TrainSymbolSVG />
                             <StationSymbolSVG />
                             <BombiiSymbolSVG />
-                            {configFileName?.includes("tokyu") && <RouteListSymbolSVG />}
+                            {routeListVariant && <RouteListSymbolSVG variant={routeListVariant} />}
                         </defs>
                         <g transform={config.svgOverall.transform}>
                             {/* 路線を描画 */}
@@ -470,7 +483,14 @@ const Routemap: React.FC<RoutemapProps> = ({
                                 }
 
                                 {/* 路線 */}
-                                <use id="route-on-routemap" href="#route-list-symbol" x="150" y="450" />
+                                {routeListVariant && (
+                                    <use
+                                        id="route-on-routemap"
+                                        href="#route-list-symbol"
+                                        {...ROUTE_LIST_LAYOUT[routeListVariant]}
+                                        pointerEvents="none"
+                                    />
+                                )}
                                 {/* チームの電車 */}
                                 {teamData
                                     .filter((team) => visibleTeams.includes(team.teamCode))
