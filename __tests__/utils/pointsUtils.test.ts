@@ -45,4 +45,39 @@ describe("PointsUtils", () => {
             ).toEqual({ money: 900, asset: 400 });
         });
     });
+
+    describe("calculateTotalAssets", () => {
+        it("持ち金に物件価値（物件購入分の符号反転）を足した値になる", () => {
+            const team = buildTeamData({ scoredPoints: 1_000, propertyPurchasePoints: -300 });
+            expect(PointsUtils.calculateTotalAssets(team)).toBe(1_300);
+        });
+    });
+
+    describe("rankTeamsByTotalAssets", () => {
+        it("総資産の降順に並び、順位が付く", () => {
+            const result = PointsUtils.rankTeamsByTotalAssets([
+                buildTeamData({ teamCode: "TEAM_A", scoredPoints: 100 }),
+                buildTeamData({ teamCode: "TEAM_B", scoredPoints: 500, propertyPurchasePoints: -200 }),
+                buildTeamData({ teamCode: "TEAM_C", scoredPoints: -50 }),
+            ]);
+            expect(result.map((r) => [r.rank, r.team.teamCode, r.totalAssets])).toEqual([
+                [1, "TEAM_B", 700],
+                [2, "TEAM_A", 100],
+                [3, "TEAM_C", -50],
+            ]);
+        });
+
+        it("同額は同順位になり、次の順位は人数分飛ぶ", () => {
+            const result = PointsUtils.rankTeamsByTotalAssets([
+                buildTeamData({ teamCode: "TEAM_A", scoredPoints: 300 }),
+                buildTeamData({ teamCode: "TEAM_B", scoredPoints: 300 }),
+                buildTeamData({ teamCode: "TEAM_C", scoredPoints: 100 }),
+            ]);
+            expect(result.map((r) => r.rank)).toEqual([1, 1, 3]);
+        });
+
+        it("空配列の場合は空配列を返す", () => {
+            expect(PointsUtils.rankTeamsByTotalAssets([])).toEqual([]);
+        });
+    });
 });
