@@ -6,6 +6,7 @@ import CustomButton from "@/components/base/CustomButton";
 import PageTitle from "@/components/base/PageTitle";
 import ArrivalGoalStationsFormV3 from "@/components/composite/form/ArrivalGoalStationsFormV3";
 import CalculateDistanceToolForm from "@/components/composite/form/CalculateDistanceToolForm";
+import GameResultImageForm from "@/components/composite/form/GameResultImageForm";
 import PointsTransferFormV3 from "@/components/composite/form/PointsTransferFormV3";
 import RegisterBombiiAutoForm from "@/components/composite/form/RegisterBombiiAutoForm";
 import RegisterBombiiManualForm from "@/components/composite/form/RegisterBombiiManualForm";
@@ -34,7 +35,7 @@ import FormDescription from "@/components/base/FormDescription";
 const ToolsPage: React.FC = (): React.JSX.Element => {
     const { eventCode } = useParams();
 
-    const { teams, stations, nearbyStations, user, event, isInitDataLoading, contextError } = useEventContext();
+    const { teams, stations, nearbyStations, members, user, event, isInitDataLoading, contextError } = useEventContext();
 
     const [teamData, setTeamData] = useState<TeamData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -184,6 +185,13 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                         />
                         <Divider />
                         <MissionFormTakebashi />
+                        <Divider />
+                        <GameResultImageForm
+                            teamData={teamData}
+                            members={members}
+                            eventName={event?.eventName ?? ""}
+                            eventCode={eventCode as string}
+                        />
                         <Divider />
                         <InformationDialogV3 teamData={teamData} />
                     </>

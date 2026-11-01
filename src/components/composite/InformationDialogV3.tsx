@@ -1,6 +1,7 @@
 "use client";
 
 import { TeamData } from "@/types/TeamData";
+import { PointsUtils } from "@/utils/pointsUtils";
 import { Info } from "@mui/icons-material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Fab } from "@mui/material";
@@ -76,8 +77,7 @@ const InformationDialogV3: React.FC<InformationDialogV3Props> = ({
                     <DataGrid
                         rows={teamData.map((team) => ({
                             ...team,
-                            // 持ち金には物件購入額（マイナス）が含まれているため、物件価値を足し戻して総資産とする
-                            totalAssets: team.scoredPoints - team.propertyPurchasePoints,
+                            totalAssets: PointsUtils.calculateTotalAssets(team),
                             propertyPurchasePoints: -1 * team.propertyPurchasePoints,
                             goalCounts: team.transitStations.filter((station) => station.isGoal).length,
                         }))}

@@ -12,6 +12,18 @@ export type TeamBalance = {
     asset: number;
 };
 
+/**
+ * 総資産順位の型定義
+ * @property {number} rank - 順位（同額は同順位）
+ * @property {TeamData} team - チームデータ
+ * @property {number} totalAssets - 総資産
+ */
+export type RankedTeam = {
+    rank: number;
+    team: TeamData;
+    totalAssets: number;
+};
+
 export class PointsUtils {
     /**
      * チームの現在の持ち金・資産を取得する
@@ -41,5 +53,31 @@ export class PointsUtils {
             money: balance.money + points,
             asset: status === GameConstants.POINT_STATUS.PROPERTY ? balance.asset - points : balance.asset,
         };
+    }
+
+    /**
+     * チームの総資産を計算する
+     * 持ち金には物件購入額（マイナス）が含まれているため、物件価値を足し戻して総資産とする
+     * @param {TeamData} team - チームデータ
+     * @return {number} 総資産（持ち金・収益・物件価値の合計）
+     */
+    static calculateTotalAssets(team: TeamData): number {
+        return team.scoredPoints - team.propertyPurchasePoints;
+    }
+
+    /**
+     * チームを総資産の降順に並べて順位を付ける（同額は同順位、次の順位は人数分飛ばす）
+     * @param {TeamData[]} teamData - チームデータのリスト
+     * @return {RankedTeam[]} 順位付きのチームのリスト
+     */
+    static rankTeamsByTotalAssets(teamData: TeamData[]): RankedTeam[] {
+        const sorted = teamData
+            .map((team) => ({ team, totalAssets: PointsUtils.calculateTotalAssets(team) }))
+            .sort((a, b) => b.totalAssets - a.totalAssets);
+
+        return sorted.map((item) => ({
+            ...item,
+            rank: sorted.findIndex((other) => other.totalAssets === item.totalAssets) + 1,
+        }));
     }
 }
