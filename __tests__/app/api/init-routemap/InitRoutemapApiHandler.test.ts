@@ -31,8 +31,8 @@ import InitRoutemapApiHandler from "@/app/api/init-routemap/InitRoutemapApiHandl
 
 /** レスポンススキーマを満たす正常なInitRoutemapResponseを生成する */
 const buildValidInitRoutemapResponse = (): InitRoutemapResponse => {
-    // points/scoredPoints/propertyPurchasePoints/revenuePointsはレスポンスから除外される
-    const { points: _points, scoredPoints: _scoredPoints, propertyPurchasePoints: _propertyPurchasePoints, revenuePoints: _revenuePoints, ...teamDataForRoutemap } = buildTeamData();
+    // points/scoredPoints/propertyPurchasePoints/revenuePoints/revenueInPoints/revenueOutPointsはレスポンスから除外される
+    const { points: _points, scoredPoints: _scoredPoints, propertyPurchasePoints: _propertyPurchasePoints, revenuePoints: _revenuePoints, revenueInPoints: _revenueInPoints, revenueOutPoints: _revenueOutPoints, ...teamDataForRoutemap } = buildTeamData();
 
     return {
         teamData: [teamDataForRoutemap],

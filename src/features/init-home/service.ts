@@ -30,6 +30,8 @@ export const InitHomeServiceImpl: InitHomeService = {
                 totalScoredPoints,
                 totalPropertyPoint,
                 totalRevenuePoint,
+                totalRevenueInPoint,
+                totalRevenueOutPoint,
                 events,
                 bombiiCounts,
             ] = await Promise.all([
@@ -40,6 +42,8 @@ export const InitHomeServiceImpl: InitHomeService = {
                 pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
                 pointsRepository.sumPropertyPointsGroupedByTeamCode(req.eventCode),
                 pointsRepository.sumRevenuePointsGroupedByTeamCode(req.eventCode),
+                pointsRepository.sumRevenuePointsGroupedByTeamCode(req.eventCode, "in"),
+                pointsRepository.sumRevenuePointsGroupedByTeamCode(req.eventCode, "out"),
                 eventsRepository.findByEventCode(req.eventCode),
                 bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
             ]);
@@ -64,6 +68,8 @@ export const InitHomeServiceImpl: InitHomeService = {
                 scoredPoints: totalScoredPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 propertyPurchasePoints: totalPropertyPoint.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 revenuePoints: totalRevenuePoint.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
+                revenueInPoints: totalRevenueInPoint.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
+                revenueOutPoints: totalRevenueOutPoint.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 bombiiCounts: bombiiCounts.find((b) => b.teamCode === team.teamCode)?.count || 0,
             }));
 

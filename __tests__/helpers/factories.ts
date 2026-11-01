@@ -288,6 +288,8 @@ export const buildTeamData = (overrides: Partial<TeamData> = {}): TeamData => ({
     scoredPoints: 0,
     propertyPurchasePoints: 0,
     revenuePoints: 0,
+    revenueInPoints: 0,
+    revenueOutPoints: 0,
     bombiiCounts: 0,
     ...overrides,
 });

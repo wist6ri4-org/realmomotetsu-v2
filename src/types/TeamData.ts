@@ -14,6 +14,8 @@ import z from "zod";
  * @property {number} scoredPoints - 得点済みポイント
  * @property {number} propertyPurchasePoints - 物件購入ポイント
  * @property {number} revenuePoints - 収益ポイント
+ * @property {number} revenueInPoints - 収益ポイントのうちプラス（受け取り）の合計
+ * @property {number} revenueOutPoints - 収益ポイントのうちマイナス（支払い）の合計
  * @property {number} bombiiCounts - ボンビーの回数
  */
 export type TeamData = {
@@ -27,6 +29,8 @@ export type TeamData = {
     scoredPoints: number;
     propertyPurchasePoints: number;
     revenuePoints: number;
+    revenueInPoints: number;
+    revenueOutPoints: number;
     bombiiCounts: number;
 };
 
@@ -44,5 +48,7 @@ export const TeamDataSchema = z.object({
     scoredPoints: z.number(),
     propertyPurchasePoints: z.number(),
     revenuePoints: z.number(),
+    revenueInPoints: z.number(),
+    revenueOutPoints: z.number(),
     bombiiCounts: z.number(),
 });

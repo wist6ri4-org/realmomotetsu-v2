@@ -12,7 +12,7 @@ export type InitRoutemapRequest = {
 
 export type TeamDataForRoutemap = Omit<
     TeamData,
-    "points" | "scoredPoints" | "propertyPurchasePoints" | "revenuePoints"
+    "points" | "scoredPoints" | "propertyPurchasePoints" | "revenuePoints" | "revenueInPoints" | "revenueOutPoints"
 >;
 
 /**

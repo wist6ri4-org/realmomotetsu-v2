@@ -134,6 +134,32 @@ describe("PointsRepository", () => {
                 where: { status: PointStatus.revenue, eventCode: "EVENT_A" },
             });
         });
+
+        it("directionに\"in\"を指定した場合はプラスのレコードのみを合計する", async () => {
+            (prisma.points.groupBy as jest.Mock).mockResolvedValue([{ teamCode: "TEAM_A", _sum: { points: 40 } }]);
+
+            const result = await repository.sumRevenuePointsGroupedByTeamCode("EVENT_A", "in");
+
+            expect(prisma.points.groupBy).toHaveBeenCalledWith({
+                by: ["teamCode"],
+                _sum: { points: true },
+                where: { status: PointStatus.revenue, eventCode: "EVENT_A", points: { gt: 0 } },
+            });
+            expect(result).toEqual([{ teamCode: "TEAM_A", totalPoints: 40 }]);
+        });
+
+        it("directionに\"out\"を指定した場合はマイナスのレコードのみを合計する", async () => {
+            (prisma.points.groupBy as jest.Mock).mockResolvedValue([{ teamCode: "TEAM_A", _sum: { points: -30 } }]);
+
+            const result = await repository.sumRevenuePointsGroupedByTeamCode("EVENT_A", "out");
+
+            expect(prisma.points.groupBy).toHaveBeenCalledWith({
+                by: ["teamCode"],
+                _sum: { points: true },
+                where: { status: PointStatus.revenue, eventCode: "EVENT_A", points: { lt: 0 } },
+            });
+            expect(result).toEqual([{ teamCode: "TEAM_A", totalPoints: -30 }]);
+        });
     });
 
     describe("sumScoredPointsByTeamCode", () => {
