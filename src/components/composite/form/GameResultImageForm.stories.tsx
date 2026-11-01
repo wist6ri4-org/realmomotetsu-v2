@@ -63,6 +63,32 @@ export const TiedWinnersManyTeams: Story = {
     },
 };
 
+/** 優勝チームのメンバーが多い場合・資産0のチームがある場合（レイアウト確認用）。 */
+export const ManyMembersAndZeroAssets: Story = {
+    args: {
+        teamData: [
+            ...teamData,
+            buildTeamData({ id: 5, teamCode: "TEAM_E", teamName: "チームE", teamColor: "#7b1fa2" }),
+        ],
+        members: [
+            ...members,
+            ...Array.from({ length: 10 }, (_, index) => ({
+                id: 100 + index,
+                nickname: `ながいなまえ${index + 1}`,
+                iconUrl: null,
+                teamCode: "TEAM_B",
+            })),
+        ],
+    },
+};
+
+/** 全チームの資産が0で、全チームが同点優勝になる場合（レイアウト確認用）。 */
+export const AllTeamsZeroAssets: Story = {
+    args: {
+        teamData: teamData.map((team) => ({ ...team, scoredPoints: 0, propertyPurchasePoints: 0 })),
+    },
+};
+
 /** 画像を生成ボタンを押すとプレビュー画像と共有/保存ボタンが表示される。 */
 export const GenerateShowsPreview: Story = {
     play: async ({ canvasElement }) => {
