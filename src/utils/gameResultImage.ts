@@ -15,6 +15,10 @@ const CARD_RADIUS = 16;
 const RANK_COLUMN_WIDTH = 130;
 const WINNER_AREA_HEIGHT = 480;
 const MAX_ROW_HEIGHT = 200;
+/** 優勝が複数の場合に、2位以下の行のために最低限残す1行の高さ */
+const MIN_ROW_HEIGHT = 96;
+/** 優勝チームのメンバー名の最小フォントサイズ（全員収めるためにここまで縮める） */
+const MIN_MEMBER_FONT_SIZE = 16;
 
 /** ヘッダー画像のうち使う範囲の高さ（下側の菜の花を少し切る） */
 const HEADER_SOURCE_HEIGHT = 600;
@@ -93,9 +97,18 @@ export const drawGameResultImage = (canvas: HTMLCanvasElement, data: GameResultI
 
     // 優勝チーム（同額で複数いる場合は優勝枠を分け合う）
     if (winners.length > 0) {
-        const momotaroHeight = Math.min(WINNER_AREA_HEIGHT * 0.62, 340);
+        // 優勝が複数の場合は、2位以下の行に必要な高さを残して優勝枠を広げる
+        const remainingHeight = GAME_RESULT_IMAGE_HEIGHT - FOOTER_HEIGHT - y;
+        const reservedHeight =
+            others.length > 0 ? others.length * MIN_ROW_HEIGHT + CARD_GAP * (others.length - 1) + CARD_GAP * 2 : 0;
+        const winnerAreaHeight = Math.min(
+            WINNER_AREA_HEIGHT * winners.length + CARD_GAP * (winners.length - 1),
+            remainingHeight - reservedHeight
+        );
+
+        const momotaroHeight = Math.min(winnerAreaHeight * 0.62, 340);
         const momotaroWidth = (data.momotaroImage.naturalWidth / data.momotaroImage.naturalHeight) * momotaroHeight;
-        const winnerCardHeight = (WINNER_AREA_HEIGHT - CARD_GAP * (winners.length - 1)) / winners.length;
+        const winnerCardHeight = (winnerAreaHeight - CARD_GAP * (winners.length - 1)) / winners.length;
         // 文字は桃太郎と重ならない幅に収める
         const textWidth = cardWidth - momotaroWidth - 40;
 
@@ -109,12 +122,12 @@ export const drawGameResultImage = (canvas: HTMLCanvasElement, data: GameResultI
         ctx.drawImage(
             data.momotaroImage,
             GAME_RESULT_IMAGE_WIDTH - PADDING - momotaroWidth,
-            y + WINNER_AREA_HEIGHT - momotaroHeight - 10,
+            y + winnerAreaHeight - momotaroHeight - 10,
             momotaroWidth,
             momotaroHeight
         );
 
-        y += WINNER_AREA_HEIGHT + CARD_GAP * 2;
+        y += winnerAreaHeight + CARD_GAP * 2;
     }
 
     // 2位以下のチーム
@@ -366,7 +379,8 @@ const drawWinnerCard = (
     const innerX = x + 24;
     const innerWidth = textWidth;
     // 優勝チームが複数の場合はカードが低くなるので文字も縮める
-    const scale = Math.min(1, Math.max(0.55, height / WINNER_AREA_HEIGHT));
+    // カードからはみ出さないよう、カードの高さに比例させる
+    const scale = Math.min(1, height / WINNER_AREA_HEIGHT);
 
     drawCard(ctx, x, y, width, height, rankedTeam.team.teamColor);
 
@@ -401,13 +415,19 @@ const drawWinnerCard = (
     drawText(ctx, fontFamily, "メンバー", innerX, cursorY, { size: 36 * scale });
     cursorY += 56 * scale;
 
-    const memberFontSize = 48 * scale;
-    const lineHeight = memberFontSize * 1.4;
-    const lines = wrapWords(ctx, fontFamily, memberNames, memberFontSize, innerWidth);
-    const maxLines = Math.max(1, Math.floor((y + height - 24 - cursorY + lineHeight / 2) / lineHeight));
-    lines.slice(0, maxLines).forEach((line, index) => {
-        const isLastVisible = index === maxLines - 1 && lines.length > maxLines;
-        drawText(ctx, fontFamily, isLastVisible ? line + " …" : line, innerX, cursorY + index * lineHeight, {
+    // 全員がカード内に収まるまで文字を小さくする（名前は省略しない）
+    const bottomY = y + height - 16;
+    let memberFontSize = 48 * scale;
+    let lineHeight = memberFontSize * 1.3;
+    let lines = wrapWords(ctx, fontFamily, memberNames, memberFontSize, innerWidth);
+    while (memberFontSize > MIN_MEMBER_FONT_SIZE && cursorY - lineHeight / 2 + lines.length * lineHeight > bottomY) {
+        memberFontSize = Math.max(MIN_MEMBER_FONT_SIZE, memberFontSize - 2);
+        lineHeight = memberFontSize * 1.3;
+        lines = wrapWords(ctx, fontFamily, memberNames, memberFontSize, innerWidth);
+    }
+
+    lines.forEach((line, index) => {
+        drawText(ctx, fontFamily, line, innerX, cursorY + index * lineHeight, {
             size: memberFontSize,
             maxWidth: innerWidth,
         });
