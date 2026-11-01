@@ -32,6 +32,8 @@ export const InitOperationServiceImpl: InitOperationService = {
                 totalScoredPoints,
                 totalPropertyPoints,
                 totalRevenuePoints,
+                totalRevenueInPoints,
+                totalRevenueOutPoints,
                 nextGoalStation,
                 bombiiCounts,
             ] = await Promise.all([
@@ -41,6 +43,8 @@ export const InitOperationServiceImpl: InitOperationService = {
                 pointsRepository.sumScoredPointsGroupedByTeamCode(req.eventCode),
                 pointsRepository.sumPropertyPointsGroupedByTeamCode(req.eventCode),
                 pointsRepository.sumRevenuePointsGroupedByTeamCode(req.eventCode),
+                pointsRepository.sumRevenuePointsGroupedByTeamCode(req.eventCode, "in"),
+                pointsRepository.sumRevenuePointsGroupedByTeamCode(req.eventCode, "out"),
                 goalStationsRepository.findLatestGoalStation(req.eventCode),
                 bombiiHistoriesRepository.countByEventCodeGroupedByTeamCode(req.eventCode),
             ]);
@@ -61,6 +65,8 @@ export const InitOperationServiceImpl: InitOperationService = {
                 scoredPoints: totalScoredPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 propertyPurchasePoints: totalPropertyPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 revenuePoints: totalRevenuePoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
+                revenueInPoints: totalRevenueInPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
+                revenueOutPoints: totalRevenueOutPoints.find((p) => p.teamCode === team.teamCode)?.totalPoints || 0,
                 bombiiCounts: bombiiCounts.find((b) => b.teamCode === team.teamCode)?.count || 0,
             }));
 

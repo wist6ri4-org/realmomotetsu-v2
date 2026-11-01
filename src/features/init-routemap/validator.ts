@@ -14,6 +14,8 @@ export const InitRoutemapResponseSchema = z.object({
         scoredPoints: true,
         propertyPurchasePoints: true,
         revenuePoints: true,
+        revenueInPoints: true,
+        revenueOutPoints: true,
     })),
     nextGoalStation: GoalStationsSchema.nullable(),
     bombiiTeam: TeamsSchema.nullable(),

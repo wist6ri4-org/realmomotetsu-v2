@@ -94,14 +94,19 @@ describe("InitHomeServiceImpl.getDataForHome", () => {
     });
 
     describe("チームデータの組み立て", () => {
-        it("チームごとの合計ポイント・スコア済みポイント・物件購入ポイント・収益ポイント・ボンビー回数をteamCodeで突き合わせて集計する", async () => {
+        it("チームごとの合計ポイント・スコア済みポイント・物件購入ポイント・収益ポイント（合計・入・出）・ボンビー回数をteamCodeで突き合わせて集計する", async () => {
             sumPointsGroupedByTeamCode.mockResolvedValue([
                 { teamCode: "TEAM_A", totalPoints: 100 },
                 { teamCode: "TEAM_B", totalPoints: 200 },
             ]);
             sumScoredPointsGroupedByTeamCode.mockResolvedValue([{ teamCode: "TEAM_A", totalPoints: 50 }]);
             sumPropertyPointsGroupedByTeamCode.mockResolvedValue([{ teamCode: "TEAM_B", totalPoints: -30 }]);
-            sumRevenuePointsGroupedByTeamCode.mockResolvedValue([{ teamCode: "TEAM_A", totalPoints: 10 }]);
+            // 収益は direction（省略/in/out）ごとに別の集計結果を返す
+            sumRevenuePointsGroupedByTeamCode.mockImplementation(async (_eventCode: string, direction?: "in" | "out") => {
+                if (direction === "in") return [{ teamCode: "TEAM_A", totalPoints: 40 }];
+                if (direction === "out") return [{ teamCode: "TEAM_A", totalPoints: -30 }];
+                return [{ teamCode: "TEAM_A", totalPoints: 10 }];
+            });
             countByEventCodeGroupedByTeamCode.mockResolvedValue([
                 buildBombiiCount({ teamCode: "TEAM_B", count: 3 }),
             ]);
@@ -115,6 +120,8 @@ describe("InitHomeServiceImpl.getDataForHome", () => {
                 scoredPoints: 50,
                 propertyPurchasePoints: 0,
                 revenuePoints: 10,
+                revenueInPoints: 40,
+                revenueOutPoints: -30,
                 bombiiCounts: 0,
             });
             expect(teamB).toMatchObject({
@@ -122,6 +129,8 @@ describe("InitHomeServiceImpl.getDataForHome", () => {
                 scoredPoints: 0,
                 propertyPurchasePoints: -30,
                 revenuePoints: 0,
+                revenueInPoints: 0,
+                revenueOutPoints: 0,
                 bombiiCounts: 3,
             });
         });
@@ -137,6 +146,8 @@ describe("InitHomeServiceImpl.getDataForHome", () => {
                         scoredPoints: 0,
                         propertyPurchasePoints: 0,
                         revenuePoints: 0,
+                        revenueInPoints: 0,
+                        revenueOutPoints: 0,
                         bombiiCounts: 0,
                     }),
                 ]),
