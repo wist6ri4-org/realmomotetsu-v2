@@ -45,6 +45,9 @@ export const Messages = {
     CARD_STATION_ARRIVAL: "カード売り場駅！\n{stationName}（{stationNameKana}）！\nカードを　購入できます！",
     TREASURE_STATION_ARRIVAL: "宝くじ駅！\n{stationName}（{stationNameKana}）！\n宝くじを　１枚差し上げます！",
     REGISTER_BOMBII_FAILED_FOR_NO_GOAL_STATIONS : "ボンビーを登録できませんでした。\n目的駅が設定されていません。",
+    GAME_RESULT_IMAGE_NO_TEAMS: "チームデータが無いため、結果画像を生成できません。",
+    GAME_RESULT_IMAGE_FAILED: "結果画像の生成に失敗しました。",
+    GAME_RESULT_IMAGE_SHARE_FAILED: "結果画像の共有に失敗しました。",
 } as const;
 
 export type Messages = typeof Messages;
