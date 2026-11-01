@@ -114,6 +114,8 @@ describe("InitRoutemapServiceImpl.getDataForRoutemap", () => {
             expect(res.teamData[0]).not.toHaveProperty("scoredPoints");
             expect(res.teamData[0]).not.toHaveProperty("propertyPurchasePoints");
             expect(res.teamData[0]).not.toHaveProperty("revenuePoints");
+            expect(res.teamData[0]).not.toHaveProperty("revenueInPoints");
+            expect(res.teamData[0]).not.toHaveProperty("revenueOutPoints");
         });
 
         it("チームカラーが未設定の場合は空文字になる", async () => {

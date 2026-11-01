@@ -137,9 +137,10 @@ export class PointsRepository extends BaseRepository {
     /**
      * 指定されたイベントコードにおけるチームごとの収益ポイントを合計
      * @param eventCode - イベントコード
+     * @param direction - "in"はプラス（受け取り）のみ、"out"はマイナス（支払い）のみを合計する。省略時は全件
      * @return {Promise<SummedPoints[]>} チームごとの合計ポイント
      */
-    async sumRevenuePointsGroupedByTeamCode(eventCode: string): Promise<SummedPoints[]> {
+    async sumRevenuePointsGroupedByTeamCode(eventCode: string, direction?: "in" | "out"): Promise<SummedPoints[]> {
         try {
             const result = await this.prisma.points.groupBy({
                 by: ["teamCode"],
@@ -149,6 +150,8 @@ export class PointsRepository extends BaseRepository {
                 where: {
                     status: GameConstants.POINT_STATUS.REVENUE, // 収益
                     eventCode: eventCode,
+                    ...(direction === "in" && { points: { gt: 0 } }),
+                    ...(direction === "out" && { points: { lt: 0 } }),
                 },
             });
             return result.map((item) => ({

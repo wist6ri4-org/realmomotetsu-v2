@@ -4,8 +4,25 @@ import InformationDialogV3 from "./InformationDialogV3";
 import { buildTeamData } from "@/stories/mocks/fixtures";
 
 const teamData = [
-    buildTeamData({ id: 1, teamCode: "TEAM_A", teamName: "チームA", points: 1200, scoredPoints: 3400 }),
-    buildTeamData({ id: 2, teamCode: "TEAM_B", teamName: "チームB", points: 800, scoredPoints: 2100 }),
+    buildTeamData({
+        id: 1,
+        teamCode: "TEAM_A",
+        teamName: "チームA",
+        points: 1200,
+        scoredPoints: 3400,
+        propertyPurchasePoints: -500,
+        revenueInPoints: 300,
+        revenueOutPoints: -100,
+    }),
+    buildTeamData({
+        id: 2,
+        teamCode: "TEAM_B",
+        teamName: "チームB",
+        points: 800,
+        scoredPoints: 2100,
+        revenueInPoints: 100,
+        revenueOutPoints: -300,
+    }),
 ];
 
 /**
@@ -35,5 +52,9 @@ export const OpenDialog: Story = {
         await expect(await body.findByText("チーム情報")).toBeInTheDocument();
         await expect(body.getByText("チームA")).toBeInTheDocument();
         await expect(body.getByText("チームB")).toBeInTheDocument();
+        // NOTE: 収益(入)/(出)はダイアログ幅の外にあり、DataGridの列仮想化で横スクロールするまで描画されないため検証しない
+        await expect(body.getByText("総資産")).toBeInTheDocument();
+        // チームAの総資産 = 持ち金3400 + 物件500
+        await expect(body.getByText("3900")).toBeInTheDocument();
     },
 };

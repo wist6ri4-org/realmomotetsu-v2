@@ -47,10 +47,13 @@ const InformationDialogV3: React.FC<InformationDialogV3Props> = ({
     // チームデータのフィールドとヘッダー名
     const fields: GridColDef[] = [
         { field: "teamName", headerName: "チーム名", minWidth: 120 },
+        { field: "totalAssets", headerName: "総資産", minWidth: 80 },
         { field: "scoredPoints", headerName: "持ち金", minWidth: 80 },
         { field: "propertyPurchasePoints", headerName: "物件", minWidth: 80 },
+        { field: "revenueInPoints", headerName: "収益(入)", minWidth: 80 },
+        { field: "revenueOutPoints", headerName: "収益(出)", minWidth: 80 },
         { field: "remainingStationsNumber", headerName: "あと", minWidth: 80, valueFormatter: (value) => (value !== null ? value : "-") },
-        { field: "goalCounts", headerName: "ゴール回数回数", minWidth: 80 },
+        { field: "goalCounts", headerName: "ゴール回数", minWidth: 80 },
         { field: "bombiiCounts", headerName: "ボンビー回数", minWidth: 80 },
     ];
     // ページネーションの初期設定
@@ -73,6 +76,8 @@ const InformationDialogV3: React.FC<InformationDialogV3Props> = ({
                     <DataGrid
                         rows={teamData.map((team) => ({
                             ...team,
+                            // 持ち金には物件購入額（マイナス）が含まれているため、物件価値を足し戻して総資産とする
+                            totalAssets: team.scoredPoints - team.propertyPurchasePoints,
                             propertyPurchasePoints: -1 * team.propertyPurchasePoints,
                             goalCounts: team.transitStations.filter((station) => station.isGoal).length,
                         }))}
