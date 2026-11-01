@@ -21,11 +21,12 @@ import { checkIsOperatingUser } from "@/lib/auth";
 import { UsersWithRelations } from "@/repositories/users/UsersRepository";
 import { TeamData } from "@/types/TeamData";
 import { Construction } from "@mui/icons-material";
-import { Alert, Box, CircularProgress, Divider } from "@mui/material";
+import { Alert, Box, CircularProgress, Divider, Paper } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useRealtimeRefresh } from "@/hooks/useRealtimeRefresh";
 import MissionFormTakebashi from "@/components/composite/form/MissionFormTakebashi";
+import FormDescription from "@/components/base/FormDescription";
 
 /**
  * GMツールページ
@@ -144,15 +145,24 @@ const ToolsPage: React.FC = (): React.JSX.Element => {
                 {/* メインコンテンツ */}
                 {hasLoaded && (
                     <>
-                        <RegisterGoalStationsFormV3
-                            stations={stations.filter((station) => station.stationType === StationType.mission)}
-                            event={event!} onSubmit={handleUpdate}
-                            isOperating={isOperating}
-                        />
-                        <Divider />
-                        <ArrivalGoalStationsFormV3 event={event} teams={teams} stations={stations} onSubmit={handleUpdate} isOperating={isOperating} />
-                        <Divider />
-                        <RegisterBombiiAutoForm teamData={teamData} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
+                        <Paper variant={'outlined'} sx={{ padding: 1, marginBottom: 2 }}>
+                            <FormDescription>
+                                目的地に到着したら、以下の順にデータを登録してください。<br />
+                                1. <strong>目的駅到着処理</strong><br />
+                                2. <strong>ボンビー自動設定</strong><br />
+                                3. <strong>目的駅登録</strong><br />
+                            </FormDescription>
+                            <Divider />
+                            <ArrivalGoalStationsFormV3 event={event} teams={teams} stations={stations} onSubmit={handleUpdate} isOperating={isOperating} />
+                            <Divider />
+                            <RegisterBombiiAutoForm teamData={teamData} event={event!} onSubmit={handleUpdate} isOperating={isOperating} />
+                            <Divider />
+                            <RegisterGoalStationsFormV3
+                                stations={stations.filter((station) => station.stationType === StationType.mission)}
+                                event={event!} onSubmit={handleUpdate}
+                                isOperating={isOperating}
+                            />
+                        </Paper>
                         <Divider />
                         <RegisterPointsFormV3 teams={teams} teamData={teamData} onSubmit={handleUpdate} isOperating={isOperating} />
                         <Divider />
