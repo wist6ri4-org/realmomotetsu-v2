@@ -14,4 +14,5 @@ export const PostCurrentLocationV3ResponseSchema = z.object({
     point: PointsSchema.optional(),
     paymentPoint: PointsSchema.optional(),
     stationType: StationTypeSchema.optional(),
+    isPurchased: z.boolean(),
 });

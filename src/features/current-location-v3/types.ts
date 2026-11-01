@@ -18,10 +18,12 @@ export type PostCurrentLocationV3Request = {
  * @property { Points } point - 登録されたポイント（物件駅の場合は所有チームの収益）
  * @property { Points } paymentPoint - 物件駅で到着したチームが支払ったポイント
  * @property { StationType } stationType - 登録された駅のタイプ
+ * @property { boolean } isPurchased - 登録された駅が（登録前の時点で）購入済みかどうか
  */
 export type PostCurrentLocationV3Response = {
     transitStation: TransitStations;
     point?: Points;
     paymentPoint?: Points;
     stationType?: StationType;
+    isPurchased: boolean;
 };

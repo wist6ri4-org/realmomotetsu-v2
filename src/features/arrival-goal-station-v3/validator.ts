@@ -1,4 +1,4 @@
-import { PropertyPurchasesSchema, StationsSchema } from "@/generated/zod";
+import { StationsSchema } from "@/generated/zod";
 import { z } from "zod";
 
 /**
@@ -9,7 +9,6 @@ export const PostArrivalGoalStationV3RequestSchema = z.object({
     eventCode: z.string().min(1, "イベントコードは必須です"),
     teamCode: z.string().min(1, "チームコードは必須です"),
     stations: z.array(StationsSchema),
-    willPurchase: z.boolean(),
 });
 
 /**
@@ -17,8 +16,6 @@ export const PostArrivalGoalStationV3RequestSchema = z.object({
  */
 export const PostArrivalGoalStationV3ResponseSchema = z.object({
     points: z.number(),
-    propertyPurchases: PropertyPurchasesSchema.nullable(),
-    purchasePoints: z.number().nullable(),
     consecutiveGoalCount: z.number(),
     consecutiveGoalBonus: z.number().nullable(),
 });

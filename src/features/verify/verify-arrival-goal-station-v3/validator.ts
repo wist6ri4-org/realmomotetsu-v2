@@ -8,7 +8,6 @@ export const PostVerifyArrivalGoalStationV3RequestSchema = z.object({
     eventTypeCode: z.string().min(1, "イベント種別コードは必須です"),
     eventCode: z.string().min(1, "イベントコードは必須です"),
     teamCode: z.string().min(1, "チームコードは必須です"),
-    willPurchase: z.boolean(),
 });
 
 /**
@@ -17,7 +16,6 @@ export const PostVerifyArrivalGoalStationV3RequestSchema = z.object({
 export const PostVerifyArrivalGoalStationV3ResponseSchema = z.object({
     result: z.nativeEnum(VerifyArrivalGoalStationV3Result),
     stationName: z.string(),
-    price: z.number(),
     currentPoints: z.number(),
     arrivalPoints: z.number(),
     consecutiveGoalBonus: z.number(),

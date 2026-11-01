@@ -24,19 +24,24 @@ import { useAlertDialog } from "@/hooks/useAlertDialog";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { useNumberInput } from "@/hooks/useNumberInput";
 import { useSelectInput } from "@/hooks/useSelectInput";
+import { TeamData } from "@/types/TeamData";
+import { Converter } from "@/utils/converter";
+import { PointsUtils, TeamBalance } from "@/utils/pointsUtils";
 import { TypeConverter } from "@/utils/typeConverter";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 
 /**
  * PointsTransferFormV3コンポーネントのプロパティ型定義
  * @property {Teams[]} teams - チームのリスト
+ * @property {TeamData[]} teamData - チームデータのリスト（現在の持ち金・資産の表示に使用）
  * @property {() => void} [onSubmit] - フォーム送信後のコールバック関数
  * @property {boolean} isOperating - 操作権限があるかどうか
  */
 interface PointsTransferFormV3Props {
     teams: Teams[];
+    teamData: TeamData[];
     onSubmit?: () => void;
     isOperating: boolean;
 }
@@ -49,12 +54,25 @@ const pointStatusOptions: RadioOption[] = [
 ];
 
 /**
+ * 確認ダイアログ用に、チームの移動前後の持ち金・資産を整形する
+ * @param {string} label - チームの区分（移動元・移動先）
+ * @param {TeamBalance} before - 移動前の持ち金・資産
+ * @param {TeamBalance} after - 移動後の持ち金・資産
+ * @return {string} 整形した文字列
+ */
+const formatBalanceChange = (label: string, before: TeamBalance, after: TeamBalance): string =>
+    `【${label}】\n` +
+    `持ち金: ${Converter.convertPointsToYenV3(before.money)} → ${Converter.convertPointsToYenV3(after.money)}\n` +
+    `資産: ${Converter.convertPointsToYenV3(before.asset)} → ${Converter.convertPointsToYenV3(after.asset)}`;
+
+/**
  * ポイント移動フォームコンポーネント
  * @param {PointsTransferFormV3Props} props - PointsTransferFormV3のプロパティ
  * @returns {JSX.Element} - PointsTransferFormV3コンポーネント
  */
 const PointsTransferFormV3: React.FC<PointsTransferFormV3Props> = ({
     teams,
+    teamData,
     onSubmit,
     isOperating,
 }: PointsTransferFormV3Props): React.JSX.Element => {
@@ -70,6 +88,10 @@ const PointsTransferFormV3: React.FC<PointsTransferFormV3Props> = ({
     const { isAlertOpen, alertOptions, showAlertDialog, handleAlertOk } = useAlertDialog();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    // 選択中の移動元・移動先チームの現在の持ち金・資産
+    const fromBalance = PointsUtils.calculateTeamBalance(teamData, fromTeamCodeInput.value);
+    const toBalance = PointsUtils.calculateTeamBalance(teamData, toTeamCodeInput.value);
 
     /**
      * ポイント状態の変更ハンドラー
@@ -95,10 +117,21 @@ const PointsTransferFormV3: React.FC<PointsTransferFormV3Props> = ({
             "以下の内容でポイントを移動しますか？\n\n" +
             `移動元チーム: ${teams.find((team) => team.teamCode === fromTeamCodeInput.value)?.teamName || "不明"}\n` +
             `移動先チーム: ${teams.find((team) => team.teamCode === toTeamCodeInput.value)?.teamName || "不明"}\n` +
-            `ポイント: ${pointsInput.value}\n` +
+            `金額: ${Converter.convertPointsToYenV3(pointsInput.value)}\n` +
             `ステータス: ${pointStatus === GameConstants.POINT_STATUS.SCORED
                 ? "持ち金" : pointStatus === GameConstants.POINT_STATUS.PROPERTY
-                    ? "物件" : "収益"}`;
+                    ? "物件" : "収益"}\n\n` +
+            formatBalanceChange(
+                "移動元",
+                fromBalance,
+                PointsUtils.calculateTeamBalanceAfter(fromBalance, -1 * pointsInput.value, pointStatus)
+            ) +
+            "\n\n" +
+            formatBalanceChange(
+                "移動先",
+                toBalance,
+                PointsUtils.calculateTeamBalanceAfter(toBalance, pointsInput.value, pointStatus)
+            );
         const isConfirmed = await showConfirmDialog({
             message: confirmMessage,
         });
@@ -212,6 +245,12 @@ const PointsTransferFormV3: React.FC<PointsTransferFormV3Props> = ({
                             disabled={isLoading}
                             sx={{ minWidth: 200 }}
                         />
+                        {fromTeamCodeInput.value && (
+                            <Typography variant="body2" sx={{ marginTop: 1 }}>
+                                現在の持ち金: {Converter.convertPointsToYenV3(fromBalance.money)}
+                                {` ／ 資産: ${Converter.convertPointsToYenV3(fromBalance.asset)}`}
+                            </Typography>
+                        )}
                     </Box>
                     <Box sx={{ marginBottom: 2 }}>
                         <CustomSelect
@@ -225,6 +264,12 @@ const PointsTransferFormV3: React.FC<PointsTransferFormV3Props> = ({
                             disabled={isLoading}
                             sx={{ minWidth: 200 }}
                         />
+                        {toTeamCodeInput.value && (
+                            <Typography variant="body2" sx={{ marginTop: 1 }}>
+                                現在の持ち金: {Converter.convertPointsToYenV3(toBalance.money)}
+                                {` ／ 資産: ${Converter.convertPointsToYenV3(toBalance.asset)}`}
+                            </Typography>
+                        )}
                     </Box>
                     <Box sx={{ marginBottom: 2 }}>
                         <CustomNumberInput

@@ -9,7 +9,6 @@ import { ArrivalGoalStationV3Service } from "@/features/arrival-goal-station-v3/
 import {
     TEST_EVENT_CODE,
     TEST_EVENT_TYPE_CODE,
-    buildPropertyPurchase,
     buildStations,
 } from "../../../helpers/factories";
 import {
@@ -29,7 +28,6 @@ describe("ArrivalGoalStationV3ApiHandler", () => {
         eventCode: TEST_EVENT_CODE,
         teamCode: "TEAM_A",
         stations: buildStations(["STATION_A", "STATION_B"]),
-        willPurchase: false,
     };
 
     beforeEach(() => {
@@ -48,8 +46,6 @@ describe("ArrivalGoalStationV3ApiHandler", () => {
         it("リクエストボディをServiceに渡し、到着処理の結果を返す", async () => {
             service.postArrivalGoalStationV3.mockResolvedValue({
                 points: 5000,
-                propertyPurchases: null,
-                purchasePoints: null,
                 consecutiveGoalCount: 0,
                 consecutiveGoalBonus: null,
             });
@@ -64,36 +60,32 @@ describe("ArrivalGoalStationV3ApiHandler", () => {
             const calledWith = service.postArrivalGoalStationV3.mock.calls[0][0];
             expect(calledWith.eventCode).toBe(TEST_EVENT_CODE);
             expect(calledWith.teamCode).toBe("TEAM_A");
-            expect(calledWith.willPurchase).toBe(false);
             expect(status).toBe(StatusCode.OK);
             expect(body).toHaveProperty("data");
             expect((body.data as { points: number }).points).toBe(5000);
         });
 
-        it("物件購入ありの戻り値もそのままレスポンスに乗る", async () => {
+        it("連続ゴールボーナスの戻り値もそのままレスポンスに乗る", async () => {
             service.postArrivalGoalStationV3.mockResolvedValue({
                 points: 5000,
-                propertyPurchases: buildPropertyPurchase({ stationCode: "STATION_B" }),
-                purchasePoints: 10_000,
-                consecutiveGoalCount: 1,
+                consecutiveGoalCount: 2,
                 consecutiveGoalBonus: 1_000,
             });
 
-            const req = buildPostRequest({ ...validBody, willPurchase: true });
+            const req = buildPostRequest(validBody);
             const { status, body } = await readResponse(
                 await new ArrivalGoalStationV3ApiHandler(req, service).handle(),
             );
 
             expect(status).toBe(StatusCode.OK);
             const data = body.data as Record<string, unknown>;
-            expect(data.purchasePoints).toBe(10_000);
+            expect(data.consecutiveGoalCount).toBe(2);
             expect(data.consecutiveGoalBonus).toBe(1_000);
         });
 
         it.each([
-            ["eventTypeCodeがない", { eventCode: TEST_EVENT_CODE, teamCode: "TEAM_A", stations: [], willPurchase: false }],
+            ["eventTypeCodeがない", { eventCode: TEST_EVENT_CODE, teamCode: "TEAM_A", stations: [] }],
             ["teamCodeが空文字", { ...validBody, teamCode: "" }],
-            ["willPurchaseが真偽値でない", { ...validBody, willPurchase: "yes" }],
             ["stationsが配列でない", { ...validBody, stations: "STATION_A" }],
         ])("ボディが不正な場合（%s）は400を返す", async (_label, body) => {
             const req = buildPostRequest(body);

@@ -50,7 +50,7 @@ describe("CurrentLocationV3ApiHandler", () => {
     describe("POST", () => {
         it("リクエストボディをServiceに渡し、登録結果を返す", async () => {
             const transitStation = buildTransitStation({ stationCode: "STATION_A" });
-            CurrentLocationV3ServiceImpl.postCurrentLocationV3.mockResolvedValue({ transitStation });
+            CurrentLocationV3ServiceImpl.postCurrentLocationV3.mockResolvedValue({ transitStation, isPurchased: false });
 
             const req = buildPostRequest(validBody);
             const { status, body } = await readResponse(await new CurrentLocationV3ApiHandler(req).handle());
@@ -68,6 +68,7 @@ describe("CurrentLocationV3ApiHandler", () => {
                 point,
                 teamDiscordWebhookUrl: "https://discord.com/api/webhooks/sample",
                 stationType: StationType.plus,
+                isPurchased: false,
             });
 
             const req = buildPostRequest(validBody);
@@ -87,6 +88,7 @@ describe("CurrentLocationV3ApiHandler", () => {
                 point,
                 paymentPoint,
                 stationType: StationType.mission,
+                isPurchased: true,
             });
 
             const req = buildPostRequest(validBody);
@@ -96,6 +98,7 @@ describe("CurrentLocationV3ApiHandler", () => {
             const data = body.data as Record<string, { teamCode: string; points: number }>;
             expect(data.point).toMatchObject({ teamCode: "TEAM_B", points: 5_000 });
             expect(data.paymentPoint).toMatchObject({ teamCode: "TEAM_A", points: -5_000 });
+            expect(data.isPurchased).toBe(true);
         });
 
         it.each([

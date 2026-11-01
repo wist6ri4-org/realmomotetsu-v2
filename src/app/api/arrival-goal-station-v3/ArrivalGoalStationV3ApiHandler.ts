@@ -64,8 +64,7 @@ class ArrivalGoalStationV3ApiHandler extends BaseApiHandler {
 
             this.logInfo("Successfully processed arrival-goal-station-v3 data", {
                 points: validatedResponse.points,
-                hasPurchased: validatedResponse.propertyPurchases != null,
-                purchasePoints: validatedResponse.purchasePoints,
+                consecutiveGoalBonus: validatedResponse.consecutiveGoalBonus,
             });
 
             return this.createSuccessResponse(validatedResponse);
