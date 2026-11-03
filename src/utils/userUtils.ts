@@ -37,12 +37,14 @@ export class UserUtils {
         // TODO バケットの存在確認と作成
         // await this.ensureBucketExists(this.BUCKET_NAME);
 
-        const fileExtension = file.name.split(".").pop();
+        // 表示サイズに合わせて縮小・圧縮してから保存する（失敗時は元ファイルのまま）
+        const uploadFile = await this.resizeIconFile(file);
+        const fileExtension = uploadFile.name.split(".").pop();
         const fileName = `${this.USER_ICON_FOLDER}/${userId}.${fileExtension}`;
 
         await this.deleteUserIcon(userId); // 既存のアイコンを削除
 
-        const { error } = await supabase.storage.from(this.BUCKET_NAME).upload(fileName, file, {
+        const { error } = await supabase.storage.from(this.BUCKET_NAME).upload(fileName, uploadFile, {
             upsert: true,
         });
 
@@ -60,6 +62,42 @@ export class UserUtils {
         const publicUrlWithCacheBuster = `${urlData.publicUrl}?t=${timestamp}`;
 
         return publicUrlWithCacheBuster;
+    }
+
+    /**
+     * アイコン画像を正方形(中央切り抜き)に縮小し WebP に変換する
+     * @param {File} file - 元の画像ファイル
+     * @return {Promise<File>} - 変換後のファイル（変換に失敗した場合は元のファイル）
+     */
+    private async resizeIconFile(file: File): Promise<File> {
+        const ICON_SIZE = 256;
+        try {
+            const bitmap = await createImageBitmap(file);
+            const side = Math.min(bitmap.width, bitmap.height);
+            const canvas = document.createElement("canvas");
+            canvas.width = ICON_SIZE;
+            canvas.height = ICON_SIZE;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return file;
+            ctx.drawImage(
+                bitmap,
+                (bitmap.width - side) / 2,
+                (bitmap.height - side) / 2,
+                side,
+                side,
+                0,
+                0,
+                ICON_SIZE,
+                ICON_SIZE
+            );
+            bitmap.close();
+            const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", 0.85));
+            if (!blob || blob.type !== "image/webp") return file;
+            return new File([blob], "icon.webp", { type: "image/webp" });
+        } catch (error) {
+            console.warn("Failed to resize icon, uploading original:", error);
+            return file;
+        }
     }
 
     /**

@@ -5,6 +5,8 @@ import CustomButton from "../base/CustomButton";
 import Image from "next/image";
 import { DialogConstants } from "@/constants/dialogConstants";
 
+const GOAL_BACKGROUND_SRC = "/goal_background.webp";
+const GOAL_MOMOTARO_SRC = "/goal_momotaro.webp";
 
 /**
  * GoalDialogコンポーネントのプロパティ型定義
@@ -53,6 +55,14 @@ const GoalDialog: React.FC<GoalDialogProps> = ({ goalStationName, isOpen, handle
         makeShot(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
         makeShot(0.1, { spread: 120, startVelocity: 45 });
     }, [makeShot]);
+
+    // 表示時の遅延を避けるため、マウント時に画像をプリロードしてブラウザキャッシュに載せる
+    useEffect(() => {
+        [GOAL_BACKGROUND_SRC, GOAL_MOMOTARO_SRC].forEach((src) => {
+            const img = new window.Image();
+            img.src = src;
+        });
+    }, []);
 
     // ゴールダイアログが開いたときにコンフェッティを発射するエフェクト
     useEffect(() => {
@@ -115,7 +125,7 @@ const GoalDialog: React.FC<GoalDialogProps> = ({ goalStationName, isOpen, handle
                         content: '""',
                         position: "absolute",
                         inset: 0,
-                        backgroundImage: "url(/goal_background.png)",
+                        backgroundImage: `url(${GOAL_BACKGROUND_SRC})`,
                         backgroundSize: "cover",
                         backgroundRepeat: "no-repeat",
                         backgroundPosition: "center",
@@ -190,11 +200,12 @@ const GoalDialog: React.FC<GoalDialogProps> = ({ goalStationName, isOpen, handle
                             animation: isOpen ? "popFromBottom 0.9s ease-out 1s both" : "none",
                         }}>
                         <Image
-                            src="/goal_momotaro.png"
+                            src={GOAL_MOMOTARO_SRC}
                             alt="桃太郎"
-                            width={1000}
-                            height={1000}
-                            priority
+                            width={800}
+                            height={1202}
+                            style={{ width: "100%", height: "auto" }}
+                            unoptimized // 軽量化済みWebP。プリロードしたキャッシュをそのまま使うため最適化を通さない
                         />
                     </Box>
                 </Box>
