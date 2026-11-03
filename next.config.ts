@@ -19,6 +19,18 @@ const nextConfig: NextConfig = {
     experimental: {
         optimizePackageImports: ["@mui/material", "@mui/icons-material"],
     },
+    images: {
+        formats: ["image/avif", "image/webp"],
+    },
+    // public 配下の静的画像をキャッシュする（同名で差し替える運用があるため immutable にはしない）
+    async headers() {
+        return [
+            {
+                source: "/:path*.(png|jpg|jpeg|webp|avif|svg)",
+                headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
+            },
+        ];
+    },
 
     // ルートパスのリダイレクト設定
     // NOTE 特定のパスへのアクセスをNext.js側でリダイレクトするための設定。2025.9現在不要。学習用に残している。
